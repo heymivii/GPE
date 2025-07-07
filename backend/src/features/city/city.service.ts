@@ -22,67 +22,87 @@ export class CityService {
   }
 
   async importCitiesFromGeoDb(): Promise<{
-    message: string;
-    totalImported: number;
-  }> {
-    const headers = {
-      'X-RapidAPI-Key': 'aa81c51695msh90375fad163b55fp1bd0c4jsn23ae1f2996e5',
-      'X-RapidAPI-Host': 'wft-geo-db.p.rapidapi.com',
-      'User-Agent': 'RapidAPI-Node',
-    };
+  message: string;
+  totalImported: number;
+}> {
+  const headers = {
+    'X-RapidAPI-Key': 'aa81c51695msh90375fad163b55fp1bd0c4jsn23ae1f2996e5',
+    'X-RapidAPI-Host': 'wft-geo-db.p.rapidapi.com',
+    'User-Agent': 'RapidAPI-Node',
+  };
 
-    let offset = 0;
-    const limit = 10;
-    let totalCount = 0;
-    let totalImported = 0;
+  // ✅ Reprise ici
+  let offset = 9550;
+  const limit = 10;
+  let totalCount = 0;
+  let totalImported = offset;
 
-    do {
-      try {
-        const response = await axios.get(
-          'https://wft-geo-db.p.rapidapi.com/v1/geo/cities',
-          {
-            headers,
-            params: { offset, limit },
-            decompress: true,
-          },
-        );
+  const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-        const cities = response.data.data;
-        const sleep = (ms: number) =>
-          new Promise((resolve) => setTimeout(resolve, ms));
+  console.log(`🚀 Starting import at offset ${offset} with limit ${limit}`);
 
-        // 🗃️ Prépare un tableau d'entités
-        const cityEntities: City[] = cities.map((c: any) =>
-          this.cityRepository.create({
-            name: c.name,
-            countryCode: c.countryCode,
-            region: c.region,
-            latitude: c.latitude,
-            longitude: c.longitude,
-            population: c.population,
-          }),
-        );
+  do {
+    console.log(`📡 Requesting cities: offset=${offset}, limit=${limit}`);
 
-        // ⚡ Sauvegarde en batch
-        await this.cityRepository.save(cityEntities);
+    try {
+      const response = await axios.get(
+        'https://wft-geo-db.p.rapidapi.com/v1/geo/cities',
+        {
+          headers,
+          params: { offset, limit },
+          decompress: true,
+        },
+      );
 
-        totalImported += cityEntities.length;
+      const cities = response.data.data;
+      totalCount = response.data.metadata.totalCount;
 
-        totalCount = response.data.metadata.totalCount;
+      console.log(`✅ Received ${cities.length} cities | Total count: ${totalCount}`);
 
-        console.log(`✅ Imported ${totalImported}/${totalCount}`);
+      const cityEntities: City[] = cities.map((c: any) =>
+        this.cityRepository.create({
+          name: c.name,
+          countryCode: c.countryCode,
+          region: c.region,
+          latitude: c.latitude,
+          longitude: c.longitude,
+          population: c.population,
+        }),
+      );
 
-        offset += limit;
-        await sleep(2000);
-      } catch (error) {
-        console.error('❌ Axios Error:', error.response?.data || error.message);
+      console.log(`💾 Saving ${cityEntities.length} cities to database...`);
+
+      await this.cityRepository.save(cityEntities);
+
+      totalImported += cityEntities.length;
+
+      console.log(`🎯 Progress: ${totalImported}/${totalCount}`);
+
+      offset += limit;
+
+      console.log(`⏳ Waiting 2 sec before next request...`);
+      await sleep(2000);
+
+    } catch (error) {
+      console.error('❌ Axios Error:', error.response?.data || error.message);
+
+      if (error.response?.status === 429) {
+        console.log('⚠️ Too many requests. Waiting 1 minute before retry...');
+        await sleep(60_000);
+      } else {
+        console.error('🛑 Unexpected error, aborting.');
         throw error;
       }
-    } while (offset < totalCount);
+    }
 
-    return {
-      message: `🎉 Import finished! ${totalImported} cities imported.`,
-      totalImported,
-    };
-  }
+  } while (offset < totalCount);
+
+  console.log(`🎉 Import finished! Total cities imported: ${totalImported}`);
+
+  return {
+    message: `🎉 Import finished! ${totalImported} cities imported.`,
+    totalImported,
+  };
+}
+
 }
