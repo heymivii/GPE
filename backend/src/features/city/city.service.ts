@@ -32,7 +32,7 @@ export class CityService {
   };
 
   // ✅ Reprise ici
-  let offset = 9550;
+  let offset = 19540;
   const limit = 10;
   let totalCount = 0;
   let totalImported = offset;
