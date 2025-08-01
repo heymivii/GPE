@@ -1,1 +1,8 @@
 @import "tailwindcss";
+
+
+:root {
+    --font-outfit: "Outfit", sans-serif;
+    --font-sans: "Poppins", sans-serif;
+    --font-aclonica: "Aclonica", sans-serif;
+}

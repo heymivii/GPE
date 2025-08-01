@@ -2,8 +2,9 @@ import LoginForm from "../components/LoginForm";
 
 export default function LoginPage() {
   return (
-    <div className="flex h-screen justify-center items-center bg-gray-100">
+    <>
+      <h1 className="text-1xl font-bold text-center mb-6 text-black">Bon retour parmis nous !</h1>
       <LoginForm />
-    </div>
+    </>
   );
 }
