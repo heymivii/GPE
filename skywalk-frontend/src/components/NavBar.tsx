@@ -13,7 +13,7 @@ export default function NavBar() {
 
   return (
     <nav className="flex justify-between items-center px-8 py-4 bg-white shadow w-full">
-      {/* Logo + liens principaux */}
+   
       <div className="flex items-center gap-8">
         <Link to="/" className="text-xl font-bold font-aclonica">SkyWalk</Link>
         <div className="hidden md:flex gap-6">
@@ -23,7 +23,6 @@ export default function NavBar() {
         </div>
       </div>
 
-      {/* Droite: Connexion, Inscription, Langues */}
       <div className="flex items-center gap-4">
          <div className="relative">
           <button
@@ -48,9 +47,7 @@ export default function NavBar() {
           )}
         </div>
         <Link to="/auth/login" className="text-gray-700 hover:text-black px-4 py-2">Connexion</Link>
-        <Link to="/auth/register" className="bg-[#5EA3C0] text-white px-4 py-2 rounded-full font-semibold hover:bg-[#4891b0] transition-colors">Inscription</Link>
-        {/* Dropdown langues */}
-       
+        <Link to="/auth/register" className="bg-[#5EA3C0] text-white px-4 py-2 rounded-full font-semibold hover:bg-[#4891b0] transition-colors">Inscription</Link>       
       </div>
     </nav>
   );

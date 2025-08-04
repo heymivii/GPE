@@ -17,7 +17,6 @@ export default function JobSearchForm() {
 
   const handleSearch = () => {
     console.log('Recherche avec:', formData);
-    // Ici vous pouvez ajouter la logique de recherche
   };
 
   const SelectField = ({
@@ -60,7 +59,6 @@ export default function JobSearchForm() {
         </div>
       </div>
       
-      {/* Dropdown simulé (vous pouvez implémenter une vraie dropdown ici) */}
       {activeField === field && (
         <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-10 p-2">
           <div className="text-sm text-gray-500 p-2">
@@ -76,7 +74,7 @@ export default function JobSearchForm() {
       <div className="max-w-2xl mx-auto">
         <div className="bg-white rounded-2xl shadow-lg p-8">
           <div className="space-y-6">
-            {/* D'où je viens */}
+   
             <SelectField
               icon={Home}
               label="D'où je viens"
@@ -84,7 +82,6 @@ export default function JobSearchForm() {
               field="origin"
             />
 
-            {/* Où je vais */}
             <SelectField
               icon={Plane}
               label="Où je vais"
@@ -92,7 +89,6 @@ export default function JobSearchForm() {
               field="destination"
             />
 
-            {/* Catégorie de recherche */}
             <SelectField
               icon={Star}
               label="Catégorie de recherche"
@@ -100,7 +96,6 @@ export default function JobSearchForm() {
               field="category"
             />
 
-            {/* Intitulé du poste */}
             <SelectField
               icon={CheckCircle}
               label="Intitulé du poste"
@@ -109,7 +104,6 @@ export default function JobSearchForm() {
               isHighlighted={true}
             />
 
-            {/* Bouton de recherche */}
             <div className="pt-4">
               <button 
                 onClick={handleSearch}
