@@ -5,7 +5,7 @@ import AuthLayout from '../layouts/AuthLayout';
 import LandingPage from '../features/landing/pages/LandingPage';
 import MainLayout from '../layouts/MainLayout';
 import PasswordForgotPage from '../features/auth/pages/PasswordForgotPage';
-
+import FormPage from '../features/forms/pages/FormPage';
 export const router = createBrowserRouter([
 {
     path: '/',
@@ -25,4 +25,12 @@ export const router = createBrowserRouter([
       { path: 'pwdForgot', element: <PasswordForgotPage /> },
     ],
   },
+  {
+  path: '/forms', 
+  element: <MainLayout/>,
+  children: [
+    {index: true, element: <FormPage /> },
+  ],
+},
+
 ]);
