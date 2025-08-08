@@ -5,14 +5,19 @@ import AuthLayout from '../layouts/AuthLayout';
 import LandingPage from '../features/landing/pages/LandingPage';
 import MainLayout from '../layouts/MainLayout';
 import PasswordForgotPage from '../features/auth/pages/PasswordForgotPage';
+<<<<<<< HEAD
 import FormPage from '../features/forms/pages/FormPage';
+=======
+import DashboardPage from '../features/dashboard/pages/dashboard';
+
+>>>>>>> 46d5ed6 (init dashboard)
 export const router = createBrowserRouter([
 {
     path: '/',
     element: <MainLayout />,
     children: [
       { index: true, element: <LandingPage /> },
-    //   { path: 'about', element: <AboutPage /> },
+      //{ path: 'about', element: <AboutPage /> },
       // autres pages publiques avec nav/footer
     ],
   },
@@ -26,6 +31,7 @@ export const router = createBrowserRouter([
     ],
   },
   {
+<<<<<<< HEAD
   path: '/forms', 
   element: <MainLayout/>,
   children: [
@@ -33,4 +39,12 @@ export const router = createBrowserRouter([
   ],
 },
 
+=======
+    path: '/dashboard', 
+    element: <MainLayout />,
+    children: [
+      { index: true, element: <DashboardPage /> },
+    ],
+  },
+>>>>>>> 46d5ed6 (init dashboard)
 ]);

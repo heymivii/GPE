@@ -55,12 +55,11 @@ export default function LoginForm() {
 
       </div>
 
-      <button
+      <Link
         type="submit"
-        className="w-full px-4 py-4 bg-black text-white rounded-lg transition-colors duration-200"
-      >
+        className="w-full flex px-4 py-4 justify-center bg-black text-white rounded-lg transition-colors duration-200" to={"/dashboard"}      >
         Se connecter
-      </button>
+      </Link>
       <p>Vous n’avez pas encore de compte ? <Link to="/auth/register">Incrivez-vous</Link> </p>
     </form>
   );
