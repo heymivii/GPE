@@ -10,6 +10,9 @@ import DashboardPage from '../features/dashboard/pages/dashboard';
 import PersonalizedDashboard from '../features/dashboard/pages/PersonalizedDashboard';
 import OnboardingFlow from '../features/onboarding/pages/OnboardingFlow';
 import SearchPage from '../features/search/pages/SearchPage';
+import ForumPage from '../features/forum/pages/ForumPage';
+import PostDetailPage from '../features/forum/pages/PostDetailPage';
+import NewPostPage from '../features/forum/pages/NewPostPage';
 
 export const router = createBrowserRouter([
 {
@@ -18,6 +21,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <LandingPage /> },
       { path: 'search', element: <SearchPage /> },
+      { path: 'forum', element: <ForumPage /> },
       //{ path: 'about', element: <AboutPage /> },
 
     ],
@@ -49,6 +53,15 @@ export const router = createBrowserRouter([
   {
     path: '/onboarding',
     element: <OnboardingFlow />,
+  },
+  {
+    path: '/forum',
+    element: <MainLayout />,
+    children: [
+      { index: true, element: <ForumPage /> },
+      { path: 'post/:id', element: <PostDetailPage /> },
+      { path: 'new', element: <NewPostPage /> },
+    ],
   },
   {
     path: '/personalized',
