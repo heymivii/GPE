@@ -7,7 +7,6 @@ export default function LoginForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: logique de connexion (fetch API / tanstack query)
     console.log({ email, password });
   };
 

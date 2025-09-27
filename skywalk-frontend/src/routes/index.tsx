@@ -5,20 +5,21 @@ import AuthLayout from '../layouts/AuthLayout';
 import LandingPage from '../features/landing/pages/LandingPage';
 import MainLayout from '../layouts/MainLayout';
 import PasswordForgotPage from '../features/auth/pages/PasswordForgotPage';
-<<<<<<< HEAD
 import FormPage from '../features/forms/pages/FormPage';
-=======
 import DashboardPage from '../features/dashboard/pages/dashboard';
+import PersonalizedDashboard from '../features/dashboard/pages/PersonalizedDashboard';
+import OnboardingFlow from '../features/onboarding/pages/OnboardingFlow';
+import SearchPage from '../features/search/pages/SearchPage';
 
->>>>>>> 46d5ed6 (init dashboard)
 export const router = createBrowserRouter([
 {
     path: '/',
     element: <MainLayout />,
     children: [
       { index: true, element: <LandingPage /> },
+      { path: 'search', element: <SearchPage /> },
       //{ path: 'about', element: <AboutPage /> },
-      // autres pages publiques avec nav/footer
+
     ],
   },
   {
@@ -31,20 +32,29 @@ export const router = createBrowserRouter([
     ],
   },
   {
-<<<<<<< HEAD
   path: '/forms', 
   element: <MainLayout/>,
   children: [
     {index: true, element: <FormPage /> },
   ],
 },
-
-=======
+{
     path: '/dashboard', 
     element: <MainLayout />,
     children: [
       { index: true, element: <DashboardPage /> },
+      { path: 'personalized', element: <PersonalizedDashboard /> },
     ],
   },
->>>>>>> 46d5ed6 (init dashboard)
+  {
+    path: '/onboarding',
+    element: <OnboardingFlow />,
+  },
+  {
+    path: '/personalized',
+    element: <MainLayout />,
+    children: [
+      { index: true, element: <PersonalizedDashboard /> },
+    ],
+  },
 ]);
