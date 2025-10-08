@@ -21,5 +21,6 @@ export class Ressource {
   @ManyToOne(() => Pays, { nullable: false })
   @JoinColumn({ name: 'id_pays', referencedColumnName: 'id_pays' })
   pays: Pays;
+  
 }
 
