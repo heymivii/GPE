@@ -13,6 +13,7 @@ import { GuideModule } from './features/guide/guide.module';
 import { ChecklistModule } from './features/checklist/checklist.module';
 import { RessourceModule } from './features/ressource/ressource.module';
 import { CoutVieModule } from './features/cout-vie/cout-vie.module';
+import { OffreEmploiModule } from './features/offre-emploi/offre-emploi.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { CoutVieModule } from './features/cout-vie/cout-vie.module';
     ChecklistModule,
     RessourceModule,
     CoutVieModule,
+    OffreEmploiModule,
   ],
 })
 export class AppModule {}
