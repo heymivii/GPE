@@ -1,0 +1,17 @@
+# Node
+node_modules
+npm-debug.log
+.env
+
+# Build
+dist
+.cache
+coverage
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+.gitignore
