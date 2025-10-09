@@ -1,23 +1,22 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { Pays } from '../../pays/entities/pays.entity';
+import { Country } from '../../country/entities/country.entity';
 
 @Entity({ name: 'checklist' })
 export class Checklist {
-  @PrimaryGeneratedColumn({ name: 'id_checklist' })
-  id_checklist: number;
+  @PrimaryGeneratedColumn({ name: 'checklist_id' })
+  checklist_id: number;
 
-  @Column({ name: 'titre', type: 'varchar', length: 255 })
-  titre: string;
+  @Column({ name: 'title', type: 'varchar', length: 255 })
+  title: string;
 
-  // JSONB (peut être un objet, un tableau, etc.)
-  @Column({ name: 'etapes', type: 'jsonb', nullable: true })
-  etapes?: unknown; 
+  @Column({ name: 'steps', type: 'jsonb', nullable: true })
+  steps?: unknown;
 
-  @Column({ name: 'date_creation', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  date_creation: Date;
+  @Column({ name: 'created_at', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  created_at: Date;
 
-  @ManyToOne(() => Pays, { nullable: false })
-  @JoinColumn({ name: 'id_pays', referencedColumnName: 'id_pays' })
-  pays: Pays;
+  @ManyToOne(() => Country, { nullable: false })
+  @JoinColumn({ name: 'country_id', referencedColumnName: 'country_id' })
+  country: Country;
 }
 

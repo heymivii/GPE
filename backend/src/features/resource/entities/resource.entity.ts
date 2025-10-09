@@ -1,20 +1,19 @@
-// src/features/guide/entities/guide.entity.ts
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Country } from '../../country/entities/country.entity';
 
-@Entity({ name: 'guide' })
-export class Guide {
-  @PrimaryGeneratedColumn({ name: 'guide_id' })
-  guide_id: number;
+@Entity({ name: 'resource' })
+export class Resource {
+  @PrimaryGeneratedColumn({ name: 'resource_id' })
+  resource_id: number;
 
   @Column({ name: 'title', type: 'varchar', length: 255 })
   title: string;
 
-  @Column({ name: 'content', type: 'text' })
-  content: string;
+  @Column({ name: 'url', type: 'varchar', length: 500, nullable: true })
+  url?: string;
 
-  @Column({ name: 'guide_type', type: 'varchar', length: 50, nullable: true })
-  guide_type?: string;
+  @Column({ name: 'resource_type', type: 'varchar', length: 50, nullable: true })
+  resource_type?: string;
 
   @Column({ name: 'created_at', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;

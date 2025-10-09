@@ -1,46 +1,31 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
-import { Pays } from '../../pays/entities/pays.entity';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Country } from '../../country/entities/country.entity';
 
-@Entity({ name: 'utilisateur' }) 
-export class Utilisateur {
-  @PrimaryGeneratedColumn({ name: 'id_utilisateur' })
-  id_utilisateur: number; 
+@Entity({ name: 'user' })
+export class User {
+  @PrimaryGeneratedColumn({ name: 'user_id' })
+  user_id: number;
 
-  @Column({ name: 'nom', type: 'varchar', length: 100 })
-  nom: string;
+  @Column({ name: 'name', type: 'varchar', length: 100 })
+  name: string;
 
   @Column({ name: 'email', type: 'varchar', length: 255, unique: true })
   email: string;
 
-  @Column({ name: 'mot_de_passe', type: 'varchar', length: 255 })
-  mot_de_passe: string;
+  @Column({ name: 'password_hash', type: 'varchar', length: 255 })
+  password_hash: string;
 
-  @Column({
-    name: 'role',
-    type: 'varchar',
-    length: 50,
-    default: () => `'utilisateur'`,
-  })
+  @Column({ name: 'role', type: 'varchar', length: 50, default: () => `'user'` })
   role: string;
 
-  @Column({
-    name: 'date_creation',
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-  })
-  date_creation: Date;
+  @Column({ name: 'created_at', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  created_at: Date;
 
-  @ManyToOne(() => Pays, { nullable: true })
-  @JoinColumn({ name: 'id_pays_origine', referencedColumnName: 'id_pays' })
-  pays_origine?: Pays;
+  @ManyToOne(() => Country, { nullable: true })
+  @JoinColumn({ name: 'origin_country_id', referencedColumnName: 'country_id' })
+  origin_country?: Country;
 
-  @ManyToOne(() => Pays, { nullable: true })
-  @JoinColumn({ name: 'id_pays_destination', referencedColumnName: 'id_pays' })
-  pays_destination?: Pays;
+  @ManyToOne(() => Country, { nullable: true })
+  @JoinColumn({ name: 'destination_country_id', referencedColumnName: 'country_id' })
+  destination_country?: Country;
 }
