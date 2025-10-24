@@ -7,22 +7,22 @@ import * as bcrypt from 'bcryptjs';
 export class AuthService {
   constructor(
     private userService: UserService,
-    private jwtService: JwtService
+    private jwtService: JwtService,
   ) {}
 
   async signup(email: string, password: string) {
     const user = await this.userService.create(email, password);
-    return this.getToken(user.id, user.email);
+    return this.getToken(user.user_id, user.email);
   }
 
   async login(email: string, password: string) {
     const user = await this.userService.findByEmail(email);
     if (!user) throw new UnauthorizedException('Utilisateur non trouvé');
 
-    const match = await bcrypt.compare(password, user.password);
+    const match = await bcrypt.compare(password, user.password_hash);
     if (!match) throw new UnauthorizedException('Mot de passe incorrect');
 
-    return this.getToken(user.id, user.email);
+    return this.getToken(user.user_id, user.email);
   }
 
   private getToken(id: number, email: string) {
