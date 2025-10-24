@@ -11,7 +11,7 @@ export class CreateForumMessage1760002692174 implements MigrationInterface {
       `ALTER TABLE "forum_message" ADD CONSTRAINT "FK_bb9e67251430d09539f97b67095" FOREIGN KEY ("topic_id") REFERENCES "forum_topic"("topic_id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
     await queryRunner.query(
-      `ALTER TABLE "forum_message" ADD CONSTRAINT "FK_f44374405c3512cd5d7f1aeadd9" FOREIGN KEY ("user_id") REFERENCES "user"("user_id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
+      `ALTER TABLE "forum_message" ADD CONSTRAINT "FK_f44374405c3512cd5d7f1aeadd9" FOREIGN KEY ("user_id") REFERENCES "users"("user_id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
   }
 
