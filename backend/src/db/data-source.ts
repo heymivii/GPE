@@ -10,7 +10,8 @@ export const AppDataSource = new DataSource({
   password: process.env.DB_PASS || 'postgres',
   database: process.env.DB_NAME || 'skywalk_db',
   synchronize: false,
-  migrations: ['src/db/migrations/*.ts'],
-  entities: ['src/**/*.entity.ts'],
+  // migrations: ['src/db/migrations/*.ts'],
+  migrations: ['dist/db/migrations/*.js'],
+  // entities: ['src/**/*.entity.ts'],
+  entities: ['dist/**/*.entity.js'],
 });
-
