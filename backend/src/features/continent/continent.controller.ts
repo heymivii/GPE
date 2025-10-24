@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { ContinentService } from './continent.service';
 import { CreateContinentDto } from './dto/create-continent.dto';
 import { UpdateContinentDto } from './dto/update-continent.dto';
@@ -23,7 +31,10 @@ export class ContinentController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateContinentDto: UpdateContinentDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateContinentDto: UpdateContinentDto,
+  ) {
     return this.continentService.update(+id, updateContinentDto);
   }
 

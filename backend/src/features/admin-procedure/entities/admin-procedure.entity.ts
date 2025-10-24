@@ -1,4 +1,10 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Country } from '../../country/entities/country.entity';
 
 @Entity({ name: 'admin_procedure' })
@@ -22,4 +28,3 @@ export class AdminProcedure {
   @JoinColumn({ name: 'country_id', referencedColumnName: 'country_id' })
   country: Country;
 }
-

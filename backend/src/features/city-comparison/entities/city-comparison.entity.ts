@@ -15,4 +15,3 @@ export class CityComparison {
   @JoinColumn({ name: 'city_id', referencedColumnName: 'city_id' })
   city: City;
 }
-

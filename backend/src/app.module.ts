@@ -41,7 +41,7 @@ import { Experience } from './features/experience/entities/experience.entity';
     ForumMessageModule,
     NotificationModule,
     JobOffer,
-    Experience
+    Experience,
   ],
 })
 export class AppModule {}

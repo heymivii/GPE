@@ -11,4 +11,3 @@ export class IndustrySector {
   @Column({ name: 'description', type: 'text', nullable: true })
   description?: string;
 }
-

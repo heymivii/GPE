@@ -1,4 +1,10 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 import { Country } from '../../country/entities/country.entity';
 
@@ -13,7 +19,11 @@ export class ForumTopic {
   @Column({ name: 'category', type: 'varchar', length: 50, nullable: true })
   category?: string;
 
-  @Column({ name: 'created_at', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({
+    name: 'created_at',
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
   created_at: Date;
 
   @ManyToOne(() => User, { nullable: false })
@@ -24,4 +34,3 @@ export class ForumTopic {
   @JoinColumn({ name: 'country_id', referencedColumnName: 'country_id' })
   country: Country;
 }
-

@@ -11,7 +11,9 @@ describe('ProcedureTrackingController', () => {
       providers: [ProcedureTrackingService],
     }).compile();
 
-    controller = module.get<ProcedureTrackingController>(ProcedureTrackingController);
+    controller = module.get<ProcedureTrackingController>(
+      ProcedureTrackingController,
+    );
   });
 
   it('should be defined', () => {
