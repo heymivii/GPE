@@ -12,7 +12,7 @@ export const typeOrmConfigAsync: TypeOrmModuleAsyncOptions = {
     password: configService.get<string>('DB_PASS'),
     database: configService.get<string>('DB_NAME'),
     entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-    synchronize: false, 
+    synchronize: false,
     autoLoadEntities: true, // permet d'éviter de lister tous les modules manuellement
   }),
 };

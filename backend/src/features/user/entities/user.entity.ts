@@ -1,4 +1,10 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Country } from '../../country/entities/country.entity';
 
 @Entity({ name: 'user' })
@@ -15,10 +21,19 @@ export class User {
   @Column({ name: 'password_hash', type: 'varchar', length: 255 })
   password_hash: string;
 
-  @Column({ name: 'role', type: 'varchar', length: 50, default: () => `'user'` })
+  @Column({
+    name: 'role',
+    type: 'varchar',
+    length: 50,
+    default: () => `'user'`,
+  })
   role: string;
 
-  @Column({ name: 'created_at', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({
+    name: 'created_at',
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
   created_at: Date;
 
   @ManyToOne(() => Country, { nullable: true })
@@ -26,6 +41,9 @@ export class User {
   origin_country?: Country;
 
   @ManyToOne(() => Country, { nullable: true })
-  @JoinColumn({ name: 'destination_country_id', referencedColumnName: 'country_id' })
+  @JoinColumn({
+    name: 'destination_country_id',
+    referencedColumnName: 'country_id',
+  })
   destination_country?: Country;
 }

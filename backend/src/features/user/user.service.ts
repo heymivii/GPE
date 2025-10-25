@@ -9,12 +9,19 @@ export class UserService {
 
   async create(email: string, password: string): Promise<User> {
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user: User = { id: this.idCounter++, email, password: hashedPassword };
+    const user: User = {
+      user_id: this.idCounter++,
+      email,
+      password_hash: hashedPassword,
+      name: '',
+      role: '',
+      created_at: undefined,
+    };
     this.users.push(user);
     return user;
   }
 
   async findByEmail(email: string): Promise<User | undefined> {
-    return this.users.find(user => user.email === email);
+    return this.users.find((user) => user.email === email);
   }
 }

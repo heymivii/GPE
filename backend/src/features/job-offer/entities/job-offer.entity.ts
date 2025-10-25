@@ -1,5 +1,11 @@
 // src/features/job-offer/entities/job-offer.entity.ts
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { City } from '../../city/entities/city.entity';
 import { IndustrySector } from '../../industry-sector/entities/industry-sector.entity';
 
@@ -14,13 +20,23 @@ export class JobOffer {
   @Column({ name: 'company', type: 'varchar', length: 255, nullable: true })
   company?: string;
 
-  @Column({ name: 'avg_salary', type: 'numeric', precision: 10, scale: 2, nullable: true })
+  @Column({
+    name: 'avg_salary',
+    type: 'numeric',
+    precision: 10,
+    scale: 2,
+    nullable: true,
+  })
   avg_salary?: string;
 
   @Column({ name: 'description', type: 'text', nullable: true })
   description?: string;
 
-  @Column({ name: 'publication_date', type: 'date', default: () => 'CURRENT_DATE' })
+  @Column({
+    name: 'publication_date',
+    type: 'date',
+    default: () => 'CURRENT_DATE',
+  })
   publication_date: string;
 
   @ManyToOne(() => City, { nullable: false })
@@ -31,4 +47,3 @@ export class JobOffer {
   @JoinColumn({ name: 'sector_id', referencedColumnName: 'sector_id' })
   sector: IndustrySector;
 }
-

@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { ForumMessageService } from './forum-message.service';
 import { CreateForumMessageDto } from './dto/create-forum-message.dto';
 import { UpdateForumMessageDto } from './dto/update-forum-message.dto';
@@ -23,7 +31,10 @@ export class ForumMessageController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateForumMessageDto: UpdateForumMessageDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateForumMessageDto: UpdateForumMessageDto,
+  ) {
     return this.forumMessageService.update(+id, updateForumMessageDto);
   }
 

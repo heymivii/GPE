@@ -1,5 +1,12 @@
 // src/features/experience/entities/experience.entity.ts
-import { Check, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Check,
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 import { Country } from '../../country/entities/country.entity';
 
@@ -18,7 +25,11 @@ export class Experience {
   @Column({ name: 'rating', type: 'integer', nullable: true })
   rating?: number;
 
-  @Column({ name: 'created_at', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({
+    name: 'created_at',
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
   created_at: Date;
 
   @ManyToOne(() => User, { nullable: false })
@@ -29,4 +40,3 @@ export class Experience {
   @JoinColumn({ name: 'country_id', referencedColumnName: 'country_id' })
   country: Country;
 }
-

@@ -1,4 +1,10 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { ForumTopic } from '../../forum-topic/entities/forum-topic.entity';
 import { User } from '../../user/entities/user.entity';
 
@@ -10,7 +16,11 @@ export class ForumMessage {
   @Column({ name: 'content', type: 'text' })
   content: string;
 
-  @Column({ name: 'sent_at', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({
+    name: 'sent_at',
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
   sent_at: Date;
 
   @ManyToOne(() => ForumTopic, { nullable: false })
@@ -21,4 +31,3 @@ export class ForumMessage {
   @JoinColumn({ name: 'user_id', referencedColumnName: 'user_id' })
   user: User;
 }
-
