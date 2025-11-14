@@ -1,0 +1,63 @@
+// 📍 EMPLACEMENT: backend/src/app.module.ts
+// Module principal qui importe tous les modules de l'application
+
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { typeOrmConfigAsync } from './config/typeorm.config';
+
+// Import de tous vos modules
+import { AuthModule } from './features/auth/auth.module';
+import { UserModule } from './features/user/user.module';
+import { CostOfLivingModule } from './features/cost-of-living/cost-of-living.module';
+import { ResourceModule } from './features/resource/resource.module';
+import { BusinessSectorModule } from './features/business-sector/business-sector.module';
+import { CityModule } from './features/city/city.module';
+import { CountryModule } from './features/country/country.module';
+import { GuideModule } from './features/guide/guide.module';
+import { ChecklistModule } from './features/checklist/checklist.module';
+import { ContinentModule } from './features/continent/continent.module';
+import { AdminProcedureModule } from './features/admin-procedure/admin-procedure.module';
+import { ProcedureTrackingModule } from './features/procedure-tracking/procedure-tracking.module';
+import { ForumTopicModule } from './features/forum-topic/forum-topic.module';
+import { ForumMessageModule } from './features/forum-message/forum-message.module';
+import { NotificationModule } from './features/notification/notification.module';
+import { ExperienceModule } from './features/experience/experience.module';
+import { JobOfferModule } from './features/job-offer/job-offer.module';
+import { CityComparisonModule } from './features/city-comparison/city-comparison.module';
+import { ExpatriationProjectModule } from './features/expatriation-project/expatriation-project.module';
+
+@Module({
+  imports: [
+    // Configuration globale
+    ConfigModule.forRoot({ 
+      isGlobal: true,
+      envFilePath: '.env',
+    }),
+    
+    // Configuration TypeORM
+    TypeOrmModule.forRootAsync(typeOrmConfigAsync),
+    
+    // Tous vos modules features
+    AuthModule,
+    UserModule,
+    ContinentModule,
+    CountryModule,
+    CityModule,
+    CityComparisonModule,
+    BusinessSectorModule,
+    GuideModule,
+    ChecklistModule,
+    ResourceModule,
+    CostOfLivingModule,
+    JobOfferModule,
+    AdminProcedureModule,
+    ProcedureTrackingModule,
+    ForumTopicModule,
+    ForumMessageModule,
+    NotificationModule,
+    ExperienceModule,
+    ExpatriationProjectModule,
+  ],
+})
+export class AppModule {}
