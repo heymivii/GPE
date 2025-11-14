@@ -1,5 +1,6 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { useAuth } from '../hooks/useAuth';
 
 const languages = [
   { code: 'fr', label: 'Français' },
@@ -10,6 +11,16 @@ const languages = [
 export default function NavBar() {
   const [langOpen, setLangOpen] = useState(false);
   const [selectedLang, setSelectedLang] = useState(languages[0]);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  
+  const { user, isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    setUserMenuOpen(false);
+    navigate('/');
+  };
 
   return (
     <nav className="flex justify-between items-center px-8 py-4 bg-white shadow w-full">
@@ -46,8 +57,53 @@ export default function NavBar() {
             </div>
           )}
         </div>
-        <Link to="/auth/login" className="text-gray-700 hover:text-black px-4 py-2">Connexion</Link>
-        <Link to="/auth/register" className="bg-[#5EA3C0] text-white px-4 py-2 rounded-full font-semibold hover:bg-[#4891b0] transition-colors">Inscription</Link>       
+        
+        {/* Affichage conditionnel selon l'état de connexion */}
+        {isAuthenticated && user ? (
+          <div className="relative">
+            <button
+              className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-full bg-white hover:bg-gray-50"
+              onClick={() => setUserMenuOpen((v) => !v)}
+            >
+              <div className="w-8 h-8 rounded-full bg-[#5EA3C0] text-white flex items-center justify-center font-semibold">
+                {user.fullName?.charAt(0).toUpperCase() || 'U'}
+              </div>
+              <span className="text-gray-700">{user.fullName}</span>
+              <svg className={`w-4 h-4 transition-transform ${userMenuOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+            </button>
+            
+            {userMenuOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-20">
+                <Link
+                  to="/dashboard"
+                  className="block px-4 py-2 hover:bg-gray-100 text-gray-700"
+                  onClick={() => setUserMenuOpen(false)}
+                >
+                  Mon tableau de bord
+                </Link>
+                <Link
+                  to="/profile"
+                  className="block px-4 py-2 hover:bg-gray-100 text-gray-700"
+                  onClick={() => setUserMenuOpen(false)}
+                >
+                  Mon profil
+                </Link>
+                <hr className="my-1" />
+                <button
+                  className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600"
+                  onClick={handleLogout}
+                >
+                  Déconnexion
+                </button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <>
+            <Link to="/auth/login" className="text-gray-700 hover:text-black px-4 py-2">Connexion</Link>
+            <Link to="/auth/register" className="bg-[#5EA3C0] text-white px-4 py-2 rounded-full font-semibold hover:bg-[#4891b0] transition-colors">Inscription</Link>
+          </>
+        )}
       </div>
     </nav>
   );
