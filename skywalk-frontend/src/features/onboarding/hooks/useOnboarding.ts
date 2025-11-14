@@ -1,0 +1,158 @@
+import { useState, useEffect } from 'react'
+import type { Step } from '../components/Stepper'
+
+interface OnboardingData {
+  destination: {
+    fromCountry: string
+    toCountry: string
+    targetCity: string
+    departureYear: string
+  }
+  profile: {
+    age: string
+    status: string
+    travelParty: string
+    languageLevel: string
+  }
+  objective: {
+    goal: string
+    stayDuration: string
+  }
+  preparation: {
+    stepsDone: string[]
+    housingBudget: string
+  }
+  needs: {
+    priorities: string[]
+    needPersonalizedSupport: boolean | undefined
+  }
+}
+
+const STORAGE_KEY = 'skywalk-onboarding-draft'
+
+export default function useOnboarding() {
+  const [currentStep, setCurrentStep] = useState(1)
+  const [data, setData] = useState<Partial<OnboardingData>>({})
+
+  useEffect(() => {
+    const savedDraft = localStorage.getItem(STORAGE_KEY)
+    if (savedDraft) {
+      try {
+        const parsedData = JSON.parse(savedDraft)
+        setData(parsedData.data || {})
+        setCurrentStep(parsedData.currentStep || 1)
+      } catch (error) {
+        console.error('Error loading onboarding draft:', error)
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    if (Object.keys(data).length > 0) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ data, currentStep }))
+    }
+  }, [data, currentStep])
+
+  const updateStepData = <T extends keyof OnboardingData>(
+    step: T, 
+    stepData: OnboardingData[T]
+  ) => {
+    setData(prev => ({
+      ...prev,
+      [step]: stepData
+    }))
+  }
+
+  const nextStep = () => {
+    if (currentStep < 6) {
+      setCurrentStep(prev => prev + 1)
+    }
+  }
+
+  const prevStep = () => {
+    if (currentStep > 1) {
+      setCurrentStep(prev => prev - 1)
+    }
+  }
+
+  const goToStep = (step: number) => {
+    if (step >= 1 && step <= 6) {
+      setCurrentStep(step)
+    }
+  }
+
+  const getSteps = (): Step[] => {
+    return [
+      { id: 1, label: 'Destination', state: getStepState(1) },
+      { id: 2, label: 'Profil', state: getStepState(2) },
+      { id: 3, label: 'Objectif', state: getStepState(3) },
+      { id: 4, label: 'Préparation', state: getStepState(4) },
+      { id: 5, label: 'Besoins', state: getStepState(5) },
+      { id: 6, label: 'Résumé', state: getStepState(6) }
+    ]
+  }
+
+  const getStepState = (step: number): 'todo' | 'current' | 'done' => {
+    if (step === currentStep) return 'current'
+    if (step < currentStep) return 'done'
+    return 'todo'
+  }
+
+  const isStepCompleted = (step: keyof OnboardingData): boolean => {
+    const stepData = data[step]
+    if (!stepData) return false
+
+    switch (step) {
+      case 'destination':
+        return !!(stepData as OnboardingData['destination']).fromCountry && 
+               !!(stepData as OnboardingData['destination']).toCountry && 
+               !!(stepData as OnboardingData['destination']).departureYear
+      case 'profile':
+        return !!(stepData as OnboardingData['profile']).age && 
+               !!(stepData as OnboardingData['profile']).status && 
+               !!(stepData as OnboardingData['profile']).travelParty && 
+               !!(stepData as OnboardingData['profile']).languageLevel
+      case 'objective':
+        return !!(stepData as OnboardingData['objective']).goal && 
+               !!(stepData as OnboardingData['objective']).stayDuration
+      case 'preparation':
+        return !!(stepData as OnboardingData['preparation']).housingBudget
+      case 'needs':
+        return (stepData as OnboardingData['needs']).priorities.length > 0 && 
+               (stepData as OnboardingData['needs']).needPersonalizedSupport !== undefined
+      default:
+        return false
+    }
+  }
+
+  const clearDraft = () => {
+    localStorage.removeItem(STORAGE_KEY)
+    setData({})
+    setCurrentStep(1)
+  }
+
+  const canGoToStep = (step: number): boolean => {
+    if (step <= currentStep) return true
+    
+    const stepKeys: (keyof OnboardingData)[] = ['destination', 'profile', 'objective', 'preparation', 'needs']
+    for (let i = 0; i < step - 1; i++) {
+      if (!isStepCompleted(stepKeys[i])) {
+        return false
+      }
+    }
+    return true
+  }
+
+  return {
+    currentStep,
+    data,
+    updateStepData,
+    nextStep,
+    prevStep,
+    goToStep,
+    getSteps,
+    isStepCompleted,
+    canGoToStep,
+    clearDraft
+  }
+}
