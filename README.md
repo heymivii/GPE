@@ -1,10 +1,10 @@
-# 🚀 Workflow du projet
+# Workflow du projet
 
-## 🌱 Branches principales
+## Branches principales
 - **main** : version stable (production, protégée).  
 - **develop** : branche d’intégration (protégée). Toutes les fonctionnalités passent par elle avant d’aller sur `main`.  
 
-👉 Le code est déjà structuré en deux dossiers dans la branch develop :  
+Le code est déjà structuré en deux dossiers dans la branch develop :  
 - `/skywalk-frontend/` : pour le code du front-end  
 - `/backend/` : pour le code du back-end  
 
@@ -12,7 +12,7 @@
 
 ---
 
-## 🔧 Comment contribuer
+## Comment contribuer
 
 ### 1. Créer une nouvelle branche à partir de `dev`
 ```bash
