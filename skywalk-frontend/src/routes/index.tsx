@@ -17,6 +17,8 @@ import EditTopicPage from '../features/forum/pages/EditTopicPage';
 import ProtectedRoute from '../components/ProtectedRoute';
 import PublicRoute from '../components/PublicRoute';
 import ProfilePage from '../features/profile/pages/ProfilePage';
+import { DestinationsPage } from '../features/destinations/pages/DestinationsPage';
+import { DestinationDetailPage } from '../features/destinations/pages/DestinationDetailPage';
 
 export const router = createBrowserRouter([
   {
@@ -47,6 +49,8 @@ export const router = createBrowserRouter([
     children: [
       { path: 'search', element: <SearchPage /> },
       { path: 'forum', element: <ForumPage /> },
+      { path: 'destinations', element: <DestinationsPage /> },
+      { path: 'destinations/:countrySlug', element: <DestinationDetailPage /> },
     ],
   },
   {

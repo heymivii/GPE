@@ -50,6 +50,7 @@ export default function NavBar() {
           
           {/* Liens communs */}
           <Link to="/search" className="text-gray-700 hover:text-black">Moteur de Recherche</Link>
+          <Link to="/destinations" className="text-gray-700 hover:text-black">Destinations</Link>
           <Link to="/forum" className="text-gray-700 hover:text-black">Forum</Link>
         </div>
       </div>
