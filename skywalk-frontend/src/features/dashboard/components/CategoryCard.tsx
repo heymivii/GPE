@@ -21,30 +21,36 @@ export default function CategoryCard({
   backgroundColor
 }: CategoryCardProps) {
   return (
-    <div className={`${backgroundColor} rounded-lg p-6 h-full flex flex-col transition-transform duration-200 hover:scale-105 hover:shadow-lg`}>
-      {/* Icône et titre */}
-      <div className="flex items-center mb-4">
-        <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center mr-3">
-          <Icon className="w-6 h-6 text-gray-700" />
+    <div className="group bg-white rounded-xl border border-gray-200 p-8 h-full flex flex-col transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-blue-200">
+      {/* En-tête avec Icône */}
+      <div className="flex items-start justify-between mb-6">
+        <div className={`w-14 h-14 ${backgroundColor} rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110`}>
+          <Icon className="w-7 h-7 text-gray-800" />
         </div>
-        <div>
-          <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
-          <p className="text-sm text-gray-600">{subtitle}</p>
-        </div>
+      </div>
+      
+      {/* Contenu */}
+      <div className="mb-4">
+        <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-700 transition-colors">
+          {title}
+        </h3>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+          {subtitle}
+        </p>
       </div>
 
       {/* Description */}
-      <p className="text-gray-700 mb-6 flex-grow">
+      <p className="text-gray-600 mb-8 flex-grow leading-relaxed">
         {description}
       </p>
 
       {/* Bouton CTA */}
       <a
         href={ctaLink}
-        className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200 group"
+        className="inline-flex items-center text-blue-600 font-semibold transition-colors duration-200 group/link"
       >
         <span>{ctaText}</span>
-        <ArrowRight className="w-4 h-4 ml-2 transition-transform duration-200 group-hover:translate-x-1" />
+        <ArrowRight className="w-4 h-4 ml-2 transition-transform duration-200 group-hover/link:translate-x-1" />
       </a>
     </div>
   )
