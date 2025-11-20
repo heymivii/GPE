@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { ForumMessageService } from './forum-message.service';
 import { CreateForumMessageDto } from './dto/create-forum-message.dto';
 import { UpdateForumMessageDto } from './dto/update-forum-message.dto';
@@ -13,7 +13,10 @@ export class ForumMessageController {
   }
 
   @Get()
-  findAll() {
+  findAll(@Query('topicId') topicId?: string) {
+    if (topicId) {
+      return this.forumMessageService.findByTopic(+topicId);
+    }
     return this.forumMessageService.findAll();
   }
 

@@ -13,6 +13,7 @@ import SearchPage from '../features/search/pages/SearchPage';
 import ForumPage from '../features/forum/pages/ForumPage';
 import PostDetailPage from '../features/forum/pages/PostDetailPage';
 import NewPostPage from '../features/forum/pages/NewPostPage';
+import EditTopicPage from '../features/forum/pages/EditTopicPage';
 
 export const router = createBrowserRouter([
 {
@@ -60,6 +61,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <ForumPage /> },
       { path: 'post/:id', element: <PostDetailPage /> },
+      { path: 'post/:id/edit', element: <EditTopicPage /> },
       { path: 'new', element: <NewPostPage /> },
     ],
   },

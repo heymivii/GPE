@@ -1,191 +1,117 @@
-import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { useState, useMemo, useRef } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { 
   MessageSquare, 
-  Users, 
   TrendingUp, 
   Search, 
-  Plus, 
-  Pin,
-  CheckCircle,
+  Plus,
   Clock,
   Eye,
   MessageCircle,
-  ThumbsUp
+  Loader2,
+  AlertCircle,
+  Bookmark,
+  Filter,
+  X
 } from 'lucide-react'
-import type { Category, Post, ForumStats, User } from '../types'
+import { useForumTopics } from '../../../hooks/useForum'
+import { useAuth } from '../../../hooks/useAuth'
 
 // Données mockées
-const categories: Category[] = [
-  {
-    id: 'emploi',
-    name: 'Emploi & Carrière',
-    description: 'Questions sur la recherche d\'emploi, CV, entretiens, négociation salariale',
-    icon: '💼',
-    color: 'bg-blue-50 border-blue-200',
-    postCount: 1250,
-    lastPost: {
-      id: '1',
-      title: 'Comment négocier son salaire au Canada?',
-      author: 'Marie L.',
-      date: '2024-01-15T10:30:00Z'
-    }
+// Mapping des catégories (pour l'affichage visuel)
+const categoryConfig: Record<string, { name: string; description: string; icon: string; color: string }> = {
+  question: {
+    name: 'Question',
+    description: 'Posez vos questions à la communauté',
+    icon: '❓',
+    color: 'bg-blue-50 border-blue-200'
   },
-  {
-    id: 'logement',
-    name: 'Logement',
-    description: 'Recherche d\'appartement, bail, droits des locataires, colocation',
-    icon: '🏠',
-    color: 'bg-green-50 border-green-200',
-    postCount: 980,
-    lastPost: {
-      id: '2',
-      title: 'Garanties demandées pour un appartement à Paris',
-      author: 'Thomas K.',
-      date: '2024-01-15T09:15:00Z'
-    }
+  testimony: {
+    name: 'Témoignage',
+    description: 'Partagez votre expérience d\'expatriation',
+    icon: '📝',
+    color: 'bg-green-50 border-green-200'
   },
-  {
-    id: 'administratif',
-    name: 'Démarches Admin',
-    description: 'Visa, permis de travail, ouverture de compte, assurances',
-    icon: '📋',
-    color: 'bg-yellow-50 border-yellow-200',
-    postCount: 750,
-    lastPost: {
-      id: '3',
-      title: 'Délai pour obtenir un permis de travail en Suisse',
-      author: 'Alex R.',
-      date: '2024-01-15T08:45:00Z'
-    }
+  advice: {
+    name: 'Conseil',
+    description: 'Donnez ou recevez des conseils pratiques',
+    icon: '�',
+    color: 'bg-yellow-50 border-yellow-200'
   },
-  {
-    id: 'transport',
-    name: 'Transport',
-    description: 'Transports publics, permis de conduire, véhicules',
-    icon: '🚌',
-    color: 'bg-purple-50 border-purple-200',
-    postCount: 420,
-    lastPost: {
-      id: '4',
-      title: 'Abonnement transports publics Berlin',
-      author: 'Sophie M.',
-      date: '2024-01-15T07:20:00Z'
-    }
+  discussion: {
+    name: 'Discussion',
+    description: 'Discussions générales sur l\'expatriation',
+    icon: '💬',
+    color: 'bg-purple-50 border-purple-200'
   },
-  {
-    id: 'sante',
-    name: 'Santé',
-    description: 'Système de santé, assurance maladie, médecins',
-    icon: '🏥',
-    color: 'bg-red-50 border-red-200',
-    postCount: 320,
-    lastPost: {
-      id: '5',
-      title: 'Choisir une assurance santé au Canada',
-      author: 'Pierre D.',
-      date: '2024-01-14T16:30:00Z'
-    }
+  announcement: {
+    name: 'Annonce',
+    description: 'Annonces et informations importantes',
+    icon: '📢',
+    color: 'bg-red-50 border-red-200'
   },
-  {
-    id: 'communaute',
-    name: 'Communauté',
-    description: 'Présentation, événements, rencontres, aide générale',
-    icon: '👥',
-    color: 'bg-indigo-50 border-indigo-200',
-    postCount: 890,
-    lastPost: {
-      id: '6',
-      title: 'Événement expatriés français à Toronto - Février',
-      author: 'Julie B.',
-      date: '2024-01-14T14:15:00Z'
-    }
+  other: {
+    name: 'Autre',
+    description: 'Autres sujets divers',
+    icon: '📌',
+    color: 'bg-gray-50 border-gray-200'
   }
-]
-
-const recentPosts: Post[] = [
-  {
-    id: '1',
-    title: 'Comment négocier son salaire lors d\'un entretien au Canada?',
-    content: 'Bonjour, j\'ai un entretien la semaine prochaine pour un poste de développeur à Toronto. C\'est ma première expérience au Canada et je ne sais pas comment aborder la question du salaire...',
-    author: {
-      id: '1',
-      name: 'Marie Laurent',
-      avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b890?w=50&h=50&fit=crop&crop=face',
-      reputation: 245,
-      joinDate: '2023-06-15',
-      location: 'Paris → Toronto',
-      badges: [{ id: '1', name: 'Nouvel arrivant', icon: '🌟', color: 'text-yellow-500', description: 'Premier post' }],
-      isOnline: true
-    },
-    category: 'emploi',
-    tags: ['salaire', 'entretien', 'canada', 'développeur'],
-    createdAt: '2024-01-15T10:30:00Z',
-    updatedAt: '2024-01-15T10:30:00Z',
-    views: 127,
-    votes: 8,
-    replies: [],
-    isPinned: false,
-    isClosed: false,
-    isSolved: false
-  },
-  {
-    id: '2',
-    title: 'Aide pour comprendre le système de transport berlinois',
-    content: 'Salut ! Je viens d\'arriver à Berlin et le système de transport me semble complexe. Entre le U-Bahn, S-Bahn, les zones... quelqu\'un peut m\'expliquer?',
-    author: {
-      id: '2',
-      name: 'Thomas Müller',
-      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50&h=50&fit=crop&crop=face',
-      reputation: 156,
-      joinDate: '2023-09-20',
-      location: 'Lyon → Berlin',
-      badges: [{ id: '2', name: 'Explorateur', icon: '🚀', color: 'text-blue-500', description: 'Actif dans les transports' }],
-      isOnline: false
-    },
-    category: 'transport',
-    tags: ['berlin', 'transport', 'u-bahn', 's-bahn'],
-    createdAt: '2024-01-15T09:15:00Z',
-    updatedAt: '2024-01-15T09:15:00Z',
-    views: 89,
-    votes: 12,
-    replies: [],
-    isPinned: true,
-    isClosed: false,
-    isSolved: true
-  }
-]
-
-const forumStats: ForumStats = {
-  totalPosts: 4610,
-  totalUsers: 1250,
-  totalReplies: 12340,
-  activeUsers: 89,
-  topContributors: [
-    {
-      id: '1',
-      name: 'Sarah Expert',
-      avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=40&h=40&fit=crop&crop=face',
-      reputation: 2580,
-      joinDate: '2022-03-10',
-      badges: [{ id: '3', name: 'Expert', icon: '⭐', color: 'text-yellow-500', description: 'Expert reconnu' }],
-      isOnline: true
-    },
-    {
-      id: '2',
-      name: 'Marc Helper',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face',
-      reputation: 1890,
-      joinDate: '2022-07-22',
-      badges: [{ id: '4', name: 'Mentor', icon: '🎓', color: 'text-green-500', description: 'Aide les nouveaux' }],
-      isOnline: false
-    }
-  ]
 }
 
 export default function ForumPage() {
+  const navigate = useNavigate()
+  const { user } = useAuth()
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<string>('')
+  const [showMyTopics, setShowMyTopics] = useState(false)
+  const topicsListRef = useRef<HTMLDivElement>(null)
+  
+  // Charger les topics depuis l'API
+  const { data: topics, isLoading, error } = useForumTopics()
+
+  // Fonction pour scroller vers les résultats
+  const scrollToResults = () => {
+    setTimeout(() => {
+      topicsListRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 100)
+  }
+
+  // Handler pour les catégories avec scroll
+  const handleCategoryClick = (categoryId: string) => {
+    setSelectedCategory(selectedCategory === categoryId ? '' : categoryId)
+    if (selectedCategory !== categoryId) {
+      scrollToResults()
+    }
+  }
+
+  // Calculer les statistiques réelles
+  const stats = useMemo(() => {
+    if (!topics) return { totalTopics: 0, totalMessages: 0, recentTopics: 0, categories: 0 }
+    
+    const totalMessages = topics.reduce((sum, topic) => sum + (topic.messages?.length || 0), 0)
+    const last24h = topics.filter(topic => {
+      const createdAt = new Date(topic.created_at)
+      const now = new Date()
+      const diffInHours = (now.getTime() - createdAt.getTime()) / (1000 * 60 * 60)
+      return diffInHours <= 24
+    }).length
+    
+    const uniqueCategories = new Set(topics.map(t => t.category).filter(Boolean))
+    
+    return {
+      totalTopics: topics.length,
+      totalMessages,
+      recentTopics: last24h,
+      categories: uniqueCategories.size
+    }
+  }, [topics])
+
+  // Mes topics (si connecté)
+  const myTopics = useMemo(() => {
+    if (!user || !topics) return []
+    const userId = user.idUser || user.id
+    return topics.filter(topic => topic.user?.idUser === userId)
+  }, [topics, user])
 
   const formatTimeAgo = (dateString: string) => {
     const date = new Date(dateString)
@@ -197,6 +123,58 @@ export default function ForumPage() {
     const diffInDays = Math.floor(diffInHours / 24)
     if (diffInDays < 7) return `Il y a ${diffInDays}j`
     return date.toLocaleDateString('fr-FR')
+  }
+
+  // Grouper les topics par catégorie
+  const getCategoryStats = () => {
+    if (!topics) return []
+    
+    const categoryCounts = topics.reduce((acc, topic) => {
+      const cat = topic.category || 'other'
+      acc[cat] = (acc[cat] || 0) + 1
+      return acc
+    }, {} as Record<string, number>)
+
+    return Object.entries(categoryConfig).map(([key, config]) => ({
+      id: key,
+      ...config,
+      postCount: categoryCounts[key] || 0
+    }))
+  }
+
+  // Filtrer les topics
+  const filteredTopics = useMemo(() => {
+    if (!topics) return []
+    
+    let result = topics
+    
+    // Filtre par utilisateur (Mes topics)
+    if (showMyTopics && user) {
+      const userId = user.idUser || user.id
+      result = result.filter(topic => topic.user?.idUser === userId)
+    }
+    
+    // Filtre par recherche
+    if (searchQuery) {
+      result = result.filter(topic => 
+        topic.title.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    }
+    
+    // Filtre par catégorie
+    if (selectedCategory) {
+      result = result.filter(topic => topic.category === selectedCategory)
+    }
+    
+    return result
+  }, [topics, searchQuery, selectedCategory, showMyTopics, user])
+
+  // Mettre à jour les stats
+  const updatedStats = {
+    totalPosts: stats.totalTopics,
+    totalUsers: 0, // À implémenter côté backend si besoin
+    totalReplies: stats.totalMessages,
+    activeUsers: stats.recentTopics
   }
 
   return (
@@ -244,217 +222,230 @@ export default function ForumPage() {
           <div className="lg:col-span-3 space-y-8">
             {/* Statistiques */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="bg-white rounded-lg p-4 border border-gray-200">
+              <div className="bg-white rounded-lg p-4 border border-gray-200 hover:shadow-md transition-shadow">
                 <div className="flex items-center gap-3">
                   <MessageSquare className="w-8 h-8 text-blue-500" />
                   <div>
                     <div className="text-2xl font-bold text-gray-900">
-                      {forumStats.totalPosts.toLocaleString('fr-FR')}
+                      {updatedStats.totalPosts.toLocaleString('fr-FR')}
                     </div>
-                    <div className="text-sm text-gray-600">Posts</div>
+                    <div className="text-sm text-gray-600">Topics</div>
                   </div>
                 </div>
               </div>
               
-              <div className="bg-white rounded-lg p-4 border border-gray-200">
-                <div className="flex items-center gap-3">
-                  <Users className="w-8 h-8 text-green-500" />
-                  <div>
-                    <div className="text-2xl font-bold text-gray-900">
-                      {forumStats.totalUsers.toLocaleString('fr-FR')}
-                    </div>
-                    <div className="text-sm text-gray-600">Membres</div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="bg-white rounded-lg p-4 border border-gray-200">
+              <div className="bg-white rounded-lg p-4 border border-gray-200 hover:shadow-md transition-shadow">
                 <div className="flex items-center gap-3">
                   <MessageCircle className="w-8 h-8 text-purple-500" />
                   <div>
                     <div className="text-2xl font-bold text-gray-900">
-                      {forumStats.totalReplies.toLocaleString('fr-FR')}
+                      {updatedStats.totalReplies.toLocaleString('fr-FR')}
                     </div>
                     <div className="text-sm text-gray-600">Réponses</div>
                   </div>
                 </div>
               </div>
               
-              <div className="bg-white rounded-lg p-4 border border-gray-200">
+              <div className="bg-white rounded-lg p-4 border border-gray-200 hover:shadow-md transition-shadow">
                 <div className="flex items-center gap-3">
                   <TrendingUp className="w-8 h-8 text-orange-500" />
                   <div>
                     <div className="text-2xl font-bold text-gray-900">
-                      {forumStats.activeUsers}
+                      {updatedStats.activeUsers}
                     </div>
-                    <div className="text-sm text-gray-600">En ligne</div>
+                    <div className="text-sm text-gray-600">Dernières 24h</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-lg p-4 border border-gray-200 hover:shadow-md transition-shadow">
+                <div className="flex items-center gap-3">
+                  <Filter className="w-8 h-8 text-green-500" />
+                  <div>
+                    <div className="text-2xl font-bold text-gray-900">
+                      {stats.categories}
+                    </div>
+                    <div className="text-sm text-gray-600">Catégories</div>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Catégories */}
+            {/* Catégories - Version compacte */}
             <div className="bg-white rounded-lg border border-gray-200">
-              <div className="p-6 border-b border-gray-200">
-                <h2 className="text-xl font-semibold text-gray-900">Catégories</h2>
-              </div>
-              <div className="divide-y divide-gray-200">
-                {categories.map((category) => (
-                  <Link
-                    key={category.id}
-                    to={`/forum/category/${category.id}`}
-                    className="block p-6 hover:bg-gray-50 transition-colors"
+              <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+                <h2 className="text-xl font-semibold text-gray-900">Filtrer par catégorie</h2>
+                {selectedCategory && (
+                  <button
+                    onClick={() => setSelectedCategory('')}
+                    className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800"
                   >
-                    <div className={`p-4 rounded-lg border ${category.color}`}>
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-start gap-4">
-                          <div className="text-3xl">{category.icon}</div>
-                          <div>
-                            <h3 className="font-semibold text-gray-900 mb-1">
-                              {category.name}
-                            </h3>
-                            <p className="text-gray-600 text-sm mb-2">
-                              {category.description}
-                            </p>
-                            <div className="text-sm text-gray-500">
-                              {category.postCount.toLocaleString('fr-FR')} posts
-                            </div>
-                          </div>
-                        </div>
-                        
-                        {category.lastPost && (
-                          <div className="text-right text-sm">
-                            <div className="font-medium text-gray-900">
-                              {category.lastPost.author}
-                            </div>
-                            <div className="text-gray-500">
-                              {formatTimeAgo(category.lastPost.date)}
-                            </div>
-                          </div>
-                        )}
+                    <X className="w-4 h-4" />
+                    Réinitialiser
+                  </button>
+                )}
+              </div>
+              <div className="p-4 grid grid-cols-2 gap-3">
+                {getCategoryStats().map((category) => (
+                  <button
+                    key={category.id}
+                    onClick={() => handleCategoryClick(category.id)}
+                    className={`flex items-center gap-3 p-4 rounded-lg border-2 transition-all text-left ${
+                      selectedCategory === category.id
+                        ? 'border-blue-500 bg-blue-50 shadow-sm'
+                        : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                    }`}
+                  >
+                    <div className="text-2xl">{category.icon}</div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-semibold text-gray-900 text-sm truncate">
+                        {category.name}
+                      </div>
+                      <div className="text-xs text-gray-600 mt-0.5">
+                        {category.postCount} {category.postCount === 1 ? 'topic' : 'topics'}
                       </div>
                     </div>
-                  </Link>
+                  </button>
                 ))}
               </div>
             </div>
 
-            {/* Posts récents */}
-            <div className="bg-white rounded-lg border border-gray-200">
-              <div className="p-6 border-b border-gray-200">
-                <h2 className="text-xl font-semibold text-gray-900">Discussions récentes</h2>
-              </div>
-              <div className="divide-y divide-gray-200">
-                {recentPosts.map((post) => (
-                  <Link
-                    key={post.id}
-                    to={`/forum/post/${post.id}`}
-                    className="block p-6 hover:bg-gray-50 transition-colors"
+            {/* Topics récents */}
+            <div ref={topicsListRef} className="bg-white rounded-lg border border-gray-200">
+              <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+                <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+                  {showMyTopics ? (
+                    <>
+                      Mes topics
+                      <span className="text-sm font-normal text-gray-500">
+                        ({filteredTopics.length})
+                      </span>
+                    </>
+                  ) : selectedCategory ? (
+                    <>
+                      Topics - {categoryConfig[selectedCategory]?.name}
+                      <span className="text-sm font-normal text-gray-500">
+                        ({filteredTopics.length})
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      Tous les topics
+                      <span className="text-sm font-normal text-gray-500">
+                        ({filteredTopics.length})
+                      </span>
+                    </>
+                  )}
+                </h2>
+                {(selectedCategory || showMyTopics) && (
+                  <button
+                    onClick={() => {
+                      setSelectedCategory('')
+                      setShowMyTopics(false)
+                    }}
+                    className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 font-medium"
                   >
-                    <div className="flex items-start gap-4">
-                      <img
-                        src={post.author.avatar}
-                        alt={post.author.name}
-                        className="w-10 h-10 rounded-full"
-                      />
-                      
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-2">
-                          {post.isPinned && <Pin className="w-4 h-4 text-blue-500" />}
-                          {post.isSolved && <CheckCircle className="w-4 h-4 text-green-500" />}
-                          <h3 className="font-semibold text-gray-900 truncate">
-                            {post.title}
-                          </h3>
-                        </div>
-                        
-                        <p className="text-gray-600 text-sm line-clamp-2 mb-3">
-                          {post.content}
-                        </p>
-                        
-                        <div className="flex items-center gap-4 text-xs text-gray-500">
-                          <span className="flex items-center gap-1">
-                            <Clock className="w-3 h-3" />
-                            {formatTimeAgo(post.createdAt)}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Eye className="w-3 h-3" />
-                            {post.views}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <ThumbsUp className="w-3 h-3" />
-                            {post.votes}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <MessageCircle className="w-3 h-3" />
-                            {post.replies.length}
-                          </span>
-                        </div>
-                        
-                        <div className="flex items-center gap-2 mt-2">
-                          {post.tags.slice(0, 3).map((tag) => (
-                            <span
-                              key={tag}
-                              className="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs"
-                            >
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                      
-                      <div className="text-right">
-                        <div className="text-sm font-medium text-gray-900">
-                          {post.author.name}
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          {post.author.location}
-                        </div>
-                        <div className="text-xs text-gray-500 mt-1">
-                          {post.author.reputation} pts
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
+                    <X className="w-4 h-4" />
+                    Réinitialiser
+                  </button>
+                )}
               </div>
+
+              {isLoading && (
+                <div className="p-12 text-center">
+                  <Loader2 className="w-8 h-8 animate-spin text-blue-500 mx-auto mb-3" />
+                  <p className="text-gray-600">Chargement des topics...</p>
+                </div>
+              )}
+
+              {error && (
+                <div className="p-12 text-center">
+                  <AlertCircle className="w-8 h-8 text-red-500 mx-auto mb-3" />
+                  <p className="text-gray-600">Erreur lors du chargement des topics</p>
+                  <p className="text-sm text-red-500 mt-1">{error.message}</p>
+                </div>
+              )}
+
+              {!isLoading && !error && filteredTopics.length === 0 && (
+                <div className="p-12 text-center">
+                  <MessageSquare className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                  <p className="text-gray-600 mb-2">Aucun topic trouvé</p>
+                  <Link
+                    to="/forum/new"
+                    className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                  >
+                    Créer le premier topic →
+                  </Link>
+                </div>
+              )}
+
+              {!isLoading && !error && filteredTopics.length > 0 && (
+                <div className="divide-y divide-gray-200">
+                  {filteredTopics.map((topic) => {
+                    const categoryInfo = categoryConfig[topic.category || 'other']
+                    return (
+                      <Link
+                        key={topic.topic_id}
+                        to={`/forum/post/${topic.topic_id}`}
+                        className="block p-6 hover:bg-gray-50 transition-colors"
+                      >
+                        <div className="flex items-start gap-4">
+                          <div className="text-3xl">{categoryInfo?.icon || '📌'}</div>
+                          
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-2">
+                              <h3 className="font-semibold text-gray-900">
+                                {topic.title}
+                              </h3>
+                            </div>
+                            
+                            <div className="flex items-center gap-4 text-xs text-gray-500 mb-2">
+                              <span className="flex items-center gap-1">
+                                <Clock className="w-3 h-3" />
+                                {formatTimeAgo(topic.created_at)}
+                              </span>
+                              <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded">
+                                {categoryInfo?.name || 'Autre'}
+                              </span>
+                            </div>
+                          </div>
+                          
+                          <div className="text-right">
+                            <div className="text-xs text-gray-500">
+                              {topic.user?.fullName || `Utilisateur #${topic.user?.idUser || '?'}`}
+                            </div>
+                          </div>
+                        </div>
+                      </Link>
+                    )
+                  })}
+                </div>
+              )}
             </div>
           </div>
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Top contributeurs */}
-            <div className="bg-white rounded-lg border border-gray-200">
-              <div className="p-4 border-b border-gray-200">
-                <h3 className="font-semibold text-gray-900">Top Contributeurs</h3>
-              </div>
-              <div className="p-4 space-y-3">
-                {forumStats.topContributors.map((user, index) => (
-                  <div key={user.id} className="flex items-center gap-3">
-                    <div className="relative">
-                      <img
-                        src={user.avatar}
-                        alt={user.name}
-                        className="w-8 h-8 rounded-full"
-                      />
-                      {user.isOnline && (
-                        <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium text-gray-900 truncate">
-                        {user.name}
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        {user.reputation.toLocaleString('fr-FR')} pts
-                      </div>
-                    </div>
-                    <div className="text-lg">
-                      {index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉'}
-                    </div>
+            {/* Mes statistiques (si connecté) */}
+            {user && (
+              <div className="bg-white rounded-lg border border-gray-200">
+                <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-purple-50">
+                  <h3 className="font-semibold text-gray-900">Mes Statistiques</h3>
+                </div>
+                <div className="p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Mes topics</span>
+                    <span className="font-bold text-blue-600">{myTopics.length}</span>
                   </div>
-                ))}
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Total réponses</span>
+                    <span className="font-bold text-purple-600">
+                      {myTopics.reduce((sum, t) => sum + (t.messages?.length || 0), 0)}
+                    </span>
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Actions rapides */}
             <div className="bg-white rounded-lg border border-gray-200">
@@ -464,25 +455,92 @@ export default function ForumPage() {
               <div className="p-4 space-y-2">
                 <Link
                   to="/forum/new"
-                  className="flex items-center gap-2 p-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+                  className="flex items-center gap-2 p-3 text-sm text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 rounded-lg transition-all font-medium shadow-sm hover:shadow"
                 >
                   <Plus className="w-4 h-4" />
-                  Poser une question
+                  Créer un topic
                 </Link>
-                <Link
-                  to="/forum/my-posts"
-                  className="flex items-center gap-2 p-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
-                >
-                  <MessageSquare className="w-4 h-4" />
-                  Mes posts
-                </Link>
-                <Link
-                  to="/forum/bookmarks"
-                  className="flex items-center gap-2 p-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+
+                {user ? (
+                  <>
+                    <button
+                      onClick={() => setShowMyTopics(!showMyTopics)}
+                      className={`flex items-center gap-2 p-3 w-full text-sm rounded-lg transition-colors ${
+                        showMyTopics 
+                          ? 'bg-blue-100 text-blue-700 font-medium' 
+                          : 'text-gray-700 hover:bg-gray-50'
+                      }`}
+                    >
+                      <MessageSquare className="w-4 h-4" />
+                      <span>Mes topics ({myTopics.length})</span>
+                      {showMyTopics && <span className="ml-auto text-xs">✓</span>}
+                    </button>
+                    <button
+                      onClick={() => alert('Fonctionnalité à venir !')}
+                      className="flex items-center gap-2 p-3 w-full text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+                    >
+                      <Bookmark className="w-4 h-4" />
+                      Topics suivis
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    onClick={() => navigate('/auth/login')}
+                    className="flex items-center gap-2 p-3 w-full text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+                  >
+                    <MessageSquare className="w-4 h-4" />
+                    Se connecter pour plus
+                  </button>
+                )}
+                
+                <button
+                  onClick={() => {
+                    setSearchQuery('')
+                    setSelectedCategory('')
+                    setShowMyTopics(false)
+                  }}
+                  className="flex items-center gap-2 p-3 w-full text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
                 >
                   <Eye className="w-4 h-4" />
-                  Posts suivis
-                </Link>
+                  Réinitialiser filtres
+                </button>
+              </div>
+            </div>
+
+            {/* Filtres rapides */}
+            <div className="bg-white rounded-lg border border-gray-200">
+              <div className="p-4 border-b border-gray-200">
+                <h3 className="font-semibold text-gray-900">Filtres rapides</h3>
+              </div>
+              <div className="p-4 space-y-2">
+                <button
+                  onClick={() => {
+                    const recent = topics?.filter(t => {
+                      const diffInHours = (new Date().getTime() - new Date(t.created_at).getTime()) / (1000 * 60 * 60)
+                      return diffInHours <= 24
+                    })
+                    alert(`${recent?.length || 0} topics dans les dernières 24h`)
+                  }}
+                  className="flex items-center justify-between p-3 w-full text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+                >
+                  <span className="flex items-center gap-2">
+                    <Clock className="w-4 h-4" />
+                    Récents (24h)
+                  </span>
+                  <span className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded-full font-medium">
+                    {stats.recentTopics}
+                  </span>
+                </button>
+                
+                <button
+                  onClick={() => setSelectedCategory('')}
+                  className="flex items-center justify-between p-3 w-full text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+                >
+                  <span className="flex items-center gap-2">
+                    <Filter className="w-4 h-4" />
+                    Toutes catégories
+                  </span>
+                </button>
               </div>
             </div>
           </div>
