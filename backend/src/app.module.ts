@@ -30,15 +30,13 @@ import { ExpatriationProjectModule } from './features/expatriation-project/expat
 @Module({
   imports: [
     // Configuration globale
-    ConfigModule.forRoot({ 
+    ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
     }),
-    
+
     // Configuration TypeORM
-    TypeOrmModule.forRootAsync(typeOrmConfigAsync),
-    
-    // Tous vos modules features
+    TypeOrmModule.forRootAsync(typeOrmConfigAsync),    // Tous vos modules features
     AuthModule,
     UserModule,
     ContinentModule,
