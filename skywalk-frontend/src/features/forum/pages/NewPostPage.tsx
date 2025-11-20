@@ -1,151 +1,149 @@
-import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
-import { ArrowLeft, Eye, Upload, X } from 'lucide-react'
+import { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { ArrowLeft, Loader2 } from 'lucide-react';
+import { useCreateForumTopic } from '../../../hooks/useForum';
+import { useAuth } from '../../../hooks/useAuth';
+import { TopicCategoryValues, type TopicCategory } from '../../../types/forum';
 
 const categories = [
-  { id: 'emploi', name: 'Emploi & Carrière', icon: '💼' },
-  { id: 'logement', name: 'Logement', icon: '🏠' },
-  { id: 'administratif', name: 'Démarches Admin', icon: '📋' },
-  { id: 'transport', name: 'Transport', icon: '🚌' },
-  { id: 'sante', name: 'Santé', icon: '🏥' },
-  { id: 'communaute', name: 'Communauté', icon: '👥' }
-]
-
-const popularTags = [
-  'visa', 'permis-travail', 'salaire', 'entretien', 'cv', 'logement', 
-  'appartement', 'transport', 'assurance', 'banque', 'canada', 'france',
-  'suisse', 'allemagne', 'debutant', 'urgent'
-]
+  { id: TopicCategoryValues.QUESTION, name: 'Question', icon: '❓' },
+  { id: TopicCategoryValues.TESTIMONY, name: 'Témoignage', icon: '📝' },
+  { id: TopicCategoryValues.ADVICE, name: 'Conseil', icon: '💡' },
+  { id: TopicCategoryValues.DISCUSSION, name: 'Discussion', icon: '💬' },
+  { id: TopicCategoryValues.ANNOUNCEMENT, name: 'Annonce', icon: '📢' },
+  { id: TopicCategoryValues.OTHER, name: 'Autre', icon: '📌' }
+];
 
 export default function NewPostPage() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const createTopic = useCreateForumTopic();
+  
   const [formData, setFormData] = useState({
     title: '',
-    content: '',
-    category: '',
-    tags: [] as string[],
-    isUrgent: false
-  })
-  const [isPreview, setIsPreview] = useState(false)
-  const [customTag, setCustomTag] = useState('')
+    content: '', // Nouveau : contenu initial du topic
+    category: TopicCategoryValues.QUESTION as TopicCategory,
+    countryId: undefined as number | undefined
+  });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     
-    if (!formData.title.trim() || !formData.content.trim() || !formData.category) {
-      alert('Veuillez remplir tous les champs obligatoires')
-      return
+    if (!user) {
+      alert('Vous devez être connecté');
+      navigate('/auth/login');
+      return;
     }
 
-    // Dans une vraie app, on ferait un appel API
-    const newPost = {
-      id: Date.now().toString(),
-      ...formData,
-      author: {
-        id: 'current-user',
-        name: 'Vous',
-        avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50&h=50&fit=crop&crop=face',
-        reputation: 50,
-        joinDate: '2024-01-01',
-        location: 'Utilisateur actuel',
-        badges: [],
-        isOnline: true
-      },
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      views: 0,
-      votes: 0,
-      replies: [],
-      isPinned: false,
-      isClosed: false,
-      isSolved: false
+    if (!formData.title.trim()) {
+      alert('Le titre est requis');
+      return;
     }
 
-    // Sauvegarder dans localStorage pour la démo
-    const existingPosts = JSON.parse(localStorage.getItem('skywalk-forum-posts') || '[]')
-    localStorage.setItem('skywalk-forum-posts', JSON.stringify([newPost, ...existingPosts]))
-
-    navigate(`/forum/post/${newPost.id}`)
-  }
-
-  const addTag = (tag: string) => {
-    if (tag && !formData.tags.includes(tag)) {
-      setFormData(prev => ({
-        ...prev,
-        tags: [...prev.tags, tag]
-      }))
+    if (!formData.content.trim()) {
+      alert('Le contenu est requis');
+      return;
     }
-  }
 
-  const removeTag = (tagToRemove: string) => {
-    setFormData(prev => ({
-      ...prev,
-      tags: prev.tags.filter(tag => tag !== tagToRemove)
-    }))
-  }
+    try {
+      const userId = user.idUser || user.id;
+      if (!userId) {
+        alert('Erreur ID utilisateur');
+        return;
+      }
 
-  const handleCustomTagAdd = () => {
-    if (customTag.trim()) {
-      addTag(customTag.trim().toLowerCase())
-      setCustomTag('')
+      const newTopic = await createTopic.mutateAsync({
+        title: formData.title.trim(),
+        content: formData.content.trim(),
+        category: formData.category,
+        idUser: userId,
+        idCountry: formData.countryId,
+      });
+
+      navigate(`/forum/post/${newTopic.topic_id}`);
+    } catch (error: unknown) {
+      console.error('Erreur:', error);
+      const msg = error instanceof Error ? error.message : 'Erreur';
+      alert(`Erreur: ${msg}`);
     }
+  };
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
+            <h2 className="text-yellow-800 font-semibold mb-2">Connexion requise</h2>
+            <button onClick={() => navigate('/auth/login')} className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700">
+              Se connecter
+            </button>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Navigation */}
         <div className="mb-6">
-          <Link
-            to="/forum"
-            className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium"
-          >
+          <Link to="/forum" className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium">
             <ArrowLeft className="w-4 h-4" />
             Retour au forum
           </Link>
         </div>
 
-        {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Créer un nouveau post
-          </h1>
-          <p className="text-gray-600">
-            Posez votre question ou partagez votre expérience avec la communauté
-          </p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Créer un nouveau topic</h1>
+          <p className="text-gray-600">Posez votre question ou partagez votre expérience</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Titre */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Titre de votre post *
+            <label htmlFor="title" className="block text-sm font-medium text-gray-900 mb-2">
+              Titre <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
+              id="title"
               value={formData.title}
               onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-              placeholder="Décrivez votre question en quelques mots..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              maxLength={200}
+              placeholder="Ex: Comment obtenir un visa?"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              maxLength={255}
+              required
             />
-            <div className="text-right text-sm text-gray-500 mt-1">
-              {formData.title.length}/200 caractères
-            </div>
           </div>
 
-          {/* Catégorie */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <label className="block text-sm font-medium text-gray-700 mb-3">
-              Catégorie *
+            <label htmlFor="content" className="block text-sm font-medium text-gray-900 mb-2">
+              Description / Contenu <span className="text-red-500">*</span>
+            </label>
+            <textarea
+              id="content"
+              value={formData.content}
+              onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
+              placeholder="Décrivez votre question ou partagez plus de détails..."
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 min-h-[150px] resize-y"
+              rows={6}
+              required
+            />
+            <p className="mt-2 text-sm text-gray-500">
+              Expliquez votre question ou situation en détail
+            </p>
+          </div>
+
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <label className="block text-sm font-medium text-gray-900 mb-3">
+              Catégorie <span className="text-red-500">*</span>
             </label>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {categories.map((category) => (
                 <button
                   key={category.id}
                   type="button"
-                  onClick={() => setFormData(prev => ({ ...prev, category: category.id }))}
-                  className={`p-3 rounded-lg border text-left transition-all ${
+                  onClick={() => setFormData(prev => ({ ...prev, category: category.id as TopicCategory }))}
+                  className={`p-3 rounded-lg border transition-all ${
                     formData.category === category.id
                       ? 'border-blue-500 bg-blue-50 text-blue-700'
                       : 'border-gray-200 hover:border-gray-300 text-gray-700'
@@ -160,158 +158,27 @@ export default function NewPostPage() {
             </div>
           </div>
 
-          {/* Contenu */}
-          <div className="bg-white rounded-lg border border-gray-200">
-            <div className="border-b border-gray-200 p-4">
-              <div className="flex items-center justify-between">
-                <label className="text-sm font-medium text-gray-700">
-                  Contenu de votre post *
-                </label>
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setIsPreview(!isPreview)}
-                    className="flex items-center gap-1 px-3 py-1 text-sm text-gray-600 hover:text-gray-900 border border-gray-300 rounded"
-                  >
-                    <Eye className="w-4 h-4" />
-                    {isPreview ? 'Éditer' : 'Aperçu'}
-                  </button>
-                </div>
-              </div>
-            </div>
-            
-            <div className="p-6">
-              {isPreview ? (
-                <div className="prose max-w-none min-h-[200px]">
-                  <div className="whitespace-pre-wrap text-gray-700">
-                    {formData.content || 'Votre contenu apparaîtra ici...'}
-                  </div>
-                </div>
-              ) : (
-                <textarea
-                  value={formData.content}
-                  onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
-                  placeholder="Décrivez votre situation, posez votre question ou partagez votre expérience...
-
-Quelques conseils :
-- Soyez précis et détaillé
-- Expliquez votre contexte
-- Utilisez des exemples concrets
-- Formatez votre texte avec des paragraphes"
-                  rows={12}
-                  className="w-full border-0 focus:ring-0 resize-none text-gray-700 placeholder-gray-400"
-                />
-              )}
-            </div>
-          </div>
-
-          {/* Tags */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <label className="block text-sm font-medium text-gray-700 mb-3">
-              Tags (optionnel)
-            </label>
-            
-            {/* Tags sélectionnés */}
-            {formData.tags.length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-4">
-                {formData.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
-                  >
-                    #{tag}
-                    <button
-                      type="button"
-                      onClick={() => removeTag(tag)}
-                      className="text-blue-600 hover:text-blue-800"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </span>
-                ))}
-              </div>
-            )}
-
-            {/* Ajouter un tag personnalisé */}
-            <div className="flex gap-2 mb-4">
-              <input
-                type="text"
-                value={customTag}
-                onChange={(e) => setCustomTag(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleCustomTagAdd())}
-                placeholder="Ajouter un tag personnalisé..."
-                className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-              <button
-                type="button"
-                onClick={handleCustomTagAdd}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm"
-              >
-                Ajouter
-              </button>
-            </div>
-
-            {/* Tags populaires */}
-            <div>
-              <div className="text-xs font-medium text-gray-500 mb-2 uppercase tracking-wide">
-                Tags populaires
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {popularTags.map((tag) => (
-                  <button
-                    key={tag}
-                    type="button"
-                    onClick={() => addTag(tag)}
-                    disabled={formData.tags.includes(tag)}
-                    className={`px-2 py-1 text-xs rounded transition-colors ${
-                      formData.tags.includes(tag)
-                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                    }`}
-                  >
-                    #{tag}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Options */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <label className="flex items-center gap-3">
-              <input
-                type="checkbox"
-                checked={formData.isUrgent}
-                onChange={(e) => setFormData(prev => ({ ...prev, isUrgent: e.target.checked }))}
-                className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
-              />
-              <div>
-                <div className="font-medium text-gray-700">Question urgente</div>
-                <div className="text-sm text-gray-500">
-                  Marquer comme urgent pour attirer l'attention (à utiliser avec modération)
-                </div>
-              </div>
-            </label>
-          </div>
-
-          {/* Actions */}
-          <div className="flex items-center justify-between pt-6">
-            <Link
-              to="/forum"
-              className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-            >
+          <div className="flex items-center justify-end gap-4">
+            <Link to="/forum" className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
               Annuler
             </Link>
-            
             <button
               type="submit"
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+              disabled={!formData.title.trim() || !formData.content.trim() || createTopic.isPending}
+              className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Publier le post
+              {createTopic.isPending ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Création...
+                </>
+              ) : (
+                'Créer le topic'
+              )}
             </button>
           </div>
         </form>
       </div>
     </div>
-  )
+  );
 }
