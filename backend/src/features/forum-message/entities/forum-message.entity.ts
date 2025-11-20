@@ -4,17 +4,20 @@ import { User } from '../../user/entities/user.entity';
 
 @Entity({ name: 'forum_message' })
 export class ForumMessage {
-  @PrimaryGeneratedColumn({ name: 'message_id' })
+  @PrimaryGeneratedColumn({ name: 'id_message' })
   message_id: number; 
 
   @Column({ name: 'content', type: 'text' })
   content: string;
 
-  @Column({ name: 'sent_at', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({ name: 'created_at', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   sent_at: Date;
 
+  @Column({ name: 'updated_at', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  updated_at: Date;
+
   @ManyToOne(() => ForumTopic, { nullable: false })
-  @JoinColumn({ name: 'topic_id'})
+  @JoinColumn({ name: 'id_topic' })
   topic: ForumTopic;
 
   @ManyToOne(() => User, { nullable: false })
