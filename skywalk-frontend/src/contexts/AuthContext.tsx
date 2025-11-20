@@ -1,9 +1,9 @@
 // Contexte d'authentification global pour gérer l'état utilisateur dans toute l'application
+// ✅ Utilise des cookies HTTP-Only pour plus de sécurité
 
 import React, { createContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { authApi } from '../api/auth';
-import { tokenService } from '../lib/api';
 import type { User, LoginDto, RegisterDto, AuthResponse } from '../types/auth';
 
 interface AuthContextType {
@@ -26,20 +26,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Au chargement, vérifier si un token existe et récupérer le profil
+  // Au chargement, vérifier si un cookie existe et récupérer le profil
   useEffect(() => {
     const initAuth = async () => {
-      const token = tokenService.getAccessToken();
-      if (token) {
-        try {
-          const userData = await authApi.getProfile();
-          setUser(userData);
-        } catch (error) {
-          console.error('Erreur lors de la récupération du profil:', error);
-          tokenService.clearTokens();
-        }
+      try {
+        const userData = await authApi.getProfile();
+        setUser(userData);
+      } catch {
+        // Aucun utilisateur connecté
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
 
     initAuth();
@@ -72,7 +69,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.error('Erreur lors de la déconnexion:', error);
     } finally {
       setUser(null);
-      tokenService.clearTokens();
     }
   };
 
