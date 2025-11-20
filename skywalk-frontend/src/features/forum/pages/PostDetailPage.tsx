@@ -1,191 +1,186 @@
-import { useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { useState } from 'react';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { 
-  ThumbsUp, 
-  ThumbsDown, 
-  MessageCircle, 
-  Share2, 
-  Bookmark, 
-  Flag,
   ArrowLeft,
-  Crown,
-  CheckCircle,
-  Clock
-} from 'lucide-react'
-import type { Post, Reply } from '../types'
+  Clock,
+  MessageCircle,
+  Loader2,
+  AlertCircle,
+  Send,
+  Edit,
+  Trash2,
+  X,
+  Check
+} from 'lucide-react';
+import { 
+  useForumTopic, 
+  useCreateForumMessage, 
+  useUpdateForumMessage, 
+  useDeleteForumMessage 
+} from '../../../hooks/useForum';
+import { useAuth } from '../../../hooks/useAuth';
 
-// Données mockées pour un post détaillé
-const mockPost: Post = {
-  id: '1',
-  title: 'Comment négocier son salaire lors d\'un entretien au Canada?',
-  content: `Bonjour à tous,
-
-Je vais avoir un entretien la semaine prochaine pour un poste de développeur full-stack à Toronto. C'est ma première expérience professionnelle au Canada et je ne sais pas du tout comment aborder la question du salaire.
-
-**Ma situation :**
-- 5 ans d'expérience en France
-- Stack : React, Node.js, PostgreSQL
-- Poste : Senior Developer
-- Entreprise : Startup tech (50-100 employés)
-
-**Mes questions :**
-1. À quel moment aborder le sujet du salaire ?
-2. Comment faire ses recherches sur les salaires du marché ?
-3. Y a-t-il des spécificités canadiennes à connaître ?
-4. Comment négocier les avantages (assurance, congés, etc.) ?
-
-J'ai vu sur Glassdoor des fourchettes entre 80k et 120k CAD pour ce type de poste, mais je ne sais pas si c'est fiable.
-
-Merci d'avance pour vos conseils ! 🙏`,
-  author: {
-    id: '1',
-    name: 'Marie Laurent',
-    avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b890?w=50&h=50&fit=crop&crop=face',
-    reputation: 245,
-    joinDate: '2023-06-15',
-    location: 'Paris → Toronto',
-    badges: [
-      { id: '1', name: 'Nouvel arrivant', icon: '🌟', color: 'text-yellow-500', description: 'Premier post' }
-    ],
-    isOnline: true
-  },
-  category: 'emploi',
-  tags: ['salaire', 'entretien', 'canada', 'développeur', 'négociation'],
-  createdAt: '2024-01-15T10:30:00Z',
-  updatedAt: '2024-01-15T10:30:00Z',
-  views: 247,
-  votes: 15,
-  replies: [
-    {
-      id: '1',
-      content: `Salut Marie ! Félicitations pour ton entretien 🎉
-
-Je suis passé par là il y a 2 ans. Voici mes conseils :
-
-**1. Timing :** Attends qu'ils abordent le sujet ou que tu sois sûre qu'ils sont intéressés. Généralement en fin d'entretien ou au 2e entretien.
-
-**2. Recherches :** 
-- Glassdoor est un bon point de départ
-- Regarde sur levels.fyi pour les startups tech
-- Consulte le guide des salaires de Robert Half Canada
-- Demande dans les groupes Facebook d'expatriés français au Canada
-
-**3. Spécificités canadiennes :**
-- Les salaires sont annuels bruts
-- Attention aux différences entre provinces (Ontario vs Québec)
-- Les avantages sont souvent plus généreux qu'en France
-
-Pour ton profil, 85-95k CAD me semble réaliste à Toronto pour commencer. Bon courage ! 💪`,
-      author: {
-        id: '2',
-        name: 'Thomas Expert',
-        avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face',
-        reputation: 1250,
-        joinDate: '2022-03-15',
-        location: 'Lyon → Montreal',
-        badges: [
-          { id: '2', name: 'Expert Emploi', icon: '💼', color: 'text-blue-500', description: 'Expert en questions d\'emploi' },
-          { id: '3', name: 'Mentor', icon: '🎓', color: 'text-green-500', description: 'Aide les nouveaux' }
-        ],
-        isOnline: false
-      },
-      createdAt: '2024-01-15T11:45:00Z',
-      updatedAt: '2024-01-15T11:45:00Z',
-      votes: 23,
-      isAccepted: true
-    },
-    {
-      id: '2',
-      content: `Juste pour ajouter à ce que dit Thomas :
-
-N'oublie pas de négocier aussi :
-- Les stock options si c'est une startup
-- Le remote/hybride (très important à Toronto avec les transports)
-- Le budget formation
-- Les congés (au Canada c'est souvent 2 semaines au début, tu peux essayer de négocier plus avec ton expérience)
-
-Et prépare-toi à ce qu'ils te demandent tes attentes salariales assez tôt dans le processus. Aie une fourchette prête !`,
-      author: {
-        id: '3',
-        name: 'Sarah RH',
-        avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=40&h=40&fit=crop&crop=face',
-        reputation: 892,
-        joinDate: '2022-08-20',
-        location: 'Paris → Toronto',
-        badges: [
-          { id: '4', name: 'RH Pro', icon: '👩‍💼', color: 'text-purple-500', description: 'Professionnelle RH' }
-        ],
-        isOnline: true
-      },
-      createdAt: '2024-01-15T14:20:00Z',
-      updatedAt: '2024-01-15T14:20:00Z',
-      votes: 12,
-      isAccepted: false
-    }
-  ],
-  isPinned: false,
-  isClosed: false,
-  isSolved: true,
-  bestReply: '1'
-}
+const categoryConfig: Record<string, { name: string; icon: string; color: string }> = {
+  question: { name: 'Question', icon: '❓', color: 'bg-blue-50 text-blue-700' },
+  testimony: { name: 'Témoignage', icon: '📝', color: 'bg-green-50 text-green-700' },
+  advice: { name: 'Conseil', icon: '💡', color: 'bg-yellow-50 text-yellow-700' },
+  discussion: { name: 'Discussion', icon: '💬', color: 'bg-purple-50 text-purple-700' },
+  announcement: { name: 'Annonce', icon: '📢', color: 'bg-red-50 text-red-700' },
+  other: { name: 'Autre', icon: '📌', color: 'bg-gray-50 text-gray-700' }
+};
 
 export default function PostDetailPage() {
-  const { id } = useParams()
-  const [post, setPost] = useState<Post>(mockPost)
-  const [newReply, setNewReply] = useState('')
-  const [userVotes, setUserVotes] = useState<Record<string, 'up' | 'down' | null>>({})
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const [replyContent, setReplyContent] = useState('');
+  const [editingMessageId, setEditingMessageId] = useState<number | null>(null);
+  const [editContent, setEditContent] = useState('');
+
+  const topicId = id ? parseInt(id) : 0;
+  const { data: topic, isLoading, error } = useForumTopic(topicId);
+  const createMessage = useCreateForumMessage();
+  const updateMessage = useUpdateForumMessage();
+  const deleteMessage = useDeleteForumMessage();
+
+  const handleReply = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!user) {
+      alert('Vous devez être connecté pour répondre');
+      navigate('/auth/login');
+      return;
+    }
+
+    if (!replyContent.trim()) {
+      alert('Le contenu est requis');
+      return;
+    }
+
+    try {
+      const userId = user.idUser || user.id;
+      if (!userId) {
+        alert('Erreur ID utilisateur');
+        return;
+      }
+
+      await createMessage.mutateAsync({
+        content: replyContent.trim(),
+        idTopic: topicId,
+        idUser: userId,
+      });
+
+      setReplyContent('');
+      // React Query recharge automatiquement les messages
+    } catch (error) {
+      console.error('Erreur:', error);
+      alert('Erreur lors de la publication');
+    }
+  };
+
+  const handleStartEdit = (messageId: number, currentContent: string) => {
+    setEditingMessageId(messageId);
+    setEditContent(currentContent);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingMessageId(null);
+    setEditContent('');
+  };
+
+  const handleSaveEdit = async (messageId: number) => {
+    if (!editContent.trim()) {
+      alert('Le contenu ne peut pas être vide');
+      return;
+    }
+
+    try {
+      await updateMessage.mutateAsync({
+        id: messageId,
+        data: { content: editContent.trim() },
+        topicId: topicId, // ← Pour invalider le cache du topic
+      });
+      
+      setEditingMessageId(null);
+      setEditContent('');
+      // Pas besoin d'alert, React Query recharge automatiquement
+    } catch (error) {
+      console.error('Erreur:', error);
+      alert('Erreur lors de la modification');
+    }
+  };
+
+  const handleDelete = async (messageId: number) => {
+    if (!window.confirm('Êtes-vous sûr de vouloir supprimer ce message ?')) {
+      return;
+    }
+
+    try {
+      await deleteMessage.mutateAsync({
+        id: messageId,
+        topicId: topicId, // ← Pour invalider le cache du topic
+      });
+      // Pas besoin d'alert, React Query recharge automatiquement
+    } catch (error) {
+      console.error('Erreur:', error);
+      alert('Erreur lors de la suppression');
+    }
+  };
 
   const formatTimeAgo = (dateString: string) => {
-    const date = new Date(dateString)
-    const now = new Date()
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60))
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
     
-    if (diffInHours < 1) return 'Il y a moins d\'une heure'
-    if (diffInHours < 24) return `Il y a ${diffInHours}h`
-    const diffInDays = Math.floor(diffInHours / 24)
-    if (diffInDays < 7) return `Il y a ${diffInDays}j`
-    return date.toLocaleDateString('fr-FR')
+    if (diffInHours < 1) return 'Il y a moins d\'une heure';
+    if (diffInHours < 24) return `Il y a ${diffInHours}h`;
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 7) return `Il y a ${diffInDays}j`;
+    return date.toLocaleDateString('fr-FR');
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin text-blue-500 mx-auto mb-4" />
+          <p className="text-gray-600">Chargement du topic...</p>
+        </div>
+      </div>
+    );
   }
 
-  const handleVote = (itemId: string, voteType: 'up' | 'down') => {
-    setUserVotes(prev => ({
-      ...prev,
-      [itemId]: prev[itemId] === voteType ? null : voteType
-    }))
-    
-    // Dans une vraie app, on ferait un appel API ici
-    console.log(`Vote ${voteType} pour ${itemId}`)
+  if (error || !topic) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+            <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-3" />
+            <h2 className="text-red-800 font-semibold mb-2">Topic introuvable</h2>
+            <p className="text-red-600 mb-4">
+              {error?.message || 'Le topic demandé n\'existe pas'}
+            </p>
+            <Link
+              to="/forum"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Retour au forum
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
   }
 
-  const handleReply = () => {
-    if (!newReply.trim()) return
-    
-    // Dans une vraie app, on ferait un appel API
-    const reply: Reply = {
-      id: Date.now().toString(),
-      content: newReply,
-      author: {
-        id: 'current-user',
-        name: 'Vous',
-        avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face',
-        reputation: 50,
-        joinDate: '2024-01-01',
-        badges: [],
-        isOnline: true
-      },
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      votes: 0,
-      isAccepted: false
-    }
-    
-    setPost(prev => ({
-      ...prev,
-      replies: [...prev.replies, reply]
-    }))
-    
-    setNewReply('')
-  }
+  const categoryInfo = categoryConfig[topic.category || 'other'];
+  const messages = topic.messages || [];
+  
+  // Séparer le premier message (contenu initial) des réponses
+  // Le backend trie les messages par date (ORDER BY created_at ASC)
+  // donc messages[0] = le plus ancien = message initial créé avec le topic
+  const initialMessage = messages.length > 0 ? messages[0] : null;
+  const replies = messages.length > 1 ? messages.slice(1) : [];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -201,258 +196,226 @@ export default function PostDetailPage() {
           </Link>
         </div>
 
-        {/* Post principal */}
-        <div className="bg-white rounded-lg border border-gray-200 mb-6">
-          <div className="p-6">
-            {/* Header */}
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-2">
-                  {post.isSolved && <CheckCircle className="w-5 h-5 text-green-500" />}
-                  <h1 className="text-2xl font-semibold text-gray-900">
-                    {post.title}
-                  </h1>
-                </div>
-                
-                <div className="flex items-center gap-4 text-sm text-gray-500">
-                  <span className="flex items-center gap-1">
-                    <Clock className="w-4 h-4" />
-                    {formatTimeAgo(post.createdAt)}
-                  </span>
-                  <span>{post.views} vues</span>
-                  <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-medium">
-                    {post.category}
-                  </span>
-                </div>
+        {/* Topic principal */}
+        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+          {/* Header */}
+          <div className="flex items-start gap-4 mb-4">
+            <div className="text-4xl">{categoryInfo?.icon || '📌'}</div>
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-2">
+                <span className={`px-3 py-1 rounded-full text-sm font-medium ${categoryInfo?.color || 'bg-gray-100'}`}>
+                  {categoryInfo?.name || 'Autre'}
+                </span>
               </div>
-              
-              <div className="flex items-center gap-2">
-                <button className="p-2 text-gray-400 hover:text-blue-500 rounded-lg">
-                  <Bookmark className="w-5 h-5" />
-                </button>
-                <button className="p-2 text-gray-400 hover:text-blue-500 rounded-lg">
-                  <Share2 className="w-5 h-5" />
-                </button>
-                <button className="p-2 text-gray-400 hover:text-red-500 rounded-lg">
-                  <Flag className="w-5 h-5" />
-                </button>
+              <h1 className="text-2xl font-bold text-gray-900 mb-3">
+                {topic.title}
+              </h1>
+              <div className="flex items-center gap-4 text-sm text-gray-500">
+                <span className="flex items-center gap-1">
+                  <Clock className="w-4 h-4" />
+                  {formatTimeAgo(topic.created_at)}
+                </span>
+                <span>Par {topic.user?.fullName || `Utilisateur #${topic.user?.idUser}`}</span>
+                {topic.country && <span>📍 {topic.country.name}</span>}
               </div>
             </div>
+            
+            {/* Bouton Modifier (visible uniquement pour l'auteur) */}
+            {user && (user.idUser === topic.user?.idUser || user.id === topic.user?.idUser) && (
+              <Link
+                to={`/forum/post/${id}/edit`}
+                className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                <Edit className="w-4 h-4" />
+                Modifier
+              </Link>
+            )}
+          </div>
+        </div>
 
-            {/* Auteur */}
-            <div className="flex items-center gap-3 mb-4 p-3 bg-gray-50 rounded-lg">
-              <div className="relative">
-                <img
-                  src={post.author.avatar}
-                  alt={post.author.name}
-                  className="w-12 h-12 rounded-full"
-                />
-                {post.author.isOnline && (
-                  <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
-                )}
+        {/* Contenu initial du topic (premier message) */}
+        {initialMessage && (
+          <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                {initialMessage.user?.fullName?.charAt(0) || '?'}
               </div>
               <div className="flex-1">
-                <div className="font-medium text-gray-900">{post.author.name}</div>
-                <div className="text-sm text-gray-500">{post.author.location}</div>
-                <div className="text-xs text-gray-500">
-                  {post.author.reputation} points • Membre depuis {new Date(post.author.joinDate).getFullYear()}
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="font-semibold text-gray-900">
+                    {initialMessage.user?.fullName || `Utilisateur #${initialMessage.user?.idUser}`}
+                  </span>
+                  <span className="text-sm text-gray-500">{formatTimeAgo(initialMessage.sent_at)}</span>
+                  <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-medium rounded">
+                    Auteur
+                  </span>
                 </div>
-                <div className="flex items-center gap-1 mt-1">
-                  {post.author.badges.map((badge) => (
-                    <span
-                      key={badge.id}
-                      className={`text-xs px-1.5 py-0.5 rounded ${badge.color} bg-opacity-10`}
-                      title={badge.description}
-                    >
-                      {badge.icon} {badge.name}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Contenu */}
-            <div className="prose max-w-none mb-6">
-              <div className="whitespace-pre-wrap text-gray-700">
-                {post.content}
-              </div>
-            </div>
-
-            {/* Tags */}
-            <div className="flex items-center gap-2 mb-4">
-              {post.tags.map((tag) => (
-                <Link
-                  key={tag}
-                  to={`/forum/tag/${tag}`}
-                  className="px-2 py-1 bg-gray-100 text-gray-600 rounded text-sm hover:bg-gray-200 transition-colors"
-                >
-                  #{tag}
-                </Link>
-              ))}
-            </div>
-
-            {/* Actions */}
-            <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-1">
-                  <button
-                    onClick={() => handleVote(post.id, 'up')}
-                    className={`p-1 rounded ${
-                      userVotes[post.id] === 'up'
-                        ? 'text-blue-600 bg-blue-50'
-                        : 'text-gray-400 hover:text-blue-600'
-                    }`}
-                  >
-                    <ThumbsUp className="w-5 h-5" />
-                  </button>
-                  <span className="font-medium text-gray-700">{post.votes}</span>
-                  <button
-                    onClick={() => handleVote(post.id, 'down')}
-                    className={`p-1 rounded ${
-                      userVotes[post.id] === 'down'
-                        ? 'text-red-600 bg-red-50'
-                        : 'text-gray-400 hover:text-red-600'
-                    }`}
-                  >
-                    <ThumbsDown className="w-5 h-5" />
-                  </button>
-                </div>
-                
-                <div className="flex items-center gap-1 text-gray-500">
-                  <MessageCircle className="w-5 h-5" />
-                  <span>{post.replies.length} réponses</span>
+                <div className="prose prose-sm max-w-none text-gray-700">
+                  {initialMessage.content}
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Réponses */}
-        <div className="space-y-6">
-          <h2 className="text-xl font-semibold text-gray-900">
-            {post.replies.length} réponse{post.replies.length > 1 ? 's' : ''}
+        <div className="space-y-4 mb-6">
+          <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+            <MessageCircle className="w-5 h-5" />
+            {replies.length} {replies.length === 1 ? 'Réponse' : 'Réponses'}
           </h2>
 
-          {post.replies.map((reply) => (
-            <div
-              key={reply.id}
-              className={`bg-white rounded-lg border ${
-                reply.isAccepted ? 'border-green-200 ring-2 ring-green-100' : 'border-gray-200'
-              }`}
-            >
-              {reply.isAccepted && (
-                <div className="px-6 py-2 bg-green-50 border-b border-green-200 rounded-t-lg">
-                  <div className="flex items-center gap-2 text-green-800 text-sm font-medium">
-                    <Crown className="w-4 h-4" />
-                    Réponse acceptée par l'auteur
-                  </div>
-                </div>
-              )}
-              
-              <div className="p-6">
-                {/* Auteur de la réponse */}
-                <div className="flex items-start gap-3 mb-4">
-                  <div className="relative">
-                    <img
-                      src={reply.author.avatar}
-                      alt={reply.author.name}
-                      className="w-10 h-10 rounded-full"
-                    />
-                    {reply.author.isOnline && (
-                      <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
-                    )}
+          {replies.length === 0 && (
+            <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
+              <MessageCircle className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+              <p className="text-gray-600 mb-2">Aucune réponse pour le moment</p>
+              <p className="text-sm text-gray-500">Soyez le premier à répondre !</p>
+            </div>
+          )}
+
+          {replies.map((message) => {
+            const isOwner = user && (user.idUser === message.user?.idUser || user.id === message.user?.idUser);
+            const isEditing = editingMessageId === message.message_id;
+            
+            return (
+              <div key={message.message_id} className="bg-white rounded-lg border border-gray-200 p-6">
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
+                    {message.user?.fullName?.charAt(0) || '?'}
                   </div>
                   <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <div className="font-medium text-gray-900">{reply.author.name}</div>
-                      <div className="text-sm text-gray-500">
-                        {formatTimeAgo(reply.createdAt)}
-                      </div>
-                    </div>
-                    <div className="text-sm text-gray-500">{reply.author.location}</div>
-                    <div className="flex items-center gap-1 mt-1">
-                      {reply.author.badges.map((badge) => (
-                        <span
-                          key={badge.id}
-                          className={`text-xs px-1.5 py-0.5 rounded ${badge.color} bg-opacity-10`}
-                          title={badge.description}
-                        >
-                          {badge.icon} {badge.name}
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-3">
+                        <span className="font-semibold text-gray-900">
+                          {message.user?.fullName || `Utilisateur #${message.user?.idUser}`}
                         </span>
-                      ))}
+                        <span className="text-sm text-gray-500">
+                          {formatTimeAgo(message.sent_at)}
+                        </span>
+                      </div>
+                      
+                      {/* Boutons Edit/Delete (visible seulement pour l'auteur) */}
+                      {isOwner && !isEditing && (
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => handleStartEdit(message.message_id, message.content)}
+                            disabled={deleteMessage.isPending}
+                            className="p-1.5 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors disabled:opacity-50"
+                            title="Modifier"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(message.message_id)}
+                            disabled={deleteMessage.isPending}
+                            className="p-1.5 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded transition-colors disabled:opacity-50"
+                            title="Supprimer"
+                          >
+                            {deleteMessage.isPending ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <Trash2 className="w-4 h-4" />
+                            )}
+                          </button>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                </div>
-
-                {/* Contenu de la réponse */}
-                <div className="prose max-w-none mb-4">
-                  <div className="whitespace-pre-wrap text-gray-700">
-                    {reply.content}
-                  </div>
-                </div>
-
-                {/* Actions réponse */}
-                <div className="flex items-center gap-4 pt-4 border-t border-gray-200">
-                  <div className="flex items-center gap-1">
-                    <button
-                      onClick={() => handleVote(reply.id, 'up')}
-                      className={`p-1 rounded ${
-                        userVotes[reply.id] === 'up'
-                          ? 'text-blue-600 bg-blue-50'
-                          : 'text-gray-400 hover:text-blue-600'
-                      }`}
-                    >
-                      <ThumbsUp className="w-4 h-4" />
-                    </button>
-                    <span className="font-medium text-gray-700">{reply.votes}</span>
-                    <button
-                      onClick={() => handleVote(reply.id, 'down')}
-                      className={`p-1 rounded ${
-                        userVotes[reply.id] === 'down'
-                          ? 'text-red-600 bg-red-50'
-                          : 'text-gray-400 hover:text-red-600'
-                      }`}
-                    >
-                      <ThumbsDown className="w-4 h-4" />
-                    </button>
+                    
+                    {/* Contenu ou formulaire d'édition */}
+                    {isEditing ? (
+                      <div className="space-y-3">
+                        <textarea
+                          value={editContent}
+                          onChange={(e) => setEditContent(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 min-h-[100px] resize-y"
+                          rows={4}
+                        />
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => handleSaveEdit(message.message_id)}
+                            disabled={updateMessage.isPending}
+                            className="flex items-center gap-1 px-3 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            {updateMessage.isPending ? (
+                              <>
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                                Enregistrement...
+                              </>
+                            ) : (
+                              <>
+                                <Check className="w-4 h-4" />
+                                Enregistrer
+                              </>
+                            )}
+                          </button>
+                          <button
+                            onClick={handleCancelEdit}
+                            disabled={updateMessage.isPending}
+                            className="flex items-center gap-1 px-3 py-1.5 border border-gray-300 text-gray-700 text-sm rounded-lg hover:bg-gray-50 disabled:opacity-50"
+                          >
+                            <X className="w-4 h-4" />
+                            Annuler
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-gray-700 whitespace-pre-wrap">
+                        {message.content}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Formulaire de réponse */}
-        <div className="mt-8 bg-white rounded-lg border border-gray-200">
-          <div className="p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Votre réponse
-            </h3>
-            
-            <textarea
-              value={newReply}
-              onChange={(e) => setNewReply(e.target.value)}
-              placeholder="Écrivez votre réponse..."
-              rows={6}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-            />
-            
-            <div className="flex items-center justify-between mt-4">
-              <div className="text-sm text-gray-500">
-                Utilisez le markdown pour formater votre réponse
+        {user ? (
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <h3 className="font-semibold text-gray-900 mb-4">Votre réponse</h3>
+            <form onSubmit={handleReply} className="space-y-4">
+              <textarea
+                value={replyContent}
+                onChange={(e) => setReplyContent(e.target.value)}
+                placeholder="Écrivez votre réponse..."
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 min-h-[150px]"
+                required
+              />
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  disabled={!replyContent.trim() || createMessage.isPending}
+                  className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {createMessage.isPending ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Publication...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4" />
+                      Publier la réponse
+                    </>
+                  )}
+                </button>
               </div>
-              
-              <button
-                onClick={handleReply}
-                disabled={!newReply.trim()}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                Publier la réponse
-              </button>
-            </div>
+            </form>
           </div>
-        </div>
+        ) : (
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
+            <h3 className="text-yellow-800 font-semibold mb-2">Connexion requise</h3>
+            <p className="text-yellow-700 mb-4">Vous devez être connecté pour répondre</p>
+            <button
+              onClick={() => navigate('/auth/login')}
+              className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700"
+            >
+              Se connecter
+            </button>
+          </div>
+        )}
       </div>
     </div>
-  )
+  );
 }
