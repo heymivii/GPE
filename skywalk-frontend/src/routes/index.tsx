@@ -14,47 +14,43 @@ import ForumPage from '../features/forum/pages/ForumPage';
 import PostDetailPage from '../features/forum/pages/PostDetailPage';
 import NewPostPage from '../features/forum/pages/NewPostPage';
 import EditTopicPage from '../features/forum/pages/EditTopicPage';
+import ProtectedRoute from '../components/ProtectedRoute';
+import PublicRoute from '../components/PublicRoute';
 
 export const router = createBrowserRouter([
-{
+  // Routes publiques (redirigent vers /dashboard si déjà connecté)
+  {
+    element: <PublicRoute />,
+    children: [
+      {
+        path: '/',
+        element: <MainLayout />,
+        children: [
+          { index: true, element: <LandingPage /> },
+        ],
+      },
+      {
+        path: '/auth', 
+        element: <AuthLayout />,
+        children: [
+          { path: 'login', element: <LoginPage /> },
+          { path: 'register', element: <RegisterPage /> },
+          { path: 'pwdForgot', element: <PasswordForgotPage /> },
+        ],
+      },
+    ],
+  },
+  
+  // Routes accessibles à tous (connectés ou non)
+  {
     path: '/',
     element: <MainLayout />,
     children: [
-      { index: true, element: <LandingPage /> },
       { path: 'search', element: <SearchPage /> },
       { path: 'forum', element: <ForumPage /> },
-      //{ path: 'about', element: <AboutPage /> },
-
     ],
   },
-  {
-    path: '/auth', 
-    element: <AuthLayout />,
-    children: [
-      { path: 'login', element: <LoginPage /> },
-      { path: 'register', element: <RegisterPage /> },
-      { path: 'pwdForgot', element: <PasswordForgotPage /> },
-    ],
-  },
-  {
-  path: '/forms', 
-  element: <MainLayout/>,
-  children: [
-    {index: true, element: <FormPage /> },
-  ],
-},
-{
-    path: '/dashboard', 
-    element: <MainLayout />,
-    children: [
-      { index: true, element: <DashboardPage /> },
-      { path: 'personalized', element: <PersonalizedDashboard /> },
-    ],
-  },
-  {
-    path: '/onboarding',
-    element: <OnboardingFlow />,
-  },
+  // Routes du forum (accessibles à tous)
   {
     path: '/forum',
     element: <MainLayout />,
@@ -65,11 +61,30 @@ export const router = createBrowserRouter([
       { path: 'new', element: <NewPostPage /> },
     ],
   },
+  
+  // Routes protégées (nécessitent une connexion)
   {
-    path: '/personalized',
-    element: <MainLayout />,
+    element: <ProtectedRoute />,
     children: [
-      { index: true, element: <PersonalizedDashboard /> },
+      {
+        path: '/forms', 
+        element: <MainLayout/>,
+        children: [
+          { index: true, element: <FormPage /> },
+        ],
+      },
+      {
+        path: '/dashboard', 
+        element: <MainLayout />,
+        children: [
+          { index: true, element: <DashboardPage /> },
+          { path: 'personalized', element: <PersonalizedDashboard /> },
+        ],
+      },
+      {
+        path: '/onboarding',
+        element: <OnboardingFlow />,
+      },
     ],
   },
 ]);
