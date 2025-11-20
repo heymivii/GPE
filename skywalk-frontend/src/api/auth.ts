@@ -1,4 +1,4 @@
-import apiClient, { tokenService } from '../lib/api';
+import apiClient from '../lib/api';
 import type {
   AuthResponse,
   LoginDto,
@@ -12,15 +12,11 @@ import type {
 export const authApi = {
   register: async (data: RegisterDto): Promise<AuthResponse> => {
     const response = await apiClient.post<AuthResponse>('/auth/register', data);
-    const { access_token, refresh_token } = response.data;
-    tokenService.setTokens(access_token, refresh_token);
     return response.data;
   },
 
   login: async (data: LoginDto): Promise<AuthResponse> => {
     const response = await apiClient.post<AuthResponse>('/auth/login', data);
-    const { access_token, refresh_token } = response.data;
-    tokenService.setTokens(access_token, refresh_token);
     return response.data;
   },
 
@@ -30,17 +26,11 @@ export const authApi = {
   },
 
   logout: async (): Promise<void> => {
-    try {
-      await apiClient.post('/auth/logout');
-    } finally {
-      tokenService.clearTokens();
-    }
+    await apiClient.post('/auth/logout');
   },
 
   refresh: async (data: RefreshTokenDto): Promise<AuthResponse> => {
     const response = await apiClient.post<AuthResponse>('/auth/refresh', data);
-    const { access_token, refresh_token } = response.data;
-    tokenService.setTokens(access_token, refresh_token);
     return response.data;
   },
 
