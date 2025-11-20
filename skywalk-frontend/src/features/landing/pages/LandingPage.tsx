@@ -1,7 +1,11 @@
 import { ArrowRightIcon } from 'lucide-react';
-import Dropdown from '../components/Dropdown'
+import { Link } from 'react-router';
+import Dropdown from '../components/Dropdown';
+import { getTopDestinations } from '../../destinations/mockData';
 
-export default function LandingPage() { 
+export default function LandingPage() {
+  const topDestinations = getTopDestinations(6);
+  
   return (
     <div className="min-h-[90vh] flex items-center justify-center bg-gradient-to-b from-white to-gray-100">
       <div className="p-8 w-5/12">
@@ -37,6 +41,55 @@ export default function LandingPage() {
         </div>
            <div className="p-8">
        <Dropdown/>
+        </div>
+        
+        {/* Destinations populaires section */}
+        <div className="mt-16 px-8 w-full max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4 px-4">
+            <div>
+              <h2 className="text-3xl font-bold text-gray-900 mb-3">
+                Destinations populaires
+              </h2>
+              <p className="text-gray-600 text-lg">
+                Découvrez les pays les plus prisés par notre communauté
+              </p>
+            </div>
+            <Link
+              to="/destinations"
+              className="inline-flex items-center gap-2 px-6 py-2 bg-blue-50 text-blue-600 font-medium rounded-full hover:bg-blue-100 transition-colors whitespace-nowrap"
+            >
+              Voir tout
+              <ArrowRightIcon className="w-4 h-4" />
+            </Link>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mx-auto">
+            {topDestinations.map((destination) => (
+              <Link
+                key={destination.id}
+                to={`/destinations/${destination.slug}`}
+                className="bg-white rounded-lg shadow-md hover:shadow-xl transition-all p-6 border border-gray-200 hover:border-blue-400"
+              >
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="text-4xl">{destination.flagEmoji}</span>
+                  <h3 className="text-xl font-semibold text-gray-900">
+                    {destination.name}
+                  </h3>
+                </div>
+                <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                  {destination.description}
+                </p>
+                <div className="flex items-center justify-between text-sm text-gray-700">
+                  <span className="flex items-center gap-1">
+                    👥 {destination.stats.memberCount.toLocaleString('fr-FR')}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    💼 {destination.stats.jobOffersCount}
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
     </div>
   );
