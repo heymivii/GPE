@@ -16,6 +16,7 @@ import NewPostPage from '../features/forum/pages/NewPostPage';
 import EditTopicPage from '../features/forum/pages/EditTopicPage';
 import ProtectedRoute from '../components/ProtectedRoute';
 import PublicRoute from '../components/PublicRoute';
+import ProfilePage from '../features/profile/pages/ProfilePage';
 
 export const router = createBrowserRouter([
   // Routes publiques (redirigent vers /dashboard si déjà connecté)
@@ -84,6 +85,13 @@ export const router = createBrowserRouter([
       {
         path: '/onboarding',
         element: <OnboardingFlow />,
+      },
+      {
+        path: '/profile',
+        element: <MainLayout />,
+        children: [
+          { index: true, element: <ProfilePage /> },
+        ],
       },
     ],
   },
