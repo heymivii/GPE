@@ -1,8 +1,10 @@
 export interface User {
-  id: number;
+  idUser: number;  // Le backend renvoie idUser
+  id?: number;     // Alias optionnel pour compatibilité
   email: string;
   fullName: string;
-  role: 'USER' | 'ADMIN';
+  role?: 'USER' | 'ADMIN';
+  userRole?: string;  // Le backend renvoie userRole
   age?: number;
   status?: string;
   languageLevel?: string;
