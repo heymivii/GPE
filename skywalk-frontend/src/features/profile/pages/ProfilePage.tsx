@@ -1,5 +1,3 @@
-// Page de profil utilisateur avec édition et suppression de compte
-
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useProfile, useUpdateProfile, useDeleteAccount } from '../../../hooks/useProfile';
@@ -19,10 +17,8 @@ export default function ProfilePage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [formData, setFormData] = useState<UpdateProfileDto>({});
 
-  // Trouver le nom du pays d'origine
   const originCountry = countries.find(c => c.idCountry === profile?.idOriginCountry);
 
-  // Initialiser le formulaire avec les données du profil
   const startEditing = () => {
     if (profile) {
       setFormData({
@@ -83,7 +79,6 @@ export default function ProfilePage() {
     <div className="min-h-screen bg-gray-50 py-12">
       <div className="max-w-3xl mx-auto px-4">
         <div className="bg-white rounded-lg shadow-md p-8">
-          {/* En-tête */}
           <div className="flex justify-between items-center mb-8">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Mon Profil</h1>
@@ -99,7 +94,6 @@ export default function ProfilePage() {
             )}
           </div>
 
-          {/* Mode affichage */}
           {!isEditing && (
             <div className="space-y-6">
               <div>
@@ -162,7 +156,6 @@ export default function ProfilePage() {
             </div>
           )}
 
-          {/* Mode édition */}
           {isEditing && (
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>

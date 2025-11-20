@@ -1,5 +1,3 @@
-// Types pour les pays
-
 export interface Country {
   idCountry: number;
   countryName: string;

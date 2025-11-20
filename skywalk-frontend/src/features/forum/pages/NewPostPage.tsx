@@ -21,7 +21,7 @@ export default function NewPostPage() {
   
   const [formData, setFormData] = useState({
     title: '',
-    content: '', // Nouveau : contenu initial du topic
+    content: '', 
     category: TopicCategoryValues.QUESTION as TopicCategory,
     countryId: undefined as number | undefined
   });

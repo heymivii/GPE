@@ -6,7 +6,6 @@ export function useLogin() {
     mutationFn: login,
     onSuccess: (data) => {
       console.log("Connecté :", data);
-      // stocker token, redirect, etc.
     },
   });
 }

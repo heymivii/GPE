@@ -25,14 +25,12 @@ export default function EditTopicPage() {
   
   const [formData, setFormData] = useState({
     title: '',
-    content: '', // Contenu initial (premier message)
+    content: '', 
     category: TopicCategoryValues.QUESTION as TopicCategory,
   });
 
-  // Charger les données du topic dans le formulaire
   useEffect(() => {
     if (topic) {
-      // Récupérer le contenu du premier message
       const initialMessage = topic.messages && topic.messages.length > 0 ? topic.messages[0] : null;
       
       setFormData({
@@ -57,7 +55,6 @@ export default function EditTopicPage() {
       return;
     }
 
-    // Vérifier que l'utilisateur est l'auteur du topic
     const userId = user.idUser || user.id;
     const topicUserId = topic.user?.idUser;
     
@@ -89,7 +86,6 @@ export default function EditTopicPage() {
     }
   };
 
-  // État de chargement
   if (isLoadingTopic) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -101,7 +97,6 @@ export default function EditTopicPage() {
     );
   }
 
-  // Erreur de chargement
   if (topicError || !topic) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -123,7 +118,6 @@ export default function EditTopicPage() {
     );
   }
 
-  // Vérification des permissions
   if (!user) {
     return (
       <div className="min-h-screen bg-gray-50">

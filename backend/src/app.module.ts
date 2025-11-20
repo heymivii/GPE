@@ -1,12 +1,8 @@
-// 📍 EMPLACEMENT: backend/src/app.module.ts
-// Module principal qui importe tous les modules de l'application
-
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmConfigAsync } from './config/typeorm.config';
 
-// Import de tous vos modules
 import { AuthModule } from './features/auth/auth.module';
 import { UserModule } from './features/user/user.module';
 import { CostOfLivingModule } from './features/cost-of-living/cost-of-living.module';
@@ -29,16 +25,13 @@ import { ExpatriationProjectModule } from './features/expatriation-project/expat
 
 @Module({
   imports: [
-    // Configuration globale
-    ConfigModule.forRoot({ 
+    ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
     }),
-    
-    // Configuration TypeORM
+
     TypeOrmModule.forRootAsync(typeOrmConfigAsync),
-    
-    // Tous vos modules features
+
     AuthModule,
     UserModule,
     ContinentModule,

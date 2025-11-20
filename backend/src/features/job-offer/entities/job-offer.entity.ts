@@ -1,4 +1,3 @@
-// src/features/job-offer/entities/job-offer.entity.ts
 import {
   Column,
   Entity,
@@ -39,7 +38,6 @@ export class JobOffer {
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  // Relations
   @ManyToOne(() => City, { nullable: false })
   @JoinColumn({ name: 'id_city' })
   city: City;

@@ -28,7 +28,6 @@ function ResultCard({ result, viewMode }: { result: SearchResult; viewMode: 'gri
 
   const handleFavorite = () => {
     setIsFavorited(!isFavorited)
-    // Sauvegarder dans localStorage
     const favorites = JSON.parse(localStorage.getItem('skywalk-favorites') || '[]')
     if (!isFavorited) {
       favorites.push(result.id)
@@ -48,7 +47,6 @@ function ResultCard({ result, viewMode }: { result: SearchResult; viewMode: 'gri
       })
     } else {
       navigator.clipboard.writeText(result.link)
-      // Afficher un toast de confirmation
     }
   }
 

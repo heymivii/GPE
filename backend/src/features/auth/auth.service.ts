@@ -1,10 +1,8 @@
-// 📍 backend/src/features/auth/auth.service.ts
-
-import { 
-  Injectable, 
-  UnauthorizedException, 
+import {
+  Injectable,
+  UnauthorizedException,
   ConflictException,
-  NotFoundException 
+  NotFoundException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';

@@ -19,6 +19,6 @@ export class Notification {
   sent_at: Date;
 
   @ManyToOne(() => User, { nullable: false })
-  @JoinColumn({ name: 'id_user' }) // ✅ correction ici
+  @JoinColumn({ name: 'id_user' }) 
   user: User;
 }

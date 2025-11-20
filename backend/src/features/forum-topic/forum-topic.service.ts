@@ -16,7 +16,6 @@ export class ForumTopicService {
   ) {}
 
   async create(createForumTopicDto: CreateForumTopicDto): Promise<ForumTopic> {
-    // 1. Créer le topic
     const topic = this.forumTopicRepository.create({
       title: createForumTopicDto.title,
       category: createForumTopicDto.category,
@@ -28,7 +27,6 @@ export class ForumTopicService {
     
     const savedTopic = await this.forumTopicRepository.save(topic);
 
-    // 2. Créer le premier message (contenu initial) - OBLIGATOIRE maintenant
     const initialMessage = this.forumMessageRepository.create({
       content: createForumTopicDto.content.trim(),
       topic: { topic_id: savedTopic.topic_id } as any,
@@ -55,13 +53,11 @@ export class ForumTopicService {
       throw new NotFoundException(`Topic with ID ${id} not found`);
     }
 
-    // Trier les messages par date de création (le plus ancien en premier)
-    // Le premier message = contenu initial du topic
     if (topic.messages && topic.messages.length > 0) {
       topic.messages.sort((a, b) => {
         const dateA = new Date(a.sent_at).getTime();
         const dateB = new Date(b.sent_at).getTime();
-        return dateA - dateB; // Ordre croissant (plus ancien d'abord)
+        return dateA - dateB;
       });
     }
 
@@ -71,28 +67,22 @@ export class ForumTopicService {
   async update(id: number, updateForumTopicDto: UpdateForumTopicDto): Promise<ForumTopic> {
     const topic = await this.findOne(id);
     
-    // 1. Mettre à jour les métadonnées du topic (titre, catégorie)
     if (updateForumTopicDto.title) topic.title = updateForumTopicDto.title;
     if (updateForumTopicDto.category) topic.category = updateForumTopicDto.category;
     
     const updatedTopic = await this.forumTopicRepository.save(topic);
 
-    // 2. Mettre à jour le contenu initial (premier message) si fourni
     if (updateForumTopicDto.content !== undefined) {
-      // Trouver le premier message du topic (trié par date de création)
       const firstMessage = await this.forumMessageRepository.findOne({
         where: { topic: { topic_id: id } },
         order: { sent_at: 'ASC' },
       });
 
       if (updateForumTopicDto.content.trim()) {
-        // Si un contenu est fourni
         if (firstMessage) {
-          // Modifier le message existant
           firstMessage.content = updateForumTopicDto.content.trim();
           await this.forumMessageRepository.save(firstMessage);
         } else {
-          // Créer un nouveau premier message si aucun n'existe
           const newMessage = this.forumMessageRepository.create({
             content: updateForumTopicDto.content.trim(),
             topic: { topic_id: id } as any,
@@ -101,7 +91,6 @@ export class ForumTopicService {
           await this.forumMessageRepository.save(newMessage);
         }
       } else if (firstMessage) {
-        // Si content est vide et un message existe, le supprimer
         await this.forumMessageRepository.remove(firstMessage);
       }
     }

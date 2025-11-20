@@ -1,4 +1,3 @@
-// src/features/guide/entities/guide.entity.ts
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Country } from '../../country/entities/country.entity';
 

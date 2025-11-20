@@ -19,7 +19,6 @@ import PublicRoute from '../components/PublicRoute';
 import ProfilePage from '../features/profile/pages/ProfilePage';
 
 export const router = createBrowserRouter([
-  // Routes publiques (redirigent vers /dashboard si déjà connecté)
   {
     element: <PublicRoute />,
     children: [
@@ -42,7 +41,6 @@ export const router = createBrowserRouter([
     ],
   },
   
-  // Routes accessibles à tous (connectés ou non)
   {
     path: '/',
     element: <MainLayout />,
@@ -51,7 +49,6 @@ export const router = createBrowserRouter([
       { path: 'forum', element: <ForumPage /> },
     ],
   },
-  // Routes du forum (accessibles à tous)
   {
     path: '/forum',
     element: <MainLayout />,
@@ -63,7 +60,6 @@ export const router = createBrowserRouter([
     ],
   },
   
-  // Routes protégées (nécessitent une connexion)
   {
     element: <ProtectedRoute />,
     children: [

@@ -30,7 +30,6 @@ export default function SearchBar({ initialQuery = '', onSearch, placeholder }: 
 
   useEffect(() => {
     if (query.length > 2) {
-      // Simuler une recherche de suggestions
       const filtered = [...recentSearches, ...popularSearches].filter(item =>
         item.toLowerCase().includes(query.toLowerCase())
       )
@@ -47,7 +46,6 @@ export default function SearchBar({ initialQuery = '', onSearch, placeholder }: 
       setIsFocused(false)
       inputRef.current?.blur()
       
-      // Sauvegarder dans l'historique
       const recent = JSON.parse(localStorage.getItem('skywalk-recent-searches') || '[]')
       const updated = [query, ...recent.filter((item: string) => item !== query)].slice(0, 10)
       localStorage.setItem('skywalk-recent-searches', JSON.stringify(updated))

@@ -14,7 +14,6 @@ export class UserService {
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    // Vérifier si l'email existe déjà
     const existingUser = await this.userRepository.findOne({
       where: { email: createUserDto.email },
     });
@@ -23,7 +22,6 @@ export class UserService {
       throw new ConflictException('Cet email est déjà utilisé');
     }
 
-    // Hasher le mot de passe
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
 
     const user = this.userRepository.create({
@@ -68,7 +66,6 @@ export class UserService {
   async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
     const user = await this.findOne(id);
 
-    // Si le mot de passe est mis à jour, le hasher
     if (updateUserDto.password) {
       const hashedPassword = await bcrypt.hash(updateUserDto.password, 10);
       Object.assign(user, { ...updateUserDto, passwordHash: hashedPassword });
