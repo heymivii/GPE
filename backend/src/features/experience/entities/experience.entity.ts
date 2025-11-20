@@ -1,4 +1,3 @@
-// src/features/experience/entities/experience.entity.ts
 import { Check, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 import { Country } from '../../country/entities/country.entity';

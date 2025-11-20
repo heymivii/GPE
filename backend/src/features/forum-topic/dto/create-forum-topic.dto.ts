@@ -16,7 +16,7 @@ export class CreateForumTopicDto {
 
   @IsNotEmpty()
   @IsString()
-  content: string; // Contenu initial du topic (premier message) - OBLIGATOIRE
+  content: string; 
 
   @IsOptional()
   @IsEnum(TopicCategory)

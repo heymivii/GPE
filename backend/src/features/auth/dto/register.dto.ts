@@ -1,5 +1,3 @@
-// 📍 EMPLACEMENT: backend/src/features/auth/dto/register.dto.ts
-
 import {
   IsEmail,
   IsString,

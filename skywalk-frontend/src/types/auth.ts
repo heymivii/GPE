@@ -1,10 +1,10 @@
 export interface User {
-  idUser: number;  // Le backend renvoie idUser
-  id?: number;     // Alias optionnel pour compatibilité
+  idUser: number;
+  id?: number;    
   email: string;
   fullName: string;
   role?: 'USER' | 'ADMIN';
-  userRole?: string;  // Le backend renvoie userRole
+  userRole?: string;
   age?: number;
   status?: string;
   languageLevel?: string;
@@ -34,7 +34,7 @@ export interface UpdateProfileDto {
   status?: string;
   languageLevel?: string;
   idOriginCountry?: number;
-  password?: string; // Optionnel pour changer le mot de passe
+  password?: string; 
 }
 
 export interface AuthResponse {

@@ -20,6 +20,6 @@ export class City {
 
   @ManyToOne(() => Country, { nullable: false })
   @JoinColumn({ name: 'country_id'})
-  country: Country; // FK -> country(country_id)
+  country: Country; 
 }
 

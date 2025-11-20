@@ -8,15 +8,13 @@ const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true, // ⚠️ CRITIQUE : Envoie automatiquement les cookies HTTP-Only
+  withCredentials: true, 
 });
 
-// Intercepteur pour gérer les erreurs 401 (non authentifié)
 apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (error.response?.status === 401) {
-      // Token expiré ou invalide - rediriger vers login
       window.location.href = '/auth/login';
     }
     return Promise.reject(error);

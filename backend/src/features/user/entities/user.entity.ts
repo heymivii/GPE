@@ -45,7 +45,6 @@ export class User {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
-  // Relations
   @ManyToOne(() => Country, { nullable: true })
   @JoinColumn({ name: 'id_origin_country' })
   originCountry?: Country;

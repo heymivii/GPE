@@ -1,4 +1,3 @@
-// 📍 backend/src/features/auth/auth.module.ts
 
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
@@ -15,7 +14,7 @@ import { UserModule } from '../user/user.module';
   imports: [
     ConfigModule,
     PassportModule,
-    TypeOrmModule.forFeature([User]), // ✅ essentiel pour injecter UserRepository
+    TypeOrmModule.forFeature([User]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({

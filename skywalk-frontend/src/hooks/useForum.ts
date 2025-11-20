@@ -11,7 +11,6 @@ import type {
   ForumTopicWithMessages,
 } from '../types/forum';
 
-// ==================== QUERY KEYS ====================
 
 export const forumKeys = {
   all: ['forum'] as const,
@@ -22,11 +21,6 @@ export const forumKeys = {
   messagesByTopic: (topicId: number) => [...forumKeys.messages(), 'topic', topicId] as const,
 };
 
-// ==================== TOPICS HOOKS ====================
-
-/**
- * Hook pour récupérer tous les topics
- */
 export function useForumTopics(): UseQueryResult<ForumTopic[], Error> {
   return useQuery({
     queryKey: forumKeys.topics(),
@@ -34,9 +28,7 @@ export function useForumTopics(): UseQueryResult<ForumTopic[], Error> {
   });
 }
 
-/**
- * Hook pour récupérer un topic spécifique avec ses messages
- */
+
 export function useForumTopic(id: number): UseQueryResult<ForumTopicWithMessages, Error> {
   return useQuery({
     queryKey: forumKeys.topic(id),
@@ -45,9 +37,7 @@ export function useForumTopic(id: number): UseQueryResult<ForumTopicWithMessages
   });
 }
 
-/**
- * Hook pour créer un nouveau topic
- */
+
 export function useCreateForumTopic(): UseMutationResult<ForumTopic, Error, CreateForumTopicDto> {
   const queryClient = useQueryClient();
 
@@ -59,9 +49,7 @@ export function useCreateForumTopic(): UseMutationResult<ForumTopic, Error, Crea
   });
 }
 
-/**
- * Hook pour mettre à jour un topic
- */
+
 export function useUpdateForumTopic(): UseMutationResult<
   ForumTopic,
   Error,
@@ -79,9 +67,7 @@ export function useUpdateForumTopic(): UseMutationResult<
   });
 }
 
-/**
- * Hook pour supprimer un topic
- */
+
 export function useDeleteForumTopic(): UseMutationResult<void, Error, number> {
   const queryClient = useQueryClient();
 
@@ -93,11 +79,6 @@ export function useDeleteForumTopic(): UseMutationResult<void, Error, number> {
   });
 }
 
-// ==================== MESSAGES HOOKS ====================
-
-/**
- * Hook pour récupérer tous les messages
- */
 export function useForumMessages(): UseQueryResult<ForumMessage[], Error> {
   return useQuery({
     queryKey: forumKeys.messages(),
@@ -105,9 +86,7 @@ export function useForumMessages(): UseQueryResult<ForumMessage[], Error> {
   });
 }
 
-/**
- * Hook pour récupérer un message spécifique
- */
+
 export function useForumMessage(id: number): UseQueryResult<ForumMessage, Error> {
   return useQuery({
     queryKey: forumKeys.message(id),
@@ -116,9 +95,7 @@ export function useForumMessage(id: number): UseQueryResult<ForumMessage, Error>
   });
 }
 
-/**
- * Hook pour récupérer les messages d'un topic spécifique
- */
+
 export function useForumMessagesByTopic(topicId: number): UseQueryResult<ForumMessage[], Error> {
   return useQuery({
     queryKey: forumKeys.messagesByTopic(topicId),
@@ -127,9 +104,7 @@ export function useForumMessagesByTopic(topicId: number): UseQueryResult<ForumMe
   });
 }
 
-/**
- * Hook pour créer un nouveau message (réponse)
- */
+
 export function useCreateForumMessage(): UseMutationResult<ForumMessage, Error, CreateForumMessageDto> {
   const queryClient = useQueryClient();
 
@@ -143,9 +118,7 @@ export function useCreateForumMessage(): UseMutationResult<ForumMessage, Error, 
   });
 }
 
-/**
- * Hook pour mettre à jour un message
- */
+
 export function useUpdateForumMessage(): UseMutationResult<
   ForumMessage,
   Error,
@@ -157,13 +130,10 @@ export function useUpdateForumMessage(): UseMutationResult<
     mutationFn: ({ id, data }: { id: number; data: UpdateForumMessageDto; topicId?: number }) =>
       forumMessagesApi.update(id, data),
     onSuccess: (_, variables) => {
-      // Invalider le message lui-même
       queryClient.invalidateQueries({ queryKey: forumKeys.message(variables.id) });
       
-      // Invalider tous les messages
       queryClient.invalidateQueries({ queryKey: forumKeys.messages() });
       
-      // Invalider le topic parent si fourni
       if (variables.topicId) {
         queryClient.invalidateQueries({ queryKey: forumKeys.topic(variables.topicId) });
         queryClient.invalidateQueries({ queryKey: forumKeys.messagesByTopic(variables.topicId) });
@@ -172,19 +142,15 @@ export function useUpdateForumMessage(): UseMutationResult<
   });
 }
 
-/**
- * Hook pour supprimer un message
- */
+
 export function useDeleteForumMessage(): UseMutationResult<void, Error, { id: number; topicId?: number }> {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: ({ id }: { id: number; topicId?: number }) => forumMessagesApi.remove(id),
     onSuccess: (_, variables) => {
-      // Invalider tous les messages
       queryClient.invalidateQueries({ queryKey: forumKeys.messages() });
       
-      // Invalider le topic parent si fourni
       if (variables.topicId) {
         queryClient.invalidateQueries({ queryKey: forumKeys.topic(variables.topicId) });
         queryClient.invalidateQueries({ queryKey: forumKeys.messagesByTopic(variables.topicId) });

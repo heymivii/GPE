@@ -1,7 +1,6 @@
 import { useState, useCallback, useEffect } from 'react'
 import type { SearchFilters, SearchResult, SearchState } from '../types'
 
-// Données mock pour simuler les résultats de recherche
 const mockResults: SearchResult[] = [
   {
     id: '1',
@@ -126,7 +125,6 @@ export default function useSearch() {
     savedFilters: []
   })
 
-  // Charger les données sauvegardées au montage
   useEffect(() => {
     const recentSearches = JSON.parse(localStorage.getItem('skywalk-recent-searches') || '[]')
     const savedFilters = JSON.parse(localStorage.getItem('skywalk-saved-filters') || '[]')
@@ -149,11 +147,9 @@ export default function useSearch() {
   const search = useCallback(async () => {
     setState(prev => ({ ...prev, isLoading: true }))
 
-    // Simuler un délai de recherche
     await new Promise(resolve => setTimeout(resolve, 800))
 
     try {
-      // Filtrer les résultats selon les critères
       let filteredResults = mockResults
 
       const { query, category, country, city, priceRange } = state.filters
@@ -187,7 +183,6 @@ export default function useSearch() {
         })
       }
 
-      // Trier les résultats
       const { sortBy, sortOrder } = state.filters
       filteredResults.sort((a, b) => {
         let comparison = 0
@@ -204,7 +199,6 @@ export default function useSearch() {
             break
           case 'relevance':
           default:
-            // Simuler un score de pertinence basé sur le titre et les tags
             const scoreA = (a.title.toLowerCase().includes(query.toLowerCase()) ? 2 : 0) +
                           (a.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase())) ? 1 : 0)
             const scoreB = (b.title.toLowerCase().includes(query.toLowerCase()) ? 2 : 0) +
@@ -220,10 +214,9 @@ export default function useSearch() {
         results: filteredResults,
         totalResults: filteredResults.length,
         isLoading: false,
-        hasMore: false // Pour la démo, on charge tout d'un coup
+        hasMore: false
       }))
 
-      // Sauvegarder la recherche si elle contient une query
       if (query.trim()) {
         const recentSearches = JSON.parse(localStorage.getItem('skywalk-recent-searches') || '[]')
         const updatedSearches = [query, ...recentSearches.filter((item: string) => item !== query)].slice(0, 10)
@@ -242,8 +235,6 @@ export default function useSearch() {
   }, [state.filters])
 
   const loadMore = useCallback(async () => {
-    // Pour l'instant, on ne fait rien car on charge tout d'un coup
-    // Dans une vraie app, on ferait un appel API pour la page suivante
     console.log('Charger plus de résultats...')
   }, [])
 

@@ -20,7 +20,6 @@ export default function SearchPage() {
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
 
-  // Récupérer les données d'onboarding pour personnaliser les filtres par défaut
   useEffect(() => {
     const onboardingData = localStorage.getItem('skywalk-onboarding-data')
     if (onboardingData) {
@@ -28,7 +27,6 @@ export default function SearchPage() {
       const destination = data.destination
       const profile = data.profile
       
-      // Pré-remplir les filtres avec les données d'onboarding
       const defaultFilters: Partial<SearchFilters> = {}
       
       if (destination?.country) {
@@ -38,7 +36,6 @@ export default function SearchPage() {
         defaultFilters.city = destination.city
       }
       
-      // Suggérer une catégorie selon les priorités de l'utilisateur
       const priorities = data.needs?.priorities || []
       if (priorities.includes('Emploi')) {
         defaultFilters.category = 'emploi'

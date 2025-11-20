@@ -17,8 +17,7 @@ import {
 import { useForumTopics } from '../../../hooks/useForum'
 import { useAuth } from '../../../hooks/useAuth'
 
-// Données mockées
-// Mapping des catégories (pour l'affichage visuel)
+
 const categoryConfig: Record<string, { name: string; description: string; icon: string; color: string }> = {
   question: {
     name: 'Question',
@@ -66,17 +65,14 @@ export default function ForumPage() {
   const [showMyTopics, setShowMyTopics] = useState(false)
   const topicsListRef = useRef<HTMLDivElement>(null)
   
-  // Charger les topics depuis l'API
   const { data: topics, isLoading, error } = useForumTopics()
 
-  // Fonction pour scroller vers les résultats
   const scrollToResults = () => {
     setTimeout(() => {
       topicsListRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }, 100)
   }
 
-  // Handler pour les catégories avec scroll
   const handleCategoryClick = (categoryId: string) => {
     setSelectedCategory(selectedCategory === categoryId ? '' : categoryId)
     if (selectedCategory !== categoryId) {
@@ -84,7 +80,6 @@ export default function ForumPage() {
     }
   }
 
-  // Calculer les statistiques réelles
   const stats = useMemo(() => {
     if (!topics) return { totalTopics: 0, totalMessages: 0, recentTopics: 0, categories: 0 }
     
@@ -106,7 +101,6 @@ export default function ForumPage() {
     }
   }, [topics])
 
-  // Mes topics (si connecté)
   const myTopics = useMemo(() => {
     if (!user || !topics) return []
     const userId = user.idUser || user.id
@@ -125,7 +119,6 @@ export default function ForumPage() {
     return date.toLocaleDateString('fr-FR')
   }
 
-  // Grouper les topics par catégorie
   const getCategoryStats = () => {
     if (!topics) return []
     
@@ -142,26 +135,22 @@ export default function ForumPage() {
     }))
   }
 
-  // Filtrer les topics
   const filteredTopics = useMemo(() => {
     if (!topics) return []
     
     let result = topics
     
-    // Filtre par utilisateur (Mes topics)
     if (showMyTopics && user) {
       const userId = user.idUser || user.id
       result = result.filter(topic => topic.user?.idUser === userId)
     }
     
-    // Filtre par recherche
     if (searchQuery) {
       result = result.filter(topic => 
         topic.title.toLowerCase().includes(searchQuery.toLowerCase())
       )
     }
     
-    // Filtre par catégorie
     if (selectedCategory) {
       result = result.filter(topic => topic.category === selectedCategory)
     }
@@ -169,17 +158,15 @@ export default function ForumPage() {
     return result
   }, [topics, searchQuery, selectedCategory, showMyTopics, user])
 
-  // Mettre à jour les stats
   const updatedStats = {
     totalPosts: stats.totalTopics,
-    totalUsers: 0, // À implémenter côté backend si besoin
+    totalUsers: 0,
     totalReplies: stats.totalMessages,
     activeUsers: stats.recentTopics
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
@@ -218,9 +205,7 @@ export default function ForumPage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Contenu principal */}
           <div className="lg:col-span-3 space-y-8">
-            {/* Statistiques */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="bg-white rounded-lg p-4 border border-gray-200 hover:shadow-md transition-shadow">
                 <div className="flex items-center gap-3">
@@ -271,7 +256,6 @@ export default function ForumPage() {
               </div>
             </div>
 
-            {/* Catégories - Version compacte */}
             <div className="bg-white rounded-lg border border-gray-200">
               <div className="p-6 border-b border-gray-200 flex items-center justify-between">
                 <h2 className="text-xl font-semibold text-gray-900">Filtrer par catégorie</h2>
@@ -310,7 +294,6 @@ export default function ForumPage() {
               </div>
             </div>
 
-            {/* Topics récents */}
             <div ref={topicsListRef} className="bg-white rounded-lg border border-gray-200">
               <div className="p-6 border-b border-gray-200 flex items-center justify-between">
                 <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
@@ -424,9 +407,7 @@ export default function ForumPage() {
             </div>
           </div>
 
-          {/* Sidebar */}
           <div className="space-y-6">
-            {/* Mes statistiques (si connecté) */}
             {user && (
               <div className="bg-white rounded-lg border border-gray-200">
                 <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-purple-50">
@@ -447,7 +428,6 @@ export default function ForumPage() {
               </div>
             )}
 
-            {/* Actions rapides */}
             <div className="bg-white rounded-lg border border-gray-200">
               <div className="p-4 border-b border-gray-200">
                 <h3 className="font-semibold text-gray-900">Actions rapides</h3>
@@ -507,7 +487,6 @@ export default function ForumPage() {
               </div>
             </div>
 
-            {/* Filtres rapides */}
             <div className="bg-white rounded-lg border border-gray-200">
               <div className="p-4 border-b border-gray-200">
                 <h3 className="font-semibold text-gray-900">Filtres rapides</h3>

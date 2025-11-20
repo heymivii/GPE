@@ -71,7 +71,6 @@ export default function PostDetailPage() {
       });
 
       setReplyContent('');
-      // React Query recharge automatiquement les messages
     } catch (error) {
       console.error('Erreur:', error);
       alert('Erreur lors de la publication');
@@ -98,12 +97,11 @@ export default function PostDetailPage() {
       await updateMessage.mutateAsync({
         id: messageId,
         data: { content: editContent.trim() },
-        topicId: topicId, // ← Pour invalider le cache du topic
+        topicId: topicId,
       });
       
       setEditingMessageId(null);
       setEditContent('');
-      // Pas besoin d'alert, React Query recharge automatiquement
     } catch (error) {
       console.error('Erreur:', error);
       alert('Erreur lors de la modification');
@@ -118,9 +116,8 @@ export default function PostDetailPage() {
     try {
       await deleteMessage.mutateAsync({
         id: messageId,
-        topicId: topicId, // ← Pour invalider le cache du topic
+        topicId: topicId,
       });
-      // Pas besoin d'alert, React Query recharge automatiquement
     } catch (error) {
       console.error('Erreur:', error);
       alert('Erreur lors de la suppression');
@@ -175,10 +172,7 @@ export default function PostDetailPage() {
 
   const categoryInfo = categoryConfig[topic.category || 'other'];
   const messages = topic.messages || [];
-  
-  // Séparer le premier message (contenu initial) des réponses
-  // Le backend trie les messages par date (ORDER BY created_at ASC)
-  // donc messages[0] = le plus ancien = message initial créé avec le topic
+
   const initialMessage = messages.length > 0 ? messages[0] : null;
   const replies = messages.length > 1 ? messages.slice(1) : [];
 
@@ -220,7 +214,6 @@ export default function PostDetailPage() {
               </div>
             </div>
             
-            {/* Bouton Modifier (visible uniquement pour l'auteur) */}
             {user && (user.idUser === topic.user?.idUser || user.id === topic.user?.idUser) && (
               <Link
                 to={`/forum/post/${id}/edit`}
@@ -233,7 +226,6 @@ export default function PostDetailPage() {
           </div>
         </div>
 
-        {/* Contenu initial du topic (premier message) */}
         {initialMessage && (
           <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
             <div className="flex items-start gap-4">
@@ -258,7 +250,6 @@ export default function PostDetailPage() {
           </div>
         )}
 
-        {/* Réponses */}
         <div className="space-y-4 mb-6">
           <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
             <MessageCircle className="w-5 h-5" />
@@ -293,8 +284,7 @@ export default function PostDetailPage() {
                           {formatTimeAgo(message.sent_at)}
                         </span>
                       </div>
-                      
-                      {/* Boutons Edit/Delete (visible seulement pour l'auteur) */}
+
                       {isOwner && !isEditing && (
                         <div className="flex items-center gap-2">
                           <button
@@ -321,7 +311,6 @@ export default function PostDetailPage() {
                       )}
                     </div>
                     
-                    {/* Contenu ou formulaire d'édition */}
                     {isEditing ? (
                       <div className="space-y-3">
                         <textarea
@@ -370,7 +359,6 @@ export default function PostDetailPage() {
           })}
         </div>
 
-        {/* Formulaire de réponse */}
         {user ? (
           <div className="bg-white rounded-lg border border-gray-200 p-6">
             <h3 className="font-semibold text-gray-900 mb-4">Votre réponse</h3>

@@ -1,15 +1,13 @@
-// 📍 EMPLACEMENT: backend/src/features/auth/auth.controller.ts
-
-import { 
-  Controller, 
-  Post, 
-  Body, 
-  Get, 
-  UseGuards, 
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  UseGuards,
   Request,
   Response,
   HttpCode,
-  HttpStatus 
+  HttpStatus,
 } from '@nestjs/common';
 import { Response as ExpressResponse } from 'express';
 import { AuthService } from './auth.service';
@@ -22,9 +20,10 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   /**
-   * 📌 POST /api/auth/register
-   * Inscription d'un nouvel utilisateur
-   * Envoie le token JWT dans un cookie HTTP-Only
+   * Register a new user
+   * @param registerDto User registration data
+   * @param res Express response object
+   * @returns User data and success message
    */
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
@@ -33,35 +32,7 @@ export class AuthController {
     @Response({ passthrough: true }) res: ExpressResponse,
   ) {
     const result = await this.authService.register(registerDto);
-    
-    // Définir le cookie HTTP-Only avec le token
-    res.cookie('access_token', result.access_token, {
-      httpOnly: true,  // Inaccessible via JavaScript
-      secure: process.env.NODE_ENV === 'production',  // HTTPS en production
-      sameSite: 'lax',  // Protection CSRF
-      maxAge: 24 * 60 * 60 * 1000,  // 24 heures
-    });
 
-    // Retourner les infos utilisateur sans le token
-    return {
-      message: result.message,
-      user: result.user,
-    };
-  }
-
-  /**
-   * 📌 POST /api/auth/login
-   * Connexion d'un utilisateur
-   * Envoie le token JWT dans un cookie HTTP-Only
-   */
-  @Post('login')
-  @HttpCode(HttpStatus.OK)
-  async login(
-    @Body() loginDto: LoginDto,
-    @Response({ passthrough: true }) res: ExpressResponse,
-  ) {
-    const result = await this.authService.login(loginDto);
-    
     res.cookie('access_token', result.access_token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -76,8 +47,36 @@ export class AuthController {
   }
 
   /**
-   * 📌 GET /api/auth/profile
-   * Récupérer le profil de l'utilisateur connecté (protégé)
+   * Authenticate user
+   * @param loginDto User credentials
+   * @param res Express response object
+   * @returns User data and success message
+   */
+  @Post('login')
+  @HttpCode(HttpStatus.OK)
+  async login(
+    @Body() loginDto: LoginDto,
+    @Response({ passthrough: true }) res: ExpressResponse,
+  ) {
+    const result = await this.authService.login(loginDto);
+
+    res.cookie('access_token', result.access_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+
+    return {
+      message: result.message,
+      user: result.user,
+    };
+  }
+
+  /**
+   * Get authenticated user profile
+   * @param req Request object with authenticated user
+   * @returns User profile data
    */
   @Get('profile')
   @UseGuards(JwtAuthGuard)
@@ -86,26 +85,27 @@ export class AuthController {
   }
 
   /**
-   * 📌 POST /api/auth/logout
-   * Déconnexion - Supprime le cookie HTTP-Only
+   * Logout user
+   * @param res Express response object
+   * @returns Success message
    */
   @Post('logout')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   async logout(@Response({ passthrough: true }) res: ExpressResponse) {
-    // Supprimer le cookie
     res.clearCookie('access_token', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
     });
-    
+
     return { message: 'Déconnexion réussie' };
   }
 
   /**
-   * 📌 POST /api/auth/refresh
-   * Rafraîchir le token JWT
+   * Refresh JWT token
+   * @param refreshToken Refresh token
+   * @returns New access token
    */
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
@@ -114,8 +114,9 @@ export class AuthController {
   }
 
   /**
-   * 📌 POST /api/auth/forgot-password
-   * Demande de réinitialisation de mot de passe
+   * Request password reset
+   * @param email User email
+   * @returns Success message
    */
   @Post('forgot-password')
   @HttpCode(HttpStatus.OK)
@@ -124,8 +125,10 @@ export class AuthController {
   }
 
   /**
-   * 📌 POST /api/auth/reset-password
-   * Réinitialisation du mot de passe avec token
+   * Reset password with token
+   * @param token Reset token
+   * @param newPassword New password
+   * @returns Success message
    */
   @Post('reset-password')
   @HttpCode(HttpStatus.OK)
