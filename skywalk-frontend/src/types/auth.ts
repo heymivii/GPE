@@ -28,6 +28,15 @@ export interface RegisterDto {
   idOriginCountry?: number;
 }
 
+export interface UpdateProfileDto {
+  fullName?: string;
+  age?: number;
+  status?: string;
+  languageLevel?: string;
+  idOriginCountry?: number;
+  password?: string; // Optionnel pour changer le mot de passe
+}
+
 export interface AuthResponse {
   access_token: string;
   refresh_token?: string;
