@@ -44,7 +44,7 @@ export default function NavBar() {
           {isAuthenticated && (
             <>
               <Link to="/dashboard" className="text-gray-700 hover:text-black">Tableau de bord</Link>
-              <Link to="/dashboard/personalized" className="text-gray-700 hover:text-black">Mes Projets</Link>
+              <Link to="/projects" className="text-gray-700 hover:text-black">Mes Projets</Link>
             </>
           )}
           

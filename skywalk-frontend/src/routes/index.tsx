@@ -19,6 +19,7 @@ import PublicRoute from '../components/PublicRoute';
 import ProfilePage from '../features/profile/pages/ProfilePage';
 import { DestinationsPage } from '../features/destinations/pages/DestinationsPage';
 import { DestinationDetailPage } from '../features/destinations/pages/DestinationDetailPage';
+import ProjectsPage from '../features/projects/pages/ProjectsPage';
 
 export const router = createBrowserRouter([
   {
@@ -80,6 +81,13 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <DashboardPage /> },
           { path: 'personalized', element: <PersonalizedDashboard /> },
+        ],
+      },
+      {
+        path: '/projects',
+        element: <MainLayout />,
+        children: [
+          { index: true, element: <ProjectsPage /> },
         ],
       },
       {
