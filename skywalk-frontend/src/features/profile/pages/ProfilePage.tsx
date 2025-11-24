@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { toast } from 'react-hot-toast';
 import { useProfile, useUpdateProfile, useDeleteAccount } from '../../../hooks/useProfile';
 import { countryApi } from '../../../api/country';
 import type { UpdateProfileDto } from '../../../types/auth';
@@ -55,17 +56,21 @@ export default function ProfilePage() {
     e.preventDefault();
     try {
       await updateProfile.mutateAsync(formData);
+      toast.success('Profil mis à jour avec succès');
       setIsEditing(false);
     } catch (error) {
       console.error('Erreur lors de la mise à jour du profil:', error);
+      toast.error('Erreur lors de la mise à jour du profil');
     }
   };
 
   const handleDeleteAccount = async () => {
     try {
       await deleteAccount.mutateAsync();
+      toast.success('Compte supprimé avec succès');
     } catch (error) {
       console.error('Erreur lors de la suppression du compte:', error);
+      toast.error('Erreur lors de la suppression du compte');
     }
   };
 
