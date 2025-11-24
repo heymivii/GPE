@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
 import { useAuth } from "../../../hooks/useAuth";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   
   const { login } = useAuth();
@@ -13,14 +13,15 @@ export default function LoginForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
     setIsLoading(true);
     
     try {
       await login({ email, password });
+      toast.success("Connexion réussie !");
       navigate("/dashboard");
     } catch (err: any) {
-      setError(err.response?.data?.message || "Erreur de connexion");
+      const message = err.response?.data?.message || "Erreur de connexion";
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
@@ -28,12 +29,6 @@ export default function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {error && (
-        <div className="p-3 text-red-700 bg-red-100 rounded-lg">
-          {error}
-        </div>
-      )}
-      
       <div>
         <input
           type="email"
