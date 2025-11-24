@@ -138,6 +138,7 @@ export default function PersonalizedDashboard() {
           <BudgetTrackerWidget
             key={widgetId}
             housingBudget={activeProject?.housingBudget?.toString() || '0'}
+            countryData={countryData}
             {...commonProps}
           />
         )

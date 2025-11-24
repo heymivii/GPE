@@ -39,6 +39,18 @@ export interface CountryData {
     steps: ExpatStep[];
   };
   recommendations?: Recommendation[];
+  costOfLiving?: {
+    averageRent: {
+      studio: number;
+      t2: number;
+      t3: number;
+      currency: string;
+    };
+    averageSalary: number;
+    transportMonthly: number;
+    groceriesMonthly: number;
+    currency: string;
+  };
 }
 
 export function useCountryData(countryId?: number | null) {

@@ -545,6 +545,18 @@
           }
         ]
       },
+      "costOfLiving": {
+        "averageRent": {
+          "studio": 1200,
+          "t2": 1800,
+          "t3": 2500,
+          "currency": "£"
+        },
+        "averageSalary": 35000,
+        "transportMonthly": 150,
+        "groceriesMonthly": 250,
+        "currency": "£"
+      },
       "recommendations": [
   {
     "title": "Rechercher un logement temporaire",
