@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { Request } from 'express';
@@ -9,7 +9,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request: Request) => {
-          return request?.cookies?.access_token;
+          const token = request?.cookies?.access_token;
+          if (!token) {
+            return null;
+          }
+          return token;
         },
       ]),
       ignoreExpiration: false,
@@ -18,6 +22,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
+    if (!payload || !payload.sub) {
+      throw new UnauthorizedException('Token invalide');
+    }
     return { userId: payload.sub, email: payload.email };
   }
 }
