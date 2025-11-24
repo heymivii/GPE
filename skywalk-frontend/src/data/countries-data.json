@@ -1,0 +1,608 @@
+{
+  "countries": [
+    {
+      "id": 1,
+      "name": "France",
+      "code": "FR",
+      "currency": "EUR",
+      "languages": ["Français"],
+      "flagUrl": "https://flagcdn.com/fr.svg",
+      "flagEmoji": "🇫🇷",
+      "continent": "Europe",
+      "capital": "Paris",
+      "expatProjectTemplate": {
+        "version": "1.0.0",
+        "steps": [
+          {
+            "id": 1,
+            "slug": "type-visa",
+            "title": "Déterminer le type de visa",
+            "description": "Identifier le visa adapté (travail, études, visiteur)",
+            "category": "visa",
+            "order": 1,
+            "substeps": [
+              { "id": "1.1", "label": "Déterminer le type de visa nécessaire", "isOptional": false },
+              { "id": "1.2", "label": "Consulter France-Visas pour les conditions", "isOptional": false },
+              { "id": "1.3", "label": "Rassembler les justificatifs requis", "isOptional": false }
+            ]
+          },
+          {
+            "id": 2,
+            "slug": "demande-visa",
+            "title": "Demander le visa long séjour",
+            "description": "Remplir le dossier, payer et obtenir le visa",
+            "category": "visa",
+            "order": 2,
+            "substeps": [
+              { "id": "2.1", "label": "Créer un compte France-Visas", "isOptional": false },
+              { "id": "2.2", "label": "Remplir le formulaire de demande", "isOptional": false },
+              { "id": "2.3", "label": "Payer les frais de visa (99€)", "isOptional": false },
+              { "id": "2.4", "label": "Prendre rendez-vous au consulat", "isOptional": false },
+              { "id": "2.5", "label": "Déposer le dossier complet", "isOptional": false }
+            ]
+          },
+          {
+            "id": 3,
+            "slug": "validation-ofii",
+            "title": "Validation OFII",
+            "description": "Valider le visa auprès de l'OFII dans les 3 mois",
+            "category": "administratif",
+            "order": 3,
+            "substeps": [
+              { "id": "3.1", "label": "Envoyer le formulaire OFII par courrier recommandé", "isOptional": false },
+              { "id": "3.2", "label": "Attendre la convocation", "isOptional": false },
+              { "id": "3.3", "label": "Se présenter à la visite médicale", "isOptional": false },
+              { "id": "3.4", "label": "Payer la taxe OFII (200€)", "isOptional": false }
+            ]
+          },
+          {
+            "id": 4,
+            "slug": "logement",
+            "title": "Trouver un logement",
+            "description": "Recherche et signature du bail",
+            "category": "logement",
+            "order": 4,
+            "substeps": [
+              { "id": "4.1", "label": "Rechercher sur SeLoger, LeBonCoin, PAP", "isOptional": false },
+              { "id": "4.2", "label": "Préparer dossier locatif complet", "isOptional": false },
+              { "id": "4.3", "label": "Visiter les logements", "isOptional": false },
+              { "id": "4.4", "label": "Signer le bail et état des lieux", "isOptional": false },
+              { "id": "4.5", "label": "Payer dépôt de garantie et premier loyer", "isOptional": false }
+            ]
+          },
+          {
+            "id": 5,
+            "slug": "carte-sejour",
+            "title": "Demander la carte de séjour",
+            "description": "Obtenir le titre de séjour officiel",
+            "category": "administratif",
+            "order": 5,
+            "substeps": [
+              { "id": "5.1", "label": "Prendre RDV en préfecture", "isOptional": false },
+              { "id": "5.2", "label": "Constituer le dossier complet", "isOptional": false },
+              { "id": "5.3", "label": "Se présenter au rendez-vous", "isOptional": false },
+              { "id": "5.4", "label": "Payer la taxe (225€)", "isOptional": false },
+              { "id": "5.5", "label": "Récupérer la carte de séjour", "isOptional": false }
+            ]
+          },
+          {
+            "id": 6,
+            "slug": "securite-sociale",
+            "title": "S'affilier à la Sécurité sociale",
+            "description": "Obtenir le numéro de sécurité sociale",
+            "category": "administratif",
+            "order": 6,
+            "substeps": [
+              { "id": "6.1", "label": "Créer un compte sur Ameli.fr", "isOptional": false },
+              { "id": "6.2", "label": "Fournir justificatifs d'identité et de résidence", "isOptional": false },
+              { "id": "6.3", "label": "Recevoir le numéro de sécurité sociale", "isOptional": false },
+              { "id": "6.4", "label": "Obtenir la carte Vitale", "isOptional": false }
+            ]
+          },
+          {
+            "id": 7,
+            "slug": "banque",
+            "title": "Ouvrir un compte bancaire",
+            "description": "Compte courant français",
+            "category": "vie-quotidienne",
+            "order": 7,
+            "substeps": [
+              { "id": "7.1", "label": "Choisir une banque (physique ou en ligne)", "isOptional": false },
+              { "id": "7.2", "label": "Prendre RDV ou faire la demande en ligne", "isOptional": false },
+              { "id": "7.3", "label": "Fournir justificatifs (ID, résidence, revenus)", "isOptional": false },
+              { "id": "7.4", "label": "Recevoir RIB et carte bancaire", "isOptional": false }
+            ]
+          },
+          {
+            "id": 8,
+            "slug": "installation",
+            "title": "Installation quotidienne",
+            "description": "Électricité, internet, abonnements",
+            "category": "vie-quotidienne",
+            "order": 8,
+            "substeps": [
+              { "id": "8.1", "label": "Souscrire contrat électricité/gaz", "isOptional": false },
+              { "id": "8.2", "label": "Souscrire box internet", "isOptional": false },
+              { "id": "8.3", "label": "Obtenir forfait mobile français", "isOptional": false },
+              { "id": "8.4", "label": "S'inscrire sur Impots.gouv.fr", "isOptional": false },
+              { "id": "8.5", "label": "Demander aide au logement (CAF)", "isOptional": true }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "name": "Canada",
+      "code": "CA",
+      "currency": "CAD",
+      "languages": ["Français", "Anglais"],
+      "flagUrl": "https://flagcdn.com/ca.svg",
+      "flagEmoji": "🇨🇦",
+      "continent": "Amérique du Nord",
+      "capital": "Ottawa",
+      "expatProjectTemplate": {
+        "version": "1.0.0",
+        "steps": [
+          {
+            "id": 1,
+            "slug": "evaluer-admissibilite",
+            "title": "Évaluer son admissibilité",
+            "description": "Calculer ses points et choisir le programme",
+            "category": "pre-departure",
+            "order": 1,
+            "substeps": [
+              { "id": "1.1", "label": "Faire le test d'évaluation en ligne", "isOptional": false },
+              { "id": "1.2", "label": "Choisir le programme (Entrée Express, PVT, etc.)", "isOptional": false },
+              { "id": "1.3", "label": "Vérifier les critères spécifiques", "isOptional": false }
+            ]
+          },
+          {
+            "id": 2,
+            "slug": "tests-langue",
+            "title": "Passer les tests de langue",
+            "description": "IELTS (anglais) ou TEF (français)",
+            "category": "pre-departure",
+            "order": 2,
+            "substeps": [
+              { "id": "2.1", "label": "S'inscrire au test (IELTS ou TEF)", "isOptional": false },
+              { "id": "2.2", "label": "Passer le test", "isOptional": false },
+              { "id": "2.3", "label": "Obtenir les résultats officiels", "isOptional": false }
+            ]
+          },
+          {
+            "id": 3,
+            "slug": "eca",
+            "title": "Évaluation des diplômes (ECA)",
+            "description": "Faire reconnaître ses diplômes",
+            "category": "pre-departure",
+            "order": 3,
+            "substeps": [
+              { "id": "3.1", "label": "Choisir un organisme reconnu (WES, ICAS...)", "isOptional": false },
+              { "id": "3.2", "label": "Envoyer les documents académiques", "isOptional": false },
+              { "id": "3.3", "label": "Recevoir le rapport ECA", "isOptional": false }
+            ]
+          },
+          {
+            "id": 4,
+            "slug": "entree-express",
+            "title": "Créer profil Entrée Express",
+            "description": "Soumettre son profil dans le bassin",
+            "category": "visa",
+            "order": 4,
+            "substeps": [
+              { "id": "4.1", "label": "Créer un compte sur le portail IRCC", "isOptional": false },
+              { "id": "4.2", "label": "Remplir le profil Entrée Express", "isOptional": false },
+              { "id": "4.3", "label": "Soumettre le profil dans le bassin", "isOptional": false },
+              { "id": "4.4", "label": "Attendre l'invitation (ITA)", "isOptional": false }
+            ]
+          },
+          {
+            "id": 5,
+            "slug": "residence-permanente",
+            "title": "Demande de résidence permanente",
+            "description": "Après réception de l'ITA",
+            "category": "visa",
+            "order": 5,
+            "substeps": [
+              { "id": "5.1", "label": "Rassembler tous les documents requis", "isOptional": false },
+              { "id": "5.2", "label": "Payer les frais (1365 CAD + 515 CAD RPD)", "isOptional": false },
+              { "id": "5.3", "label": "Passer l'examen médical", "isOptional": false },
+              { "id": "5.4", "label": "Fournir certificats de police", "isOptional": false },
+              { "id": "5.5", "label": "Soumettre la demande complète", "isOptional": false }
+            ]
+          },
+          {
+            "id": 6,
+            "slug": "arrivee",
+            "title": "Arrivée au Canada",
+            "description": "Validation de la RP à l'aéroport",
+            "category": "arrival",
+            "order": 6,
+            "substeps": [
+              { "id": "6.1", "label": "Présenter COPR à l'agent d'immigration", "isOptional": false },
+              { "id": "6.2", "label": "Confirmer adresse canadienne pour envoi RP", "isOptional": false },
+              { "id": "6.3", "label": "Recevoir la carte de résident permanent", "isOptional": false }
+            ]
+          },
+          {
+            "id": 7,
+            "slug": "nas",
+            "title": "Obtenir le NAS",
+            "description": "Numéro d'assurance sociale",
+            "category": "administratif",
+            "order": 7,
+            "substeps": [
+              { "id": "7.1", "label": "Se rendre à Service Canada", "isOptional": false },
+              { "id": "7.2", "label": "Fournir preuve d'identité et statut", "isOptional": false },
+              { "id": "7.3", "label": "Recevoir le NAS", "isOptional": false }
+            ]
+          },
+          {
+            "id": 8,
+            "slug": "logement-canada",
+            "title": "Trouver un logement",
+            "description": "Location au Canada",
+            "category": "logement",
+            "order": 8,
+            "substeps": [
+              { "id": "8.1", "label": "Rechercher sur Kijiji, Rentals.ca, Facebook", "isOptional": false },
+              { "id": "8.2", "label": "Préparer références et preuve de revenus", "isOptional": false },
+              { "id": "8.3", "label": "Visiter et signer le bail", "isOptional": false },
+              { "id": "8.4", "label": "Payer premier/dernier mois", "isOptional": false }
+            ]
+          },
+          {
+            "id": 9,
+            "slug": "sante-canada",
+            "title": "Assurance santé provinciale",
+            "description": "S'inscrire au régime provincial",
+            "category": "administratif",
+            "order": 9,
+            "substeps": [
+              { "id": "9.1", "label": "Attendre délai de carence (3 mois)", "isOptional": false },
+              { "id": "9.2", "label": "S'inscrire à l'assurance provinciale", "isOptional": false },
+              { "id": "9.3", "label": "Recevoir carte santé", "isOptional": false }
+            ]
+          },
+          {
+            "id": 10,
+            "slug": "integration-canada",
+            "title": "Intégration",
+            "description": "Banque, permis, quotidien",
+            "category": "vie-quotidienne",
+            "order": 10,
+            "substeps": [
+              { "id": "10.1", "label": "Ouvrir compte bancaire canadien", "isOptional": false },
+              { "id": "10.2", "label": "Échanger permis de conduire", "isOptional": true },
+              { "id": "10.3", "label": "Obtenir forfait mobile canadien", "isOptional": false },
+              { "id": "10.4", "label": "S'inscrire aux cours de langue gratuits", "isOptional": true }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "name": "Suisse",
+      "code": "CH",
+      "currency": "CHF",
+      "languages": ["Français", "Allemand", "Italien"],
+      "flagUrl": "https://flagcdn.com/ch.svg",
+      "flagEmoji": "🇨🇭",
+      "continent": "Europe",
+      "capital": "Berne",
+      "expatProjectTemplate": {
+        "version": "1.0.0",
+        "steps": [
+          {
+            "id": 1,
+            "slug": "offre-emploi",
+            "title": "Obtenir une offre d'emploi",
+            "description": "Condition préalable pour le permis",
+            "category": "pre-departure",
+            "order": 1,
+            "substeps": [
+              { "id": "1.1", "label": "Rechercher emploi sur JobUp, Indeed Suisse", "isOptional": false },
+              { "id": "1.2", "label": "Postuler et passer entretiens", "isOptional": false },
+              { "id": "1.3", "label": "Recevoir offre d'emploi écrite", "isOptional": false },
+              { "id": "1.4", "label": "Vérifier que l'employeur peut sponsoriser", "isOptional": false }
+            ]
+          },
+          {
+            "id": 2,
+            "slug": "permis-travail",
+            "title": "Demande de permis de travail",
+            "description": "L'employeur fait la demande",
+            "category": "visa",
+            "order": 2,
+            "substeps": [
+              { "id": "2.1", "label": "Employeur dépose demande auprès du canton", "isOptional": false },
+              { "id": "2.2", "label": "Fournir documents (CV, diplômes, contrat)", "isOptional": false },
+              { "id": "2.3", "label": "Attendre approbation (8-12 semaines)", "isOptional": false }
+            ]
+          },
+          {
+            "id": 3,
+            "slug": "arrivee-suisse",
+            "title": "Arrivée en Suisse",
+            "description": "S'enregistrer dans les 14 jours",
+            "category": "arrival",
+            "order": 3,
+            "substeps": [
+              { "id": "3.1", "label": "Arriver avec permis approuvé", "isOptional": false },
+              { "id": "3.2", "label": "S'inscrire au contrôle des habitants (14 jours)", "isOptional": false },
+              { "id": "3.3", "label": "Fournir contrat travail, bail, passeport", "isOptional": false },
+              { "id": "3.4", "label": "Payer taxes d'inscription (~100 CHF)", "isOptional": false }
+            ]
+          },
+          {
+            "id": 4,
+            "slug": "assurance-maladie",
+            "title": "Assurance maladie obligatoire",
+            "description": "À souscrire dans les 3 mois",
+            "category": "administratif",
+            "order": 4,
+            "substeps": [
+              { "id": "4.1", "label": "Comparer les caisses (Comparis.ch)", "isOptional": false },
+              { "id": "4.2", "label": "Souscrire assurance de base LAMal", "isOptional": false },
+              { "id": "4.3", "label": "Recevoir carte d'assurance", "isOptional": false }
+            ]
+          },
+          {
+            "id": 5,
+            "slug": "logement-suisse",
+            "title": "Trouver un logement",
+            "description": "Marché très compétitif",
+            "category": "logement",
+            "order": 5,
+            "substeps": [
+              { "id": "5.1", "label": "Chercher sur Homegate, ImmoScout24", "isOptional": false },
+              { "id": "5.2", "label": "Préparer dossier complet (CV, fiches paie, références)", "isOptional": false },
+              { "id": "5.3", "label": "Visiter rapidement les logements", "isOptional": false },
+              { "id": "5.4", "label": "Signer bail et payer 3 mois de dépôt", "isOptional": false }
+            ]
+          },
+          {
+            "id": 6,
+            "slug": "permis-sejour-carte",
+            "title": "Recevoir le permis de séjour",
+            "description": "Carte physique permis B/L",
+            "category": "administratif",
+            "order": 6,
+            "substeps": [
+              { "id": "6.1", "label": "Attendre fabrication carte (4-6 semaines)", "isOptional": false },
+              { "id": "6.2", "label": "Récupérer carte au contrôle des habitants", "isOptional": false },
+              { "id": "6.3", "label": "Vérifier durée de validité", "isOptional": false }
+            ]
+          },
+          {
+            "id": 7,
+            "slug": "banque-suisse",
+            "title": "Ouvrir compte bancaire",
+            "description": "Compte courant suisse",
+            "category": "vie-quotidienne",
+            "order": 7,
+            "substeps": [
+              { "id": "7.1", "label": "Choisir banque (UBS, CS, PostFinance, néobanque)", "isOptional": false },
+              { "id": "7.2", "label": "Prendre RDV avec permis + bail + contrat", "isOptional": false },
+              { "id": "7.3", "label": "Ouvrir compte et recevoir carte", "isOptional": false }
+            ]
+          },
+          {
+            "id": 8,
+            "slug": "quotidien-suisse",
+            "title": "Installation quotidienne",
+            "description": "Abonnements et services",
+            "category": "vie-quotidienne",
+            "order": 8,
+            "substeps": [
+              { "id": "8.1", "label": "Souscrire abonnement transports (demi-tarif, AG)", "isOptional": false },
+              { "id": "8.2", "label": "Obtenir forfait mobile suisse (Swisscom, Salt, Sunrise)", "isOptional": false },
+              { "id": "8.3", "label": "Souscrire assurance RC (responsabilité civile)", "isOptional": false },
+              { "id": "8.4", "label": "Échanger permis conduire si nécessaire", "isOptional": true }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 11,
+      "name": "Royaume-Uni",
+      "code": "GB",
+      "currency": "GBP",
+      "languages": ["Anglais"],
+      "flagUrl": "https://flagcdn.com/gb.svg",
+      "flagEmoji": "🇬🇧",
+      "continent": "Europe",
+      "capital": "Londres",
+      "expatProjectTemplate": {
+        "version": "1.0.0",
+        "steps": [
+          {
+            "id": 1,
+            "slug": "choisir-visa",
+            "title": "Choisir le visa",
+            "description": "Choisir le type de visa (travail, études, talent, entrepreneur), vérifier les conditions et rassembler les documents.",
+            "category": "visa",
+            "order": 1,
+            "substeps": [
+              { "id": "1.1", "label": "Choisir le type de visa (travail, études, talent, entrepreneur)", "isOptional": false },
+              { "id": "1.2", "label": "Vérifier les conditions sur le site officiel du gouvernement UK", "isOptional": false },
+              { "id": "1.3", "label": "Lister et rassembler tous les documents nécessaires", "isOptional": false }
+            ]
+          },
+          {
+            "id": 2,
+            "slug": "deposer-demande",
+            "title": "Déposer la demande de visa",
+            "description": "Remplir la demande en ligne, payer les frais + IHS, puis passer la biométrie.",
+            "category": "visa",
+            "order": 2,
+            "substeps": [
+              { "id": "2.1", "label": "Créer un compte sur la plateforme de visa UK", "isOptional": false },
+              { "id": "2.2", "label": "Remplir le formulaire de demande", "isOptional": false },
+              { "id": "2.3", "label": "Payer les frais de visa et l'IHS", "isOptional": false },
+              { "id": "2.4", "label": "Prendre un rendez-vous biométrique", "isOptional": false },
+              { "id": "2.5", "label": "Aller au rendez-vous biométrique avec les documents", "isOptional": false }
+            ]
+          },
+          {
+            "id": 3,
+            "slug": "preparer-arrivee",
+            "title": "Préparer l'arrivée",
+            "description": "Recevoir le visa/BRP, réserver le voyage et un logement temporaire.",
+            "category": "pre-departure",
+            "order": 3,
+            "substeps": [
+              { "id": "3.1", "label": "Vérifier les informations sur le visa/BRP", "isOptional": false },
+              { "id": "3.2", "label": "Réserver le billet d'avion", "isOptional": false },
+              { "id": "3.3", "label": "Réserver un logement temporaire (Airbnb, hôtel, résidence)", "isOptional": false }
+            ]
+          },
+          {
+            "id": 4,
+            "slug": "arrivee",
+            "title": "Arriver au Royaume-Uni",
+            "description": "Arriver au UK, récupérer le BRP, obtenir un numéro UK, garder les preuves d'entrée.",
+            "category": "arrival",
+            "order": 4,
+            "substeps": [
+              { "id": "4.1", "label": "Passer le contrôle aux frontières", "isOptional": false },
+              { "id": "4.2", "label": "Garder les preuves d'entrée (tampon/eGate, billets)", "isOptional": false },
+              { "id": "4.3", "label": "Récupérer le BRP au bureau désigné", "isOptional": false },
+              { "id": "4.4", "label": "Acheter une SIM UK et obtenir un numéro local", "isOptional": false }
+            ]
+          },
+          {
+            "id": 5,
+            "slug": "administratif-base",
+            "title": "Administratif de base",
+            "description": "Demander le NINo, ouvrir un compte bancaire, préparer les preuves financières.",
+            "category": "administratif",
+            "order": 5,
+            "substeps": [
+              { "id": "5.1", "label": "Demander un NINo (National Insurance Number)", "isOptional": false },
+              { "id": "5.2", "label": "Ouvrir un compte bancaire (Monzo, Starling, banque traditionnelle)", "isOptional": false },
+              { "id": "5.3", "label": "Préparer les preuves financières pour la location", "isOptional": false }
+            ]
+          },
+          {
+            "id": 6,
+            "slug": "logement",
+            "title": "Chercher un logement",
+            "description": "Chercher un logement, visiter, fournir références + revenus.",
+            "category": "logement",
+            "order": 6,
+            "substeps": [
+              { "id": "6.1", "label": "Créer des comptes sur Rightmove, Zoopla, SpareRoom…", "isOptional": false },
+              { "id": "6.2", "label": "Sélectionner des annonces et planifier des visites", "isOptional": false },
+              { "id": "6.3", "label": "Préparer références, fiches de paie, contrat de travail", "isOptional": false }
+            ]
+          },
+          {
+            "id": 7,
+            "slug": "signer-bail",
+            "title": "Signer le bail",
+            "description": "Payer dépôt + premier loyer, emménager, obtenir le certificat de dépôt protégé.",
+            "category": "logement",
+            "order": 7,
+            "substeps": [
+              { "id": "7.1", "label": "Lire et signer le contrat de location", "isOptional": false },
+              { "id": "7.2", "label": "Payer le dépôt de garantie", "isOptional": false },
+              { "id": "7.3", "label": "Payer le premier loyer", "isOptional": false },
+              { "id": "7.4", "label": "Obtenir le certificat de dépôt protégé", "isOptional": false },
+              { "id": "7.5", "label": "Emménager dans le logement", "isOptional": false }
+            ]
+          },
+          {
+            "id": 8,
+            "slug": "stabilisation",
+            "title": "Stabilisation",
+            "description": "Enregistrer un GP, mettre à jour l'adresse, gérer énergie/Internet, vérifier le tax code.",
+            "category": "installation",
+            "order": 8,
+            "substeps": [
+              { "id": "8.1", "label": "S'enregistrer chez un GP (médecin généraliste)", "isOptional": false },
+              { "id": "8.2", "label": "Mettre à jour l'adresse auprès des organismes clés", "isOptional": false },
+              { "id": "8.3", "label": "Souscrire aux contrats énergie + Internet", "isOptional": false },
+              { "id": "8.4", "label": "Vérifier son tax code sur ses fiches de paie", "isOptional": false }
+            ]
+          },
+          {
+            "id": 9,
+            "slug": "vie-quotidienne",
+            "title": "Vie quotidienne",
+            "description": "Oyster/Railcard, permis/assurance, démarches de départ en France.",
+            "category": "vie-quotidienne",
+            "order": 9,
+            "substeps": [
+              { "id": "9.1", "label": "Prendre une Oyster card ou une Railcard", "isOptional": false },
+              { "id": "9.2", "label": "Prendre une assurance habitation et assurance auto si nécessaire", "isOptional": false },
+              { "id": "9.3", "label": "Finaliser les démarches de départ en France (impôts, sécu, résiliations)", "isOptional": false },
+              { "id": "9.4", "label": "Mettre en place une redirection du courrier", "isOptional": false }
+            ]
+          }
+        ]
+      },
+      "recommendations": [
+  {
+    "title": "Rechercher un logement temporaire",
+    "importance": "Urgent",
+    "description": "Réservez un logement temporaire pour vos premières semaines au Royaume-Uni.",
+    "link": "https://www.visitbritain.com/gb/en/accommodation",
+    "linkText": "VisitBritain – Hébergements",
+    "category": "logement"
+  },
+  {
+    "title": "Comprendre le marché du travail britannique",
+    "importance": "Urgent",
+    "description": "Informez-vous sur les secteurs qui recrutent, les salaires, les contrats et vos droits.",
+    "link": "https://www.gov.uk/browse/working",
+    "linkText": "GOV.UK – Travailler au Royaume-Uni",
+    "category": "emploi"
+  },
+  {
+    "title": "Optimiser votre CV au format UK",
+    "importance": "Important",
+    "description": "Adaptez votre CV aux standards britanniques pour maximiser vos chances.",
+    "link": "https://nationalcareers.service.gov.uk/careers-advice/cv-sections",
+    "linkText": "National Careers Service – UK CV Guide",
+    "category": "emploi"
+  },
+  {
+    "title": "Souscrire à une assurance santé complémentaire",
+    "importance": "Important",
+    "description": "Même avec le NHS, une assurance privée peut être nécessaire selon votre situation.",
+    "link": "https://www.nhs.uk/using-the-nhs/nhs-services/health-insurance/",
+    "linkText": "NHS – Private Health Insurance",
+    "category": "sante"
+  },
+  {
+    "title": "Demander un NINo (National Insurance Number)",
+    "importance": "Important",
+    "description": "Indispensable pour travailler légalement et payer vos contributions.",
+    "link": "https://www.gov.uk/apply-national-insurance-number",
+    "linkText": "GOV.UK – Demande de NINo",
+    "category": "administratif"
+  },
+  {
+    "title": "Comprendre le système de transport de Londres",
+    "importance": "À faire",
+    "description": "Découvrez les options Oyster, Travelcard, et les zones tarifaires.",
+    "link": "https://tfl.gov.uk/fares",
+    "linkText": "Transport for London – Fares",
+    "category": "transport"
+  },
+  {
+    "title": "Ouvrir un compte bancaire UK",
+    "importance": "À faire",
+    "description": "Choisissez entre banques traditionnelles ou néobanques comme Monzo/Starling.",
+    "link": "https://www.moneysavingexpert.com/banking/current-accounts/",
+    "linkText": "MoneySavingExpert – Bank Accounts UK",
+    "category": "banque"
+  }
+]
+    }
+  ]
+}

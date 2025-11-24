@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { CheckCircle } from 'lucide-react'
 import SummaryCard from '../ui/SummaryCard'
 import WizardNav from '../components/WizardNav'
@@ -45,21 +44,12 @@ interface SummaryStepProps {
   onBack?: () => void
   onEdit: (step: number) => void
   onComplete: () => void
+  isSubmitting?: boolean
 }
 
-export default function SummaryStep({ data, onBack, onEdit, onComplete }: SummaryStepProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false)
-
+export default function SummaryStep({ data, onBack, onEdit, onComplete, isSubmitting = false }: SummaryStepProps) {
   const handleComplete = async () => {
-    setIsSubmitting(true)
-    try {
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      onComplete()
-    } catch (error) {
-      console.error('Error submitting onboarding:', error)
-    } finally {
-      setIsSubmitting(false)
-    }
+    await onComplete()
   }
 
   const getCountryLabel = (code: string) => 
@@ -175,7 +165,7 @@ export default function SummaryStep({ data, onBack, onEdit, onComplete }: Summar
         onBack={onBack}
         onNext={handleComplete}
         isNextDisabled={isSubmitting}
-        nextLabel={isSubmitting ? "Validation en cours..." : undefined}
+        nextLabel={isSubmitting ? "Création du projet en cours..." : "Valider et créer mon projet"}
         isLastStep={true}
       />
     </div>

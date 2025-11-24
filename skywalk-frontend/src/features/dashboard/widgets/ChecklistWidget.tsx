@@ -1,57 +1,42 @@
 import Widget from './Widget'
-import { CheckCircle, Circle, Plus } from 'lucide-react'
-import { useState } from 'react'
+import { CheckCircle, Circle } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import type { CountryData } from '../../../hooks/useCountryData'
 
 interface ChecklistItem {
   id: string
   title: string
   completed: boolean
   category: string
-  dueDate?: string
+  substeps?: Array<{ id: string; label: string; isOptional: boolean }>
 }
 
 interface ChecklistWidgetProps {
-  userStepsDone: string[]
+  countryData: CountryData | null
   onEdit?: () => void
   onHide?: () => void
 }
 
-export default function ChecklistWidget({ userStepsDone, onEdit, onHide }: ChecklistWidgetProps) {
-  const [checklist, setChecklist] = useState<ChecklistItem[]>([
-    {
-      id: '1',
-      title: 'Demande de visa/permis de travail',
-      completed: userStepsDone.includes('visa_application'),
-      category: 'Administratif',
-      dueDate: '2025-01-15'
-    },
-    {
-      id: '2',
-      title: 'Recherche de logement temporaire',
-      completed: userStepsDone.includes('housing_search'),
-      category: 'Logement'
-    },
-    {
-      id: '3',
-      title: 'Ouverture compte bancaire',
-      completed: false,
-      category: 'Finance',
-      dueDate: '2025-02-01'
-    },
-    {
-      id: '4',
-      title: 'Assurance santé internationale',
-      completed: false,
-      category: 'Santé',
-      dueDate: '2025-01-20'
-    },
-    {
-      id: '5',
-      title: 'Adaptation du CV',
-      completed: userStepsDone.includes('job_search'),
-      category: 'Emploi'
+export default function ChecklistWidget({ countryData, onEdit, onHide }: ChecklistWidgetProps) {
+  const [checklist, setChecklist] = useState<ChecklistItem[]>([])
+
+  // Charger les étapes depuis le JSON du pays
+  useEffect(() => {
+    if (!countryData?.expatProjectTemplate) {
+      return
     }
-  ])
+
+    // Convertir les steps du JSON en checklist items
+    const steps = countryData.expatProjectTemplate.steps.map((step) => ({
+      id: step.id.toString(),
+      title: step.title,
+      completed: false, // TODO: charger depuis le backend
+      category: step.category,
+      substeps: step.substeps,
+    }))
+
+    setChecklist(steps)
+  }, [countryData])
 
   const toggleItem = (id: string) => {
     setChecklist(prev => 
@@ -62,11 +47,16 @@ export default function ChecklistWidget({ userStepsDone, onEdit, onHide }: Check
   }
 
   const completedCount = checklist.filter(item => item.completed).length
-  const progressPercentage = (completedCount / checklist.length) * 100
+  const progressPercentage = checklist.length > 0 ? (completedCount / checklist.length) * 100 : 0
 
-  const isOverdue = (dueDate?: string) => {
-    if (!dueDate) return false
-    return new Date(dueDate) < new Date()
+  if (!countryData || checklist.length === 0) {
+    return (
+      <Widget title="Ma Checklist" onEdit={onEdit} onHide={onHide}>
+        <div className="text-center py-8 text-gray-500">
+          <p>Aucune checklist disponible pour ce pays.</p>
+        </div>
+      </Widget>
+    )
   }
 
   return (
@@ -114,17 +104,12 @@ export default function ChecklistWidget({ userStepsDone, onEdit, onHide }: Check
                 </p>
                 
                 <div className="flex items-center space-x-2 mt-1">
-                  <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                  <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded capitalize">
                     {item.category}
                   </span>
-                  
-                  {item.dueDate && (
-                    <span className={`text-xs px-2 py-1 rounded ${
-                      isOverdue(item.dueDate) 
-                        ? 'text-red-600 bg-red-50' 
-                        : 'text-orange-600 bg-orange-50'
-                    }`}>
-                      {new Date(item.dueDate).toLocaleDateString('fr-FR')}
+                  {item.substeps && item.substeps.length > 0 && (
+                    <span className="text-xs text-blue-600">
+                      {item.substeps.length} sous-étapes
                     </span>
                   )}
                 </div>
@@ -132,12 +117,6 @@ export default function ChecklistWidget({ userStepsDone, onEdit, onHide }: Check
             </div>
           ))}
         </div>
-
-        {/* Bouton ajouter */}
-        <button className="w-full flex items-center justify-center space-x-2 p-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-gray-400 hover:text-gray-600">
-          <Plus className="w-4 h-4" />
-          <span className="text-sm">Ajouter une tâche</span>
-        </button>
       </div>
     </Widget>
   )

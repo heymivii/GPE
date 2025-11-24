@@ -20,6 +20,7 @@ import ProfilePage from '../features/profile/pages/ProfilePage';
 import { DestinationsPage } from '../features/destinations/pages/DestinationsPage';
 import { DestinationDetailPage } from '../features/destinations/pages/DestinationDetailPage';
 import ProjectsPage from '../features/projects/pages/ProjectsPage';
+import ProjectDetailPage from '../features/projects/pages/ProjectDetailPage';
 
 export const router = createBrowserRouter([
   {
@@ -88,6 +89,7 @@ export const router = createBrowserRouter([
         element: <MainLayout />,
         children: [
           { index: true, element: <ProjectsPage /> },
+          { path: ':id', element: <ProjectDetailPage /> },
         ],
       },
       {
