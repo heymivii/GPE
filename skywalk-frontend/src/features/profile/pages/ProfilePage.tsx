@@ -108,7 +108,6 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header Section */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-6">
           <div className="h-24 bg-gradient-to-r from-blue-600 to-blue-400"></div>
           <div className="px-8 pb-8">
@@ -138,7 +137,6 @@ export default function ProfilePage() {
 
             {!isEditing ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Personal Info View */}
                 <div className="space-y-6">
                   <h2 className="text-lg font-semibold text-gray-900 border-b border-gray-100 pb-2">
                     Informations personnelles
@@ -174,7 +172,6 @@ export default function ProfilePage() {
                   </div>
                 </div>
 
-                {/* Preferences View */}
                 <div className="space-y-6">
                   <h2 className="text-lg font-semibold text-gray-900 border-b border-gray-100 pb-2">
                     Préférences & Localisation
@@ -200,7 +197,6 @@ export default function ProfilePage() {
             ) : (
               <form onSubmit={handleSubmit} className="space-y-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {/* Edit Personal Info */}
                   <div className="space-y-4">
                     <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">Informations personnelles</h3>
                     
@@ -260,7 +256,6 @@ export default function ProfilePage() {
                     </div>
                   </div>
 
-                  {/* Edit Preferences */}
                   <div className="space-y-4">
                     <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">Préférences</h3>
                     
@@ -367,7 +362,6 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Danger Zone */}
         <div className="bg-white rounded-xl shadow-sm border border-red-100 overflow-hidden">
           <div className="px-8 py-6">
             <div className="flex items-start">

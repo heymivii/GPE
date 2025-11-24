@@ -15,7 +15,6 @@ export function DestinationCard({ destination }: DestinationCardProps) {
       to={`/destinations/${destination.slug}`}
       className="group flex flex-col bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 overflow-hidden hover:-translate-y-1"
     >
-      {/* Header with Flag */}
       <div className="p-6 pb-0">
         <div className="flex justify-between items-start mb-4">
           <div className="w-16 h-16 flex items-center justify-center bg-gray-50 rounded-2xl text-4xl shadow-inner">
@@ -35,7 +34,6 @@ export function DestinationCard({ destination }: DestinationCardProps) {
         </p>
       </div>
 
-      {/* Stats Grid */}
       <div className="px-6 py-4 bg-gray-50 mt-auto border-t border-gray-100">
         <div className="grid grid-cols-2 gap-4">
           <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -61,7 +59,6 @@ export function DestinationCard({ destination }: DestinationCardProps) {
         </div>
       </div>
       
-      {/* Hover Action */}
       <div className="px-6 py-3 bg-white border-t border-gray-100 flex items-center justify-between text-[#5EA3C0] font-medium text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
         <span>Voir la destination</span>
         <ArrowRight className="w-4 h-4" />

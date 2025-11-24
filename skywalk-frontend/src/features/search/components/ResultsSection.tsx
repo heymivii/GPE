@@ -264,7 +264,6 @@ export default function ResultsSection({ results, isLoading, viewMode, onLoadMor
         ))}
       </div>
 
-      {/* Bouton charger plus */}
       {results.length > 0 && (
         <div className="text-center pt-8">
           <button

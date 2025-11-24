@@ -49,7 +49,6 @@ export default function ProfileSummaryWidget({ userData, onEdit, onHide }: Profi
   return (
     <Widget title="Mon Profil" onEdit={onEdit} onHide={onHide}>
       <div className="space-y-4">
-        {/* Informations personnelles */}
         <div className="flex items-center space-x-3">
           <User className="w-5 h-5 text-blue-600" />
           <div>
@@ -60,7 +59,6 @@ export default function ProfileSummaryWidget({ userData, onEdit, onHide }: Profi
           </div>
         </div>
 
-        {/* Destination */}
         <div className="flex items-center space-x-3">
           <MapPin className="w-5 h-5 text-green-600" />
           <div>
@@ -73,7 +71,6 @@ export default function ProfileSummaryWidget({ userData, onEdit, onHide }: Profi
           </div>
         </div>
 
-        {/* Objectif */}
         <div className="flex items-center space-x-3">
           <Target className="w-5 h-5 text-purple-600" />
           <div>
@@ -84,7 +81,6 @@ export default function ProfileSummaryWidget({ userData, onEdit, onHide }: Profi
           </div>
         </div>
 
-        {/* Progression */}
         <div className="mt-6 pt-4 border-t border-gray-200">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium text-gray-700">Profil complété</span>

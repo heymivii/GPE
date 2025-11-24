@@ -1,10 +1,13 @@
-import type { ReactNode } from 'react'
-import { MoreHorizontal, Edit2, EyeOff, Maximize2 } from 'lucide-react'
+import type { ReactNode, ComponentType } from 'react'
+import { MoreHorizontal } from 'lucide-react'
 import { useState } from 'react'
 
 interface WidgetProps {
   id?: string
   title: string
+  subtitle?: string
+  icon?: ComponentType<{ className?: string }>
+  iconColor?: string
   children: ReactNode
   onEdit?: () => void
   onHide?: () => void
@@ -16,6 +19,9 @@ interface WidgetProps {
 
 export default function Widget({
   title,
+  subtitle,
+  icon: Icon,
+  iconColor = 'text-blue-600',
   children,
   onEdit,
   onHide,
@@ -37,38 +43,57 @@ export default function Widget({
     }
   }
 
+  const getIconBgColor = () => {
+    if (iconColor.includes('blue')) return 'bg-blue-50'
+    if (iconColor.includes('purple')) return 'bg-purple-50'
+    if (iconColor.includes('green')) return 'bg-green-50'
+    if (iconColor.includes('orange')) return 'bg-orange-50'
+    if (iconColor.includes('red')) return 'bg-red-50'
+    return 'bg-gray-50'
+  }
+
   return (
     <div className={`
-      bg-white rounded-xl border border-gray-200 p-6 relative
-      hover:shadow-md transition-shadow duration-200
+      bg-white rounded-xl shadow-sm border border-gray-100
+      hover:shadow-md transition-shadow duration-200 p-6
       ${getSizeClasses()}
       ${className}
     `}>
-      {/* Header avec titre et menu */}
-      <div className="flex justify-between items-start mb-4">
-        <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+      <div className="flex justify-between items-start mb-6">
+        <div className="flex items-center gap-3">
+          {Icon && (
+            <div className={`p-2 ${getIconBgColor()} rounded-lg ${iconColor}`}>
+              <Icon className="w-5 h-5" />
+            </div>
+          )}
+          <div>
+            <h3 className="font-semibold text-gray-900">{title}</h3>
+            {subtitle && (
+              <p className="text-xs text-gray-500">{subtitle}</p>
+            )}
+          </div>
+        </div>
         
         {isEditable && (
           <div className="relative">
             <button
               onClick={() => setShowMenu(!showMenu)}
-              className="p-1 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+              className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-50"
             >
               <MoreHorizontal className="w-5 h-5" />
             </button>
 
             {showMenu && (
-              <div className="absolute right-0 top-8 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-10 min-w-32">
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-10">
                 {onEdit && (
                   <button
                     onClick={() => {
                       onEdit()
                       setShowMenu(false)
                     }}
-                    className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center"
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                   >
-                    <Edit2 className="w-4 h-4 mr-2" />
-                    Éditer
+                    Modifier
                   </button>
                 )}
                 
@@ -78,9 +103,8 @@ export default function Widget({
                       onExpand()
                       setShowMenu(false)
                     }}
-                    className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center"
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                   >
-                    <Maximize2 className="w-4 h-4 mr-2" />
                     Agrandir
                   </button>
                 )}
@@ -91,10 +115,9 @@ export default function Widget({
                       onHide()
                       setShowMenu(false)
                     }}
-                    className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center"
+                    className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
                   >
-                    <EyeOff className="w-4 h-4 mr-2" />
-                    Masquer
+                    Masquer ce widget
                   </button>
                 )}
               </div>
@@ -103,12 +126,10 @@ export default function Widget({
         )}
       </div>
 
-      {/* Contenu du widget */}
-      <div className="h-full">
+      <div>
         {children}
       </div>
 
-      {/* Click outside pour fermer le menu */}
       {showMenu && (
         <div 
           className="fixed inset-0 z-0"

@@ -1,136 +1,102 @@
+import { Wallet, TrendingUp, AlertCircle } from 'lucide-react'
+import type { CountryData } from '../../../hooks/useCountryData'
 import Widget from './Widget'
-import { DollarSign, TrendingUp, TrendingDown, AlertCircle } from 'lucide-react'
-
-interface BudgetCategory {
-  name: string
-  allocated: number
-  spent: number
-  currency: string
-}
 
 interface BudgetTrackerWidgetProps {
   housingBudget: string
+  countryData?: CountryData | null
   onEdit?: () => void
   onHide?: () => void
 }
 
-export default function BudgetTrackerWidget({ housingBudget, onEdit, onHide }: BudgetTrackerWidgetProps) {
-  const budgetData: BudgetCategory[] = [
-    {
-      name: 'Logement',
-      allocated: parseInt(housingBudget) || 1000,
-      spent: 800,
-      currency: '€'
-    },
-    {
-      name: 'Transport',
-      allocated: 200,
-      spent: 150,
-      currency: '€'
-    },
-    {
-      name: 'Nourriture',
-      allocated: 400,
-      spent: 320,
-      currency: '€'
-    },
-    {
-      name: 'Démarches',
-      allocated: 500,
-      spent: 650,
-      currency: '€'
-    }
-  ]
-
-  const totalAllocated = budgetData.reduce((sum, cat) => sum + cat.allocated, 0)
-  const totalSpent = budgetData.reduce((sum, cat) => sum + cat.spent, 0)
-  const remainingBudget = totalAllocated - totalSpent
-
-  const getStatusColor = (allocated: number, spent: number) => {
-    const percentage = (spent / allocated) * 100
-    if (percentage > 100) return 'text-red-600 bg-red-50'
-    if (percentage > 80) return 'text-orange-600 bg-orange-50'
-    return 'text-green-600 bg-green-50'
+export default function BudgetTrackerWidget({ 
+  housingBudget, 
+  countryData,
+  onEdit, 
+  onHide 
+}: BudgetTrackerWidgetProps) {
+  const budget = parseFloat(housingBudget)
+  const currency = countryData?.costOfLiving?.currency || countryData?.currency || '€'
+  
+  const rents = {
+    oneBedroom: countryData?.costOfLiving?.averageRent?.oneBedroom || 0,
+    threeBedroom: countryData?.costOfLiving?.averageRent?.threeBedroom || 0
   }
 
-  const getPercentage = (allocated: number, spent: number) => {
-    return Math.min((spent / allocated) * 100, 100)
+  const getCoverage = (rentPrice: number) => {
+    if (!rentPrice) return 0
+    return Math.min(100, Math.round((budget / rentPrice) * 100))
   }
+
+  const oneBedroomCoverage = getCoverage(rents.oneBedroom)
+  const threeBedroomCoverage = getCoverage(rents.threeBedroom)
 
   return (
-    <Widget title="Suivi Budget" onEdit={onEdit} onHide={onHide}>
-      <div className="space-y-4">
-        <div className="bg-gray-50 rounded-lg p-4">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center space-x-2">
-              <DollarSign className="w-5 h-5 text-blue-600" />
-              <span className="font-medium text-gray-900">Budget total</span>
-            </div>
-            <div className="text-right">
-              <p className="font-semibold text-gray-900">{totalSpent}€ / {totalAllocated}€</p>
-              <p className={`text-sm flex items-center ${
-                remainingBudget >= 0 ? 'text-green-600' : 'text-red-600'
-              }`}>
-                {remainingBudget >= 0 ? (
-                  <TrendingUp className="w-3 h-3 mr-1" />
-                ) : (
-                  <TrendingDown className="w-3 h-3 mr-1" />
-                )}
-                {Math.abs(remainingBudget)}€ {remainingBudget >= 0 ? 'restant' : 'dépassé'}
-              </p>
-            </div>
-          </div>
-          
-          <div className="w-full bg-gray-200 rounded-full h-2">
-            <div 
-              className={`h-2 rounded-full transition-all duration-300 ${
-                remainingBudget >= 0 ? 'bg-green-600' : 'bg-red-600'
-              }`}
-              style={{ width: `${Math.min((totalSpent / totalAllocated) * 100, 100)}%` }}
-            />
-          </div>
+    <Widget
+      title="Analyse Budget"
+      subtitle={`Logement à ${countryData?.name || 'destination'}`}
+      icon={Wallet}
+      iconColor="text-purple-600"
+      onEdit={onEdit}
+      onHide={onHide}
+    >
+      <div className="mb-6">
+        <div className="flex items-baseline gap-1">
+          <span className="text-3xl font-bold text-gray-900">{budget.toLocaleString()}</span>
+          <span className="text-lg font-medium text-gray-500">{currency}</span>
         </div>
-
-        <div className="space-y-3">
-          {budgetData.map((category, index) => (
-            <div key={index} className="flex items-center justify-between">
-              <div className="flex-1">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-medium text-gray-700">{category.name}</span>
-                  <div className="flex items-center space-x-2">
-                    {category.spent > category.allocated && (
-                      <AlertCircle className="w-4 h-4 text-red-500" />
-                    )}
-                    <span className="text-sm text-gray-600">
-                      {category.spent}{category.currency} / {category.allocated}{category.currency}
-                    </span>
-                  </div>
-                </div>
-                
-                <div className="w-full bg-gray-200 rounded-full h-1.5">
-                  <div 
-                    className={`h-1.5 rounded-full transition-all duration-300 ${
-                      category.spent > category.allocated ? 'bg-red-500' : 'bg-blue-600'
-                    }`}
-                    style={{ width: `${getPercentage(category.allocated, category.spent)}%` }}
-                  />
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="pt-4 border-t border-gray-200">
-          <div className="flex space-x-2">
-            <button className="flex-1 text-sm bg-blue-50 text-blue-700 py-2 px-3 rounded-lg hover:bg-blue-100 transition-colors">
-              Ajouter dépense
-            </button>
-            <button className="flex-1 text-sm border border-gray-300 text-gray-700 py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors">
-              Voir détails
-            </button>
-          </div>
-        </div>
+        <p className="text-sm text-gray-500">Votre budget mensuel prévu</p>
       </div>
+
+      {countryData?.costOfLiving ? (
+        <div className="space-y-4">
+          <div>
+            <div className="flex justify-between text-sm mb-1">
+              <span className="text-gray-600">Appart 1 chambre ({rents.oneBedroom.toLocaleString()} {currency})</span>
+              <span className={`font-medium ${oneBedroomCoverage >= 100 ? 'text-green-600' : 'text-orange-600'}`}>
+                {oneBedroomCoverage >= 100 ? 'Couvert ✅' : `${oneBedroomCoverage}%`}
+              </span>
+            </div>
+            <div className="w-full bg-gray-100 rounded-full h-2">
+              <div 
+                className={`h-2 rounded-full transition-all duration-500 ${oneBedroomCoverage >= 100 ? 'bg-green-500' : 'bg-orange-500'}`}
+                style={{ width: `${oneBedroomCoverage}%` }}
+              ></div>
+            </div>
+          </div>
+
+          <div>
+            <div className="flex justify-between text-sm mb-1">
+              <span className="text-gray-600">Appart 3 chambres ({rents.threeBedroom.toLocaleString()} {currency})</span>
+              <span className={`font-medium ${threeBedroomCoverage >= 100 ? 'text-green-600' : 'text-red-600'}`}>
+                {threeBedroomCoverage >= 100 ? 'Couvert ✅' : `${threeBedroomCoverage}%`}
+              </span>
+            </div>
+            <div className="w-full bg-gray-100 rounded-full h-2">
+              <div 
+                className={`h-2 rounded-full transition-all duration-500 ${threeBedroomCoverage >= 100 ? 'bg-green-500' : 'bg-red-500'}`}
+                style={{ width: `${threeBedroomCoverage}%` }}
+              ></div>
+            </div>
+          </div>
+
+          <div className="mt-4 p-3 bg-blue-50 rounded-lg flex items-start gap-2">
+            <TrendingUp className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+            <p className="text-xs text-blue-800 leading-relaxed">
+              {budget >= rents.threeBedroom
+                ? "Excellent ! Votre budget est confortable pour un grand appartement."
+                : budget >= rents.oneBedroom
+                ? "Bon budget. Vous pouvez viser un appartement 1 chambre dans le centre."
+                : "Budget serré. Considérez la colocation ou éloignez-vous du centre-ville."}
+            </p>
+          </div>
+        </div>
+      ) : (
+        <div className="flex flex-col items-center justify-center py-4 text-center text-gray-500 bg-gray-50 rounded-lg border border-dashed border-gray-200">
+          <AlertCircle className="w-8 h-8 mb-2 text-gray-400" />
+          <p className="text-sm">Données de marché non disponibles pour ce pays.</p>
+        </div>
+      )}
     </Widget>
   )
 }

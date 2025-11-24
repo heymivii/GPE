@@ -62,7 +62,6 @@ export default function FilterSection({ filters, onFiltersChange }: FilterSectio
 
   return (
     <div className="space-y-6">
-      {/* Header avec compteur et reset */}
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold text-gray-900">
           Filtres {activeFiltersCount > 0 && <span className="text-sm text-gray-500">({activeFiltersCount})</span>}
@@ -79,7 +78,6 @@ export default function FilterSection({ filters, onFiltersChange }: FilterSectio
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {/* Catégories */}
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             <Tag className="w-4 h-4 text-gray-500" />
@@ -102,7 +100,6 @@ export default function FilterSection({ filters, onFiltersChange }: FilterSectio
           </div>
         </div>
 
-        {/* Pays */}
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             <MapPin className="w-4 h-4 text-gray-500" />
@@ -126,7 +123,6 @@ export default function FilterSection({ filters, onFiltersChange }: FilterSectio
           </div>
         </div>
 
-        {/* Prix */}
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             <DollarSign className="w-4 h-4 text-gray-500" />
@@ -176,7 +172,6 @@ export default function FilterSection({ filters, onFiltersChange }: FilterSectio
           </div>
         </div>
 
-        {/* Dates */}
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             <Calendar className="w-4 h-4 text-gray-500" />
@@ -233,7 +228,6 @@ export default function FilterSection({ filters, onFiltersChange }: FilterSectio
         </div>
       </div>
 
-      {/* Ville */}
       <div className="pt-4 border-t">
         <div className="flex items-center gap-4">
           <label className="font-medium text-gray-700">Ville:</label>

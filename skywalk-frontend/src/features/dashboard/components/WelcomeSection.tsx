@@ -13,7 +13,6 @@ export default function WelcomeSection({
     <section className="bg-white py-12 border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Colonne Gauche : Titre et Intro */}
           <div>
             <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-sm font-medium mb-6">
               <Sparkles className="w-4 h-4 mr-2" />
@@ -51,7 +50,6 @@ export default function WelcomeSection({
             </button>
           </div>
 
-          {/* Colonne Droite : Carte Avantages */}
           <div className="relative">
             <div className="absolute inset-0 bg-gradient-to-tr from-blue-50 to-purple-50 rounded-2xl transform rotate-3 scale-105 -z-10"></div>
             <div className="bg-white border border-gray-100 rounded-2xl p-8 shadow-xl">
