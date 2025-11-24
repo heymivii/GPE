@@ -59,7 +59,6 @@ export default function Widget({
       ${getSizeClasses()}
       ${className}
     `}>
-      {/* Header avec titre et menu */}
       <div className="flex justify-between items-start mb-6">
         <div className="flex items-center gap-3">
           {Icon && (
@@ -127,12 +126,10 @@ export default function Widget({
         )}
       </div>
 
-      {/* Contenu du widget */}
       <div>
         {children}
       </div>
 
-      {/* Click outside pour fermer le menu */}
       {showMenu && (
         <div 
           className="fixed inset-0 z-0"

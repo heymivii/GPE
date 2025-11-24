@@ -22,14 +22,12 @@ export default function CategoryCard({
 }: CategoryCardProps) {
   return (
     <div className="group bg-white rounded-xl border border-gray-200 p-8 h-full flex flex-col transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-blue-200">
-      {/* En-tête avec Icône */}
       <div className="flex items-start justify-between mb-6">
         <div className={`w-14 h-14 ${backgroundColor} rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110`}>
           <Icon className="w-7 h-7 text-gray-800" />
         </div>
       </div>
       
-      {/* Contenu */}
       <div className="mb-4">
         <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-700 transition-colors">
           {title}
@@ -39,12 +37,10 @@ export default function CategoryCard({
         </p>
       </div>
 
-      {/* Description */}
       <p className="text-gray-600 mb-8 flex-grow leading-relaxed">
         {description}
       </p>
 
-      {/* Bouton CTA */}
       <a
         href={ctaLink}
         className="inline-flex items-center text-blue-600 font-semibold transition-colors duration-200 group/link"

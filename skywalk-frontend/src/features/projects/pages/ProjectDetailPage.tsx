@@ -105,7 +105,6 @@ export default function ProjectDetailPage() {
 
   return (
     <div className="min-h-screen bg-gray-50/50 pb-12">
-      {/* Header / Breadcrumb */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
@@ -158,9 +157,7 @@ export default function ProjectDetailPage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Info Column */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Destination Details */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                 <MapPin className="w-5 h-5 text-blue-600" />
@@ -180,7 +177,6 @@ export default function ProjectDetailPage() {
               </div>
             </div>
 
-            {/* General Info Card */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
                 <Target className="w-5 h-5 text-blue-600" />
@@ -240,7 +236,6 @@ export default function ProjectDetailPage() {
               </div>
             </div>
 
-            {/* Priorities Card */}
             {project.priorities && (
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
@@ -261,9 +256,7 @@ export default function ProjectDetailPage() {
             )}
           </div>
 
-          {/* Sidebar Column */}
           <div className="space-y-6">
-            {/* Status Card */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">État du projet</h2>
               <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg border ${statusConfig.color}`}>
@@ -272,7 +265,6 @@ export default function ProjectDetailPage() {
               </div>
             </div>
 
-            {/* Budget Card */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                 <Wallet className="w-5 h-5 text-blue-600" />
@@ -284,7 +276,6 @@ export default function ProjectDetailPage() {
               <p className="text-sm text-gray-500">par mois estimé</p>
             </div>
 
-            {/* Support Card */}
             {project.needsSupport && (
               <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg p-6 text-white">
                 <div className="flex items-start gap-4">
@@ -304,7 +295,6 @@ export default function ProjectDetailPage() {
         </div>
       </div>
 
-      {/* Modal de confirmation de suppression */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setShowDeleteConfirm(false)}>
           <div className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl" onClick={(e) => e.stopPropagation()}>

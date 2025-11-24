@@ -129,6 +129,22 @@
             ]
           }
         ]
+      },
+      "costOfLiving": {
+        "averageRent": {
+          "oneBedroom": 900,
+          "threeBedroom": 1600
+        },
+        "averageSalary": 2500,
+        "food": {
+          "restaurantMeal": 15,
+          "groceriesWeekly": 70
+        }
+      },
+      "recommendations": {
+        "bestFor": ["Étudiants", "Travailleurs qualifiés", "Familles"],
+        "language": "Français requis",
+        "visaDifficulty": "Moyenne"
       }
     },
     {
@@ -280,6 +296,22 @@
             ]
           }
         ]
+      },
+      "costOfLiving": {
+        "averageRent": {
+          "oneBedroom": 1300,
+          "threeBedroom": 2200
+        },
+        "averageSalary": 4500,
+        "food": {
+          "restaurantMeal": 12,
+          "groceriesWeekly": 85
+        }
+      },
+      "recommendations": {
+        "bestFor": ["Travailleurs qualifiés", "Aventuriers", "Familles"],
+        "language": "Anglais ou Français requis",
+        "visaDifficulty": "Élevée"
       }
     },
     {
@@ -404,6 +436,22 @@
             ]
           }
         ]
+      },
+      "costOfLiving": {
+        "averageRent": {
+          "oneBedroom": 1800,
+          "threeBedroom": 3200
+        },
+        "averageSalary": 6500,
+        "food": {
+          "restaurantMeal": 25,
+          "groceriesWeekly": 100
+        }
+      },
+      "recommendations": {
+        "bestFor": ["Professionnels", "Familles aisées", "Indépendants"],
+        "language": "Français, Allemand ou Italien selon canton",
+        "visaDifficulty": "Élevée"
       }
     },
     {
@@ -547,17 +595,21 @@
       },
       "costOfLiving": {
         "averageRent": {
-          "studio": 1200,
-          "t2": 1800,
-          "t3": 2500,
-          "currency": "£"
+          "oneBedroom": 1500,
+          "threeBedroom": 2800
         },
-        "averageSalary": 35000,
-        "transportMonthly": 150,
-        "groceriesMonthly": 250,
-        "currency": "£"
+        "averageSalary": 3500,
+        "food": {
+          "restaurantMeal": 18,
+          "groceriesWeekly": 75
+        }
       },
-      "recommendations": [
+      "recommendations": {
+        "bestFor": ["Professionnels", "Étudiants", "Travailleurs qualifiés"],
+        "language": "Anglais requis",
+        "visaDifficulty": "Élevée (post-Brexit)"
+      },
+      "oldRecommendations": [
   {
     "title": "Rechercher un logement temporaire",
     "importance": "Urgent",

@@ -43,7 +43,6 @@ export default function LandingPage() {
        <Dropdown/>
         </div>
         
-        {/* Destinations populaires section */}
         <div className="mt-16 px-8 w-full max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4 px-4">
             <div>

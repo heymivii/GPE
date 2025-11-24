@@ -28,7 +28,6 @@ export default function PersonalizedDashboard() {
     { id: 'recommendations', name: 'Recommandations', icon: '💡', description: 'Conseils personnalisés' },
   ]
 
-  // Sélectionner automatiquement le premier projet
   const activeProject = projects?.find(p => p.idProject === selectedProjectId) || projects?.[0]
   const countryData = useCountryData(activeProject?.idDestinationCountry)
 
@@ -64,14 +63,13 @@ export default function PersonalizedDashboard() {
     )
   }
 
-  // Créer les données pour ProfileSummaryWidget
   const userData = {
-    name: 'Utilisateur', // TODO: récupérer depuis AuthContext
+    name: 'Utilisateur', 
     onboardingData: {
       destination: {
         fromCountry: 'FR',
         toCountry: countryData?.code || 'XX',
-        targetCity: '', // TODO: récupérer depuis city
+        targetCity: '',
         departureYear: activeProject?.expectedDepartureDate 
           ? new Date(activeProject.expectedDepartureDate).getFullYear().toString()
           : new Date().getFullYear().toString()
@@ -150,7 +148,6 @@ export default function PersonalizedDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
@@ -199,7 +196,6 @@ export default function PersonalizedDashboard() {
         </div>
       </div>
 
-      {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {editMode && (
           <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
@@ -209,9 +205,7 @@ export default function PersonalizedDashboard() {
           </div>
         )}
 
-        {/* Info rapide */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {/* Card Statut */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between mb-4">
               <div className="p-3 bg-blue-50 rounded-lg">
@@ -245,7 +239,6 @@ export default function PersonalizedDashboard() {
             </div>
           </div>
 
-          {/* Card Départ prévu */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between mb-4">
               <div className="p-3 bg-green-50 rounded-lg">
@@ -273,7 +266,6 @@ export default function PersonalizedDashboard() {
             </div>
           </div>
 
-          {/* Card Budget logement */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between mb-4">
               <div className="p-3 bg-purple-50 rounded-lg">
@@ -293,7 +285,6 @@ export default function PersonalizedDashboard() {
             </div>
           </div>
 
-          {/* Card Durée prévue */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between mb-4">
               <div className="p-3 bg-orange-50 rounded-lg">
@@ -312,11 +303,9 @@ export default function PersonalizedDashboard() {
           </div>
         </div>
 
-        {/* Widgets Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr">
           {visibleWidgets.map(renderWidget)}
           
-          {/* Widget "Ajouter" en mode édition */}
           {editMode && (
             <button
               onClick={() => setShowAddWidget(true)}
@@ -328,7 +317,6 @@ export default function PersonalizedDashboard() {
           )}
         </div>
 
-        {/* Widgets masqués */}
         {hiddenWidgets.length > 0 && editMode && (
           <div className="mt-8">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Widgets masqués</h3>
@@ -347,11 +335,9 @@ export default function PersonalizedDashboard() {
         )}
       </main>
 
-      {/* Modal Ajouter un widget */}
       {showAddWidget && (
         <div className="fixed inset-0 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-all duration-300">
           <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[85vh] overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200">
-            {/* Header */}
             <div className="px-8 py-6 border-b border-gray-100 flex items-center justify-between bg-white">
               <div>
                 <h2 className="text-2xl font-bold text-gray-900">Bibliothèque de widgets</h2>
@@ -367,7 +353,6 @@ export default function PersonalizedDashboard() {
               </button>
             </div>
 
-            {/* Liste des widgets */}
             <div className="p-8 overflow-y-auto bg-gray-50/50">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {availableWidgets.map((widget) => {
@@ -432,7 +417,6 @@ export default function PersonalizedDashboard() {
               </div>
             </div>
 
-            {/* Footer */}
             <div className="px-8 py-5 bg-white border-t border-gray-100 flex justify-end">
               <button
                 onClick={() => setShowAddWidget(false)}

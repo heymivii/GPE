@@ -21,16 +21,13 @@ export default function DestinationCard({
 
   return (
     <div className={`relative ${heightClasses} ${className} rounded-2xl overflow-hidden group cursor-pointer transition-all duration-300 hover:scale-[1.02] shadow-lg hover:shadow-xl`}>
-      {/* Image de fond */}
       <div 
         className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
         style={{ backgroundImage: `url(${image})` }}
       />
       
-      {/* Overlay gradient */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-90" />
       
-      {/* Contenu */}
       <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8 text-white transform transition-transform duration-300 translate-y-2 group-hover:translate-y-0">
         <div className="flex items-center mb-3">
           <span className="text-3xl mr-3 shadow-sm">{flag}</span>
@@ -43,7 +40,6 @@ export default function DestinationCard({
           {description}
         </p>
         
-        {/* Indicateur hover */}
         <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-4 group-hover:translate-y-0">
           <div className="inline-flex items-center text-sm font-bold uppercase tracking-wider text-[#5EA3C0] bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20 hover:bg-white hover:text-[#5EA3C0] transition-colors">
             <span>Explorer</span>

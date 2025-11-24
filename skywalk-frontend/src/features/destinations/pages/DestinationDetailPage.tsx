@@ -37,7 +37,6 @@ export function DestinationDetailPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Breadcrumb & Back */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <Link
@@ -52,9 +51,7 @@ export function DestinationDetailPage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content Column */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Header Card */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
               <div className="flex items-start justify-between mb-6">
                 <div className="flex items-center gap-4">
@@ -73,7 +70,6 @@ export function DestinationDetailPage() {
               </p>
             </div>
 
-            {/* Tabs Navigation */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
               <div className="border-b border-gray-100">
                 <nav className="flex">
@@ -146,9 +142,7 @@ export function DestinationDetailPage() {
             </div>
           </div>
 
-          {/* Sidebar Column */}
           <div className="space-y-6">
-            {/* Key Stats Card */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
               <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-6">Statistiques</h3>
               <div className="space-y-6">
@@ -178,7 +172,6 @@ export function DestinationDetailPage() {
               </div>
             </div>
 
-            {/* Quick Actions */}
             <div className="bg-[#5EA3C0] rounded-xl shadow-sm p-6 text-white">
               <h3 className="font-bold text-lg mb-4">Prêt à partir ?</h3>
               <p className="text-blue-50 text-sm mb-6">
@@ -206,5 +199,4 @@ export function DestinationDetailPage() {
   );
 }
 
-// TODO: Replace mock stats calculations with real backend data when available
 const mockDestinations = { length: 12 };

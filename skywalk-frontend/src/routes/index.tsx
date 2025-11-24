@@ -21,6 +21,7 @@ import { DestinationsPage } from '../features/destinations/pages/DestinationsPag
 import { DestinationDetailPage } from '../features/destinations/pages/DestinationDetailPage';
 import ProjectsPage from '../features/projects/pages/ProjectsPage';
 import ProjectDetailPage from '../features/projects/pages/ProjectDetailPage';
+import CountryComparison from '../features/comparison/pages/CountryComparison';
 
 export const router = createBrowserRouter([
   {
@@ -90,6 +91,13 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <ProjectsPage /> },
           { path: ':id', element: <ProjectDetailPage /> },
+        ],
+      },
+      {
+        path: '/comparison',
+        element: <MainLayout />,
+        children: [
+          { index: true, element: <CountryComparison /> },
         ],
       },
       {

@@ -35,15 +35,13 @@ export default function OnboardingFlow() {
     getSteps,
     canGoToStep,
     clearDraft
-  } = useOnboarding(editMode) // Skip localStorage in edit mode
+  } = useOnboarding(editMode) 
 
-  // Pré-remplir le formulaire en mode édition
   useEffect(() => {
     if (existingProject && editMode && !dataLoadedRef.current) {
       console.log('Loading existing project data:', existingProject);
       dataLoadedRef.current = true;
       
-      // Mapping inverse des objectifs
       const objectiveReverseMapping: Record<string, string> = {
         'study': 'studies',
         'work': 'work',
@@ -53,7 +51,6 @@ export default function OnboardingFlow() {
         'other': 'other'
       }
 
-      // Mapping inverse des durées
       const durationReverseMapping: Record<number, string> = {
         3: 'less_6_months',
         9: '6_12_months',
@@ -61,7 +58,6 @@ export default function OnboardingFlow() {
         48: 'more_3_years'
       }
 
-      // Charger toutes les données en une seule fois
       const projectData = {
         destination: {
           fromCountry: 'FR',
@@ -91,13 +87,11 @@ export default function OnboardingFlow() {
         }
       };
 
-      // Charger toutes les données d'un coup avec setAllData
       setAllData(projectData);
       
       console.log('Project data loaded successfully', projectData);
       console.log('Current data state:', data);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [existingProject, editMode])
 
   const handleStepClick = (stepId: number) => {
@@ -109,9 +103,7 @@ export default function OnboardingFlow() {
   const handleComplete = async () => {
     try {
       console.log('Submitting onboarding data:', data)
-      
-      // Mapping temporaire des codes pays vers des IDs
-      // TODO: Récupérer les vrais IDs depuis l'API /countries
+  
       const countryCodeToId: Record<string, number> = {
         'FR': 1, 'CA': 2, 'CH': 3, 'DE': 4, 'ES': 5, 'IT': 6,
         'PT': 7, 'BE': 8, 'NL': 9, 'LU': 10, 'GB': 11, 'IE': 12,
@@ -119,7 +111,6 @@ export default function OnboardingFlow() {
         'MX': 19, 'BR': 20
       };
       
-      // Convertir le code pays en ID
       const destinationCountryId = countryCodeToId[data.destination.toCountry];
       
       if (!destinationCountryId) {
@@ -127,7 +118,6 @@ export default function OnboardingFlow() {
         return;
       }
 
-      // Mapping des objectifs pour correspondre au backend
       const objectiveMapping: Record<string, string> = {
         'studies': 'study',
         'work': 'work',
@@ -137,7 +127,6 @@ export default function OnboardingFlow() {
         'other': 'other'
       };
 
-      // Mapping des durées vers des nombres de mois
       const durationMapping: Record<string, number> = {
         'less_6_months': 3,
         '6_12_months': 9,
@@ -145,7 +134,6 @@ export default function OnboardingFlow() {
         'more_3_years': 48
       };
       
-      // Préparer les données du projet
       const projectData = {
         idDestinationCountry: destinationCountryId,
         idDestinationCity: data.destination.targetCity ? parseInt(data.destination.targetCity) : undefined,
@@ -160,7 +148,6 @@ export default function OnboardingFlow() {
       };
 
       if (editMode && id) {
-        // Mode édition : mettre à jour le projet existant
         console.log('Updating project with data:', projectData);
         await updateProject({
           projectId: Number(id),
@@ -170,30 +157,24 @@ export default function OnboardingFlow() {
         
         toast.success('Projet mis à jour avec succès !');
         
-        // Rediriger vers le dashboard personnalisé ou la liste des projets
         navigate(`/projects/${id}`);
       } else {
-        // Mode création : créer un nouveau projet
         console.log('Creating project with data:', projectData);
         const newProject = await createProject(projectData);
         console.log('Project created:', newProject);
         
-        // Sauvegarder les données dans le localStorage pour référence
         localStorage.setItem('skywalk-user-data', JSON.stringify(data))
         localStorage.setItem('skywalk-onboarding-completed', 'true')
         
-        // Clear draft
         clearDraft()
         
         toast.success('Projet créé avec succès !');
         
-        // Rediriger vers la page des projets
         navigate(`/projects`);
       }
       
     } catch (error) {
       console.error('Error completing onboarding:', error)
-      // Le toast d'erreur est déjà géré par les hooks
     }
   }
 

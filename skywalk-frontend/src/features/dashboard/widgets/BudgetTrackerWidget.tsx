@@ -18,22 +18,18 @@ export default function BudgetTrackerWidget({
   const budget = parseFloat(housingBudget)
   const currency = countryData?.costOfLiving?.currency || countryData?.currency || '€'
   
-  // Récupérer les loyers moyens du JSON ou mettre des valeurs par défaut
-  const rents = countryData?.costOfLiving?.averageRent || {
-    studio: 0,
-    t2: 0,
-    t3: 0,
-    currency: currency
+  const rents = {
+    oneBedroom: countryData?.costOfLiving?.averageRent?.oneBedroom || 0,
+    threeBedroom: countryData?.costOfLiving?.averageRent?.threeBedroom || 0
   }
 
-  // Calculer le pouvoir d'achat (pourcentage du loyer couvert par le budget)
   const getCoverage = (rentPrice: number) => {
     if (!rentPrice) return 0
     return Math.min(100, Math.round((budget / rentPrice) * 100))
   }
 
-  const studioCoverage = getCoverage(rents.studio)
-  const t2Coverage = getCoverage(rents.t2)
+  const oneBedroomCoverage = getCoverage(rents.oneBedroom)
+  const threeBedroomCoverage = getCoverage(rents.threeBedroom)
 
   return (
     <Widget
@@ -54,46 +50,43 @@ export default function BudgetTrackerWidget({
 
       {countryData?.costOfLiving ? (
         <div className="space-y-4">
-          {/* Comparaison Studio */}
           <div>
             <div className="flex justify-between text-sm mb-1">
-              <span className="text-gray-600">Studio moyen ({rents.studio} {currency})</span>
-              <span className={`font-medium ${studioCoverage >= 100 ? 'text-green-600' : 'text-orange-600'}`}>
-                {studioCoverage >= 100 ? 'Couvert ✅' : `${studioCoverage}%`}
+              <span className="text-gray-600">Appart 1 chambre ({rents.oneBedroom.toLocaleString()} {currency})</span>
+              <span className={`font-medium ${oneBedroomCoverage >= 100 ? 'text-green-600' : 'text-orange-600'}`}>
+                {oneBedroomCoverage >= 100 ? 'Couvert ✅' : `${oneBedroomCoverage}%`}
               </span>
             </div>
             <div className="w-full bg-gray-100 rounded-full h-2">
               <div 
-                className={`h-2 rounded-full transition-all duration-500 ${studioCoverage >= 100 ? 'bg-green-500' : 'bg-orange-500'}`}
-                style={{ width: `${studioCoverage}%` }}
+                className={`h-2 rounded-full transition-all duration-500 ${oneBedroomCoverage >= 100 ? 'bg-green-500' : 'bg-orange-500'}`}
+                style={{ width: `${oneBedroomCoverage}%` }}
               ></div>
             </div>
           </div>
 
-          {/* Comparaison T2 */}
           <div>
             <div className="flex justify-between text-sm mb-1">
-              <span className="text-gray-600">Appart T2 ({rents.t2} {currency})</span>
-              <span className={`font-medium ${t2Coverage >= 100 ? 'text-green-600' : 'text-red-600'}`}>
-                {t2Coverage >= 100 ? 'Couvert ✅' : `${t2Coverage}%`}
+              <span className="text-gray-600">Appart 3 chambres ({rents.threeBedroom.toLocaleString()} {currency})</span>
+              <span className={`font-medium ${threeBedroomCoverage >= 100 ? 'text-green-600' : 'text-red-600'}`}>
+                {threeBedroomCoverage >= 100 ? 'Couvert ✅' : `${threeBedroomCoverage}%`}
               </span>
             </div>
             <div className="w-full bg-gray-100 rounded-full h-2">
               <div 
-                className={`h-2 rounded-full transition-all duration-500 ${t2Coverage >= 100 ? 'bg-green-500' : 'bg-red-500'}`}
-                style={{ width: `${t2Coverage}%` }}
+                className={`h-2 rounded-full transition-all duration-500 ${threeBedroomCoverage >= 100 ? 'bg-green-500' : 'bg-red-500'}`}
+                style={{ width: `${threeBedroomCoverage}%` }}
               ></div>
             </div>
           </div>
 
-          {/* Analyse textuelle */}
           <div className="mt-4 p-3 bg-blue-50 rounded-lg flex items-start gap-2">
             <TrendingUp className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
             <p className="text-xs text-blue-800 leading-relaxed">
-              {budget >= rents.t2 
-                ? "Excellent ! Votre budget est confortable pour un T2 standard."
-                : budget >= rents.studio
-                ? "Bon budget. Vous pouvez viser un studio confortable ou un petit T2 en périphérie."
+              {budget >= rents.threeBedroom
+                ? "Excellent ! Votre budget est confortable pour un grand appartement."
+                : budget >= rents.oneBedroom
+                ? "Bon budget. Vous pouvez viser un appartement 1 chambre dans le centre."
                 : "Budget serré. Considérez la colocation ou éloignez-vous du centre-ville."}
             </p>
           </div>

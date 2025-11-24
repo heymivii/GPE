@@ -38,7 +38,12 @@ export interface CountryData {
     version: string;
     steps: ExpatStep[];
   };
-  recommendations?: Recommendation[];
+  oldRecommendations?: Recommendation[];
+  recommendations?: {
+    bestFor?: string[];
+    language?: string;
+    visaDifficulty?: string;
+  };
   costOfLiving?: {
     averageRent: {
       studio: number;

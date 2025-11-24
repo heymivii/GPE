@@ -26,17 +26,15 @@ interface ChecklistWidgetProps {
 export default function ChecklistWidget({ countryData, onEdit, onHide }: ChecklistWidgetProps) {
   const [checklist, setChecklist] = useState<ChecklistItem[]>([])
 
-  // Charger les étapes depuis le JSON du pays
   useEffect(() => {
     if (!countryData?.expatProjectTemplate) {
       return
     }
 
-    // Convertir les steps du JSON en checklist items
     const steps = countryData.expatProjectTemplate.steps.map((step) => ({
       id: step.id.toString(),
       title: step.title,
-      completed: false, // TODO: charger depuis le backend
+      completed: false, 
       category: step.category,
       substeps: step.substeps?.map(sub => ({ ...sub, completed: false })),
       expanded: false,
@@ -61,7 +59,6 @@ export default function ChecklistWidget({ countryData, onEdit, onHide }: Checkli
           const updatedSubsteps = item.substeps.map(sub =>
             sub.id === substepId ? { ...sub, completed: !sub.completed } : sub
           )
-          // Auto-cocher l'étape principale si toutes les sous-étapes sont cochées
           const allSubstepsCompleted = updatedSubsteps.every(sub => sub.completed)
           return { 
             ...item, 
@@ -99,7 +96,6 @@ export default function ChecklistWidget({ countryData, onEdit, onHide }: Checkli
   return (
     <Widget title="Ma Checklist" onEdit={onEdit} onHide={onHide}>
       <div className="space-y-4">
-        {/* Barre de progression */}
         <div className="bg-gray-100 rounded-lg p-3">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium text-gray-700">Progression</span>
@@ -115,7 +111,6 @@ export default function ChecklistWidget({ countryData, onEdit, onHide }: Checkli
           </div>
         </div>
 
-        {/* Liste des tâches */}
         <div className="space-y-2 max-h-64 overflow-y-auto">
           {checklist.map((item) => (
             <div key={item.id} className="space-y-1">
@@ -166,7 +161,6 @@ export default function ChecklistWidget({ countryData, onEdit, onHide }: Checkli
                 </div>
               </div>
 
-              {/* Sous-étapes (accordéon) */}
               {item.expanded && item.substeps && item.substeps.length > 0 && (
                 <div className="ml-8 space-y-1 pb-2">
                   {item.substeps.map((substep) => (

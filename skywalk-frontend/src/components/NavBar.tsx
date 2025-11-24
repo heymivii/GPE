@@ -26,7 +26,6 @@ export default function NavBar() {
     <nav className="flex justify-between items-center px-8 py-4 bg-white shadow w-full">
    
       <div className="flex items-center gap-8">
-        {/* Logo cliquable : redirige vers / (landing) si non connecté, vers /dashboard si connecté */}
         <Link 
           to={isAuthenticated ? "/dashboard" : "/"} 
           className="text-xl font-bold font-aclonica"
@@ -35,20 +34,18 @@ export default function NavBar() {
         </Link>
         
         <div className="hidden md:flex gap-6">
-          {/* "Accueil" uniquement pour les visiteurs non connectés */}
           {!isAuthenticated && (
             <Link to="/" className="text-gray-700 hover:text-black">Accueil</Link>
           )}
           
-          {/* Liens pour utilisateurs connectés */}
           {isAuthenticated && (
             <>
               <Link to="/dashboard" className="text-gray-700 hover:text-black">Tableau de bord</Link>
               <Link to="/projects" className="text-gray-700 hover:text-black">Mes Projets</Link>
+              <Link to="/comparison" className="text-gray-700 hover:text-black">Comparateur</Link>
             </>
           )}
           
-          {/* Liens communs */}
           <Link to="/search" className="text-gray-700 hover:text-black">Moteur de Recherche</Link>
           <Link to="/destinations" className="text-gray-700 hover:text-black">Destinations</Link>
           <Link to="/forum" className="text-gray-700 hover:text-black">Forum</Link>
@@ -79,7 +76,6 @@ export default function NavBar() {
           )}
         </div>
         
-        {/* Affichage conditionnel selon l'état de connexion */}
         {isAuthenticated && user ? (
           <div className="relative">
             <button

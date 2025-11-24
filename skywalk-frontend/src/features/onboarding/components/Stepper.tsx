@@ -17,7 +17,6 @@ export default function Stepper({ steps, onStepClick }: StepperProps) {
       <div className="flex items-center justify-between">
         {steps.map((step, index) => (
           <div key={step.id} className="flex-1 flex items-center">
-            {/* Step circle */}
             <div className="flex flex-col items-center">
               <button
                 onClick={() => onStepClick?.(step.id)}
@@ -45,7 +44,6 @@ export default function Stepper({ steps, onStepClick }: StepperProps) {
                 )}
               </button>
               
-              {/* Step label */}
               <span className={`
                 mt-2 text-xs font-light text-center max-w-20
                 ${step.state === 'current' 
@@ -59,7 +57,6 @@ export default function Stepper({ steps, onStepClick }: StepperProps) {
               </span>
             </div>
 
-            {/* Connector line */}
             {index < steps.length - 1 && (
               <div className={`
                 flex-1 h-0.5 mx-4 transition-colors duration-200

@@ -48,7 +48,6 @@ export function useCreateProject() {
     mutationFn: (data: CreateExpatriationProjectDto) =>
       expatriationProjectApi.create(data),
     onSuccess: (newProject) => {
-      // Invalidate and refetch projects list
       queryClient.invalidateQueries({ queryKey: ['expatriation-projects'] });
       queryClient.invalidateQueries({ queryKey: ['expatriation-projects-count'] });
       
@@ -77,13 +76,11 @@ export function useUpdateProject() {
       data: UpdateExpatriationProjectDto;
     }) => expatriationProjectApi.update(projectId, data),
     onSuccess: (updatedProject) => {
-      // Update the specific project in cache
       queryClient.setQueryData(
         ['expatriation-project', updatedProject.idProject],
         updatedProject,
       );
       
-      // Invalidate projects list
       queryClient.invalidateQueries({ queryKey: ['expatriation-projects'] });
       
       toast.success('Projet mis à jour avec succès !');
@@ -105,10 +102,9 @@ export function useDeleteProject() {
   return useMutation({
     mutationFn: (projectId: number) => expatriationProjectApi.delete(projectId),
     onSuccess: (_, projectId) => {
-      // Remove from cache
+ 
       queryClient.removeQueries({ queryKey: ['expatriation-project', projectId] });
       
-      // Invalidate projects list
       queryClient.invalidateQueries({ queryKey: ['expatriation-projects'] });
       queryClient.invalidateQueries({ queryKey: ['expatriation-projects-count'] });
       

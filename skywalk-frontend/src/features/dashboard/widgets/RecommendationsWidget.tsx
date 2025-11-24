@@ -1,6 +1,7 @@
 import Widget from './Widget'
 import { Lightbulb, ExternalLink, Star } from 'lucide-react'
 import { useCountryData } from '../../../hooks/useCountryData'
+import React from 'react'
 
 interface Recommendation {
   title: string
@@ -24,7 +25,47 @@ export default function RecommendationsWidget({
 }: RecommendationsWidgetProps) {
   const countryData = useCountryData(countryId)
 
-  const recommendations: Recommendation[] = countryData?.recommendations || []
+  const recommendations: Recommendation[] = React.useMemo(() => {
+    if (countryData?.recommendations && typeof countryData.recommendations === 'object' && !Array.isArray(countryData.recommendations)) {
+      const recs: Recommendation[] = []
+      
+      if (countryData.recommendations.bestFor && Array.isArray(countryData.recommendations.bestFor)) {
+        recs.push({
+          title: 'Profils recommandés',
+          importance: 'Important',
+          description: `Ce pays est idéal pour : ${countryData.recommendations.bestFor.join(', ')}`,
+          category: 'Profil'
+        })
+      }
+      
+      if (countryData.recommendations.language) {
+        recs.push({
+          title: 'Langue requise',
+          importance: 'Important',
+          description: countryData.recommendations.language,
+          category: 'Langue'
+        })
+      }
+      
+      if (countryData.recommendations.visaDifficulty) {
+        const difficulty = countryData.recommendations.visaDifficulty.toLowerCase()
+        recs.push({
+          title: 'Difficulté du visa',
+          importance: difficulty === 'élevée' ? 'Urgent' : difficulty === 'moyenne' ? 'Important' : 'À faire',
+          description: `La difficulté d'obtention du visa est ${countryData.recommendations.visaDifficulty.toLowerCase()}`,
+          category: 'Visa'
+        })
+      }
+      
+      return recs
+    }
+    
+    if (countryData?.oldRecommendations && Array.isArray(countryData.oldRecommendations)) {
+      return countryData.oldRecommendations
+    }
+    
+    return []
+  }, [countryData])
 
   const getPriorityColor = (importance: string) => {
     switch (importance) {

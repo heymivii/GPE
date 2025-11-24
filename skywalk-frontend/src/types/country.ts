@@ -8,4 +8,9 @@ export interface Country {
   flagUrl?: string;
   idContinent: number;
   createdAt: string;
+  capital?: string;
+  continent?: {
+    idContinent: number;
+    continentName: string;
+  };
 }

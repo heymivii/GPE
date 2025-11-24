@@ -53,7 +53,6 @@ export default function CategoryGrid() {
   return (
     <section className="bg-gray-50 py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Titre de section */}
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">
             Explorez nos services
@@ -63,7 +62,6 @@ export default function CategoryGrid() {
           </p>
         </div>
 
-        {/* Grille de catégories */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {categories.map((category, index) => (
             <CategoryCard

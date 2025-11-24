@@ -13,7 +13,6 @@ export default function DashboardPage() {
     navigate('/onboarding')
   }
 
-  // Rediriger vers dashboard personnalisé si l'utilisateur a des projets
   useEffect(() => {
     if (!isLoading && projects && projects.length > 0) {
       navigate('/dashboard/personalized', { replace: true })

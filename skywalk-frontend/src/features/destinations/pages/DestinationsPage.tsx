@@ -8,7 +8,6 @@ import { Search, MapPin } from 'lucide-react';
 export function DestinationsPage() {
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
       <div className="bg-white border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 text-center">
           <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6 font-outfit">
@@ -22,7 +21,6 @@ export function DestinationsPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Filters & Stats Bar */}
         <div className="flex flex-col sm:flex-row items-center justify-between mb-10 gap-4 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
           <div className="flex items-center gap-2 text-gray-700">
             <MapPin className="w-5 h-5 text-[#5EA3C0]" />
@@ -41,17 +39,14 @@ export function DestinationsPage() {
           </div>
         </div>
 
-        {/* Grid */}
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {mockDestinations.map((destination) => (
             <DestinationCard key={destination.id} destination={destination} />
           ))}
         </div>
 
-        {/* CTA Section */}
         <div className="mt-20 mb-12">
           <div className="bg-[#5EA3C0] rounded-2xl p-8 sm:p-12 text-center text-white shadow-xl relative overflow-hidden">
-            {/* Decorative circles */}
             <div className="absolute top-0 left-0 -mt-10 -ml-10 w-40 h-40 bg-white opacity-10 rounded-full"></div>
             <div className="absolute bottom-0 right-0 -mb-10 -mr-10 w-40 h-40 bg-white opacity-10 rounded-full"></div>
             

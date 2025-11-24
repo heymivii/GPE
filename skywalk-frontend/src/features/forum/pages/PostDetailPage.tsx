@@ -179,7 +179,6 @@ export default function PostDetailPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Navigation */}
         <div className="mb-6">
           <Link
             to="/forum"
@@ -190,9 +189,7 @@ export default function PostDetailPage() {
           </Link>
         </div>
 
-        {/* Topic principal */}
         <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-          {/* Header */}
           <div className="flex items-start gap-4 mb-4">
             <div className="text-4xl">{categoryInfo?.icon || '📌'}</div>
             <div className="flex-1">

@@ -61,7 +61,6 @@ export default function SearchPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header avec barre de recherche */}
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
@@ -74,7 +73,6 @@ export default function SearchPage() {
             </div>
             
             <div className="flex items-center gap-4">
-              {/* Toggle filtres */}
               <button
                 onClick={() => setIsFilterOpen(!isFilterOpen)}
                 className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
@@ -84,7 +82,6 @@ export default function SearchPage() {
                 <ChevronDown className={`w-4 h-4 transition-transform ${isFilterOpen ? 'rotate-180' : ''}`} />
               </button>
 
-              {/* Toggle vue */}
               <div className="flex items-center bg-gray-100 rounded-lg p-1">
                 <button
                   onClick={() => setViewMode('grid')}
@@ -102,7 +99,6 @@ export default function SearchPage() {
             </div>
           </div>
 
-          {/* Section filtres collapsible */}
           {isFilterOpen && (
             <div className="mt-6 p-4 bg-gray-50 rounded-lg">
               <FilterSection
@@ -114,9 +110,7 @@ export default function SearchPage() {
         </div>
       </div>
 
-      {/* Contenu principal */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Barre d'informations */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
             <h1 className="text-2xl font-bold text-gray-900">
@@ -129,7 +123,6 @@ export default function SearchPage() {
             )}
           </div>
 
-          {/* Tri */}
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-600">Trier par:</span>
             <select
@@ -150,7 +143,6 @@ export default function SearchPage() {
           </div>
         </div>
 
-        {/* Résultats */}
         <ResultsSection
           results={results}
           isLoading={isLoading}
@@ -158,7 +150,7 @@ export default function SearchPage() {
           onLoadMore={loadMore}
         />
 
-        {/* Message si aucun résultat */}
+      
         {!isLoading && results.length === 0 && filters.query && (
           <div className="text-center py-12">
             <Search className="w-16 h-16 text-gray-300 mx-auto mb-4" />

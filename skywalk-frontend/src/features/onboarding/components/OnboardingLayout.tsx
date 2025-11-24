@@ -17,11 +17,10 @@ export default function OnboardingLayout({
 }: OnboardingLayoutProps) {
   return (
     <div className="min-h-screen bg-neutral-100">
-      {/* Header */}
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            {/* Logo */}
+           
             <div className="flex items-center gap-4">
               <h1 className="text-xl font-bold text-gray-900">SkyWalk</h1>
               {title && (
@@ -32,7 +31,6 @@ export default function OnboardingLayout({
               )}
             </div>
 
-            {/* Navigation minimale */}
             <div className="flex items-center space-x-6">
               <select className="text-sm border border-gray-300 rounded px-2 py-1">
                 <option>FR</option>
@@ -46,26 +44,22 @@ export default function OnboardingLayout({
         </div>
       </header>
 
-      {/* Stepper */}
       <div className="bg-white border-b border-gray-200">
         <Stepper steps={steps} onStepClick={onStepClick} />
       </div>
 
-      {/* Main content */}
+     
       <main className="flex-1 py-8">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Card container */}
           <div className="rounded-2xl bg-neutral-50 p-6 md:p-8 shadow-sm">
             {children}
           </div>
         </div>
       </main>
 
-      {/* Footer */}
       <footer className="bg-white border-t border-gray-200 mt-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            {/* Links */}
             <div className="flex space-x-6 mb-4 md:mb-0">
               <a href="/legal" className="text-sm text-gray-600 hover:text-gray-900">
                 Mentions légales
@@ -78,7 +72,6 @@ export default function OnboardingLayout({
               </a>
             </div>
 
-            {/* Social & Copyright */}
             <div className="flex items-center space-x-4">
               <div className="flex space-x-3">
                 <a href="#" className="text-gray-400 hover:text-gray-600">

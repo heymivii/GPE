@@ -92,7 +92,6 @@ export default function ProjectsPage() {
   return (
     <div className="min-h-screen bg-gray-50/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Header Section */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
@@ -111,7 +110,6 @@ export default function ProjectsPage() {
           </Link>
         </div>
 
-        {/* Projects Grid */}
         {projects && projects.length === 0 ? (
           <div className="text-center py-24 bg-white rounded-xl border border-dashed border-gray-300">
             <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -185,7 +183,6 @@ function ProjectCard({ project, countryName, countryFlag }: { project: Expatriat
     <>
       <div className="group bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 flex flex-col h-full">
         <div className="p-5 flex-1 flex flex-col">
-          {/* Header: Flag + Title + Menu */}
           <div className="flex justify-between items-start mb-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-lg bg-gray-50 border border-gray-100 flex items-center justify-center overflow-hidden shrink-0">
@@ -243,14 +240,12 @@ function ProjectCard({ project, countryName, countryFlag }: { project: Expatriat
             </div>
           </div>
 
-          {/* Status */}
           <div className="mb-6">
             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusStyle}`}>
               {statusLabel}
             </span>
           </div>
 
-          {/* Details Grid */}
           <div className="space-y-3 flex-1">
             {project.mainObjective && (
               <div className="flex items-center gap-3 text-sm text-gray-600">
@@ -287,7 +282,6 @@ function ProjectCard({ project, countryName, countryFlag }: { project: Expatriat
           </div>
         </div>
 
-        {/* Footer Action */}
         <div className="px-5 py-4 border-t border-gray-100 bg-gray-50/50 rounded-b-xl">
           <Link
             to={`/projects/${project.idProject}`}
@@ -299,7 +293,6 @@ function ProjectCard({ project, countryName, countryFlag }: { project: Expatriat
         </div>
       </div>
 
-      {/* Modal de confirmation de suppression */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setShowDeleteConfirm(false)}>
           <div className="bg-white rounded-xl p-6 max-w-sm w-full shadow-xl border border-gray-100" onClick={(e) => e.stopPropagation()}>
