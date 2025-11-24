@@ -6,12 +6,14 @@ interface OnboardingLayoutProps {
   children: ReactNode
   steps: Step[]
   onStepClick?: (id: number) => void
+  title?: string
 }
 
 export default function OnboardingLayout({ 
   children, 
   steps, 
-  onStepClick 
+  onStepClick,
+  title
 }: OnboardingLayoutProps) {
   return (
     <div className="min-h-screen bg-neutral-100">
@@ -20,8 +22,14 @@ export default function OnboardingLayout({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
-            <div className="flex items-center">
+            <div className="flex items-center gap-4">
               <h1 className="text-xl font-bold text-gray-900">SkyWalk</h1>
+              {title && (
+                <>
+                  <span className="text-gray-300">|</span>
+                  <span className="text-sm text-gray-600">{title}</span>
+                </>
+              )}
             </div>
 
             {/* Navigation minimale */}

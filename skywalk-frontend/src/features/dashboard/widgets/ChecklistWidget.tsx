@@ -1,5 +1,5 @@
 import Widget from './Widget'
-import { CheckCircle, Circle } from 'lucide-react'
+import { CheckCircle, Circle, ChevronDown, ChevronRight } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import type { CountryData } from '../../../hooks/useCountryData'
 
@@ -8,7 +8,13 @@ interface ChecklistItem {
   title: string
   completed: boolean
   category: string
-  substeps?: Array<{ id: string; label: string; isOptional: boolean }>
+  substeps?: Array<{ 
+    id: string
+    label: string
+    isOptional: boolean
+    completed?: boolean
+  }>
+  expanded?: boolean
 }
 
 interface ChecklistWidgetProps {
@@ -32,7 +38,8 @@ export default function ChecklistWidget({ countryData, onEdit, onHide }: Checkli
       title: step.title,
       completed: false, // TODO: charger depuis le backend
       category: step.category,
-      substeps: step.substeps,
+      substeps: step.substeps?.map(sub => ({ ...sub, completed: false })),
+      expanded: false,
     }))
 
     setChecklist(steps)
@@ -42,6 +49,36 @@ export default function ChecklistWidget({ countryData, onEdit, onHide }: Checkli
     setChecklist(prev => 
       prev.map(item => 
         item.id === id ? { ...item, completed: !item.completed } : item
+      )
+    )
+  }
+
+  const toggleSubstep = (itemId: string, substepId: string, e: React.MouseEvent) => {
+    e.stopPropagation()
+    setChecklist(prev => 
+      prev.map(item => {
+        if (item.id === itemId && item.substeps) {
+          const updatedSubsteps = item.substeps.map(sub =>
+            sub.id === substepId ? { ...sub, completed: !sub.completed } : sub
+          )
+          // Auto-cocher l'étape principale si toutes les sous-étapes sont cochées
+          const allSubstepsCompleted = updatedSubsteps.every(sub => sub.completed)
+          return { 
+            ...item, 
+            substeps: updatedSubsteps,
+            completed: allSubstepsCompleted 
+          }
+        }
+        return item
+      })
+    )
+  }
+
+  const toggleExpand = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation()
+    setChecklist(prev => 
+      prev.map(item => 
+        item.id === id ? { ...item, expanded: !item.expanded } : item
       )
     )
   }
@@ -81,39 +118,82 @@ export default function ChecklistWidget({ countryData, onEdit, onHide }: Checkli
         {/* Liste des tâches */}
         <div className="space-y-2 max-h-64 overflow-y-auto">
           {checklist.map((item) => (
-            <div 
-              key={item.id}
-              className={`flex items-start space-x-3 p-2 rounded-lg hover:bg-gray-50 cursor-pointer
-                ${item.completed ? 'opacity-75' : ''}
-              `}
-              onClick={() => toggleItem(item.id)}
-            >
-              <button className="mt-0.5">
-                {item.completed ? (
-                  <CheckCircle className="w-5 h-5 text-green-600" />
-                ) : (
-                  <Circle className="w-5 h-5 text-gray-400" />
-                )}
-              </button>
-              
-              <div className="flex-1 min-w-0">
-                <p className={`text-sm font-medium ${
-                  item.completed ? 'text-gray-500 line-through' : 'text-gray-900'
-                }`}>
-                  {item.title}
-                </p>
-                
-                <div className="flex items-center space-x-2 mt-1">
-                  <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded capitalize">
-                    {item.category}
-                  </span>
-                  {item.substeps && item.substeps.length > 0 && (
-                    <span className="text-xs text-blue-600">
-                      {item.substeps.length} sous-étapes
-                    </span>
+            <div key={item.id} className="space-y-1">
+              <div 
+                className={`flex items-start space-x-3 p-2 rounded-lg hover:bg-gray-50 cursor-pointer
+                  ${item.completed ? 'opacity-75' : ''}
+                `}
+                onClick={() => toggleItem(item.id)}
+              >
+                <button className="mt-0.5">
+                  {item.completed ? (
+                    <CheckCircle className="w-5 h-5 text-green-600" />
+                  ) : (
+                    <Circle className="w-5 h-5 text-gray-400" />
                   )}
+                </button>
+                
+                <div className="flex-1 min-w-0">
+                  <p className={`text-sm font-medium ${
+                    item.completed ? 'text-gray-500 line-through' : 'text-gray-900'
+                  }`}>
+                    {item.title}
+                  </p>
+                  
+                  <div className="flex items-center space-x-2 mt-1">
+                    <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded capitalize">
+                      {item.category}
+                    </span>
+                    {item.substeps && item.substeps.length > 0 && (
+                      <button 
+                        onClick={(e) => toggleExpand(item.id, e)}
+                        className="text-xs text-blue-600 hover:text-blue-700 flex items-center gap-1 font-medium"
+                      >
+                        {item.expanded ? (
+                          <>
+                            <ChevronDown className="w-3 h-3" />
+                            Masquer
+                          </>
+                        ) : (
+                          <>
+                            <ChevronRight className="w-3 h-3" />
+                            {item.substeps.length} sous-étapes
+                          </>
+                        )}
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
+
+              {/* Sous-étapes (accordéon) */}
+              {item.expanded && item.substeps && item.substeps.length > 0 && (
+                <div className="ml-8 space-y-1 pb-2">
+                  {item.substeps.map((substep) => (
+                    <div 
+                      key={substep.id}
+                      onClick={(e) => toggleSubstep(item.id, substep.id, e)}
+                      className={`flex items-start gap-2 p-2 text-xs rounded cursor-pointer hover:bg-gray-100 transition-colors
+                        ${substep.completed ? 'bg-green-50' : 'bg-gray-50'}
+                      `}
+                    >
+                      <button className="flex-shrink-0 mt-0.5">
+                        {substep.completed ? (
+                          <CheckCircle className="w-3 h-3 text-green-600" />
+                        ) : (
+                          <Circle className="w-3 h-3 text-gray-400" />
+                        )}
+                      </button>
+                      <span className={`flex-1 ${substep.completed ? 'text-gray-500 line-through' : 'text-gray-600'}`}>
+                        {substep.label}
+                        {substep.isOptional && (
+                          <span className="ml-1 text-gray-400 italic">(optionnel)</span>
+                        )}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           ))}
         </div>

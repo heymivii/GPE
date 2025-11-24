@@ -30,11 +30,15 @@ interface OnboardingData {
 
 const STORAGE_KEY = 'skywalk-onboarding-draft'
 
-export default function useOnboarding() {
+export default function useOnboarding(skipLocalStorage = false) {
   const [currentStep, setCurrentStep] = useState(1)
   const [data, setData] = useState<Partial<OnboardingData>>({})
 
   useEffect(() => {
+    if (skipLocalStorage) {
+      return;
+    }
+    
     const savedDraft = localStorage.getItem(STORAGE_KEY)
     if (savedDraft) {
       try {
@@ -45,13 +49,15 @@ export default function useOnboarding() {
         console.error('Error loading onboarding draft:', error)
       }
     }
-  }, [])
+  }, [skipLocalStorage])
 
   useEffect(() => {
+    if (skipLocalStorage) return;
+    
     if (Object.keys(data).length > 0) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ data, currentStep }))
     }
-  }, [data, currentStep])
+  }, [data, currentStep, skipLocalStorage])
 
   const updateStepData = <T extends keyof OnboardingData>(
     step: T, 
@@ -60,6 +66,13 @@ export default function useOnboarding() {
     setData(prev => ({
       ...prev,
       [step]: stepData
+    }))
+  }
+
+  const setAllData = (allData: Partial<OnboardingData>) => {
+    setData(prev => ({
+      ...prev,
+      ...allData
     }))
   }
 
@@ -147,6 +160,7 @@ export default function useOnboarding() {
     currentStep,
     data,
     updateStepData,
+    setAllData,
     nextStep,
     prevStep,
     goToStep,

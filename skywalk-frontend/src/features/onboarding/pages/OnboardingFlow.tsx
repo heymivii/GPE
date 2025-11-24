@@ -1,5 +1,6 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
+import { useEffect, useRef } from 'react'
 import OnboardingLayout from '../components/OnboardingLayout'
 import DestinationStep from '../pages/DestinationStep'
 import ProfileStep from '../pages/ProfileStep'
@@ -8,22 +9,96 @@ import PreparationStep from '../pages/PreparationStep'
 import NeedsStep from '../pages/NeedsStep'
 import SummaryStep from '../pages/SummaryStep'
 import useOnboarding from '../hooks/useOnboarding'
-import { useCreateProject } from '../../projects/hooks/useProjectMutations'
+import { useCreateProject, useUpdateProject } from '../../projects/hooks/useProjectMutations'
+import { useProjects } from '../../projects/hooks/useProjectMutations'
 
 export default function OnboardingFlow() {
   const navigate = useNavigate()
+  const { id } = useParams<{ id: string }>()
+  const editMode = !!id
+  const dataLoadedRef = useRef(false)
+  
   const { mutateAsync: createProject, isPending: isCreatingProject } = useCreateProject()
+  const { mutateAsync: updateProject, isPending: isUpdatingProject } = useUpdateProject()
+  const { data: projects } = useProjects()
+  
+  const existingProject = editMode ? projects?.find((p) => p.idProject === Number(id)) : null
+  
   const {
     currentStep,
     data,
     updateStepData,
+    setAllData,
     nextStep,
     prevStep,
     goToStep,
     getSteps,
     canGoToStep,
     clearDraft
-  } = useOnboarding()
+  } = useOnboarding(editMode) // Skip localStorage in edit mode
+
+  // Pré-remplir le formulaire en mode édition
+  useEffect(() => {
+    if (existingProject && editMode && !dataLoadedRef.current) {
+      console.log('Loading existing project data:', existingProject);
+      dataLoadedRef.current = true;
+      
+      // Mapping inverse des objectifs
+      const objectiveReverseMapping: Record<string, string> = {
+        'study': 'studies',
+        'work': 'work',
+        'adventure': 'discovery',
+        'family_reunion': 'family',
+        'retirement': 'other',
+        'other': 'other'
+      }
+
+      // Mapping inverse des durées
+      const durationReverseMapping: Record<number, string> = {
+        3: 'less_6_months',
+        9: '6_12_months',
+        24: '1_3_years',
+        48: 'more_3_years'
+      }
+
+      // Charger toutes les données en une seule fois
+      const projectData = {
+        destination: {
+          fromCountry: 'FR',
+          toCountry: existingProject.idDestinationCountry?.toString() || '',
+          targetCity: existingProject.idDestinationCity?.toString() || '',
+          departureYear: existingProject.expectedDepartureDate 
+            ? new Date(existingProject.expectedDepartureDate).getFullYear().toString()
+            : new Date().getFullYear().toString()
+        },
+        profile: {
+          age: '25',
+          status: 'single',
+          travelParty: existingProject.travelType || 'alone',
+          languageLevel: 'intermediate'
+        },
+        objective: {
+          goal: objectiveReverseMapping[existingProject.mainObjective || ''] || 'other',
+          stayDuration: durationReverseMapping[existingProject.expectedDuration || 12] || '6_12_months'
+        },
+        preparation: {
+          stepsDone: [],
+          housingBudget: existingProject.housingBudget?.toString() || '0'
+        },
+        needs: {
+          priorities: existingProject.priorities?.split(',').map(p => p.trim()) || [],
+          needPersonalizedSupport: existingProject.needsSupport || false
+        }
+      };
+
+      // Charger toutes les données d'un coup avec setAllData
+      setAllData(projectData);
+      
+      console.log('Project data loaded successfully', projectData);
+      console.log('Current data state:', data);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [existingProject, editMode])
 
   const handleStepClick = (stepId: number) => {
     if (canGoToStep(stepId)) {
@@ -70,7 +145,7 @@ export default function OnboardingFlow() {
         'more_3_years': 48
       };
       
-      // Créer le projet d'expatriation avec les données du formulaire
+      // Préparer les données du projet
       const projectData = {
         idDestinationCountry: destinationCountryId,
         idDestinationCity: data.destination.targetCity ? parseInt(data.destination.targetCity) : undefined,
@@ -84,23 +159,41 @@ export default function OnboardingFlow() {
         expectedDepartureDate: data.destination.departureYear ? `${data.destination.departureYear}-01-01` : undefined,
       };
 
-      console.log('Creating project with data:', projectData);
-      const newProject = await createProject(projectData);
-      console.log('Project created:', newProject);
-      
-      // Sauvegarder les données dans le localStorage pour référence
-      localStorage.setItem('skywalk-user-data', JSON.stringify(data))
-      localStorage.setItem('skywalk-onboarding-completed', 'true')
-      
-      // Clear draft
-      clearDraft()
-      
-      // Rediriger vers la page du projet créé
-      navigate(`/projects`)
+      if (editMode && id) {
+        // Mode édition : mettre à jour le projet existant
+        console.log('Updating project with data:', projectData);
+        await updateProject({
+          projectId: Number(id),
+          data: projectData
+        });
+        console.log('Project updated');
+        
+        toast.success('Projet mis à jour avec succès !');
+        
+        // Rediriger vers le dashboard personnalisé ou la liste des projets
+        navigate(`/projects/${id}`);
+      } else {
+        // Mode création : créer un nouveau projet
+        console.log('Creating project with data:', projectData);
+        const newProject = await createProject(projectData);
+        console.log('Project created:', newProject);
+        
+        // Sauvegarder les données dans le localStorage pour référence
+        localStorage.setItem('skywalk-user-data', JSON.stringify(data))
+        localStorage.setItem('skywalk-onboarding-completed', 'true')
+        
+        // Clear draft
+        clearDraft()
+        
+        toast.success('Projet créé avec succès !');
+        
+        // Rediriger vers la page des projets
+        navigate(`/projects`);
+      }
       
     } catch (error) {
       console.error('Error completing onboarding:', error)
-      // Le toast d'erreur est déjà géré par le hook useCreateProject
+      // Le toast d'erreur est déjà géré par les hooks
     }
   }
 
@@ -167,7 +260,7 @@ export default function OnboardingFlow() {
             onBack={prevStep}
             onEdit={goToStep}
             onComplete={handleComplete}
-            isSubmitting={isCreatingProject}
+            isSubmitting={isCreatingProject || isUpdatingProject}
           />
         )
       default:
@@ -179,6 +272,7 @@ export default function OnboardingFlow() {
     <OnboardingLayout
       steps={getSteps()}
       onStepClick={handleStepClick}
+      title={editMode ? 'Modifier mon projet' : undefined}
     >
       {renderCurrentStep()}
     </OnboardingLayout>

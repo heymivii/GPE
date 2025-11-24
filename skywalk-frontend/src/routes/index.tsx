@@ -97,6 +97,10 @@ export const router = createBrowserRouter([
         element: <OnboardingFlow />,
       },
       {
+        path: '/onboarding/:id',
+        element: <OnboardingFlow />,
+      },
+      {
         path: '/profile',
         element: <MainLayout />,
         children: [
