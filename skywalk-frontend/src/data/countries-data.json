@@ -130,6 +130,24 @@
           }
         ]
       },
+      "jobMarket": {
+        "topSectors": ["Technologies de l'information", "Santé et services sociaux", "Ingénierie", "Finance et assurance", "Commerce et vente"],
+        "averageSalary": 2500,
+        "unemploymentRate": "7.3%",
+        "keyJobSites": [
+          { "name": "Pôle emploi", "url": "https://www.pole-emploi.fr" },
+          { "name": "Indeed France", "url": "https://www.indeed.fr" },
+          { "name": "LinkedIn", "url": "https://www.linkedin.com/jobs" },
+          { "name": "Welcome to the Jungle", "url": "https://www.welcometothejungle.com/fr" },
+          { "name": "Apec", "url": "https://www.apec.fr" }
+        ],
+        "workingHoursPerWeek": 35,
+        "salaryByCity": {
+          "Paris": 3200,
+          "Lyon": 2600,
+          "Marseille": 2400
+        }
+      },
       "costOfLiving": {
         "averageRent": {
           "oneBedroom": 900,
@@ -139,7 +157,98 @@
         "food": {
           "restaurantMeal": 15,
           "groceriesWeekly": 70
+        },
+        "utilities": 150,
+        "transportMonthly": 75,
+        "internetMonthly": 30,
+        "gymMembership": 35,
+        "byCity": {
+          "Paris": { "oneBedroom": 1300, "threeBedroom": 2500, "utilities": 180, "transportMonthly": 84 },
+          "Lyon": { "oneBedroom": 800, "threeBedroom": 1400, "utilities": 140, "transportMonthly": 65 },
+          "Marseille": { "oneBedroom": 750, "threeBedroom": 1300, "utilities": 135, "transportMonthly": 60 }
         }
+      },
+      "education": {
+        "system": "Système éducatif gratuit et laïc de la maternelle au lycée, avec un enseignement supérieur accessible",
+        "publicSchools": {
+          "quality": "Excellente",
+          "cost": "Gratuit",
+          "info": "École obligatoire de 3 à 16 ans, programmes nationaux standardisés"
+        },
+        "privateSchools": {
+          "averageCost": 3500,
+          "info": "Coût annuel variable entre 2000€ et 8000€ selon l'établissement"
+        },
+        "universities": {
+          "topUniversities": ["Sorbonne Université", "Université PSL", "École Polytechnique", "Sciences Po", "HEC Paris"],
+          "averageTuition": 250,
+          "info": "Universités publiques très accessibles (170-600€/an), grandes écoles plus coûteuses"
+        }
+      },
+      "healthcare": {
+        "system": "Système public universel (Sécurité sociale) avec remboursements partiels",
+        "coverage": "Couverture à hauteur de 70% des frais médicaux, mutuelles complémentaires recommandées",
+        "qualityRating": "9/10",
+        "averageCosts": {
+          "doctorVisit": 25,
+          "emergency": 0,
+          "insurance": 50
+        },
+        "accessibility": "Excellente"
+      },
+      "taxation": {
+        "incomeTaxRange": "0% - 45%",
+        "corporateTax": "25%",
+        "vat": "20%",
+        "socialContributions": "22% - 28%",
+        "taxResidencyRules": "Résidence fiscale après 183 jours de présence ou si le foyer principal est en France"
+      },
+      "climate": {
+        "type": "Tempéré océanique, continental et méditerranéen selon les régions",
+        "averageTemp": {
+          "summer": "20°C - 28°C",
+          "winter": "2°C - 8°C"
+        },
+        "rainfall": "600-900 mm/an",
+        "seasons": "Quatre saisons distinctes, hivers doux à froids, étés tempérés à chauds"
+      },
+      "lifestyle": {
+        "culturalActivities": ["Musées et galeries d'art", "Théâtres et opéras", "Festivals culturels", "Cinémas", "Gastronomie et œnologie"],
+        "outdoorActivities": ["Randonnée", "Ski et sports d'hiver", "Cyclisme", "Sports nautiques", "Escalade"],
+        "cuisine": "Gastronomie française reconnue mondialement, fromages, vins, pâtisseries, cuisine régionale variée",
+        "workLifeBalance": "Excellent",
+        "safetyRating": "8/10"
+      },
+      "expatCommunity": {
+        "size": "Moyenne",
+        "estimated": "Environ 500 000 expatriés",
+        "forums": [
+          { "name": "InterNations France", "url": "https://www.internations.org/france-expats" },
+          { "name": "Expat.com France", "url": "https://www.expat.com/fr/guide/europe/france/" },
+          { "name": "The Local France", "url": "https://www.thelocal.fr" }
+        ],
+        "events": "Nombreux meetups d'expatriés, événements networking, groupes linguistiques",
+        "supportGroups": [
+          { "name": "Meetup Paris Expats", "url": "https://www.meetup.com/fr-FR/cities/fr/paris/expat/" },
+          { "name": "Message Paris", "url": "https://messageparis.org" }
+        ]
+      },
+      "resources": {
+        "officialGovWebsite": "https://www.service-public.fr",
+        "immigrationOffice": {
+          "name": "Office Français de l'Immigration et de l'Intégration (OFII)",
+          "url": "https://www.ofii.fr"
+        },
+        "emergencyNumbers": {
+          "police": "17",
+          "medical": "15",
+          "fire": "18"
+        },
+        "expatGuides": [
+          { "name": "France-Visas", "url": "https://france-visas.gouv.fr" },
+          { "name": "Campus France", "url": "https://www.campusfrance.org" },
+          { "name": "Ameli - Sécurité sociale", "url": "https://www.ameli.fr" }
+        ]
       },
       "recommendations": {
         "bestFor": ["Étudiants", "Travailleurs qualifiés", "Familles"],
@@ -297,6 +406,24 @@
           }
         ]
       },
+      "jobMarket": {
+        "topSectors": ["Technologies de l'information", "Santé", "Construction et métiers spécialisés", "Finance", "Ingénierie"],
+        "averageSalary": 4500,
+        "unemploymentRate": "5.8%",
+        "keyJobSites": [
+          { "name": "Job Bank Canada", "url": "https://www.jobbank.gc.ca" },
+          { "name": "Indeed Canada", "url": "https://ca.indeed.com" },
+          { "name": "LinkedIn", "url": "https://www.linkedin.com/jobs" },
+          { "name": "Monster Canada", "url": "https://www.monster.ca" },
+          { "name": "Workopolis", "url": "https://www.workopolis.com" }
+        ],
+        "workingHoursPerWeek": 40,
+        "salaryByCity": {
+          "Toronto": 5200,
+          "Montréal": 4200,
+          "Vancouver": 5000
+        }
+      },
       "costOfLiving": {
         "averageRent": {
           "oneBedroom": 1300,
@@ -306,7 +433,98 @@
         "food": {
           "restaurantMeal": 12,
           "groceriesWeekly": 85
+        },
+        "utilities": 180,
+        "transportMonthly": 100,
+        "internetMonthly": 60,
+        "gymMembership": 50,
+        "byCity": {
+          "Toronto": { "oneBedroom": 2000, "threeBedroom": 3500, "utilities": 200, "transportMonthly": 156 },
+          "Montréal": { "oneBedroom": 1200, "threeBedroom": 2000, "utilities": 170, "transportMonthly": 94 },
+          "Vancouver": { "oneBedroom": 2200, "threeBedroom": 3800, "utilities": 190, "transportMonthly": 134 }
         }
+      },
+      "education": {
+        "system": "Système éducatif provincial de haute qualité, enseignement en anglais et français selon la province",
+        "publicSchools": {
+          "quality": "Excellente",
+          "cost": "Gratuit",
+          "info": "École obligatoire jusqu'à 16-18 ans selon la province, programmes provinciaux"
+        },
+        "privateSchools": {
+          "averageCost": 15000,
+          "info": "Coût annuel variable entre 10 000 et 30 000 CAD selon l'établissement"
+        },
+        "universities": {
+          "topUniversities": ["Université de Toronto", "UBC", "McGill", "Université de Montréal", "Université de l'Alberta"],
+          "averageTuition": 6500,
+          "info": "Frais universitaires pour résidents permanents: 6 000-8 000 CAD/an. Pour étudiants internationaux: 20 000-40 000 CAD/an"
+        }
+      },
+      "healthcare": {
+        "system": "Système public universel géré par les provinces",
+        "coverage": "Couverture complète des soins médicaux essentiels, médicaments et dentaire non inclus",
+        "qualityRating": "8/10",
+        "averageCosts": {
+          "doctorVisit": 0,
+          "emergency": 0,
+          "insurance": 75
+        },
+        "accessibility": "Bonne"
+      },
+      "taxation": {
+        "incomeTaxRange": "15% - 33%",
+        "corporateTax": "15%",
+        "vat": "5% (TPS) + 0-10% (TVP provinciale)",
+        "socialContributions": "5.95% - 7.55%",
+        "taxResidencyRules": "Résidence fiscale si liens de résidence significatifs au Canada (logement, famille, biens)"
+      },
+      "climate": {
+        "type": "Varié selon les régions: continental, océanique, subarctique",
+        "averageTemp": {
+          "summer": "15°C - 25°C",
+          "winter": "-15°C - 5°C"
+        },
+        "rainfall": "400-1200 mm/an selon les régions",
+        "seasons": "Quatre saisons marquées, hivers froids avec neige, étés chauds"
+      },
+      "lifestyle": {
+        "culturalActivities": ["Festivals multiculturels", "Musées et galeries", "Concerts et spectacles", "Événements sportifs", "Cinéma"],
+        "outdoorActivities": ["Ski et snowboard", "Randonnée", "Camping", "Canoë-kayak", "Hockey sur glace"],
+        "cuisine": "Cuisine multiculturelle variée, poutine, sirop d'érable, plats des Premières Nations",
+        "workLifeBalance": "Bon",
+        "safetyRating": "9/10"
+      },
+      "expatCommunity": {
+        "size": "Grande",
+        "estimated": "Plus de 1 million d'expatriés",
+        "forums": [
+          { "name": "InterNations Canada", "url": "https://www.internations.org/canada-expats" },
+          { "name": "Expat.com Canada", "url": "https://www.expat.com/en/guide/north-america/canada/" },
+          { "name": "CanadaVisa Forum", "url": "https://www.canadavisa.com/canada-immigration-discussion-board/" }
+        ],
+        "events": "Nombreux événements d'accueil pour nouveaux arrivants, groupes communautaires multiculturels",
+        "supportGroups": [
+          { "name": "Newcomers Canada", "url": "https://www.newcomerscanada.ca" },
+          { "name": "COSTI Immigrant Services", "url": "https://www.costi.org" }
+        ]
+      },
+      "resources": {
+        "officialGovWebsite": "https://www.canada.ca",
+        "immigrationOffice": {
+          "name": "Immigration, Réfugiés et Citoyenneté Canada (IRCC)",
+          "url": "https://www.canada.ca/en/immigration-refugees-citizenship.html"
+        },
+        "emergencyNumbers": {
+          "police": "911",
+          "medical": "911",
+          "fire": "911"
+        },
+        "expatGuides": [
+          { "name": "Guide officiel d'immigration", "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada.html" },
+          { "name": "Service Canada", "url": "https://www.canada.ca/en/employment-social-development/corporate/portfolio/service-canada.html" },
+          { "name": "Arrive", "url": "https://arrive.ca" }
+        ]
       },
       "recommendations": {
         "bestFor": ["Travailleurs qualifiés", "Aventuriers", "Familles"],
@@ -437,6 +655,24 @@
           }
         ]
       },
+      "jobMarket": {
+        "topSectors": ["Finance et banque", "Pharmaceutique et biotechnologie", "Technologies de l'information", "Horlogerie et précision", "Ingénierie"],
+        "averageSalary": 6500,
+        "unemploymentRate": "2.1%",
+        "keyJobSites": [
+          { "name": "JobUp.ch", "url": "https://www.jobup.ch" },
+          { "name": "Jobs.ch", "url": "https://www.jobs.ch" },
+          { "name": "Indeed Suisse", "url": "https://ch.indeed.com" },
+          { "name": "LinkedIn", "url": "https://www.linkedin.com/jobs" },
+          { "name": "JobScout24", "url": "https://www.jobscout24.ch" }
+        ],
+        "workingHoursPerWeek": 42,
+        "salaryByCity": {
+          "Zurich": 7500,
+          "Genève": 7200,
+          "Berne": 6800
+        }
+      },
       "costOfLiving": {
         "averageRent": {
           "oneBedroom": 1800,
@@ -446,7 +682,98 @@
         "food": {
           "restaurantMeal": 25,
           "groceriesWeekly": 100
+        },
+        "utilities": 220,
+        "transportMonthly": 90,
+        "internetMonthly": 50,
+        "gymMembership": 80,
+        "byCity": {
+          "Zurich": { "oneBedroom": 2200, "threeBedroom": 4000, "utilities": 250, "transportMonthly": 95 },
+          "Genève": { "oneBedroom": 2100, "threeBedroom": 3800, "utilities": 240, "transportMonthly": 85 },
+          "Berne": { "oneBedroom": 1700, "threeBedroom": 3000, "utilities": 210, "transportMonthly": 90 }
         }
+      },
+      "education": {
+        "system": "Système éducatif fédéral de très haute qualité, trilingue selon les cantons",
+        "publicSchools": {
+          "quality": "Excellente",
+          "cost": "Gratuit",
+          "info": "École obligatoire de 4 à 15 ans, enseignement cantonal en allemand, français ou italien"
+        },
+        "privateSchools": {
+          "averageCost": 25000,
+          "info": "Coût annuel entre 15 000 et 50 000 CHF, nombreuses écoles internationales prestigieuses"
+        },
+        "universities": {
+          "topUniversities": ["ETH Zurich", "EPFL", "Université de Zurich", "Université de Genève", "Université de Bâle"],
+          "averageTuition": 1200,
+          "info": "Frais universitaires très accessibles: 1 000-2 000 CHF/an pour les résidents"
+        }
+      },
+      "healthcare": {
+        "system": "Système d'assurance maladie obligatoire privé (LAMal)",
+        "coverage": "Couverture complète des soins de base, assurances complémentaires disponibles",
+        "qualityRating": "10/10",
+        "averageCosts": {
+          "doctorVisit": 50,
+          "emergency": 100,
+          "insurance": 400
+        },
+        "accessibility": "Excellente"
+      },
+      "taxation": {
+        "incomeTaxRange": "0% - 40%",
+        "corporateTax": "12% - 21%",
+        "vat": "7.7%",
+        "socialContributions": "6% - 12%",
+        "taxResidencyRules": "Résidence fiscale dès l'installation en Suisse, imposition fédérale + cantonale + communale"
+      },
+      "climate": {
+        "type": "Continental tempéré, alpin en montagne",
+        "averageTemp": {
+          "summer": "18°C - 28°C",
+          "winter": "-2°C - 7°C"
+        },
+        "rainfall": "1000-1500 mm/an",
+        "seasons": "Quatre saisons distinctes, hivers froids avec neige en montagne, étés tempérés"
+      },
+      "lifestyle": {
+        "culturalActivities": ["Musées et expositions", "Festivals musicaux", "Théâtres", "Opéras", "Marchés traditionnels"],
+        "outdoorActivities": ["Ski et sports d'hiver", "Randonnée en montagne", "VTT", "Sports nautiques sur les lacs", "Alpinisme"],
+        "cuisine": "Fondue, raclette, chocolat suisse, rösti, cuisine variée selon les cantons",
+        "workLifeBalance": "Bon",
+        "safetyRating": "10/10"
+      },
+      "expatCommunity": {
+        "size": "Grande",
+        "estimated": "Environ 2 millions d'expatriés (25% de la population)",
+        "forums": [
+          { "name": "InterNations Suisse", "url": "https://www.internations.org/switzerland-expats" },
+          { "name": "Expat.com Suisse", "url": "https://www.expat.com/en/guide/europe/switzerland/" },
+          { "name": "Englishforum.ch", "url": "https://www.englishforum.ch" }
+        ],
+        "events": "Nombreux événements internationaux, groupes linguistiques, clubs d'expatriés actifs",
+        "supportGroups": [
+          { "name": "Swiss Expats", "url": "https://www.swissinfo.ch/eng" },
+          { "name": "Meetup Suisse", "url": "https://www.meetup.com/cities/ch/" }
+        ]
+      },
+      "resources": {
+        "officialGovWebsite": "https://www.ch.ch",
+        "immigrationOffice": {
+          "name": "Secrétariat d'État aux migrations (SEM)",
+          "url": "https://www.sem.admin.ch"
+        },
+        "emergencyNumbers": {
+          "police": "117",
+          "medical": "144",
+          "fire": "118"
+        },
+        "expatGuides": [
+          { "name": "ch.ch - Guide officiel", "url": "https://www.ch.ch/en/moving-to-switzerland/" },
+          { "name": "Swissinfo", "url": "https://www.swissinfo.ch" },
+          { "name": "Hello Switzerland", "url": "https://www.helloswitzerland.ch" }
+        ]
       },
       "recommendations": {
         "bestFor": ["Professionnels", "Familles aisées", "Indépendants"],
@@ -455,7 +782,7 @@
       }
     },
     {
-      "id": 11,
+      "id": 4,
       "name": "Royaume-Uni",
       "code": "GB",
       "currency": "GBP",
@@ -593,6 +920,24 @@
           }
         ]
       },
+      "jobMarket": {
+        "topSectors": ["Services financiers", "Technologies de l'information", "Santé", "Ingénierie", "Commerce et retail"],
+        "averageSalary": 3500,
+        "unemploymentRate": "4.2%",
+        "keyJobSites": [
+          { "name": "Indeed UK", "url": "https://www.indeed.co.uk" },
+          { "name": "Reed", "url": "https://www.reed.co.uk" },
+          { "name": "Totaljobs", "url": "https://www.totaljobs.com" },
+          { "name": "LinkedIn", "url": "https://www.linkedin.com/jobs" },
+          { "name": "CV-Library", "url": "https://www.cv-library.co.uk" }
+        ],
+        "workingHoursPerWeek": 37,
+        "salaryByCity": {
+          "Londres": 4500,
+          "Manchester": 3200,
+          "Édimbourg": 3300
+        }
+      },
       "costOfLiving": {
         "averageRent": {
           "oneBedroom": 1500,
@@ -602,71 +947,2874 @@
         "food": {
           "restaurantMeal": 18,
           "groceriesWeekly": 75
+        },
+        "utilities": 200,
+        "transportMonthly": 150,
+        "internetMonthly": 35,
+        "gymMembership": 40,
+        "byCity": {
+          "Londres": { "oneBedroom": 2000, "threeBedroom": 3800, "utilities": 230, "transportMonthly": 190 },
+          "Manchester": { "oneBedroom": 1100, "threeBedroom": 2000, "utilities": 180, "transportMonthly": 85 },
+          "Édimbourg": { "oneBedroom": 1200, "threeBedroom": 2200, "utilities": 185, "transportMonthly": 70 }
         }
+      },
+      "education": {
+        "system": "Système éducatif décentralisé (Angleterre, Écosse, Pays de Galles, Irlande du Nord) de haute qualité",
+        "publicSchools": {
+          "quality": "Bonne à excellente",
+          "cost": "Gratuit",
+          "info": "École obligatoire de 5 à 16 ans, système GCSE et A-Levels"
+        },
+        "privateSchools": {
+          "averageCost": 18000,
+          "info": "Coût annuel entre 12 000 et 40 000 GBP selon l'établissement"
+        },
+        "universities": {
+          "topUniversities": ["Oxford", "Cambridge", "Imperial College", "LSE", "UCL"],
+          "averageTuition": 9250,
+          "info": "Frais pour résidents UK: ~9 250 GBP/an. Pour étudiants internationaux: 15 000-35 000 GBP/an"
+        }
+      },
+      "healthcare": {
+        "system": "National Health Service (NHS) - système public gratuit",
+        "coverage": "Couverture complète gratuite au point de service, délais d'attente variables",
+        "qualityRating": "7/10",
+        "averageCosts": {
+          "doctorVisit": 0,
+          "emergency": 0,
+          "insurance": 0
+        },
+        "accessibility": "Bonne"
+      },
+      "taxation": {
+        "incomeTaxRange": "0% - 45%",
+        "corporateTax": "19%",
+        "vat": "20%",
+        "socialContributions": "12% - 13.8%",
+        "taxResidencyRules": "Résidence fiscale après 183 jours de présence au UK durant l'année fiscale"
+      },
+      "climate": {
+        "type": "Océanique tempéré",
+        "averageTemp": {
+          "summer": "15°C - 22°C",
+          "winter": "2°C - 8°C"
+        },
+        "rainfall": "800-1200 mm/an",
+        "seasons": "Quatre saisons, temps changeant, pluies fréquentes toute l'année"
+      },
+      "lifestyle": {
+        "culturalActivities": ["Théâtres du West End", "Musées gratuits", "Festivals musicaux", "Pubs et culture britannique", "Événements sportifs"],
+        "outdoorActivities": ["Randonnée", "Cyclisme", "Golf", "Football", "Sports nautiques"],
+        "cuisine": "Fish and chips, Sunday roast, cuisine multiculturelle variée, pubs traditionnels",
+        "workLifeBalance": "Moyen",
+        "safetyRating": "7/10"
+      },
+      "expatCommunity": {
+        "size": "Grande",
+        "estimated": "Plus de 6 millions d'expatriés",
+        "forums": [
+          { "name": "InterNations UK", "url": "https://www.internations.org/united-kingdom-expats" },
+          { "name": "Expat.com UK", "url": "https://www.expat.com/en/guide/europe/united-kingdom/" },
+          { "name": "Expat Focus", "url": "https://www.expatfocus.com/united-kingdom" }
+        ],
+        "events": "Nombreux meetups internationaux, groupes communautaires très actifs, événements de networking",
+        "supportGroups": [
+          { "name": "Meetup London", "url": "https://www.meetup.com/cities/gb/london/" },
+          { "name": "British Expat Forum", "url": "https://britishexpats.com" }
+        ]
+      },
+      "resources": {
+        "officialGovWebsite": "https://www.gov.uk",
+        "immigrationOffice": {
+          "name": "UK Visas and Immigration (UKVI)",
+          "url": "https://www.gov.uk/government/organisations/uk-visas-and-immigration"
+        },
+        "emergencyNumbers": {
+          "police": "999",
+          "medical": "999",
+          "fire": "999"
+        },
+        "expatGuides": [
+          { "name": "GOV.UK - Moving to the UK", "url": "https://www.gov.uk/browse/visas-immigration" },
+          { "name": "NHS Services", "url": "https://www.nhs.uk" },
+          { "name": "Citizens Advice", "url": "https://www.citizensadvice.org.uk" }
+        ]
       },
       "recommendations": {
         "bestFor": ["Professionnels", "Étudiants", "Travailleurs qualifiés"],
         "language": "Anglais requis",
         "visaDifficulty": "Élevée (post-Brexit)"
+      }
+    },
+    {
+      "id": 5,
+      "name": "Allemagne",
+      "code": "DE",
+      "currency": "EUR",
+      "languages": ["Allemand"],
+      "flagUrl": "https://flagcdn.com/de.svg",
+      "flagEmoji": "🇩🇪",
+      "continent": "Europe",
+      "capital": "Berlin",
+      "expatProjectTemplate": {
+        "version": "1.0.0",
+        "steps": [
+          {
+            "id": 1,
+            "slug": "offre-emploi",
+            "title": "Obtenir une offre d'emploi",
+            "description": "Condition préalable pour le visa de travail",
+            "category": "pre-departure",
+            "order": 1,
+            "substeps": [
+              { "id": "1.1", "label": "Rechercher emploi sur StepStone, Indeed.de, Xing", "isOptional": false },
+              { "id": "1.2", "label": "Postuler et passer les entretiens", "isOptional": false },
+              { "id": "1.3", "label": "Recevoir offre d'emploi écrite signée", "isOptional": false },
+              { "id": "1.4", "label": "Vérifier que l'employeur peut sponsoriser le visa", "isOptional": false }
+            ]
+          },
+          {
+            "id": 2,
+            "slug": "visa-national",
+            "title": "Demander le visa national",
+            "description": "Nationale D Visum pour long séjour",
+            "category": "visa",
+            "order": 2,
+            "substeps": [
+              { "id": "2.1", "label": "Prendre rendez-vous à l'ambassade/consulat", "isOptional": false },
+              { "id": "2.2", "label": "Rassembler documents (contrat, diplômes, passeport)", "isOptional": false },
+              { "id": "2.3", "label": "Remplir formulaire de demande de visa", "isOptional": false },
+              { "id": "2.4", "label": "Payer frais de visa (75€)", "isOptional": false },
+              { "id": "2.5", "label": "Déposer dossier et passer entretien", "isOptional": false }
+            ]
+          },
+          {
+            "id": 3,
+            "slug": "anmeldung",
+            "title": "Anmeldung - Enregistrement résidence",
+            "description": "Obligatoire dans les 14 jours après arrivée",
+            "category": "arrival",
+            "order": 3,
+            "substeps": [
+              { "id": "3.1", "label": "Trouver logement et signer bail", "isOptional": false },
+              { "id": "3.2", "label": "Obtenir Wohnungsgeberbestätigung du propriétaire", "isOptional": false },
+              { "id": "3.3", "label": "Prendre RDV au Bürgeramt (mairie)", "isOptional": false },
+              { "id": "3.4", "label": "Se présenter avec passeport, visa, bail", "isOptional": false },
+              { "id": "3.5", "label": "Recevoir Meldebescheinigung (certificat)", "isOptional": false }
+            ]
+          },
+          {
+            "id": 4,
+            "slug": "aufenthaltstitel",
+            "title": "Obtenir permis de séjour",
+            "description": "Aufenthaltstitel (carte de résidence)",
+            "category": "administratif",
+            "order": 4,
+            "substeps": [
+              { "id": "4.1", "label": "Prendre RDV à l'Ausländerbehörde", "isOptional": false },
+              { "id": "4.2", "label": "Préparer documents (Anmeldung, contrat, photos)", "isOptional": false },
+              { "id": "4.3", "label": "Se présenter au rendez-vous", "isOptional": false },
+              { "id": "4.4", "label": "Payer taxe (100€)", "isOptional": false },
+              { "id": "4.5", "label": "Récupérer carte de séjour", "isOptional": false }
+            ]
+          },
+          {
+            "id": 5,
+            "slug": "assurance-sante",
+            "title": "Assurance santé obligatoire",
+            "description": "Publique (GKV) ou privée (PKV)",
+            "category": "administratif",
+            "order": 5,
+            "substeps": [
+              { "id": "5.1", "label": "Choisir entre assurance publique (AOK, TK, Barmer) ou privée", "isOptional": false },
+              { "id": "5.2", "label": "Souscrire l'assurance", "isOptional": false },
+              { "id": "5.3", "label": "Recevoir carte d'assurance", "isOptional": false }
+            ]
+          },
+          {
+            "id": 6,
+            "slug": "banque",
+            "title": "Ouvrir compte bancaire",
+            "description": "Compte courant allemand",
+            "category": "vie-quotidienne",
+            "order": 6,
+            "substeps": [
+              { "id": "6.1", "label": "Choisir banque (Deutsche Bank, Commerzbank, N26)", "isOptional": false },
+              { "id": "6.2", "label": "Prendre RDV avec Anmeldung + passeport", "isOptional": false },
+              { "id": "6.3", "label": "Ouvrir compte et recevoir carte", "isOptional": false }
+            ]
+          },
+          {
+            "id": 7,
+            "slug": "steuer-id",
+            "title": "Obtenir numéro fiscal",
+            "description": "Steuer-ID envoyé automatiquement",
+            "category": "administratif",
+            "order": 7,
+            "substeps": [
+              { "id": "7.1", "label": "Attendre réception automatique (2-4 semaines)", "isOptional": false },
+              { "id": "7.2", "label": "Fournir Steuer-ID à l'employeur", "isOptional": false }
+            ]
+          },
+          {
+            "id": 8,
+            "slug": "securite-sociale",
+            "title": "Assurance retraite et sociale",
+            "description": "Inscription automatique via employeur",
+            "category": "administratif",
+            "order": 8,
+            "substeps": [
+              { "id": "8.1", "label": "Fournir documents à l'employeur", "isOptional": false },
+              { "id": "8.2", "label": "Recevoir Sozialversicherungsnummer", "isOptional": false }
+            ]
+          },
+          {
+            "id": 9,
+            "slug": "installation",
+            "title": "Installation quotidienne",
+            "description": "Internet, téléphone, transports",
+            "category": "vie-quotidienne",
+            "order": 9,
+            "substeps": [
+              { "id": "9.1", "label": "Souscrire contrat Internet (Telekom, Vodafone)", "isOptional": false },
+              { "id": "9.2", "label": "Obtenir forfait mobile allemand", "isOptional": false },
+              { "id": "9.3", "label": "Acheter abonnement transports (BVG, MVG)", "isOptional": false },
+              { "id": "9.4", "label": "Échanger permis conduire si nécessaire", "isOptional": true }
+            ]
+          }
+        ]
       },
-      "oldRecommendations": [
-  {
-    "title": "Rechercher un logement temporaire",
-    "importance": "Urgent",
-    "description": "Réservez un logement temporaire pour vos premières semaines au Royaume-Uni.",
-    "link": "https://www.visitbritain.com/gb/en/accommodation",
-    "linkText": "VisitBritain – Hébergements",
-    "category": "logement"
-  },
-  {
-    "title": "Comprendre le marché du travail britannique",
-    "importance": "Urgent",
-    "description": "Informez-vous sur les secteurs qui recrutent, les salaires, les contrats et vos droits.",
-    "link": "https://www.gov.uk/browse/working",
-    "linkText": "GOV.UK – Travailler au Royaume-Uni",
-    "category": "emploi"
-  },
-  {
-    "title": "Optimiser votre CV au format UK",
-    "importance": "Important",
-    "description": "Adaptez votre CV aux standards britanniques pour maximiser vos chances.",
-    "link": "https://nationalcareers.service.gov.uk/careers-advice/cv-sections",
-    "linkText": "National Careers Service – UK CV Guide",
-    "category": "emploi"
-  },
-  {
-    "title": "Souscrire à une assurance santé complémentaire",
-    "importance": "Important",
-    "description": "Même avec le NHS, une assurance privée peut être nécessaire selon votre situation.",
-    "link": "https://www.nhs.uk/using-the-nhs/nhs-services/health-insurance/",
-    "linkText": "NHS – Private Health Insurance",
-    "category": "sante"
-  },
-  {
-    "title": "Demander un NINo (National Insurance Number)",
-    "importance": "Important",
-    "description": "Indispensable pour travailler légalement et payer vos contributions.",
-    "link": "https://www.gov.uk/apply-national-insurance-number",
-    "linkText": "GOV.UK – Demande de NINo",
-    "category": "administratif"
-  },
-  {
-    "title": "Comprendre le système de transport de Londres",
-    "importance": "À faire",
-    "description": "Découvrez les options Oyster, Travelcard, et les zones tarifaires.",
-    "link": "https://tfl.gov.uk/fares",
-    "linkText": "Transport for London – Fares",
-    "category": "transport"
-  },
-  {
-    "title": "Ouvrir un compte bancaire UK",
-    "importance": "À faire",
-    "description": "Choisissez entre banques traditionnelles ou néobanques comme Monzo/Starling.",
-    "link": "https://www.moneysavingexpert.com/banking/current-accounts/",
-    "linkText": "MoneySavingExpert – Bank Accounts UK",
-    "category": "banque"
-  }
-]
+      "jobMarket": {
+        "topSectors": ["Automobile", "Ingénierie mécanique", "Technologies de l'information", "Pharmaceutique et chimie", "Finance et assurance"],
+        "averageSalary": 3800,
+        "unemploymentRate": "3.0%",
+        "keyJobSites": [
+          { "name": "Indeed Deutschland", "url": "https://de.indeed.com" },
+          { "name": "StepStone", "url": "https://www.stepstone.de" },
+          { "name": "LinkedIn", "url": "https://www.linkedin.com/jobs" },
+          { "name": "Xing", "url": "https://www.xing.com/jobs" },
+          { "name": "Bundesagentur für Arbeit", "url": "https://www.arbeitsagentur.de" }
+        ],
+        "workingHoursPerWeek": 40,
+        "salaryByCity": {
+          "Berlin": 3400,
+          "München": 4200,
+          "Frankfurt": 4000
+        },
+        "salaryBySector": {
+          "Automobile": 4500,
+          "IT": 4200,
+          "Pharmaceutique": 4300,
+          "Finance": 4600,
+          "Ingénierie": 4000
+        }
+      },
+      "costOfLiving": {
+        "averageRent": {
+          "oneBedroom": 1100,
+          "threeBedroom": 2000
+        },
+        "averageSalary": 3800,
+        "food": {
+          "restaurantMeal": 15,
+          "groceriesWeekly": 65
+        },
+        "utilities": 240,
+        "transportMonthly": 80,
+        "internetMonthly": 40,
+        "gymMembership": 35,
+        "byCity": {
+          "Berlin": { "oneBedroom": 1200, "threeBedroom": 2200, "utilities": 250, "transportMonthly": 86 },
+          "München": { "oneBedroom": 1600, "threeBedroom": 2800, "utilities": 260, "transportMonthly": 65 },
+          "Frankfurt": { "oneBedroom": 1300, "threeBedroom": 2400, "utilities": 245, "transportMonthly": 90 }
+        }
+      },
+      "education": {
+        "system": "Système éducatif fédéral gratuit de très haute qualité, enseignement en allemand",
+        "publicSchools": {
+          "quality": "Excellente",
+          "cost": "Gratuit",
+          "info": "École obligatoire de 6 à 18 ans, système dual reconnu mondialement"
+        },
+        "privateSchools": {
+          "averageCost": 15000,
+          "info": "Coût annuel variable entre 10 000 et 30 000 EUR selon l'établissement"
+        },
+        "universities": {
+          "topUniversities": ["TU München", "LMU München", "Université de Heidelberg", "Université Humboldt de Berlin", "RWTH Aachen"],
+          "averageTuition": 300,
+          "info": "Universités publiques presque gratuites (250-350€/semestre), excellent niveau académique"
+        }
+      },
+      "healthcare": {
+        "system": "Système d'assurance maladie obligatoire (publique GKV ou privée PKV)",
+        "coverage": "Couverture complète des soins, médicaments partiellement remboursés",
+        "qualityRating": "9/10",
+        "averageCosts": {
+          "doctorVisit": 0,
+          "emergency": 0,
+          "insurance": 350
+        },
+        "accessibility": "Excellente"
+      },
+      "taxation": {
+        "incomeTaxRange": "0% - 45%",
+        "corporateTax": "15%",
+        "vat": "19%",
+        "socialContributions": "20%",
+        "taxResidencyRules": "Résidence fiscale dès l'installation en Allemagne ou après 183 jours de présence"
+      },
+      "climate": {
+        "type": "Continental tempéré",
+        "averageTemp": {
+          "summer": "18°C - 25°C",
+          "winter": "-2°C - 5°C"
+        },
+        "rainfall": "600-800 mm/an",
+        "seasons": "Quatre saisons marquées, hivers froids avec neige, étés tempérés"
+      },
+      "lifestyle": {
+        "culturalActivities": ["Musées et galeries", "Théâtres et opéras", "Festivals de musique", "Marchés de Noël", "Cinémas"],
+        "outdoorActivities": ["Randonnée en Forêt-Noire", "Cyclisme", "Sports nautiques", "Ski dans les Alpes", "Football"],
+        "cuisine": "Currywurst, bretzel, choucroute, bière allemande, pâtisseries traditionnelles",
+        "workLifeBalance": "Excellent",
+        "safetyRating": "9/10"
+      },
+      "expatCommunity": {
+        "size": "Grande",
+        "estimated": "Environ 2.5 millions d'expatriés",
+        "forums": [
+          { "name": "InterNations Germany", "url": "https://www.internations.org/germany-expats" },
+          { "name": "Expat.com Allemagne", "url": "https://www.expat.com/en/guide/europe/germany/" },
+          { "name": "Toytown Germany", "url": "https://www.toytowngermany.com" }
+        ],
+        "events": "Nombreux meetups internationaux, groupes linguistiques, événements d'intégration",
+        "supportGroups": [
+          { "name": "Make it in Germany", "url": "https://www.make-it-in-germany.com" },
+          { "name": "Meetup Deutschland", "url": "https://www.meetup.com/cities/de/" }
+        ]
+      },
+      "resources": {
+        "officialGovWebsite": "https://www.bundesregierung.de",
+        "immigrationOffice": {
+          "name": "Bundesamt für Migration und Flüchtlinge (BAMF)",
+          "url": "https://www.bamf.de"
+        },
+        "emergencyNumbers": {
+          "police": "110",
+          "medical": "112",
+          "fire": "112"
+        },
+        "expatGuides": [
+          { "name": "Make it in Germany", "url": "https://www.make-it-in-germany.com" },
+          { "name": "Germany.info", "url": "https://www.germany.info" },
+          { "name": "Handbook Germany", "url": "https://handbookgermany.de" }
+        ]
+      },
+      "recommendations": {
+        "bestFor": ["Ingénieurs", "Professionnels qualifiés", "Familles"],
+        "language": "Allemand requis",
+        "visaDifficulty": "Moyenne"
+      }
+    },
+    {
+      "id": 6,
+      "name": "Espagne",
+      "code": "ES",
+      "currency": "EUR",
+      "languages": ["Espagnol"],
+      "flagUrl": "https://flagcdn.com/es.svg",
+      "flagEmoji": "🇪🇸",
+      "continent": "Europe",
+      "capital": "Madrid",
+      "expatProjectTemplate": {
+        "version": "1.0.0",
+        "steps": [
+          {
+            "id": 1,
+            "slug": "type-visa",
+            "title": "Choisir le type de visa",
+            "description": "Travail, études, non-lucratif, digital nomad",
+            "category": "pre-departure",
+            "order": 1,
+            "substeps": [
+              { "id": "1.1", "label": "Déterminer le type de visa adapté", "isOptional": false },
+              { "id": "1.2", "label": "Vérifier conditions sur site consulat", "isOptional": false },
+              { "id": "1.3", "label": "Rassembler justificatifs requis", "isOptional": false }
+            ]
+          },
+          {
+            "id": 2,
+            "slug": "demande-visa",
+            "title": "Demander le visa",
+            "description": "Dépôt dossier au consulat espagnol",
+            "category": "visa",
+            "order": 2,
+            "substeps": [
+              { "id": "2.1", "label": "Prendre rendez-vous au consulat", "isOptional": false },
+              { "id": "2.2", "label": "Remplir formulaire de demande", "isOptional": false },
+              { "id": "2.3", "label": "Payer frais de visa (60-80€)", "isOptional": false },
+              { "id": "2.4", "label": "Déposer dossier complet", "isOptional": false },
+              { "id": "2.5", "label": "Attendre décision (1-3 mois)", "isOptional": false }
+            ]
+          },
+          {
+            "id": 3,
+            "slug": "empadronamiento",
+            "title": "Empadronamiento",
+            "description": "Enregistrement municipal obligatoire",
+            "category": "arrival",
+            "order": 3,
+            "substeps": [
+              { "id": "3.1", "label": "Trouver logement et signer bail", "isOptional": false },
+              { "id": "3.2", "label": "Prendre RDV à l'Ayuntamiento (mairie)", "isOptional": false },
+              { "id": "3.3", "label": "Se présenter avec passeport, bail, formulaire", "isOptional": false },
+              { "id": "3.4", "label": "Recevoir certificat d'empadronamiento", "isOptional": false }
+            ]
+          },
+          {
+            "id": 4,
+            "slug": "nie",
+            "title": "Obtenir le NIE",
+            "description": "Número de Identidad de Extranjero",
+            "category": "administratif",
+            "order": 4,
+            "substeps": [
+              { "id": "4.1", "label": "Prendre RDV à la comisaría de policía", "isOptional": false },
+              { "id": "4.2", "label": "Remplir formulaire EX-15", "isOptional": false },
+              { "id": "4.3", "label": "Payer taxe (10€)", "isOptional": false },
+              { "id": "4.4", "label": "Se présenter avec documents requis", "isOptional": false },
+              { "id": "4.5", "label": "Recevoir certificat NIE", "isOptional": false }
+            ]
+          },
+          {
+            "id": 5,
+            "slug": "tie",
+            "title": "Demander la TIE",
+            "description": "Tarjeta de Identidad de Extranjero",
+            "category": "administratif",
+            "order": 5,
+            "substeps": [
+              { "id": "5.1", "label": "Prendre RDV Oficina de Extranjería", "isOptional": false },
+              { "id": "5.2", "label": "Préparer documents (NIE, empadronamiento, photos)", "isOptional": false },
+              { "id": "5.3", "label": "Se présenter au rendez-vous", "isOptional": false },
+              { "id": "5.4", "label": "Payer taxe (15€)", "isOptional": false },
+              { "id": "5.5", "label": "Récupérer carte TIE", "isOptional": false }
+            ]
+          },
+          {
+            "id": 6,
+            "slug": "assurance-sante",
+            "title": "Assurance santé",
+            "description": "Publique ou privée obligatoire",
+            "category": "administratif",
+            "order": 6,
+            "substeps": [
+              { "id": "6.1", "label": "Choisir entre sécurité sociale publique ou assurance privée", "isOptional": false },
+              { "id": "6.2", "label": "S'inscrire à la Seguridad Social ou souscrire assurance", "isOptional": false },
+              { "id": "6.3", "label": "Recevoir carte sanitaire", "isOptional": false }
+            ]
+          },
+          {
+            "id": 7,
+            "slug": "banque",
+            "title": "Ouvrir compte bancaire",
+            "description": "Compte courant espagnol",
+            "category": "vie-quotidienne",
+            "order": 7,
+            "substeps": [
+              { "id": "7.1", "label": "Choisir banque (Santander, BBVA, CaixaBank)", "isOptional": false },
+              { "id": "7.2", "label": "Prendre RDV avec NIE + empadronamiento", "isOptional": false },
+              { "id": "7.3", "label": "Ouvrir compte et recevoir carte", "isOptional": false }
+            ]
+          },
+          {
+            "id": 8,
+            "slug": "logement",
+            "title": "Stabiliser le logement",
+            "description": "Location longue durée",
+            "category": "logement",
+            "order": 8,
+            "substeps": [
+              { "id": "8.1", "label": "Rechercher sur Idealista, Fotocasa, Habitaclia", "isOptional": false },
+              { "id": "8.2", "label": "Préparer dossier locatif", "isOptional": false },
+              { "id": "8.3", "label": "Visiter et signer bail", "isOptional": false },
+              { "id": "8.4", "label": "Payer dépôt (1-2 mois) et premier loyer", "isOptional": false }
+            ]
+          },
+          {
+            "id": 9,
+            "slug": "installation",
+            "title": "Installation quotidienne",
+            "description": "Internet, téléphone, transports",
+            "category": "vie-quotidienne",
+            "order": 9,
+            "substeps": [
+              { "id": "9.1", "label": "Souscrire contrat Internet/TV (Movistar, Vodafone)", "isOptional": false },
+              { "id": "9.2", "label": "Obtenir forfait mobile espagnol", "isOptional": false },
+              { "id": "9.3", "label": "Acheter abonnement transports (Abono Transporte)", "isOptional": false },
+              { "id": "9.4", "label": "Échanger permis conduire si nécessaire", "isOptional": true }
+            ]
+          }
+        ]
+      },
+      "jobMarket": {
+        "topSectors": ["Tourisme et hôtellerie", "Technologies de l'information", "Santé", "Commerce et retail", "Immobilier et construction"],
+        "averageSalary": 2000,
+        "unemploymentRate": "11.5%",
+        "keyJobSites": [
+          { "name": "InfoJobs", "url": "https://www.infojobs.net" },
+          { "name": "Indeed España", "url": "https://es.indeed.com" },
+          { "name": "LinkedIn", "url": "https://www.linkedin.com/jobs" },
+          { "name": "Infoempleo", "url": "https://www.infoempleo.com" },
+          { "name": "Jobatus", "url": "https://www.jobatus.es" }
+        ],
+        "workingHoursPerWeek": 40,
+        "salaryByCity": {
+          "Madrid": 2300,
+          "Barcelona": 2400,
+          "Valencia": 1800
+        },
+        "salaryBySector": {
+          "IT": 2800,
+          "Tourisme": 1600,
+          "Santé": 2200,
+          "Commerce": 1700,
+          "Immobilier": 2000
+        }
+      },
+      "costOfLiving": {
+        "averageRent": {
+          "oneBedroom": 900,
+          "threeBedroom": 1500
+        },
+        "averageSalary": 2000,
+        "food": {
+          "restaurantMeal": 12,
+          "groceriesWeekly": 55
+        },
+        "utilities": 120,
+        "transportMonthly": 55,
+        "internetMonthly": 35,
+        "gymMembership": 30,
+        "byCity": {
+          "Madrid": { "oneBedroom": 1100, "threeBedroom": 1800, "utilities": 135, "transportMonthly": 55 },
+          "Barcelona": { "oneBedroom": 1200, "threeBedroom": 1900, "utilities": 140, "transportMonthly": 40 },
+          "Valencia": { "oneBedroom": 750, "threeBedroom": 1300, "utilities": 110, "transportMonthly": 45 }
+        }
+      },
+      "education": {
+        "system": "Système éducatif gratuit bilingue (espagnol + langues régionales), de qualité variable selon régions",
+        "publicSchools": {
+          "quality": "Bonne",
+          "cost": "Gratuit",
+          "info": "École obligatoire de 6 à 16 ans, enseignement en espagnol et langues co-officielles"
+        },
+        "privateSchools": {
+          "averageCost": 6000,
+          "info": "Coût annuel variable entre 4 000 et 15 000 EUR selon l'établissement"
+        },
+        "universities": {
+          "topUniversities": ["Université de Barcelone", "Université Autonome de Madrid", "Université Complutense de Madrid", "Université de Valence", "IE Business School"],
+          "averageTuition": 1500,
+          "info": "Frais universitaires publics: 1 000-2 000 EUR/an. Universités privées: 6 000-20 000 EUR/an"
+        }
+      },
+      "healthcare": {
+        "system": "Système public universel (Seguridad Social) et assurances privées",
+        "coverage": "Couverture complète gratuite au point de service pour urgences et soins essentiels",
+        "qualityRating": "8/10",
+        "averageCosts": {
+          "doctorVisit": 0,
+          "emergency": 0,
+          "insurance": 60
+        },
+        "accessibility": "Bonne"
+      },
+      "taxation": {
+        "incomeTaxRange": "19% - 47%",
+        "corporateTax": "25%",
+        "vat": "21%",
+        "socialContributions": "6.35%",
+        "taxResidencyRules": "Résidence fiscale après 183 jours de présence en Espagne durant l'année civile"
+      },
+      "climate": {
+        "type": "Méditerranéen, continental et océanique selon régions",
+        "averageTemp": {
+          "summer": "25°C - 35°C",
+          "winter": "8°C - 15°C"
+        },
+        "rainfall": "300-800 mm/an selon régions",
+        "seasons": "Étés chauds et secs, hivers doux, climat très ensoleillé"
+      },
+      "lifestyle": {
+        "culturalActivities": ["Festivals et fêtes locales", "Musées et patrimoine", "Flamenco et spectacles", "Gastronomie tapas", "Vie nocturne animée"],
+        "outdoorActivities": ["Sports nautiques", "Randonnée", "Cyclisme", "Golf", "Football"],
+        "cuisine": "Paella, tapas, jamón ibérico, vins espagnols, cuisine méditerranéenne",
+        "workLifeBalance": "Bon",
+        "safetyRating": "8/10"
+      },
+      "expatCommunity": {
+        "size": "Très grande",
+        "estimated": "Plus de 5 millions d'expatriés",
+        "forums": [
+          { "name": "InterNations Spain", "url": "https://www.internations.org/spain-expats" },
+          { "name": "Expat.com Espagne", "url": "https://www.expat.com/en/guide/europe/spain/" },
+          { "name": "Spain Expat", "url": "https://www.spainexpat.com" }
+        ],
+        "events": "Très nombreux événements internationaux, communauté expat très active, rencontres linguistiques",
+        "supportGroups": [
+          { "name": "Meetup España", "url": "https://www.meetup.com/cities/es/" },
+          { "name": "Internations Barcelona/Madrid", "url": "https://www.internations.org" }
+        ]
+      },
+      "resources": {
+        "officialGovWebsite": "https://www.administracion.gob.es",
+        "immigrationOffice": {
+          "name": "Ministerio de Inclusión, Seguridad Social y Migraciones",
+          "url": "https://www.inclusion.gob.es"
+        },
+        "emergencyNumbers": {
+          "police": "091",
+          "medical": "112",
+          "fire": "080"
+        },
+        "expatGuides": [
+          { "name": "Sede Electrónica", "url": "https://sede.administracionespublicas.gob.es" },
+          { "name": "Seguridad Social", "url": "https://www.seg-social.es" },
+          { "name": "Exteriores - Visados", "url": "https://www.exteriores.gob.es" }
+        ]
+      },
+      "recommendations": {
+        "bestFor": ["Digital nomads", "Retraités", "Professionnels IT"],
+        "language": "Espagnol requis",
+        "visaDifficulty": "Moyenne"
+      }
+    },
+    {
+      "id": 7,
+      "name": "Italie",
+      "code": "IT",
+      "currency": "EUR",
+      "languages": ["Italien"],
+      "flagUrl": "https://flagcdn.com/it.svg",
+      "flagEmoji": "🇮🇹",
+      "continent": "Europe",
+      "capital": "Rome",
+      "expatProjectTemplate": {
+        "version": "1.0.0",
+        "steps": [
+          {
+            "id": 1,
+            "slug": "offre-emploi",
+            "title": "Obtenir une offre d'emploi",
+            "description": "Condition préalable pour le visa de travail",
+            "category": "pre-departure",
+            "order": 1,
+            "substeps": [
+              { "id": "1.1", "label": "Rechercher emploi sur InfoJobs.it, Indeed, LinkedIn", "isOptional": false },
+              { "id": "1.2", "label": "Postuler et passer entretiens", "isOptional": false },
+              { "id": "1.3", "label": "Recevoir offre d'emploi ou lettre d'admission", "isOptional": false },
+              { "id": "1.4", "label": "Vérifier que l'employeur peut sponsoriser le visa", "isOptional": false }
+            ]
+          },
+          {
+            "id": 2,
+            "slug": "visa-nazionale",
+            "title": "Demander le visa national",
+            "description": "Visto Nazionale pour long séjour",
+            "category": "visa",
+            "order": 2,
+            "substeps": [
+              { "id": "2.1", "label": "Prendre rendez-vous au consulat italien", "isOptional": false },
+              { "id": "2.2", "label": "Rassembler documents (contrat, diplômes, passeport)", "isOptional": false },
+              { "id": "2.3", "label": "Remplir formulaire de demande", "isOptional": false },
+              { "id": "2.4", "label": "Payer frais de visa (116€)", "isOptional": false },
+              { "id": "2.5", "label": "Déposer dossier et attendre décision", "isOptional": false }
+            ]
+          },
+          {
+            "id": 3,
+            "slug": "arrivee-italie",
+            "title": "Arrivée en Italie",
+            "description": "Démarches dans les 8 jours",
+            "category": "arrival",
+            "order": 3,
+            "substeps": [
+              { "id": "3.1", "label": "Arriver en Italie avec visa national", "isOptional": false },
+              { "id": "3.2", "label": "Trouver logement temporaire ou permanent", "isOptional": false },
+              { "id": "3.3", "label": "Préparer documents pour permis de séjour", "isOptional": false }
+            ]
+          },
+          {
+            "id": 4,
+            "slug": "permesso-soggiorno",
+            "title": "Demander permis de séjour",
+            "description": "Permesso di soggiorno obligatoire",
+            "category": "administratif",
+            "order": 4,
+            "substeps": [
+              { "id": "4.1", "label": "Acheter kit à La Poste (30€)", "isOptional": false },
+              { "id": "4.2", "label": "Remplir formulaire et joindre documents", "isOptional": false },
+              { "id": "4.3", "label": "Envoyer dossier à La Poste", "isOptional": false },
+              { "id": "4.4", "label": "Attendre convocation Questura", "isOptional": false },
+              { "id": "4.5", "label": "Se présenter au rendez-vous et donner empreintes", "isOptional": false },
+              { "id": "4.6", "label": "Récupérer permesso di soggiorno", "isOptional": false }
+            ]
+          },
+          {
+            "id": 5,
+            "slug": "codice-fiscale",
+            "title": "Obtenir codice fiscale",
+            "description": "Numéro fiscal italien obligatoire",
+            "category": "administratif",
+            "order": 5,
+            "substeps": [
+              { "id": "5.1", "label": "Se rendre à l'Agenzia delle Entrate", "isOptional": false },
+              { "id": "5.2", "label": "Présenter passeport et documents", "isOptional": false },
+              { "id": "5.3", "label": "Recevoir codice fiscale immédiatement", "isOptional": false }
+            ]
+          },
+          {
+            "id": 6,
+            "slug": "residenza",
+            "title": "Déclaration de résidence",
+            "description": "Residenza auprès de la commune",
+            "category": "administratif",
+            "order": 6,
+            "substeps": [
+              { "id": "6.1", "label": "Prendre RDV à l'Anagrafe (mairie)", "isOptional": false },
+              { "id": "6.2", "label": "Présenter bail, passeport, permesso", "isOptional": false },
+              { "id": "6.3", "label": "Attendre visite de vérification à domicile", "isOptional": false },
+              { "id": "6.4", "label": "Recevoir certificat de résidence", "isOptional": false }
+            ]
+          },
+          {
+            "id": 7,
+            "slug": "sante",
+            "title": "Inscription santé nationale",
+            "description": "SSN - Servizio Sanitario Nazionale",
+            "category": "administratif",
+            "order": 7,
+            "substeps": [
+              { "id": "7.1", "label": "Se rendre à l'ASL locale", "isOptional": false },
+              { "id": "7.2", "label": "Présenter permesso, codice fiscale, résidence", "isOptional": false },
+              { "id": "7.3", "label": "Choisir médecin généraliste", "isOptional": false },
+              { "id": "7.4", "label": "Recevoir tessera sanitaria", "isOptional": false }
+            ]
+          },
+          {
+            "id": 8,
+            "slug": "banque",
+            "title": "Ouvrir compte bancaire",
+            "description": "Compte courant italien",
+            "category": "vie-quotidienne",
+            "order": 8,
+            "substeps": [
+              { "id": "8.1", "label": "Choisir banque (Intesa Sanpaolo, UniCredit, Fineco)", "isOptional": false },
+              { "id": "8.2", "label": "Prendre RDV avec codice fiscale + résidence", "isOptional": false },
+              { "id": "8.3", "label": "Ouvrir compte et recevoir carte", "isOptional": false }
+            ]
+          },
+          {
+            "id": 9,
+            "slug": "installation",
+            "title": "Installation quotidienne",
+            "description": "Internet, téléphone, transports",
+            "category": "vie-quotidienne",
+            "order": 9,
+            "substeps": [
+              { "id": "9.1", "label": "Souscrire contrat Internet (TIM, Vodafone, Fastweb)", "isOptional": false },
+              { "id": "9.2", "label": "Obtenir forfait mobile italien", "isOptional": false },
+              { "id": "9.3", "label": "Acheter abonnement transports (abbonamento)", "isOptional": false },
+              { "id": "9.4", "label": "Convertir permis conduire si nécessaire", "isOptional": true }
+            ]
+          }
+        ]
+      },
+      "jobMarket": {
+        "topSectors": ["Mode et luxe", "Tourisme et hôtellerie", "Design et architecture", "Technologies de l'information", "Agroalimentaire"],
+        "averageSalary": 2200,
+        "unemploymentRate": "7.5%",
+        "keyJobSites": [
+          { "name": "InfoJobs Italia", "url": "https://www.infojobs.it" },
+          { "name": "Indeed Italia", "url": "https://it.indeed.com" },
+          { "name": "LinkedIn", "url": "https://www.linkedin.com/jobs" },
+          { "name": "Monster Italia", "url": "https://www.monster.it" },
+          { "name": "Bakeca Lavoro", "url": "https://www.bakeca.it/lavoro" }
+        ],
+        "workingHoursPerWeek": 40,
+        "salaryByCity": {
+          "Roma": 2100,
+          "Milano": 2800,
+          "Firenze": 2000
+        },
+        "salaryBySector": {
+          "Mode": 2500,
+          "IT": 3000,
+          "Tourisme": 1700,
+          "Design": 2400,
+          "Agroalimentaire": 2000
+        }
+      },
+      "costOfLiving": {
+        "averageRent": {
+          "oneBedroom": 850,
+          "threeBedroom": 1600
+        },
+        "averageSalary": 2200,
+        "food": {
+          "restaurantMeal": 15,
+          "groceriesWeekly": 60
+        },
+        "utilities": 150,
+        "transportMonthly": 50,
+        "internetMonthly": 30,
+        "gymMembership": 40,
+        "byCity": {
+          "Roma": { "oneBedroom": 1100, "threeBedroom": 2000, "utilities": 165, "transportMonthly": 35 },
+          "Milano": { "oneBedroom": 1400, "threeBedroom": 2500, "utilities": 170, "transportMonthly": 40 },
+          "Firenze": { "oneBedroom": 900, "threeBedroom": 1700, "utilities": 145, "transportMonthly": 37 }
+        }
+      },
+      "education": {
+        "system": "Système éducatif gratuit de bonne qualité, enseignement en italien",
+        "publicSchools": {
+          "quality": "Bonne",
+          "cost": "Gratuit",
+          "info": "École obligatoire de 6 à 16 ans, système public gratuit et de qualité"
+        },
+        "privateSchools": {
+          "averageCost": 8000,
+          "info": "Coût annuel variable entre 5 000 et 20 000 EUR selon l'établissement"
+        },
+        "universities": {
+          "topUniversities": ["Université de Bologne", "Sapienza Université de Rome", "Politecnico di Milano", "Université de Padoue", "Bocconi"],
+          "averageTuition": 2000,
+          "info": "Frais universitaires publics: 900-4 000 EUR/an selon revenus. Universités privées: 10 000-20 000 EUR/an"
+        }
+      },
+      "healthcare": {
+        "system": "Système public universel (SSN - Servizio Sanitario Nazionale)",
+        "coverage": "Couverture complète gratuite pour soins essentiels, ticket modérateur pour certains services",
+        "qualityRating": "8/10",
+        "averageCosts": {
+          "doctorVisit": 0,
+          "emergency": 0,
+          "insurance": 0
+        },
+        "accessibility": "Bonne"
+      },
+      "taxation": {
+        "incomeTaxRange": "23% - 43%",
+        "corporateTax": "24%",
+        "vat": "22%",
+        "socialContributions": "9.19% - 9.49%",
+        "taxResidencyRules": "Résidence fiscale après 183 jours de présence en Italie ou si résidence principale y est établie"
+      },
+      "climate": {
+        "type": "Méditerranéen, continental alpin au nord",
+        "averageTemp": {
+          "summer": "22°C - 32°C",
+          "winter": "5°C - 12°C"
+        },
+        "rainfall": "600-1000 mm/an",
+        "seasons": "Quatre saisons, étés chauds et secs, hivers doux au sud, froids au nord"
+      },
+      "lifestyle": {
+        "culturalActivities": ["Patrimoine historique et UNESCO", "Opéras et concerts", "Festivals culturels", "Cinéma italien", "Musées et galeries d'art"],
+        "outdoorActivities": ["Randonnée", "Ski dans les Alpes et Dolomites", "Sports nautiques", "Cyclisme", "Football"],
+        "cuisine": "Pizza, pasta, risotto, gelato, vins italiens, cuisine régionale variée",
+        "workLifeBalance": "Bon",
+        "safetyRating": "7/10"
+      },
+      "expatCommunity": {
+        "size": "Grande",
+        "estimated": "Environ 5 millions d'expatriés",
+        "forums": [
+          { "name": "InterNations Italy", "url": "https://www.internations.org/italy-expats" },
+          { "name": "Expat.com Italie", "url": "https://www.expat.com/en/guide/europe/italy/" },
+          { "name": "Italy Forum", "url": "https://www.italymag.co.uk/forums" }
+        ],
+        "events": "Nombreux événements internationaux, groupes linguistiques actifs, communauté expat bien établie",
+        "supportGroups": [
+          { "name": "Meetup Italia", "url": "https://www.meetup.com/cities/it/" },
+          { "name": "Expats in Italy", "url": "https://www.expatsinitaly.com" }
+        ]
+      },
+      "resources": {
+        "officialGovWebsite": "https://www.governo.it",
+        "immigrationOffice": {
+          "name": "Ministero dell'Interno - Immigrazione",
+          "url": "https://www.interno.gov.it"
+        },
+        "emergencyNumbers": {
+          "police": "112",
+          "medical": "118",
+          "fire": "115"
+        },
+        "expatGuides": [
+          { "name": "Portale Immigrazione", "url": "https://www.portaleimmigrazione.it" },
+          { "name": "Agenzia delle Entrate", "url": "https://www.agenziaentrate.gov.it" },
+          { "name": "Ministero Salute", "url": "https://www.salute.gov.it" }
+        ]
+      },
+      "recommendations": {
+        "bestFor": ["Amateurs d'art et culture", "Professionnels créatifs", "Retraités"],
+        "language": "Italien requis",
+        "visaDifficulty": "Moyenne à élevée"
+      }
+    },
+    {
+      "id": 8,
+      "name": "États-Unis",
+      "code": "US",
+      "currency": "USD",
+      "languages": ["Anglais"],
+      "flagUrl": "https://flagcdn.com/us.svg",
+      "flagEmoji": "🇺🇸",
+      "continent": "Amérique du Nord",
+      "capital": "Washington D.C.",
+      "expatProjectTemplate": {
+        "version": "1.0.0",
+        "steps": [
+          {
+            "id": 1,
+            "slug": "determiner-visa",
+            "title": "Déterminer le type de visa",
+            "description": "Identifier le visa adapté à votre situation",
+            "category": "pre-departure",
+            "order": 1,
+            "substeps": [
+              { "id": "1.1", "label": "Évaluer votre éligibilité (H-1B, L-1, E-2, O-1, etc.)", "isOptional": false },
+              { "id": "1.2", "label": "Consulter le site travel.state.gov", "isOptional": false },
+              { "id": "1.3", "label": "Rassembler les documents requis", "isOptional": false }
+            ]
+          },
+          {
+            "id": 2,
+            "slug": "demande-visa",
+            "title": "Demander le visa de travail",
+            "description": "Procédure de demande de visa américain",
+            "category": "visa",
+            "order": 2,
+            "substeps": [
+              { "id": "2.1", "label": "Remplir le formulaire DS-160 en ligne", "isOptional": false },
+              { "id": "2.2", "label": "Payer les frais de visa (185-205 USD)", "isOptional": false },
+              { "id": "2.3", "label": "Prendre rendez-vous à l'ambassade/consulat", "isOptional": false },
+              { "id": "2.4", "label": "Passer l'entretien consulaire", "isOptional": false },
+              { "id": "2.5", "label": "Recevoir le visa dans votre passeport", "isOptional": false }
+            ]
+          },
+          {
+            "id": 3,
+            "slug": "numero-securite-sociale",
+            "title": "Obtenir le numéro de sécurité sociale",
+            "description": "Social Security Number (SSN)",
+            "category": "administratif",
+            "order": 3,
+            "substeps": [
+              { "id": "3.1", "label": "Localiser le bureau SSA le plus proche", "isOptional": false },
+              { "id": "3.2", "label": "Remplir le formulaire SS-5", "isOptional": false },
+              { "id": "3.3", "label": "Fournir documents (passeport, visa, I-94)", "isOptional": false },
+              { "id": "3.4", "label": "Recevoir la carte SSN par courrier (2-4 semaines)", "isOptional": false }
+            ]
+          },
+          {
+            "id": 4,
+            "slug": "assurance-sante",
+            "title": "Souscrire une assurance santé",
+            "description": "Couverture médicale obligatoire",
+            "category": "administratif",
+            "order": 4,
+            "substeps": [
+              { "id": "4.1", "label": "Vérifier si l'employeur propose une assurance", "isOptional": false },
+              { "id": "4.2", "label": "Comparer les plans sur Healthcare.gov ou assureurs privés", "isOptional": false },
+              { "id": "4.3", "label": "Souscrire un plan adapté à vos besoins", "isOptional": false },
+              { "id": "4.4", "label": "Payer la prime mensuelle (300-600 USD)", "isOptional": false }
+            ]
+          },
+          {
+            "id": 5,
+            "slug": "logement",
+            "title": "Trouver un logement",
+            "description": "Location d'appartement ou maison",
+            "category": "logement",
+            "order": 5,
+            "substeps": [
+              { "id": "5.1", "label": "Rechercher sur Zillow, Apartments.com, Craigslist", "isOptional": false },
+              { "id": "5.2", "label": "Préparer dossier (SSN, preuve revenus, références)", "isOptional": false },
+              { "id": "5.3", "label": "Visiter les logements et vérifier le quartier", "isOptional": false },
+              { "id": "5.4", "label": "Signer le bail (lease)", "isOptional": false },
+              { "id": "5.5", "label": "Payer dépôt de garantie et premier mois", "isOptional": false }
+            ]
+          },
+          {
+            "id": 6,
+            "slug": "permis-conduire",
+            "title": "Obtenir le permis de conduire",
+            "description": "Driver's license américain",
+            "category": "administratif",
+            "order": 6,
+            "substeps": [
+              { "id": "6.1", "label": "Localiser le DMV (Department of Motor Vehicles)", "isOptional": false },
+              { "id": "6.2", "label": "Passer le test théorique", "isOptional": false },
+              { "id": "6.3", "label": "Passer le test pratique de conduite", "isOptional": false },
+              { "id": "6.4", "label": "Payer les frais (20-90 USD selon l'État)", "isOptional": false },
+              { "id": "6.5", "label": "Recevoir le permis par courrier", "isOptional": false }
+            ]
+          },
+          {
+            "id": 7,
+            "slug": "compte-bancaire",
+            "title": "Ouvrir un compte bancaire",
+            "description": "Compte courant américain",
+            "category": "vie-quotidienne",
+            "order": 7,
+            "substeps": [
+              { "id": "7.1", "label": "Choisir une banque (Chase, Bank of America, Wells Fargo)", "isOptional": false },
+              { "id": "7.2", "label": "Prendre RDV avec SSN et pièce d'identité", "isOptional": false },
+              { "id": "7.3", "label": "Ouvrir compte courant et épargne", "isOptional": false },
+              { "id": "7.4", "label": "Recevoir carte de débit et chéquier", "isOptional": false }
+            ]
+          },
+          {
+            "id": 8,
+            "slug": "declaration-fiscale",
+            "title": "Comprendre les obligations fiscales",
+            "description": "Système fiscal américain",
+            "category": "administratif",
+            "order": 8,
+            "substeps": [
+              { "id": "8.1", "label": "S'inscrire sur IRS.gov", "isOptional": false },
+              { "id": "8.2", "label": "Comprendre les taxes fédérales et d'État", "isOptional": false },
+              { "id": "8.3", "label": "Consulter un fiscaliste si nécessaire", "isOptional": true },
+              { "id": "8.4", "label": "Préparer documents pour déclaration annuelle (avril)", "isOptional": false }
+            ]
+          },
+          {
+            "id": 9,
+            "slug": "installation",
+            "title": "Installation quotidienne",
+            "description": "Services essentiels et utilités",
+            "category": "vie-quotidienne",
+            "order": 9,
+            "substeps": [
+              { "id": "9.1", "label": "Souscrire électricité/gaz avec fournisseur local", "isOptional": false },
+              { "id": "9.2", "label": "Installer Internet/câble (Comcast, Verizon, AT&T)", "isOptional": false },
+              { "id": "9.3", "label": "Obtenir forfait mobile (T-Mobile, Verizon, AT&T)", "isOptional": false },
+              { "id": "9.4", "label": "Commander carte de crédit pour bâtir credit score", "isOptional": false }
+            ]
+          }
+        ]
+      },
+      "jobMarket": {
+        "topSectors": ["Technologies de l'information", "Finance et banque", "Santé et biotechnologie", "Ingénierie", "Commerce et retail"],
+        "averageSalary": 5500,
+        "unemploymentRate": "3.7%",
+        "keyJobSites": [
+          { "name": "LinkedIn", "url": "https://www.linkedin.com/jobs" },
+          { "name": "Indeed", "url": "https://www.indeed.com" },
+          { "name": "Glassdoor", "url": "https://www.glassdoor.com" },
+          { "name": "Monster", "url": "https://www.monster.com" },
+          { "name": "USAJobs", "url": "https://www.usajobs.gov" }
+        ],
+        "workingHoursPerWeek": 40,
+        "salaryByCity": {
+          "New York": 6800,
+          "Los Angeles": 5800,
+          "San Francisco": 7500
+        },
+        "salaryBySector": {
+          "IT": 7500,
+          "Finance": 8000,
+          "Santé": 6000,
+          "Ingénierie": 6800,
+          "Commerce": 4200
+        }
+      },
+      "costOfLiving": {
+        "averageRent": {
+          "oneBedroom": 2500,
+          "threeBedroom": 3800
+        },
+        "averageSalary": 5500,
+        "food": {
+          "restaurantMeal": 18,
+          "groceriesWeekly": 85
+        },
+        "utilities": 180,
+        "transportMonthly": 100,
+        "internetMonthly": 65,
+        "gymMembership": 50,
+        "byCity": {
+          "New York": { "oneBedroom": 3500, "threeBedroom": 5500, "utilities": 200, "transportMonthly": 127 },
+          "Los Angeles": { "oneBedroom": 2500, "threeBedroom": 3800, "utilities": 170, "transportMonthly": 80 },
+          "San Francisco": { "oneBedroom": 3200, "threeBedroom": 5000, "utilities": 185, "transportMonthly": 90 }
+        }
+      },
+      "education": {
+        "system": "Système éducatif décentralisé, gratuit dans le public jusqu'au lycée, enseignement supérieur payant",
+        "publicSchools": {
+          "quality": "Variable selon les districts",
+          "cost": "Gratuit",
+          "info": "École obligatoire de 6 à 16-18 ans selon l'État, qualité très variable selon le district scolaire"
+        },
+        "privateSchools": {
+          "averageCost": 12000,
+          "info": "Coût annuel variable entre 8 000 et 40 000 USD selon l'établissement"
+        },
+        "universities": {
+          "topUniversities": ["Harvard University", "Stanford University", "MIT", "Yale University", "Princeton University"],
+          "averageTuition": 35000,
+          "info": "Universités publiques: 10 000-30 000 USD/an. Universités privées: 30 000-60 000 USD/an"
+        }
+      },
+      "healthcare": {
+        "system": "Système privé basé sur les assurances, pas de couverture universelle",
+        "coverage": "Couverture via assurance privée obligatoire, remboursements selon le plan souscrit",
+        "qualityRating": "9/10",
+        "averageCosts": {
+          "doctorVisit": 150,
+          "emergency": 1500,
+          "insurance": 450
+        },
+        "accessibility": "Bonne avec assurance, coûteuse sans"
+      },
+      "taxation": {
+        "incomeTaxRange": "10% - 37%",
+        "corporateTax": "21%",
+        "vat": "0% fédéral (sales tax 0-10% selon l'État)",
+        "socialContributions": "7.65% (Social Security + Medicare)",
+        "taxResidencyRules": "Résidence fiscale après 183 jours de présence (Substantial Presence Test) ou si détenteur de Green Card"
+      },
+      "climate": {
+        "type": "Très variable selon les régions: continental humide, subtropical, aride, méditerranéen",
+        "averageTemp": {
+          "summer": "20°C - 35°C",
+          "winter": "-10°C - 15°C"
+        },
+        "rainfall": "250-1500 mm/an selon les régions",
+        "seasons": "Quatre saisons dans la majorité du pays, climat subtropical en Floride, aride dans le Sud-Ouest"
+      },
+      "lifestyle": {
+        "culturalActivities": ["Broadway et théâtres", "Musées de classe mondiale", "Festivals musicaux", "Sports professionnels (NFL, NBA, MLB)", "Cinéma et divertissement"],
+        "outdoorActivities": ["Randonnée dans les parcs nationaux", "Ski et snowboard", "Surf et sports nautiques", "Road trips", "Camping"],
+        "cuisine": "BBQ, burgers, cuisine tex-mex, fusion multiculturelle, food trucks, diversité culinaire mondiale",
+        "workLifeBalance": "Moyen",
+        "safetyRating": "7/10"
+      },
+      "expatCommunity": {
+        "size": "Très grande",
+        "estimated": "Environ 50 millions d'immigrés",
+        "forums": [
+          { "name": "InterNations USA", "url": "https://www.internations.org/usa-expats" },
+          { "name": "Expat.com USA", "url": "https://www.expat.com/en/guide/north-america/usa/" },
+          { "name": "Reddit r/IWantOut", "url": "https://www.reddit.com/r/IWantOut/" }
+        ],
+        "events": "Nombreux meetups internationaux, événements de networking, groupes communautaires actifs",
+        "supportGroups": [
+          { "name": "Meetup Expats", "url": "https://www.meetup.com/topics/expat/" },
+          { "name": "American Immigration Lawyers Association", "url": "https://www.aila.org" }
+        ]
+      },
+      "resources": {
+        "officialGovWebsite": "https://www.usa.gov",
+        "immigrationOffice": {
+          "name": "U.S. Citizenship and Immigration Services (USCIS)",
+          "url": "https://www.uscis.gov"
+        },
+        "emergencyNumbers": {
+          "police": "911",
+          "medical": "911",
+          "fire": "911"
+        },
+        "expatGuides": [
+          { "name": "USCIS Immigration", "url": "https://www.uscis.gov" },
+          { "name": "U.S. Department of State", "url": "https://travel.state.gov" },
+          { "name": "Social Security Administration", "url": "https://www.ssa.gov" }
+        ]
+      },
+      "recommendations": {
+        "bestFor": ["Travailleurs qualifiés tech", "Entrepreneurs", "Professionnels finance et santé"],
+        "language": "Anglais indispensable",
+        "visaDifficulty": "Élevée"
+      }
+    },
+    {
+      "id": 9,
+      "name": "Australie",
+      "code": "AU",
+      "currency": "AUD",
+      "languages": ["Anglais"],
+      "flagUrl": "https://flagcdn.com/au.svg",
+      "flagEmoji": "🇦🇺",
+      "continent": "Océanie",
+      "capital": "Canberra",
+      "expatProjectTemplate": {
+        "version": "1.0.0",
+        "steps": [
+          {
+            "id": 1,
+            "slug": "evaluer-points",
+            "title": "Évaluer son éligibilité",
+            "description": "Système de points pour immigration qualifiée",
+            "category": "pre-departure",
+            "order": 1,
+            "substeps": [
+              { "id": "1.1", "label": "Utiliser le calculateur de points SkillSelect", "isOptional": false },
+              { "id": "1.2", "label": "Vérifier si profession sur Skilled Occupation List", "isOptional": false },
+              { "id": "1.3", "label": "Déterminer le visa adapté (189, 190, 482, WHV)", "isOptional": false }
+            ]
+          },
+          {
+            "id": 2,
+            "slug": "evaluation-competences",
+            "title": "Faire évaluer ses compétences",
+            "description": "Skills assessment obligatoire",
+            "category": "pre-departure",
+            "order": 2,
+            "substeps": [
+              { "id": "2.1", "label": "Identifier l'organisme d'évaluation pour votre profession", "isOptional": false },
+              { "id": "2.2", "label": "Soumettre documents et diplômes", "isOptional": false },
+              { "id": "2.3", "label": "Payer les frais (300-1200 AUD)", "isOptional": false },
+              { "id": "2.4", "label": "Recevoir l'évaluation positive", "isOptional": false }
+            ]
+          },
+          {
+            "id": 3,
+            "slug": "test-anglais",
+            "title": "Passer le test d'anglais",
+            "description": "IELTS ou PTE Academic",
+            "category": "pre-departure",
+            "order": 3,
+            "substeps": [
+              { "id": "3.1", "label": "S'inscrire au test IELTS ou PTE", "isOptional": false },
+              { "id": "3.2", "label": "Passer le test (385 AUD)", "isOptional": false },
+              { "id": "3.3", "label": "Obtenir score minimum requis (6.0-7.0)", "isOptional": false }
+            ]
+          },
+          {
+            "id": 4,
+            "slug": "demande-visa",
+            "title": "Soumettre demande de visa",
+            "description": "Expression of Interest et visa application",
+            "category": "visa",
+            "order": 4,
+            "substeps": [
+              { "id": "4.1", "label": "Soumettre EOI via SkillSelect", "isOptional": false },
+              { "id": "4.2", "label": "Recevoir invitation à postuler", "isOptional": false },
+              { "id": "4.3", "label": "Remplir demande complète en ligne", "isOptional": false },
+              { "id": "4.4", "label": "Payer frais de visa (4 240-4 640 AUD)", "isOptional": false },
+              { "id": "4.5", "label": "Passer examen médical et vérifications", "isOptional": false }
+            ]
+          },
+          {
+            "id": 5,
+            "slug": "arrivee-declaration",
+            "title": "Arrivée et déclaration douanière",
+            "description": "Entrée sur le territoire australien",
+            "category": "arrivee",
+            "order": 5,
+            "substeps": [
+              { "id": "5.1", "label": "Remplir Incoming Passenger Card", "isOptional": false },
+              { "id": "5.2", "label": "Passer contrôle d'immigration et douanes", "isOptional": false },
+              { "id": "5.3", "label": "Déclarer tous biens et nourriture", "isOptional": false }
+            ]
+          },
+          {
+            "id": 6,
+            "slug": "tfn",
+            "title": "Obtenir le Tax File Number",
+            "description": "Numéro fiscal australien",
+            "category": "administratif",
+            "order": 6,
+            "substeps": [
+              { "id": "6.1", "label": "Faire la demande en ligne sur ato.gov.au", "isOptional": false },
+              { "id": "6.2", "label": "Fournir pièce d'identité et visa", "isOptional": false },
+              { "id": "6.3", "label": "Recevoir TFN par courrier (28 jours)", "isOptional": false }
+            ]
+          },
+          {
+            "id": 7,
+            "slug": "medicare",
+            "title": "S'inscrire à Medicare",
+            "description": "Système de santé public",
+            "category": "administratif",
+            "order": 7,
+            "substeps": [
+              { "id": "7.1", "label": "Localiser bureau Services Australia", "isOptional": false },
+              { "id": "7.2", "label": "Apporter passeport et visa", "isOptional": false },
+              { "id": "7.3", "label": "S'inscrire gratuitement", "isOptional": false },
+              { "id": "7.4", "label": "Recevoir carte Medicare par courrier", "isOptional": false }
+            ]
+          },
+          {
+            "id": 8,
+            "slug": "superannuation",
+            "title": "Ouvrir compte Superannuation",
+            "description": "Compte retraite obligatoire",
+            "category": "administratif",
+            "order": 8,
+            "substeps": [
+              { "id": "8.1", "label": "Choisir un fonds super (AustralianSuper, REST)", "isOptional": false },
+              { "id": "8.2", "label": "Ouvrir compte en ligne avec TFN", "isOptional": false },
+              { "id": "8.3", "label": "Communiquer détails à l'employeur", "isOptional": false }
+            ]
+          },
+          {
+            "id": 9,
+            "slug": "compte-bancaire",
+            "title": "Ouvrir un compte bancaire",
+            "description": "Compte courant australien",
+            "category": "vie-quotidienne",
+            "order": 9,
+            "substeps": [
+              { "id": "9.1", "label": "Choisir banque (CommBank, NAB, ANZ, Westpac)", "isOptional": false },
+              { "id": "9.2", "label": "Ouvrir compte en ligne avant arrivée ou en agence", "isOptional": false },
+              { "id": "9.3", "label": "Fournir passeport, visa et adresse", "isOptional": false },
+              { "id": "9.4", "label": "Recevoir carte bancaire", "isOptional": false }
+            ]
+          },
+          {
+            "id": 10,
+            "slug": "logement-permis",
+            "title": "Logement et permis de conduire",
+            "description": "Installation finale",
+            "category": "vie-quotidienne",
+            "order": 10,
+            "substeps": [
+              { "id": "10.1", "label": "Rechercher logement (realestate.com.au, domain.com.au)", "isOptional": false },
+              { "id": "10.2", "label": "Signer bail et payer bond (4 semaines)", "isOptional": false },
+              { "id": "10.3", "label": "Échanger permis conduire étranger si éligible", "isOptional": true },
+              { "id": "10.4", "label": "Installer Internet et téléphone (Telstra, Optus)", "isOptional": false }
+            ]
+          }
+        ]
+      },
+      "jobMarket": {
+        "topSectors": ["Mines et ressources", "Santé et services sociaux", "Technologies de l'information", "Construction et ingénierie", "Finance et assurance"],
+        "averageSalary": 6200,
+        "unemploymentRate": "3.5%",
+        "keyJobSites": [
+          { "name": "Seek", "url": "https://www.seek.com.au" },
+          { "name": "Indeed Australia", "url": "https://au.indeed.com" },
+          { "name": "LinkedIn", "url": "https://www.linkedin.com/jobs" },
+          { "name": "Jora", "url": "https://au.jora.com" },
+          { "name": "CareerOne", "url": "https://www.careerone.com.au" }
+        ],
+        "workingHoursPerWeek": 38,
+        "salaryByCity": {
+          "Sydney": 6800,
+          "Melbourne": 6200,
+          "Brisbane": 5800
+        },
+        "salaryBySector": {
+          "Mines": 8500,
+          "IT": 7500,
+          "Santé": 6800,
+          "Ingénierie": 7200,
+          "Finance": 7800
+        }
+      },
+      "costOfLiving": {
+        "averageRent": {
+          "oneBedroom": 2200,
+          "threeBedroom": 3500
+        },
+        "averageSalary": 6200,
+        "food": {
+          "restaurantMeal": 20,
+          "groceriesWeekly": 95
+        },
+        "utilities": 200,
+        "transportMonthly": 150,
+        "internetMonthly": 70,
+        "gymMembership": 60,
+        "byCity": {
+          "Sydney": { "oneBedroom": 2600, "threeBedroom": 4200, "utilities": 220, "transportMonthly": 180 },
+          "Melbourne": { "oneBedroom": 2200, "threeBedroom": 3500, "utilities": 200, "transportMonthly": 160 },
+          "Brisbane": { "oneBedroom": 2000, "threeBedroom": 3200, "utilities": 190, "transportMonthly": 140 }
+        }
+      },
+      "education": {
+        "system": "Système éducatif de haute qualité, gratuit dans le public jusqu'à la fin du secondaire",
+        "publicSchools": {
+          "quality": "Excellente",
+          "cost": "Gratuit",
+          "info": "École obligatoire de 6 à 17 ans, enseignement public de très bonne qualité"
+        },
+        "privateSchools": {
+          "averageCost": 15000,
+          "info": "Coût annuel variable entre 10 000 et 40 000 AUD selon l'établissement"
+        },
+        "universities": {
+          "topUniversities": ["University of Melbourne", "Australian National University", "University of Sydney", "University of Queensland", "Monash University"],
+          "averageTuition": 30000,
+          "info": "Frais universitaires pour étudiants internationaux: 20 000-45 000 AUD/an. Résidents: 6 000-12 000 AUD/an via HECS-HELP"
+        }
+      },
+      "healthcare": {
+        "system": "Système public universel Medicare, complété par assurances privées optionnelles",
+        "coverage": "Medicare couvre consultations, hôpitaux publics, médicaments subventionnés (PBS)",
+        "qualityRating": "9/10",
+        "averageCosts": {
+          "doctorVisit": 0,
+          "emergency": 0,
+          "insurance": 150
+        },
+        "accessibility": "Excellente"
+      },
+      "taxation": {
+        "incomeTaxRange": "0% - 45%",
+        "corporateTax": "30% (25% pour PME)",
+        "vat": "10% (GST - Goods and Services Tax)",
+        "socialContributions": "11% Superannuation (payé par l'employeur)",
+        "taxResidencyRules": "Résidence fiscale après 183 jours de présence ou si résidence permanente établie"
+      },
+      "climate": {
+        "type": "Très varié: tropical au nord, tempéré au sud, aride au centre",
+        "averageTemp": {
+          "summer": "20°C - 35°C (décembre-février)",
+          "winter": "8°C - 20°C (juin-août)"
+        },
+        "rainfall": "250-2000 mm/an selon les régions",
+        "seasons": "Saisons inversées de l'hémisphère nord, étés chauds, hivers doux sauf en montagne"
+      },
+      "lifestyle": {
+        "culturalActivities": ["Opéra de Sydney", "Festivals de musique et arts", "Galeries d'art", "Sport national (AFL, cricket, rugby)", "Scène gastronomique cosmopolite"],
+        "outdoorActivities": ["Surf et plages", "Randonnée et bushwalking", "Plongée Grande Barrière de corail", "BBQ et vie en extérieur", "Sports nautiques"],
+        "cuisine": "BBQ, viandes grillées, fruits de mer, café culture, cuisine multiculturelle (asiatique, méditerranéenne)",
+        "workLifeBalance": "Excellent",
+        "safetyRating": "9/10"
+      },
+      "expatCommunity": {
+        "size": "Très grande",
+        "estimated": "Environ 7.5 millions d'immigrés (30% de la population)",
+        "forums": [
+          { "name": "InterNations Australia", "url": "https://www.internations.org/australia-expats" },
+          { "name": "Expat.com Australia", "url": "https://www.expat.com/en/guide/oceania/australia/" },
+          { "name": "Poms in Oz", "url": "https://www.pomsinoz.com" }
+        ],
+        "events": "Meetups internationaux très actifs, festivals multiculturels, groupes de sport et loisirs",
+        "supportGroups": [
+          { "name": "Meetup Australia Expats", "url": "https://www.meetup.com/cities/au/" },
+          { "name": "Australian Expat Forum", "url": "https://www.expatforum.com/australia/" }
+        ]
+      },
+      "resources": {
+        "officialGovWebsite": "https://www.australia.gov.au",
+        "immigrationOffice": {
+          "name": "Department of Home Affairs",
+          "url": "https://www.homeaffairs.gov.au"
+        },
+        "emergencyNumbers": {
+          "police": "000",
+          "medical": "000",
+          "fire": "000"
+        },
+        "expatGuides": [
+          { "name": "Home Affairs Immigration", "url": "https://www.homeaffairs.gov.au" },
+          { "name": "Australian Taxation Office", "url": "https://www.ato.gov.au" },
+          { "name": "Services Australia", "url": "https://www.servicesaustralia.gov.au" }
+        ]
+      },
+      "recommendations": {
+        "bestFor": ["Travailleurs qualifiés", "Jeunes professionnels (WHV)", "Familles"],
+        "language": "Anglais indispensable",
+        "visaDifficulty": "Moyenne à élevée"
+      }
+    },
+    {
+      "id": 10,
+      "name": "Japon",
+      "code": "JP",
+      "currency": "JPY",
+      "languages": ["Japonais"],
+      "flagUrl": "https://flagcdn.com/jp.svg",
+      "flagEmoji": "🇯🇵",
+      "continent": "Asie",
+      "capital": "Tokyo",
+      "expatProjectTemplate": {
+        "version": "1.0.0",
+        "steps": [
+          {
+            "id": 1,
+            "slug": "certificate-eligibility",
+            "title": "Obtenir le Certificate of Eligibility",
+            "description": "COE délivré par l'Immigration japonaise",
+            "category": "pre-departure",
+            "order": 1,
+            "substeps": [
+              { "id": "1.1", "label": "L'employeur soumet demande au Bureau d'Immigration", "isOptional": false },
+              { "id": "1.2", "label": "Préparer documents (diplômes, CV, contrat)", "isOptional": false },
+              { "id": "1.3", "label": "Attendre approbation (1-3 mois)", "isOptional": false },
+              { "id": "1.4", "label": "Recevoir COE original par courrier", "isOptional": false }
+            ]
+          },
+          {
+            "id": 2,
+            "slug": "demande-visa",
+            "title": "Demander le visa de travail",
+            "description": "Visa auprès de l'ambassade/consulat",
+            "category": "visa",
+            "order": 2,
+            "substeps": [
+              { "id": "2.1", "label": "Prendre RDV à l'ambassade du Japon", "isOptional": false },
+              { "id": "2.2", "label": "Remplir formulaire de demande de visa", "isOptional": false },
+              { "id": "2.3", "label": "Fournir COE, passeport, photo, documents", "isOptional": false },
+              { "id": "2.4", "label": "Payer frais de visa (gratuit ou 30 EUR selon nationalité)", "isOptional": false },
+              { "id": "2.5", "label": "Récupérer passeport avec visa (3-5 jours)", "isOptional": false }
+            ]
+          },
+          {
+            "id": 3,
+            "slug": "enregistrement-residence",
+            "title": "Enregistrement de résidence",
+            "description": "S'enregistrer au bureau municipal dans les 14 jours",
+            "category": "administratif",
+            "order": 3,
+            "substeps": [
+              { "id": "3.1", "label": "Localiser le bureau municipal (kuyakusho/shiyakusho)", "isOptional": false },
+              { "id": "3.2", "label": "Apporter passeport et adresse de résidence", "isOptional": false },
+              { "id": "3.3", "label": "Remplir formulaire d'enregistrement", "isOptional": false },
+              { "id": "3.4", "label": "Recevoir certificat de résidence (Juminhyo)", "isOptional": false }
+            ]
+          },
+          {
+            "id": 4,
+            "slug": "my-number",
+            "title": "Obtenir la carte My Number",
+            "description": "Numéro d'identification personnel",
+            "category": "administratif",
+            "order": 4,
+            "substeps": [
+              { "id": "4.1", "label": "Recevoir notification My Number par courrier (2-3 semaines)", "isOptional": false },
+              { "id": "4.2", "label": "Demander carte My Number au bureau municipal", "isOptional": false },
+              { "id": "4.3", "label": "Fournir photo et pièce d'identité", "isOptional": false },
+              { "id": "4.4", "label": "Récupérer carte (1 mois)", "isOptional": false }
+            ]
+          },
+          {
+            "id": 5,
+            "slug": "assurance-sante",
+            "title": "S'inscrire à l'assurance santé",
+            "description": "National Health Insurance obligatoire",
+            "category": "administratif",
+            "order": 5,
+            "substeps": [
+              { "id": "5.1", "label": "Vérifier si employeur propose Shakai Hoken", "isOptional": false },
+              { "id": "5.2", "label": "Sinon, souscrire Kokumin Kenko Hoken au bureau municipal", "isOptional": false },
+              { "id": "5.3", "label": "Payer cotisation mensuelle (15 000-30 000 JPY)", "isOptional": false },
+              { "id": "5.4", "label": "Recevoir carte d'assurance santé", "isOptional": false }
+            ]
+          },
+          {
+            "id": 6,
+            "slug": "pension",
+            "title": "Inscription au système de pension",
+            "description": "National Pension obligatoire",
+            "category": "administratif",
+            "order": 6,
+            "substeps": [
+              { "id": "6.1", "label": "S'inscrire au Nenkin (pension) au bureau municipal", "isOptional": false },
+              { "id": "6.2", "label": "Fournir My Number et carte de résidence", "isOptional": false },
+              { "id": "6.3", "label": "Payer cotisation (16 520 JPY/mois)", "isOptional": false },
+              { "id": "6.4", "label": "Recevoir livret de pension (Nenkin Techo)", "isOptional": false }
+            ]
+          },
+          {
+            "id": 7,
+            "slug": "compte-bancaire",
+            "title": "Ouvrir un compte bancaire",
+            "description": "Compte bancaire japonais",
+            "category": "vie-quotidienne",
+            "order": 7,
+            "substeps": [
+              { "id": "7.1", "label": "Choisir banque (MUFG, Mizuho, Japan Post Bank)", "isOptional": false },
+              { "id": "7.2", "label": "Prendre RDV ou se présenter en agence", "isOptional": false },
+              { "id": "7.3", "label": "Apporter carte de résidence, sceau (inkan) et My Number", "isOptional": false },
+              { "id": "7.4", "label": "Recevoir carte bancaire et livret", "isOptional": false }
+            ]
+          },
+          {
+            "id": 8,
+            "slug": "logement",
+            "title": "Trouver un logement permanent",
+            "description": "Location d'appartement",
+            "category": "logement",
+            "order": 8,
+            "substeps": [
+              { "id": "8.1", "label": "Rechercher sur Suumo, Homes, GaijinPot Apartments", "isOptional": false },
+              { "id": "8.2", "label": "Préparer garant japonais ou guarantor company", "isOptional": false },
+              { "id": "8.3", "label": "Visiter appartements avec agent immobilier", "isOptional": false },
+              { "id": "8.4", "label": "Signer contrat (2 ans)", "isOptional": false },
+              { "id": "8.5", "label": "Payer frais initiaux (reikin, shikikin, 4-6 mois de loyer)", "isOptional": false }
+            ]
+          },
+          {
+            "id": 9,
+            "slug": "utilities",
+            "title": "Souscrire aux services essentiels",
+            "description": "Électricité, gaz, eau, Internet",
+            "category": "vie-quotidienne",
+            "order": 9,
+            "substeps": [
+              { "id": "9.1", "label": "Souscrire électricité (TEPCO, Kansai Electric)", "isOptional": false },
+              { "id": "9.2", "label": "Souscrire gaz et eau via proprio ou fournisseurs", "isOptional": false },
+              { "id": "9.3", "label": "Installer Internet (NTT, SoftBank, au)", "isOptional": false },
+              { "id": "9.4", "label": "Obtenir forfait mobile (Docomo, au, SoftBank, MVNO)", "isOptional": false }
+            ]
+          },
+          {
+            "id": 10,
+            "slug": "permis-conduire",
+            "title": "Obtenir permis de conduire japonais",
+            "description": "Conversion ou nouveau permis",
+            "category": "vie-quotidienne",
+            "order": 10,
+            "substeps": [
+              { "id": "10.1", "label": "Vérifier si permis étranger convertible", "isOptional": true },
+              { "id": "10.2", "label": "Se rendre au Centre de permis (運転免許センター)", "isOptional": true },
+              { "id": "10.3", "label": "Passer test de conduite japonais si nécessaire", "isOptional": true },
+              { "id": "10.4", "label": "Payer frais (2 400-4 800 JPY)", "isOptional": true },
+              { "id": "10.5", "label": "Recevoir permis japonais", "isOptional": true }
+            ]
+          }
+        ]
+      },
+      "jobMarket": {
+        "topSectors": ["Technologies de l'information", "Ingénierie et manufacturing", "Enseignement des langues", "Finance et assurance", "Services et hospitalité"],
+        "averageSalary": 350000,
+        "unemploymentRate": "2.5%",
+        "keyJobSites": [
+          { "name": "GaijinPot Jobs", "url": "https://jobs.gaijinpot.com" },
+          { "name": "Daijob", "url": "https://www.daijob.com" },
+          { "name": "LinkedIn Japan", "url": "https://www.linkedin.com/jobs" },
+          { "name": "CareerCross", "url": "https://www.careercross.com" },
+          { "name": "Tokyo Dev", "url": "https://www.tokyodev.com" }
+        ],
+        "workingHoursPerWeek": 40,
+        "salaryByCity": {
+          "Tokyo": 400000,
+          "Osaka": 340000,
+          "Yokohama": 370000
+        },
+        "salaryBySector": {
+          "IT": 450000,
+          "Ingénierie": 420000,
+          "Enseignement": 280000,
+          "Finance": 480000,
+          "Manufacturing": 380000
+        }
+      },
+      "costOfLiving": {
+        "averageRent": {
+          "oneBedroom": 90000,
+          "threeBedroom": 180000
+        },
+        "averageSalary": 350000,
+        "food": {
+          "restaurantMeal": 900,
+          "groceriesWeekly": 6000
+        },
+        "utilities": 15000,
+        "transportMonthly": 12000,
+        "internetMonthly": 4500,
+        "gymMembership": 8000,
+        "byCity": {
+          "Tokyo": { "oneBedroom": 120000, "threeBedroom": 250000, "utilities": 18000, "transportMonthly": 15000 },
+          "Osaka": { "oneBedroom": 80000, "threeBedroom": 160000, "utilities": 14000, "transportMonthly": 10000 },
+          "Yokohama": { "oneBedroom": 95000, "threeBedroom": 190000, "utilities": 16000, "transportMonthly": 13000 }
+        }
+      },
+      "education": {
+        "system": "Système éducatif rigoureux et performant, gratuit jusqu'au collège",
+        "publicSchools": {
+          "quality": "Excellente",
+          "cost": "Gratuit jusqu'au collège",
+          "info": "École obligatoire de 6 à 15 ans, enseignement en japonais, niveau académique élevé"
+        },
+        "privateSchools": {
+          "averageCost": 1200000,
+          "info": "Coût annuel variable entre 800 000 et 2 500 000 JPY selon l'établissement"
+        },
+        "universities": {
+          "topUniversities": ["Université de Tokyo", "Université de Kyoto", "Université d'Osaka", "Université de Tohoku", "Université Waseda"],
+          "averageTuition": 800000,
+          "info": "Universités publiques: 535 800 JPY/an. Universités privées: 900 000-1 500 000 JPY/an"
+        }
+      },
+      "healthcare": {
+        "system": "Système universel d'assurance santé (Kokumin Kenko Hoken)",
+        "coverage": "Couverture à 70%, patient paie 30% des frais médicaux",
+        "qualityRating": "9/10",
+        "averageCosts": {
+          "doctorVisit": 2000,
+          "emergency": 10000,
+          "insurance": 20000
+        },
+        "accessibility": "Excellente"
+      },
+      "taxation": {
+        "incomeTaxRange": "5% - 45%",
+        "corporateTax": "23.2%",
+        "vat": "10% (Consumption Tax)",
+        "socialContributions": "14.4% (santé + pension)",
+        "taxResidencyRules": "Résidence fiscale après 1 an de présence au Japon ou si résidence permanente établie"
+      },
+      "climate": {
+        "type": "Tempéré, quatre saisons distinctes, subtropical au sud",
+        "averageTemp": {
+          "summer": "25°C - 35°C",
+          "winter": "0°C - 10°C"
+        },
+        "rainfall": "1000-2500 mm/an",
+        "seasons": "Quatre saisons marquées, été chaud et humide, hiver froid (neige au nord), saison des pluies en juin"
+      },
+      "lifestyle": {
+        "culturalActivities": ["Temples et sanctuaires", "Théâtre traditionnel (Kabuki, Noh)", "Festivals matsuri", "Manga et anime", "Musées et galeries d'art"],
+        "outdoorActivities": ["Randonnée en montagne", "Ski et snowboard", "Onsen (sources chaudes)", "Cerisiers en fleur (hanami)", "Arts martiaux"],
+        "cuisine": "Sushi, ramen, tempura, yakitori, cuisine kaiseki, okonomiyaki, culture izakaya",
+        "workLifeBalance": "Moyen (culture du travail intense)",
+        "safetyRating": "10/10"
+      },
+      "expatCommunity": {
+        "size": "Moyenne",
+        "estimated": "Environ 3 millions d'expatriés",
+        "forums": [
+          { "name": "GaijinPot Forums", "url": "https://gaijinpot.com/forum/" },
+          { "name": "Japan Guide Forum", "url": "https://www.japan-guide.com/forum/" },
+          { "name": "Reddit r/JapanLife", "url": "https://www.reddit.com/r/japanlife/" }
+        ],
+        "events": "Meetups internationaux actifs à Tokyo, Osaka, événements d'échange linguistique, groupes de loisirs",
+        "supportGroups": [
+          { "name": "Tokyo Expat Network", "url": "https://www.meetup.com/TokyoExpats/" },
+          { "name": "InterNations Japan", "url": "https://www.internations.org/japan-expats" }
+        ]
+      },
+      "resources": {
+        "officialGovWebsite": "https://www.japan.go.jp",
+        "immigrationOffice": {
+          "name": "Immigration Services Agency of Japan",
+          "url": "https://www.moj.go.jp/isa/index.html"
+        },
+        "emergencyNumbers": {
+          "police": "110",
+          "medical": "119",
+          "fire": "119"
+        },
+        "expatGuides": [
+          { "name": "Japan Immigration", "url": "https://www.moj.go.jp/isa/" },
+          { "name": "Ministry of Health, Labour and Welfare", "url": "https://www.mhlw.go.jp/english/" },
+          { "name": "Japan National Tourism Organization", "url": "https://www.jnto.go.jp" }
+        ]
+      },
+      "recommendations": {
+        "bestFor": ["Professionnels IT", "Enseignants de langues", "Passionnés de culture japonaise"],
+        "language": "Japonais fortement recommandé",
+        "visaDifficulty": "Moyenne"
+      }
+    },
+    {
+      "id": 11,
+      "name": "Pays-Bas",
+      "code": "NL",
+      "currency": "EUR",
+      "languages": ["Néerlandais", "Anglais"],
+      "flagUrl": "https://flagcdn.com/nl.svg",
+      "flagEmoji": "🇳🇱",
+      "continent": "Europe",
+      "capital": "Amsterdam",
+      "expatProjectTemplate": {
+        "version": "1.0.0",
+        "steps": [
+          {
+            "id": 1,
+            "slug": "type-visa",
+            "title": "Déterminer le type de visa",
+            "description": "Identifier le visa adapté (travail qualifié, entreprise, UE)",
+            "category": "visa",
+            "order": 1,
+            "substeps": [
+              { "id": "1.1", "label": "Vérifier si vous êtes citoyen UE/EEE (pas de permis nécessaire)", "isOptional": false },
+              { "id": "1.2", "label": "Pour hors-UE : déterminer le type de permis (HSM, GVVA)", "isOptional": false },
+              { "id": "1.3", "label": "Consulter le site IND pour les conditions", "isOptional": false }
+            ]
+          },
+          {
+            "id": 2,
+            "slug": "employeur-sponsor",
+            "title": "Trouver un employeur reconnu",
+            "description": "L'employeur doit être sponsor reconnu IND",
+            "category": "pre-departure",
+            "order": 2,
+            "substeps": [
+              { "id": "2.1", "label": "Obtenir une offre d'emploi d'un employeur néerlandais", "isOptional": false },
+              { "id": "2.2", "label": "Vérifier que l'employeur est sponsor reconnu IND", "isOptional": false },
+              { "id": "2.3", "label": "Préparer les documents requis (diplômes, expérience)", "isOptional": false }
+            ]
+          },
+          {
+            "id": 3,
+            "slug": "demande-permis",
+            "title": "Demande de permis de travail",
+            "description": "L'employeur soumet la demande à l'IND",
+            "category": "visa",
+            "order": 3,
+            "substeps": [
+              { "id": "3.1", "label": "L'employeur soumet la demande GVVA/HSM à l'IND", "isOptional": false },
+              { "id": "3.2", "label": "Fournir passeport valide 6 mois minimum", "isOptional": false },
+              { "id": "3.3", "label": "Attendre la décision (2-8 semaines)", "isOptional": false },
+              { "id": "3.4", "label": "Prendre RDV pour empreintes et photo", "isOptional": false }
+            ]
+          },
+          {
+            "id": 4,
+            "slug": "bsn",
+            "title": "Obtenir le BSN",
+            "description": "Numéro de service citoyen obligatoire",
+            "category": "administratif",
+            "order": 4,
+            "substeps": [
+              { "id": "4.1", "label": "S'inscrire à la commune (Gemeente) dans les 5 jours", "isOptional": false },
+              { "id": "4.2", "label": "Obtenir le BSN (Burgerservicenummer)", "isOptional": false },
+              { "id": "4.3", "label": "Recevoir preuve d'inscription", "isOptional": false }
+            ]
+          },
+          {
+            "id": 5,
+            "slug": "logement",
+            "title": "Trouver un logement",
+            "description": "Recherche et signature du bail",
+            "category": "logement",
+            "order": 5,
+            "substeps": [
+              { "id": "5.1", "label": "Rechercher sur Funda, Pararius, Kamernet", "isOptional": false },
+              { "id": "5.2", "label": "Préparer dossier locatif (revenus, contrat de travail)", "isOptional": false },
+              { "id": "5.3", "label": "Visiter les logements", "isOptional": false },
+              { "id": "5.4", "label": "Signer le contrat de location", "isOptional": false },
+              { "id": "5.5", "label": "Payer dépôt de garantie (1-2 mois de loyer)", "isOptional": false }
+            ]
+          },
+          {
+            "id": 6,
+            "slug": "assurance-sante",
+            "title": "Souscrire assurance santé",
+            "description": "Assurance santé privée obligatoire",
+            "category": "administratif",
+            "order": 6,
+            "substeps": [
+              { "id": "6.1", "label": "Choisir assureur (Zilveren Kruis, VGZ, CZ)", "isOptional": false },
+              { "id": "6.2", "label": "Souscrire dans les 4 mois de l'arrivée", "isOptional": false },
+              { "id": "6.3", "label": "Prévoir 120-150€/mois pour assurance de base", "isOptional": false }
+            ]
+          },
+          {
+            "id": 7,
+            "slug": "compte-bancaire",
+            "title": "Ouvrir un compte bancaire",
+            "description": "Compte nécessaire pour salaire et factures",
+            "category": "vie-quotidienne",
+            "order": 7,
+            "substeps": [
+              { "id": "7.1", "label": "Choisir une banque (ING, ABN AMRO, Rabobank)", "isOptional": false },
+              { "id": "7.2", "label": "Fournir BSN, passeport et preuve de résidence", "isOptional": false },
+              { "id": "7.3", "label": "Recevoir carte bancaire et IBAN", "isOptional": false }
+            ]
+          },
+          {
+            "id": 8,
+            "slug": "30-ruling",
+            "title": "Demander le 30% ruling (optionnel)",
+            "description": "Avantage fiscal pour expatriés qualifiés",
+            "category": "administratif",
+            "order": 8,
+            "substeps": [
+              { "id": "8.1", "label": "Vérifier éligibilité (salaire minimum requis)", "isOptional": true },
+              { "id": "8.2", "label": "Employeur soumet la demande dans les 4 mois", "isOptional": true },
+              { "id": "8.3", "label": "Bénéficier de 30% du salaire non imposable", "isOptional": true }
+            ]
+          },
+          {
+            "id": 9,
+            "slug": "transport",
+            "title": "Organiser les transports",
+            "description": "Vélo et transports publics",
+            "category": "vie-quotidienne",
+            "order": 9,
+            "substeps": [
+              { "id": "9.1", "label": "Obtenir carte OV-chipkaart pour transports publics", "isOptional": false },
+              { "id": "9.2", "label": "Acheter un vélo (80-200€)", "isOptional": false },
+              { "id": "9.3", "label": "Envisager permis de conduire néerlandais si nécessaire", "isOptional": true }
+            ]
+          }
+        ]
+      },
+      "jobMarket": {
+        "topSectors": ["Technologies de l'information", "Logistique et transport", "Finance", "Ingénierie", "Agriculture et agroalimentaire"],
+        "averageSalary": 3500,
+        "unemploymentRate": "3.6%",
+        "keyJobSites": [
+          { "name": "Indeed Netherlands", "url": "https://nl.indeed.com" },
+          { "name": "LinkedIn", "url": "https://www.linkedin.com/jobs" },
+          { "name": "Glassdoor Netherlands", "url": "https://www.glassdoor.nl" },
+          { "name": "Werk.nl", "url": "https://www.werk.nl" },
+          { "name": "Nationale Vacaturebank", "url": "https://www.nationalevacaturebank.nl" }
+        ],
+        "workingHoursPerWeek": 40,
+        "salaryByCity": {
+          "Amsterdam": 4000,
+          "Rotterdam": 3400,
+          "La Haye": 3600
+        },
+        "salaryBySector": {
+          "IT": 4200,
+          "Finance": 4500,
+          "Logistique": 3200,
+          "Ingénierie": 3800,
+          "Agriculture": 3000
+        }
+      },
+      "costOfLiving": {
+        "averageRent": {
+          "oneBedroom": 1300,
+          "threeBedroom": 2200
+        },
+        "averageSalary": 3500,
+        "food": {
+          "restaurantMeal": 18,
+          "groceriesWeekly": 80
+        },
+        "utilities": 180,
+        "transportMonthly": 90,
+        "internetMonthly": 45,
+        "gymMembership": 40,
+        "byCity": {
+          "Amsterdam": { "oneBedroom": 1800, "threeBedroom": 3000, "utilities": 200, "transportMonthly": 100 },
+          "Rotterdam": { "oneBedroom": 1200, "threeBedroom": 2000, "utilities": 170, "transportMonthly": 80 },
+          "La Haye": { "oneBedroom": 1300, "threeBedroom": 2200, "utilities": 180, "transportMonthly": 85 }
+        }
+      },
+      "education": {
+        "system": "Système éducatif de haute qualité, enseignement en néerlandais et anglais, gratuit jusqu'à 18 ans",
+        "publicSchools": {
+          "quality": "Excellente",
+          "cost": "Gratuit",
+          "info": "École obligatoire de 5 à 18 ans, programmes standardisés, nombreuses écoles internationales disponibles"
+        },
+        "privateSchools": {
+          "averageCost": 5000,
+          "info": "Coût annuel variable entre 3000€ et 15000€ selon l'établissement et le programme international"
+        },
+        "universities": {
+          "topUniversities": ["Université d'Amsterdam", "Université de Delft", "Université d'Utrecht", "Université de Leiden", "Université Erasmus de Rotterdam"],
+          "averageTuition": 2200,
+          "info": "Frais universitaires pour UE: 2000-2500€/an. Pour étudiants hors-UE: 8000-15000€/an selon le programme"
+        }
+      },
+      "healthcare": {
+        "system": "Système d'assurance santé privée obligatoire avec subventions gouvernementales",
+        "coverage": "Couverture de base obligatoire pour tous les résidents, complémentaire optionnelle",
+        "qualityRating": "9/10",
+        "averageCosts": {
+          "doctorVisit": 10,
+          "emergency": 20,
+          "insurance": 135
+        },
+        "accessibility": "Excellente"
+      },
+      "taxation": {
+        "incomeTaxRange": "9.28% - 49.5%",
+        "corporateTax": "19% - 25.8%",
+        "vat": "21% (taux standard), 9% (taux réduit)",
+        "socialContributions": "27.65% (employé et employeur combinés)",
+        "taxResidencyRules": "Résidence fiscale si vous vivez aux Pays-Bas ou si votre centre d'intérêts économiques y est situé"
+      },
+      "climate": {
+        "type": "Tempéré océanique, hivers doux et étés frais",
+        "averageTemp": {
+          "summer": "17°C - 22°C",
+          "winter": "2°C - 6°C"
+        },
+        "rainfall": "750-850 mm/an",
+        "seasons": "Quatre saisons, temps changeant, pluies fréquentes toute l'année, vent constant"
+      },
+      "lifestyle": {
+        "culturalActivities": ["Musées mondialement reconnus", "Festivals de musique", "Théâtres et concerts", "Marchés aux fleurs", "Architecture et canaux"],
+        "outdoorActivities": ["Cyclisme", "Patinage sur glace", "Randonnée", "Sports nautiques", "Visites de moulins"],
+        "cuisine": "Fromages néerlandais, hareng, stroopwafels, bitterballen, cuisine internationale variée",
+        "workLifeBalance": "Excellent",
+        "safetyRating": "9/10"
+      },
+      "expatCommunity": {
+        "size": "Grande",
+        "estimated": "Environ 2 millions d'expatriés",
+        "forums": [
+          { "name": "InterNations Netherlands", "url": "https://www.internations.org/netherlands-expats" },
+          { "name": "Expat Republic", "url": "https://www.expatrepublic.com" },
+          { "name": "IamExpat", "url": "https://www.iamexpat.nl" }
+        ],
+        "events": "Nombreux meetups internationaux, événements networking, groupes linguistiques et culturels",
+        "supportGroups": [
+          { "name": "Meetup Amsterdam Expats", "url": "https://www.meetup.com/cities/nl/amsterdam/expat/" },
+          { "name": "ACCESS", "url": "https://www.access-nl.org" }
+        ]
+      },
+      "resources": {
+        "officialGovWebsite": "https://www.government.nl",
+        "immigrationOffice": {
+          "name": "Immigration and Naturalisation Service (IND)",
+          "url": "https://ind.nl/en"
+        },
+        "emergencyNumbers": {
+          "police": "112",
+          "medical": "112",
+          "fire": "112"
+        },
+        "expatGuides": [
+          { "name": "IND - Immigration", "url": "https://ind.nl/en" },
+          { "name": "Netherlands Worldwide", "url": "https://www.netherlandsworldwide.nl" },
+          { "name": "I am Expat", "url": "https://www.iamexpat.nl" }
+        ]
+      },
+      "recommendations": {
+        "bestFor": ["Professionnels IT", "Travailleurs qualifiés", "Familles", "Anglophones"],
+        "language": "Anglais largement parlé, néerlandais apprécié",
+        "visaDifficulty": "Moyenne"
+      }
+    },
+    {
+      "id": 12,
+      "name": "Suède",
+      "code": "SE",
+      "currency": "SEK",
+      "languages": ["Suédois", "Anglais"],
+      "flagUrl": "https://flagcdn.com/se.svg",
+      "flagEmoji": "🇸🇪",
+      "continent": "Europe",
+      "capital": "Stockholm",
+      "expatProjectTemplate": {
+        "version": "1.0.0",
+        "steps": [
+          {
+            "id": 1,
+            "slug": "type-permis",
+            "title": "Déterminer le type de permis",
+            "description": "Identifier le permis adapté (travail, études, UE)",
+            "category": "pre-departure",
+            "order": 1,
+            "substeps": [
+              { "id": "1.1", "label": "Vérifier si vous êtes citoyen UE/EEE (pas de permis nécessaire)", "isOptional": false },
+              { "id": "1.2", "label": "Pour hors-UE : déterminer le type (permis travail, chercheur)", "isOptional": false },
+              { "id": "1.3", "label": "Consulter Migrationsverket pour les conditions", "isOptional": false }
+            ]
+          },
+          {
+            "id": 2,
+            "slug": "offre-emploi",
+            "title": "Obtenir une offre d'emploi",
+            "description": "Contrat de travail requis avant la demande",
+            "category": "pre-departure",
+            "order": 2,
+            "substeps": [
+              { "id": "2.1", "label": "Rechercher emploi sur sites suédois", "isOptional": false },
+              { "id": "2.2", "label": "Obtenir offre écrite avec conditions salariales", "isOptional": false },
+              { "id": "2.3", "label": "Vérifier salaire minimum selon convention collective", "isOptional": false }
+            ]
+          },
+          {
+            "id": 3,
+            "slug": "demande-permis-travail",
+            "title": "Demander le permis de travail",
+            "description": "Depuis votre pays d'origine",
+            "category": "visa",
+            "order": 3,
+            "substeps": [
+              { "id": "3.1", "label": "Créer compte sur site Migrationsverket", "isOptional": false },
+              { "id": "3.2", "label": "Soumettre demande en ligne avec documents", "isOptional": false },
+              { "id": "3.3", "label": "Payer frais de demande (2000 SEK)", "isOptional": false },
+              { "id": "3.4", "label": "Attendre décision (plusieurs mois)", "isOptional": false }
+            ]
+          },
+          {
+            "id": 4,
+            "slug": "arrivee-suede",
+            "title": "Arrivée en Suède",
+            "description": "Validation du permis",
+            "category": "arrival",
+            "order": 4,
+            "substeps": [
+              { "id": "4.1", "label": "Présenter permis à l'arrivée", "isOptional": false },
+              { "id": "4.2", "label": "Récupérer carte de résidence", "isOptional": false }
+            ]
+          },
+          {
+            "id": 5,
+            "slug": "personnummer",
+            "title": "Obtenir le personnummer",
+            "description": "Numéro d'identité personnel indispensable",
+            "category": "administratif",
+            "order": 5,
+            "substeps": [
+              { "id": "5.1", "label": "S'inscrire à Skatteverket (Administration fiscale)", "isOptional": false },
+              { "id": "5.2", "label": "Fournir passeport et permis de résidence", "isOptional": false },
+              { "id": "5.3", "label": "Recevoir personnummer (10 chiffres)", "isOptional": false },
+              { "id": "5.4", "label": "Attendre carte physique par courrier", "isOptional": false }
+            ]
+          },
+          {
+            "id": 6,
+            "slug": "logement",
+            "title": "Trouver un logement",
+            "description": "Recherche et signature du bail",
+            "category": "logement",
+            "order": 6,
+            "substeps": [
+              { "id": "6.1", "label": "Rechercher sur Blocket, Hemnet, Qasa", "isOptional": false },
+              { "id": "6.2", "label": "Préparer dossier (revenus, personnummer)", "isOptional": false },
+              { "id": "6.3", "label": "Visiter les logements", "isOptional": false },
+              { "id": "6.4", "label": "Signer contrat de location", "isOptional": false },
+              { "id": "6.5", "label": "Payer dépôt de garantie (1-3 mois)", "isOptional": false }
+            ]
+          },
+          {
+            "id": 7,
+            "slug": "compte-bancaire",
+            "title": "Ouvrir un compte bancaire",
+            "description": "Nécessite le personnummer",
+            "category": "vie-quotidienne",
+            "order": 7,
+            "substeps": [
+              { "id": "7.1", "label": "Choisir banque (SEB, Handelsbanken, Swedbank)", "isOptional": false },
+              { "id": "7.2", "label": "Présenter personnummer et passeport", "isOptional": false },
+              { "id": "7.3", "label": "Recevoir carte bancaire et BankID", "isOptional": false },
+              { "id": "7.4", "label": "Activer BankID pour services en ligne", "isOptional": false }
+            ]
+          },
+          {
+            "id": 8,
+            "slug": "assurance-sante",
+            "title": "Inscription assurance santé",
+            "description": "Système public de santé",
+            "category": "administratif",
+            "order": 8,
+            "substeps": [
+              { "id": "8.1", "label": "Inscription automatique via personnummer", "isOptional": false },
+              { "id": "8.2", "label": "Recevoir carte d'assurance santé", "isOptional": false },
+              { "id": "8.3", "label": "Enregistrer médecin traitant (vårdcentral)", "isOptional": false }
+            ]
+          },
+          {
+            "id": 9,
+            "slug": "transport",
+            "title": "Organiser les transports",
+            "description": "Carte de transport et permis",
+            "category": "vie-quotidienne",
+            "order": 9,
+            "substeps": [
+              { "id": "9.1", "label": "Obtenir carte SL (Stockholm) ou équivalent", "isOptional": false },
+              { "id": "9.2", "label": "Échanger permis de conduire si applicable", "isOptional": true },
+              { "id": "9.3", "label": "Télécharger applis transport local", "isOptional": false }
+            ]
+          }
+        ]
+      },
+      "jobMarket": {
+        "topSectors": ["Technologies de l'information", "Ingénierie", "Santé", "Finance", "Industries créatives"],
+        "averageSalary": 38000,
+        "unemploymentRate": "7.6%",
+        "keyJobSites": [
+          { "name": "Arbetsförmedlingen", "url": "https://arbetsformedlingen.se" },
+          { "name": "LinkedIn Sweden", "url": "https://www.linkedin.com/jobs" },
+          { "name": "The Local Jobs", "url": "https://www.thelocal.se/jobs" },
+          { "name": "Academic Work", "url": "https://www.academicwork.se" },
+          { "name": "Indeed Sweden", "url": "https://se.indeed.com" }
+        ],
+        "workingHoursPerWeek": 40,
+        "salaryByCity": {
+          "Stockholm": 42000,
+          "Göteborg": 36000,
+          "Malmö": 35000
+        },
+        "salaryBySector": {
+          "IT": 45000,
+          "Ingénierie": 42000,
+          "Santé": 38000,
+          "Finance": 46000,
+          "Créatif": 35000
+        }
+      },
+      "costOfLiving": {
+        "averageRent": {
+          "oneBedroom": 11000,
+          "threeBedroom": 18000
+        },
+        "averageSalary": 38000,
+        "food": {
+          "restaurantMeal": 120,
+          "groceriesWeekly": 650
+        },
+        "utilities": 1500,
+        "transportMonthly": 950,
+        "internetMonthly": 400,
+        "gymMembership": 350,
+        "byCity": {
+          "Stockholm": { "oneBedroom": 14000, "threeBedroom": 22000, "utilities": 1700, "transportMonthly": 970 },
+          "Göteborg": { "oneBedroom": 10000, "threeBedroom": 16000, "utilities": 1400, "transportMonthly": 700 },
+          "Malmö": { "oneBedroom": 9500, "threeBedroom": 15000, "utilities": 1300, "transportMonthly": 650 }
+        }
+      },
+      "education": {
+        "system": "Système éducatif public gratuit jusqu'à l'université, enseignement en suédois principalement",
+        "publicSchools": {
+          "quality": "Excellente",
+          "cost": "Gratuit",
+          "info": "École obligatoire de 6 à 16 ans, programmes nationaux, nombreuses écoles internationales en anglais"
+        },
+        "privateSchools": {
+          "averageCost": 8000,
+          "info": "Écoles privées subventionnées, généralement gratuites. Écoles internationales : 8000-15000€/an"
+        },
+        "universities": {
+          "topUniversities": ["Université de Stockholm", "KTH Royal Institute of Technology", "Université de Göteborg", "Université de Lund", "Université d'Uppsala"],
+          "averageTuition": 0,
+          "info": "Gratuit pour citoyens UE/EEE. Hors-UE: 8000-18000€/an selon le programme"
+        }
+      },
+      "healthcare": {
+        "system": "Système public universel financé par les impôts",
+        "coverage": "Couverture quasi-complète pour tous les résidents, franchise modeste par visite",
+        "qualityRating": "9/10",
+        "averageCosts": {
+          "doctorVisit": 200,
+          "emergency": 400,
+          "insurance": 0
+        },
+        "accessibility": "Excellente"
+      },
+      "taxation": {
+        "incomeTaxRange": "32% - 57%",
+        "corporateTax": "20.6%",
+        "vat": "25% (taux standard), 12% et 6% (taux réduits)",
+        "socialContributions": "31.42% (employeur uniquement)",
+        "taxResidencyRules": "Résidence fiscale après 6 mois de séjour en Suède ou si liens substantiels avec la Suède"
+      },
+      "climate": {
+        "type": "Continental et subarctique selon les régions",
+        "averageTemp": {
+          "summer": "15°C - 22°C",
+          "winter": "-5°C - 2°C"
+        },
+        "rainfall": "500-700 mm/an",
+        "seasons": "Quatre saisons marquées, hivers longs et froids avec neige, étés doux, longues journées l'été et nuits l'hiver"
+      },
+      "lifestyle": {
+        "culturalActivities": ["Musées et galeries", "Design scandinave", "Festivals musicaux", "Théâtres", "Architecture moderne"],
+        "outdoorActivities": ["Ski et sports d'hiver", "Randonnée", "Kayak", "Cyclisme", "Sauna", "Observation aurores boréales"],
+        "cuisine": "Köttbullar (boulettes), gravlax, kanelbullar, fika (pause-café), cuisine nordique moderne",
+        "workLifeBalance": "Excellent",
+        "safetyRating": "9/10"
+      },
+      "expatCommunity": {
+        "size": "Moyenne",
+        "estimated": "Environ 1 million d'expatriés",
+        "forums": [
+          { "name": "The Local Sweden", "url": "https://www.thelocal.se" },
+          { "name": "InterNations Sweden", "url": "https://www.internations.org/sweden-expats" },
+          { "name": "Reddit r/TillSverige", "url": "https://www.reddit.com/r/TillSverige/" }
+        ],
+        "events": "Meetups internationaux actifs, événements networking, cours de suédois gratuits (SFI)",
+        "supportGroups": [
+          { "name": "Stockholm Expats", "url": "https://www.meetup.com/stockholm-expats/" },
+          { "name": "Expat Sweden", "url": "https://www.expatsweden.com" }
+        ]
+      },
+      "resources": {
+        "officialGovWebsite": "https://www.government.se",
+        "immigrationOffice": {
+          "name": "Swedish Migration Agency (Migrationsverket)",
+          "url": "https://www.migrationsverket.se/en"
+        },
+        "emergencyNumbers": {
+          "police": "112",
+          "medical": "112",
+          "fire": "112"
+        },
+        "expatGuides": [
+          { "name": "Migrationsverket", "url": "https://www.migrationsverket.se/en" },
+          { "name": "Sweden.se", "url": "https://sweden.se" },
+          { "name": "Skatteverket (Tax Agency)", "url": "https://www.skatteverket.se/servicelankar/otherlanguages/inenglish.4.12815e4f14a62bc048f4edc.html" }
+        ]
+      },
+      "recommendations": {
+        "bestFor": ["Professionnels IT", "Ingénieurs", "Familles", "Amateurs de nature"],
+        "language": "Anglais très répandu, suédois recommandé",
+        "visaDifficulty": "Moyenne"
+      }
+    },
+    {
+      "id": 13,
+      "name": "Belgique",
+      "code": "BE",
+      "currency": "EUR",
+      "languages": ["Français", "Néerlandais", "Allemand"],
+      "flagUrl": "https://flagcdn.com/be.svg",
+      "flagEmoji": "🇧🇪",
+      "continent": "Europe",
+      "capital": "Bruxelles",
+      "expatProjectTemplate": {
+        "version": "1.0.0",
+        "steps": [
+          {
+            "id": 1,
+            "slug": "type-permis",
+            "title": "Déterminer le type de permis",
+            "description": "Identifier le permis adapté (UE, single permit)",
+            "category": "pre-departure",
+            "order": 1,
+            "substeps": [
+              { "id": "1.1", "label": "Vérifier si vous êtes citoyen UE/EEE (carte E)", "isOptional": false },
+              { "id": "1.2", "label": "Pour hors-UE : permis unique (single permit)", "isOptional": false },
+              { "id": "1.3", "label": "Consulter portails régionaux (Bruxelles, Flandre, Wallonie)", "isOptional": false }
+            ]
+          },
+          {
+            "id": 2,
+            "slug": "offre-emploi",
+            "title": "Obtenir une offre d'emploi",
+            "description": "Contrat requis avant demande de permis",
+            "category": "pre-departure",
+            "order": 2,
+            "substeps": [
+              { "id": "2.1", "label": "Rechercher emploi sur sites belges", "isOptional": false },
+              { "id": "2.2", "label": "Obtenir contrat de travail écrit", "isOptional": false },
+              { "id": "2.3", "label": "Vérifier conditions salariales minimales", "isOptional": false }
+            ]
+          },
+          {
+            "id": 3,
+            "slug": "single-permit",
+            "title": "Demander le permis unique",
+            "description": "Combinaison permis travail et séjour",
+            "category": "visa",
+            "order": 3,
+            "substeps": [
+              { "id": "3.1", "label": "Employeur soumet demande à la région compétente", "isOptional": false },
+              { "id": "3.2", "label": "Fournir documents (passeport, diplômes, contrat)", "isOptional": false },
+              { "id": "3.3", "label": "Attendre décision (8-12 semaines)", "isOptional": false },
+              { "id": "3.4", "label": "Recevoir Annexe 46 par email", "isOptional": false }
+            ]
+          },
+          {
+            "id": 4,
+            "slug": "visa-d",
+            "title": "Obtenir le visa D",
+            "description": "Visa long séjour à l'ambassade",
+            "category": "visa",
+            "order": 4,
+            "substeps": [
+              { "id": "4.1", "label": "Prendre RDV à l'ambassade/consulat belge", "isOptional": false },
+              { "id": "4.2", "label": "Présenter Annexe 46 et documents", "isOptional": false },
+              { "id": "4.3", "label": "Recevoir visa D dans le passeport", "isOptional": false }
+            ]
+          },
+          {
+            "id": 5,
+            "slug": "arrivee-belgique",
+            "title": "Arrivée en Belgique",
+            "description": "Enregistrement à la commune",
+            "category": "arrival",
+            "order": 5,
+            "substeps": [
+              { "id": "5.1", "label": "S'inscrire à la commune dans les 8 jours", "isOptional": false },
+              { "id": "5.2", "label": "Recevoir visite de vérification de domicile", "isOptional": false },
+              { "id": "5.3", "label": "Obtenir Annexe 49 (preuve d'enregistrement)", "isOptional": false }
+            ]
+          },
+          {
+            "id": 6,
+            "slug": "titre-sejour",
+            "title": "Recevoir le titre de séjour",
+            "description": "Carte de séjour définitive",
+            "category": "administratif",
+            "order": 6,
+            "substeps": [
+              { "id": "6.1", "label": "Attendre décision finale Office des Étrangers", "isOptional": false },
+              { "id": "6.2", "label": "Recevoir carte A (permis unique)", "isOptional": false },
+              { "id": "6.3", "label": "Valide pour durée du contrat (max 3 ans)", "isOptional": false }
+            ]
+          },
+          {
+            "id": 7,
+            "slug": "mutuelle",
+            "title": "Affiliation mutuelle santé",
+            "description": "Assurance santé obligatoire",
+            "category": "administratif",
+            "order": 7,
+            "substeps": [
+              { "id": "7.1", "label": "Choisir mutuelle (Partena, Solidaris, etc.)", "isOptional": false },
+              { "id": "7.2", "label": "S'affilier dans les 3 mois", "isOptional": false },
+              { "id": "7.3", "label": "Recevoir carte SIS (e-ID santé)", "isOptional": false }
+            ]
+          },
+          {
+            "id": 8,
+            "slug": "compte-bancaire",
+            "title": "Ouvrir un compte bancaire",
+            "description": "Compte nécessaire pour salaire",
+            "category": "vie-quotidienne",
+            "order": 8,
+            "substeps": [
+              { "id": "8.1", "label": "Choisir banque (BNP Paribas Fortis, KBC, ING)", "isOptional": false },
+              { "id": "8.2", "label": "Fournir passeport, preuve résidence, contrat travail", "isOptional": false },
+              { "id": "8.3", "label": "Recevoir carte bancaire et IBAN", "isOptional": false }
+            ]
+          },
+          {
+            "id": 9,
+            "slug": "logement",
+            "title": "Trouver un logement",
+            "description": "Location ou achat",
+            "category": "logement",
+            "order": 9,
+            "substeps": [
+              { "id": "9.1", "label": "Rechercher sur Immoweb, Zimmo, Logic-Immo", "isOptional": false },
+              { "id": "9.2", "label": "Préparer dossier locatif", "isOptional": false },
+              { "id": "9.3", "label": "Signer bail et état des lieux", "isOptional": false },
+              { "id": "9.4", "label": "Payer garantie locative (2-3 mois)", "isOptional": false }
+            ]
+          },
+          {
+            "id": 10,
+            "slug": "transport",
+            "title": "Organiser les transports",
+            "description": "Carte STIB/De Lijn/TEC",
+            "category": "vie-quotidienne",
+            "order": 10,
+            "substeps": [
+              { "id": "10.1", "label": "Obtenir abonnement transport selon région", "isOptional": false },
+              { "id": "10.2", "label": "Échanger permis de conduire si applicable", "isOptional": true },
+              { "id": "10.3", "label": "Télécharger apps SNCB pour trains", "isOptional": false }
+            ]
+          }
+        ]
+      },
+      "jobMarket": {
+        "topSectors": ["Institutions européennes", "Technologies de l'information", "Pharmaceutique et biotechnologies", "Logistique", "Finance"],
+        "averageSalary": 3700,
+        "unemploymentRate": "5.6%",
+        "keyJobSites": [
+          { "name": "VDAB", "url": "https://www.vdab.be" },
+          { "name": "Actiris", "url": "https://www.actiris.brussels" },
+          { "name": "Le Forem", "url": "https://www.leforem.be" },
+          { "name": "LinkedIn Belgium", "url": "https://www.linkedin.com/jobs" },
+          { "name": "StepStone Belgium", "url": "https://www.stepstone.be" }
+        ],
+        "workingHoursPerWeek": 38,
+        "salaryByCity": {
+          "Bruxelles": 4200,
+          "Anvers": 3500,
+          "Gand": 3400
+        },
+        "salaryBySector": {
+          "Institutions UE": 5500,
+          "IT": 4000,
+          "Pharmaceutique": 4300,
+          "Logistique": 3200,
+          "Finance": 4500
+        }
+      },
+      "costOfLiving": {
+        "averageRent": {
+          "oneBedroom": 1100,
+          "threeBedroom": 1800
+        },
+        "averageSalary": 3700,
+        "food": {
+          "restaurantMeal": 16,
+          "groceriesWeekly": 75
+        },
+        "utilities": 200,
+        "transportMonthly": 49,
+        "internetMonthly": 45,
+        "gymMembership": 45,
+        "byCity": {
+          "Bruxelles": { "oneBedroom": 1300, "threeBedroom": 2200, "utilities": 220, "transportMonthly": 49 },
+          "Anvers": { "oneBedroom": 1000, "threeBedroom": 1700, "utilities": 190, "transportMonthly": 40 },
+          "Gand": { "oneBedroom": 950, "threeBedroom": 1600, "utilities": 185, "transportMonthly": 38 }
+        }
+      },
+      "education": {
+        "system": "Système éducatif gratuit et de qualité, enseignement dans les trois langues nationales",
+        "publicSchools": {
+          "quality": "Excellente",
+          "cost": "Gratuit",
+          "info": "École obligatoire de 5 à 18 ans, programmes régionaux, nombreuses écoles internationales à Bruxelles"
+        },
+        "privateSchools": {
+          "averageCost": 4500,
+          "info": "Coût annuel variable entre 3000€ et 12000€ pour écoles internationales"
+        },
+        "universities": {
+          "topUniversities": ["KU Leuven", "Université de Gand", "UCLouvain", "Université libre de Bruxelles", "Université d'Anvers"],
+          "averageTuition": 950,
+          "info": "Frais universitaires pour UE: 800-1000€/an. Pour étudiants hors-UE: 4000-8000€/an"
+        }
+      },
+      "healthcare": {
+        "system": "Système de sécurité sociale avec mutuelles, remboursements partiels",
+        "coverage": "Couverture étendue via mutuelle, patient paie ticket modérateur (20-30%)",
+        "qualityRating": "9/10",
+        "averageCosts": {
+          "doctorVisit": 25,
+          "emergency": 50,
+          "insurance": 25
+        },
+        "accessibility": "Excellente"
+      },
+      "taxation": {
+        "incomeTaxRange": "25% - 50%",
+        "corporateTax": "25%",
+        "vat": "21% (taux standard), 6% et 12% (taux réduits)",
+        "socialContributions": "13.07% (employé), 25% (employeur)",
+        "taxResidencyRules": "Résidence fiscale si centre d'intérêts économiques en Belgique ou présence de plus de 6 mois"
+      },
+      "climate": {
+        "type": "Tempéré océanique, doux et humide",
+        "averageTemp": {
+          "summer": "17°C - 23°C",
+          "winter": "2°C - 6°C"
+        },
+        "rainfall": "800-900 mm/an",
+        "seasons": "Quatre saisons, temps changeant, pluies fréquentes, hivers doux, étés tempérés"
+      },
+      "lifestyle": {
+        "culturalActivities": ["Musées et galeries d'art", "Festivals de musique", "BD et bande dessinée", "Événements européens", "Architecture historique"],
+        "outdoorActivities": ["Cyclisme", "Randonnée en Ardennes", "Sports nautiques côte belge", "Festivals en plein air"],
+        "cuisine": "Chocolat belge, frites, gaufres, bières artisanales, moules-frites, cuisine internationale",
+        "workLifeBalance": "Bon",
+        "safetyRating": "8/10"
+      },
+      "expatCommunity": {
+        "size": "Très grande",
+        "estimated": "Environ 1.5 million d'expatriés",
+        "forums": [
+          { "name": "Expatica Belgium", "url": "https://www.expatica.com/be" },
+          { "name": "InterNations Belgium", "url": "https://www.internations.org/belgium-expats" },
+          { "name": "Just Landed Belgium", "url": "https://www.justlanded.com/english/Belgium" }
+        ],
+        "events": "Très nombreux meetups internationaux à Bruxelles, événements networking EU, groupes linguistiques",
+        "supportGroups": [
+          { "name": "Brussels Expats", "url": "https://www.meetup.com/Brussels-Expats/" },
+          { "name": "Newcomers Belgium", "url": "https://www.newcomersnetwork.be" }
+        ]
+      },
+      "resources": {
+        "officialGovWebsite": "https://www.belgium.be",
+        "immigrationOffice": {
+          "name": "Office des Étrangers",
+          "url": "https://dofi.ibz.be"
+        },
+        "emergencyNumbers": {
+          "police": "112",
+          "medical": "112",
+          "fire": "112"
+        },
+        "expatGuides": [
+          { "name": "Belgium.be", "url": "https://www.belgium.be/en" },
+          { "name": "Work Permit Belgium", "url": "https://economy-employment.brussels" },
+          { "name": "The Bulletin", "url": "https://www.thebulletin.be" }
+        ]
+      },
+      "recommendations": {
+        "bestFor": ["Fonctionnaires européens", "Professionnels IT", "Familles", "Multilingues"],
+        "language": "Français ou néerlandais selon région, anglais courant à Bruxelles",
+        "visaDifficulty": "Moyenne"
+      }
+    },
+    {
+      "id": 14,
+      "name": "Portugal",
+      "code": "PT",
+      "currency": "EUR",
+      "languages": ["Portugais"],
+      "flagUrl": "https://flagcdn.com/pt.svg",
+      "flagEmoji": "🇵🇹",
+      "continent": "Europe",
+      "capital": "Lisbonne",
+      "expatProjectTemplate": {
+        "version": "1.0.0",
+        "steps": [
+          {
+            "id": 1,
+            "slug": "type-visa",
+            "title": "Déterminer le type de visa",
+            "description": "Identifier le visa adapté (travail, D7, UE)",
+            "category": "pre-departure",
+            "order": 1,
+            "substeps": [
+              { "id": "1.1", "label": "Vérifier si vous êtes citoyen UE/EEE (pas de visa)", "isOptional": false },
+              { "id": "1.2", "label": "Pour hors-UE : visa travail, D7, ou Golden Visa", "isOptional": false },
+              { "id": "1.3", "label": "Consulter portail Portugal.gov.pt", "isOptional": false }
+            ]
+          },
+          {
+            "id": 2,
+            "slug": "nif",
+            "title": "Obtenir le NIF",
+            "description": "Numéro fiscal indispensable",
+            "category": "pre-departure",
+            "order": 2,
+            "substeps": [
+              { "id": "2.1", "label": "Demander NIF en ligne ou au consulat", "isOptional": false },
+              { "id": "2.2", "label": "Fournir passeport et justificatif", "isOptional": false },
+              { "id": "2.3", "label": "Recevoir NIF (9 chiffres)", "isOptional": false }
+            ]
+          },
+          {
+            "id": 3,
+            "slug": "visa-travail",
+            "title": "Demander le visa de travail",
+            "description": "Si hors-UE avec offre d'emploi",
+            "category": "visa",
+            "order": 3,
+            "substeps": [
+              { "id": "3.1", "label": "Obtenir contrat de travail portugais", "isOptional": false },
+              { "id": "3.2", "label": "Prendre RDV au consulat portugais", "isOptional": false },
+              { "id": "3.3", "label": "Soumettre dossier complet (passeport, contrat, NIF)", "isOptional": false },
+              { "id": "3.4", "label": "Payer frais de visa (60-100€)", "isOptional": false },
+              { "id": "3.5", "label": "Attendre décision (60 jours théoriques)", "isOptional": false }
+            ]
+          },
+          {
+            "id": 4,
+            "slug": "arrivee-portugal",
+            "title": "Arrivée au Portugal",
+            "description": "Enregistrement initial",
+            "category": "arrival",
+            "order": 4,
+            "substeps": [
+              { "id": "4.1", "label": "Arriver avec visa D dans le passeport", "isOptional": false },
+              { "id": "4.2", "label": "Trouver logement temporaire ou permanent", "isOptional": false }
+            ]
+          },
+          {
+            "id": 5,
+            "slug": "titre-residence",
+            "title": "Demander titre de résidence",
+            "description": "Auprès de l'AIMA (ex-SEF)",
+            "category": "administratif",
+            "order": 5,
+            "substeps": [
+              { "id": "5.1", "label": "Prendre RDV AIMA en ligne", "isOptional": false },
+              { "id": "5.2", "label": "Rassembler documents (NIF, contrat, logement)", "isOptional": false },
+              { "id": "5.3", "label": "Se présenter au RDV (délai ~17 mois actuellement)", "isOptional": false },
+              { "id": "5.4", "label": "Recevoir titre de résidence temporaire", "isOptional": false }
+            ]
+          },
+          {
+            "id": 6,
+            "slug": "niss",
+            "title": "Obtenir le NISS",
+            "description": "Numéro de sécurité sociale",
+            "category": "administratif",
+            "order": 6,
+            "substeps": [
+              { "id": "6.1", "label": "S'inscrire à la Sécurité sociale (Segurança Social)", "isOptional": false },
+              { "id": "6.2", "label": "Fournir NIF et contrat de travail", "isOptional": false },
+              { "id": "6.3", "label": "Recevoir NISS (11 chiffres)", "isOptional": false }
+            ]
+          },
+          {
+            "id": 7,
+            "slug": "compte-bancaire",
+            "title": "Ouvrir un compte bancaire",
+            "description": "Nécessite NIF et preuve de résidence",
+            "category": "vie-quotidienne",
+            "order": 7,
+            "substeps": [
+              { "id": "7.1", "label": "Choisir banque (CGD, Millennium BCP, Santander)", "isOptional": false },
+              { "id": "7.2", "label": "Présenter NIF, passeport et preuve de résidence", "isOptional": false },
+              { "id": "7.3", "label": "Recevoir carte bancaire et IBAN", "isOptional": false }
+            ]
+          },
+          {
+            "id": 8,
+            "slug": "sante",
+            "title": "Inscription au système de santé",
+            "description": "Centre de santé (Centro de Saúde)",
+            "category": "administratif",
+            "order": 8,
+            "substeps": [
+              { "id": "8.1", "label": "S'inscrire au centro de saúde local", "isOptional": false },
+              { "id": "8.2", "label": "Obtenir numéro utente (usager SNS)", "isOptional": false },
+              { "id": "8.3", "label": "Choisir médecin de famille", "isOptional": false }
+            ]
+          },
+          {
+            "id": 9,
+            "slug": "logement",
+            "title": "Trouver un logement permanent",
+            "description": "Location ou achat",
+            "category": "logement",
+            "order": 9,
+            "substeps": [
+              { "id": "9.1", "label": "Rechercher sur Idealista, Imovirtual, OLX", "isOptional": false },
+              { "id": "9.2", "label": "Préparer dossier (NIF, revenus, références)", "isOptional": false },
+              { "id": "9.3", "label": "Signer contrat de location", "isOptional": false },
+              { "id": "9.4", "label": "Payer caution (1-2 mois de loyer)", "isOptional": false },
+              { "id": "9.5", "label": "Obtenir attestation de résidence à la Junta", "isOptional": false }
+            ]
+          },
+          {
+            "id": 10,
+            "slug": "integration",
+            "title": "Intégration quotidienne",
+            "description": "Services et apprentissage",
+            "category": "vie-quotidienne",
+            "order": 10,
+            "substeps": [
+              { "id": "10.1", "label": "Souscrire contrats énergie et internet", "isOptional": false },
+              { "id": "10.2", "label": "Obtenir carte transport (Navegante, Andante)", "isOptional": false },
+              { "id": "10.3", "label": "S'inscrire à des cours de portugais", "isOptional": true },
+              { "id": "10.4", "label": "Rejoindre communautés d'expatriés", "isOptional": true }
+            ]
+          }
+        ]
+      },
+      "jobMarket": {
+        "topSectors": ["Technologies de l'information", "Tourisme et hôtellerie", "BPO et services partagés", "Énergies renouvelables", "Immobilier"],
+        "averageSalary": 1400,
+        "unemploymentRate": "6.7%",
+        "keyJobSites": [
+          { "name": "Net-Empregos", "url": "https://www.net-empregos.com" },
+          { "name": "Indeed Portugal", "url": "https://pt.indeed.com" },
+          { "name": "LinkedIn Portugal", "url": "https://www.linkedin.com/jobs" },
+          { "name": "Sapo Emprego", "url": "https://emprego.sapo.pt" },
+          { "name": "IT Jobs", "url": "https://www.itjobs.pt" }
+        ],
+        "workingHoursPerWeek": 40,
+        "salaryByCity": {
+          "Lisbonne": 1550,
+          "Porto": 1350,
+          "Braga": 1200
+        },
+        "salaryBySector": {
+          "IT": 1800,
+          "Tourisme": 1000,
+          "BPO": 1300,
+          "Énergies renouvelables": 1600,
+          "Immobilier": 1400
+        }
+      },
+      "costOfLiving": {
+        "averageRent": {
+          "oneBedroom": 900,
+          "threeBedroom": 1500
+        },
+        "averageSalary": 1400,
+        "food": {
+          "restaurantMeal": 12,
+          "groceriesWeekly": 60
+        },
+        "utilities": 125,
+        "transportMonthly": 40,
+        "internetMonthly": 36,
+        "gymMembership": 35,
+        "byCity": {
+          "Lisbonne": { "oneBedroom": 1250, "threeBedroom": 2100, "utilities": 140, "transportMonthly": 40 },
+          "Porto": { "oneBedroom": 850, "threeBedroom": 1400, "utilities": 120, "transportMonthly": 35 },
+          "Braga": { "oneBedroom": 650, "threeBedroom": 1100, "utilities": 110, "transportMonthly": 30 }
+        }
+      },
+      "education": {
+        "system": "Système éducatif public gratuit, enseignement en portugais, en développement",
+        "publicSchools": {
+          "quality": "Bonne",
+          "cost": "Gratuit",
+          "info": "École obligatoire de 6 à 18 ans, programmes nationaux, écoles internationales disponibles"
+        },
+        "privateSchools": {
+          "averageCost": 4000,
+          "info": "Coût annuel variable entre 3000€ et 10000€ pour écoles internationales"
+        },
+        "universities": {
+          "topUniversities": ["Université de Lisbonne", "Université de Porto", "Université de Coimbra", "Université Nova de Lisboa", "Université du Minho"],
+          "averageTuition": 1100,
+          "info": "Frais universitaires pour UE: 1000-1250€/an. Pour étudiants hors-UE: 3000-7000€/an"
+        }
+      },
+      "healthcare": {
+        "system": "Système national de santé (SNS) public universel, avec option privée",
+        "coverage": "Couverture publique gratuite ou à faible coût pour résidents, assurances privées disponibles",
+        "qualityRating": "7/10",
+        "averageCosts": {
+          "doctorVisit": 5,
+          "emergency": 20,
+          "insurance": 50
+        },
+        "accessibility": "Bonne"
+      },
+      "taxation": {
+        "incomeTaxRange": "14.5% - 48%",
+        "corporateTax": "21%",
+        "vat": "23% (taux standard), 13% et 6% (taux réduits)",
+        "socialContributions": "11% (employé), 23.75% (employeur)",
+        "taxResidencyRules": "Résidence fiscale après 183 jours au Portugal ou si résidence habituelle établie"
+      },
+      "climate": {
+        "type": "Méditerranéen, atlantique au nord",
+        "averageTemp": {
+          "summer": "25°C - 30°C",
+          "winter": "10°C - 15°C"
+        },
+        "rainfall": "400-1200 mm/an selon les régions",
+        "seasons": "Hivers doux et pluvieux, étés chauds et secs, climat agréable toute l'année au sud"
+      },
+      "lifestyle": {
+        "culturalActivities": ["Fado et musique traditionnelle", "Festivals", "Musées et patrimoine", "Architecture azulejos", "Gastronomie et vins"],
+        "outdoorActivities": ["Surf et sports nautiques", "Randonnée", "Golf", "Plages", "Observation de la nature"],
+        "cuisine": "Bacalhau, pastéis de nata, vinho verde, francesinha, sardines grillées, cuisine méditerranéenne",
+        "workLifeBalance": "Bon",
+        "safetyRating": "9/10"
+      },
+      "expatCommunity": {
+        "size": "Grande et croissante",
+        "estimated": "Environ 700 000 expatriés",
+        "forums": [
+          { "name": "Portugal Forum", "url": "https://www.portugalforum.org" },
+          { "name": "InterNations Portugal", "url": "https://www.internations.org/portugal-expats" },
+          { "name": "Expats Portugal", "url": "https://www.expats.pt" }
+        ],
+        "events": "Nombreux meetups d'expatriés, événements networking, forte communauté digitale nomade",
+        "supportGroups": [
+          { "name": "Lisbon Digital Nomads", "url": "https://www.meetup.com/Lisbon-Digital-Nomads/" },
+          { "name": "Portugal Expat Life", "url": "https://www.facebook.com/groups/portugalexpatlife" }
+        ]
+      },
+      "resources": {
+        "officialGovWebsite": "https://www.portugal.gov.pt",
+        "immigrationOffice": {
+          "name": "Agência para a Integração, Migrações e Asilo (AIMA)",
+          "url": "https://www.aima.gov.pt"
+        },
+        "emergencyNumbers": {
+          "police": "112",
+          "medical": "112",
+          "fire": "112"
+        },
+        "expatGuides": [
+          { "name": "Portal do Cidadão", "url": "https://eportugal.gov.pt" },
+          { "name": "AIMA", "url": "https://www.aima.gov.pt" },
+          { "name": "Portugal.com", "url": "https://www.portugal.com" }
+        ]
+      },
+      "recommendations": {
+        "bestFor": ["Digitaux nomades", "Retraités", "Professionnels IT", "Entrepreneurs"],
+        "language": "Portugais nécessaire, anglais courant dans grandes villes",
+        "visaDifficulty": "Moyenne à difficile (délais longs)"
+      }
     }
   ]
 }
