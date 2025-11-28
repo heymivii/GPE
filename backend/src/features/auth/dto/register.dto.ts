@@ -11,8 +11,12 @@ import {
 
 export class RegisterDto {
   @IsString()
+  @MinLength(2, { message: 'Le prénom doit contenir au moins 2 caractères' })
+  firstName: string;
+
+  @IsString()
   @MinLength(2, { message: 'Le nom doit contenir au moins 2 caractères' })
-  fullName: string;
+  lastName: string;
 
   @IsEmail({}, { message: 'Email invalide' })
   email: string;

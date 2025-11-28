@@ -2,6 +2,8 @@ export interface User {
   idUser: number;
   id?: number;    
   email: string;
+  firstName?: string;
+  lastName?: string;
   fullName: string;
   role?: 'USER' | 'ADMIN';
   userRole?: string;
@@ -21,7 +23,8 @@ export interface LoginDto {
 export interface RegisterDto {
   email: string;
   password: string;
-  fullName: string;
+  firstName: string;
+  lastName: string;
   age?: number;
   status?: string;
   languageLevel?: string;
@@ -29,6 +32,8 @@ export interface RegisterDto {
 }
 
 export interface UpdateProfileDto {
+  firstName?: string;
+  lastName?: string;
   fullName?: string;
   age?: number;
   status?: string;

@@ -1,4 +1,28 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToMany,
+} from 'typeorm';
+import { ProcessTracking } from '../../process-tracking/entities/process-tracking.entity';
+
+// Interface pour typer la progression de la checklist
+export interface ChecklistProgress {
+  [stepId: string]: {
+    completed: boolean;
+    completedAt?: string;
+    substeps?: {
+      [substepId: string]: {
+        completed: boolean;
+        completedAt?: string;
+      };
+    };
+  };
+}
 
 @Entity('expatriation_project')
 export class ExpatriationProject {
@@ -29,6 +53,9 @@ export class ExpatriationProject {
   @Column({ name: 'priorities', length: 100, nullable: true })
   priorities: string;
 
+  @Column({ name: 'steps_done', type: 'text', nullable: true })
+  stepsDone: string;
+
   @Column({ name: 'needs_support', default: false })
   needsSupport: boolean;
 
@@ -38,9 +65,20 @@ export class ExpatriationProject {
   @Column({ name: 'expected_departure_date', type: 'date', nullable: true })
   expectedDepartureDate: Date;
 
+  @Column({
+    name: 'checklist_progress',
+    type: 'jsonb',
+    default: '{}',
+    nullable: true,
+  })
+  checklistProgress: ChecklistProgress;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
+
+  @OneToMany(() => ProcessTracking, (tracking) => tracking.project)
+  processTrackings: ProcessTracking[];
 }

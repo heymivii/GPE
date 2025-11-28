@@ -15,6 +15,7 @@ import { ChecklistModule } from './features/checklist/checklist.module';
 import { ContinentModule } from './features/continent/continent.module';
 import { AdminProcedureModule } from './features/admin-procedure/admin-procedure.module';
 import { ProcedureTrackingModule } from './features/procedure-tracking/procedure-tracking.module';
+import { ProcessTrackingModule } from './features/process-tracking/process-tracking.module';
 import { ForumTopicModule } from './features/forum-topic/forum-topic.module';
 import { ForumMessageModule } from './features/forum-message/forum-message.module';
 import { NotificationModule } from './features/notification/notification.module';
@@ -46,6 +47,7 @@ import { ExpatriationProjectModule } from './features/expatriation-project/expat
     JobOfferModule,
     AdminProcedureModule,
     ProcedureTrackingModule,
+    ProcessTrackingModule,
     ForumTopicModule,
     ForumMessageModule,
     NotificationModule,

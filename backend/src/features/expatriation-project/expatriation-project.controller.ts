@@ -14,6 +14,7 @@ import {
 import { ExpatriationProjectService } from './expatriation-project.service';
 import { CreateExpatriationProjectDto } from './dto/create-expatriation-project.dto';
 import { UpdateExpatriationProjectDto } from './dto/update-expatriation-project.dto';
+import { UpdateChecklistProgressDto } from './dto/update-checklist-progress.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('expatriation-project')
@@ -83,6 +84,32 @@ export class ExpatriationProjectController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Request() req, @Param('id') id: string) {
     await this.projectService.remove(+id, req.user.userId);
+  }
+
+  /**
+   * Update checklist progress for a project
+   * POST /expatriation-project/:id/checklist
+   */
+  @Post(':id/checklist')
+  async updateChecklistProgress(
+    @Request() req,
+    @Param('id') id: string,
+    @Body() dto: UpdateChecklistProgressDto,
+  ) {
+    return await this.projectService.updateChecklistProgress(
+      +id,
+      req.user.userId,
+      dto,
+    );
+  }
+
+  /**
+   * Get checklist progress for a project
+   * GET /expatriation-project/:id/checklist
+   */
+  @Get(':id/checklist')
+  async getChecklistProgress(@Request() req, @Param('id') id: string) {
+    return await this.projectService.getChecklistProgress(+id, req.user.userId);
   }
 }
 

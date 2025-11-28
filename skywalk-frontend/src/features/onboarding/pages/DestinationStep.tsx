@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import FormField from '../ui/FormField'
 import Select from '../ui/Select'
 import TextInput from '../ui/TextInput'
@@ -25,6 +25,19 @@ export default function DestinationStep({ data, onNext, onBack }: DestinationSte
     targetCity: data?.targetCity || '',
     departureYear: data?.departureYear || ''
   })
+
+  // 🔄 Synchroniser avec les données du projet en mode édition
+  useEffect(() => {
+    if (data) {
+      console.log('📝 DestinationStep - Syncing data:', data)
+      setFormData({
+        fromCountry: data.fromCountry || '',
+        toCountry: data.toCountry || '',
+        targetCity: data.targetCity || '',
+        departureYear: data.departureYear || ''
+      })
+    }
+  }, [data])
 
   const [errors, setErrors] = useState<Partial<DestinationStepData>>({})
 

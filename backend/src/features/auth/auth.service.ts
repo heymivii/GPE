@@ -34,8 +34,12 @@ export class AuthService {
 
     const hashedPassword = await bcrypt.hash(registerDto.password, 10);
 
+    const fullName = `${registerDto.firstName} ${registerDto.lastName}`;
+
     const newUser = this.userRepository.create({
-      fullName: registerDto.fullName,
+      firstName: registerDto.firstName,
+      lastName: registerDto.lastName,
+      fullName: fullName,
       email: registerDto.email,
       passwordHash: hashedPassword,
       userRole: 'user',

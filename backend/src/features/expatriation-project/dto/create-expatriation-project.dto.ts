@@ -34,6 +34,10 @@ export class CreateExpatriationProjectDto {
   priorities?: string;
 
   @IsOptional()
+  @IsString()
+  stepsDone?: string;
+
+  @IsOptional()
   @IsBoolean()
   needsSupport?: boolean;
 

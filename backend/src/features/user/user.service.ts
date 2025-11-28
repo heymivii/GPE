@@ -24,8 +24,12 @@ export class UserService {
 
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
 
+    const fullName = `${createUserDto.firstName} ${createUserDto.lastName}`;
+
     const user = this.userRepository.create({
-      fullName: createUserDto.fullName,
+      firstName: createUserDto.firstName,
+      lastName: createUserDto.lastName,
+      fullName: fullName,
       email: createUserDto.email,
       passwordHash: hashedPassword,
       age: createUserDto.age,
@@ -65,6 +69,13 @@ export class UserService {
 
   async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
     const user = await this.findOne(id);
+
+    // Mettre à jour fullName si firstName ou lastName changent
+    if (updateUserDto.firstName || updateUserDto.lastName) {
+      const firstName = updateUserDto.firstName || user.firstName || '';
+      const lastName = updateUserDto.lastName || user.lastName || '';
+      updateUserDto['fullName'] = `${firstName} ${lastName}`.trim();
+    }
 
     if (updateUserDto.password) {
       const hashedPassword = await bcrypt.hash(updateUserDto.password, 10);

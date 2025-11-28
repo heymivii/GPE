@@ -58,10 +58,18 @@ export default function OnboardingFlow() {
         48: 'more_3_years'
       }
 
+      // 🗺️ Mapping ID pays -> Code pays
+      const idToCountryCode: Record<number, string> = {
+        1: 'FR', 2: 'CA', 3: 'CH', 4: 'DE', 5: 'ES', 6: 'IT',
+        7: 'PT', 8: 'BE', 9: 'NL', 10: 'LU', 11: 'GB', 12: 'IE',
+        13: 'US', 14: 'AU', 15: 'NZ', 16: 'JP', 17: 'SG', 18: 'AE',
+        19: 'MX', 20: 'BR'
+      }
+
       const projectData = {
         destination: {
           fromCountry: 'FR',
-          toCountry: existingProject.idDestinationCountry?.toString() || '',
+          toCountry: idToCountryCode[existingProject.idDestinationCountry] || '',
           targetCity: existingProject.idDestinationCity?.toString() || '',
           departureYear: existingProject.expectedDepartureDate 
             ? new Date(existingProject.expectedDepartureDate).getFullYear().toString()
@@ -78,7 +86,7 @@ export default function OnboardingFlow() {
           stayDuration: durationReverseMapping[existingProject.expectedDuration || 12] || '6_12_months'
         },
         preparation: {
-          stepsDone: [],
+          stepsDone: existingProject.stepsDone ? existingProject.stepsDone.split(',').map(s => s.trim()) : [],
           housingBudget: existingProject.housingBudget?.toString() || '0'
         },
         needs: {
@@ -136,15 +144,16 @@ export default function OnboardingFlow() {
       
       const projectData = {
         idDestinationCountry: destinationCountryId,
-        idDestinationCity: data.destination.targetCity ? parseInt(data.destination.targetCity) : undefined,
-        travelType: data.profile.travelParty as 'alone' | 'couple' | 'family' | 'friends' | 'other',
-        mainObjective: (objectiveMapping[data.objective.goal] || 'other') as 'work' | 'study' | 'retirement' | 'adventure' | 'family_reunion' | 'other',
-        expectedDuration: durationMapping[data.objective.stayDuration] || 12,
-        housingBudget: parseFloat(data.preparation.housingBudget),
-        priorities: data.needs.priorities.join(', '),
-        needsSupport: data.needs.needPersonalizedSupport || false,
+        idDestinationCity: data.destination?.targetCity ? parseInt(data.destination.targetCity) : undefined,
+        travelType: data.profile?.travelParty as 'alone' | 'couple' | 'family' | 'friends' | 'other',
+        mainObjective: (objectiveMapping[data.objective?.goal || ''] || 'other') as 'work' | 'study' | 'retirement' | 'adventure' | 'family_reunion' | 'other',
+        expectedDuration: durationMapping[data.objective?.stayDuration || '6_12_months'] || 12,
+        housingBudget: parseFloat(data.preparation?.housingBudget || '0'),
+        stepsDone: data.preparation?.stepsDone?.join(',') || '',
+        priorities: data.needs?.priorities?.join(', ') || '',
+        needsSupport: data.needs?.needPersonalizedSupport || false,
         projectStatus: 'planning' as const,
-        expectedDepartureDate: data.destination.departureYear ? `${data.destination.departureYear}-01-01` : undefined,
+        expectedDepartureDate: data.destination?.departureYear ? `${data.destination.departureYear}-01-01` : undefined,
       };
 
       if (editMode && id) {
@@ -179,6 +188,9 @@ export default function OnboardingFlow() {
   }
 
   const renderCurrentStep = () => {
+    // 🔍 Debug: Afficher les données actuelles
+    console.log('🎯 Rendering step', currentStep, 'with data:', data);
+    
     switch (currentStep) {
       case 1:
         return (
@@ -191,6 +203,7 @@ export default function OnboardingFlow() {
           />
         )
       case 2:
+        console.log('📋 ProfileStep data:', data.profile);
         return (
           <ProfileStep
             data={data.profile}

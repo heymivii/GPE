@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Settings, Plus, LayoutGrid, X, Check, User, CheckSquare, Wallet, Lightbulb } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useProjects } from '../../projects/hooks/useProjectMutations'
 import { useCountryData } from '../../../hooks/useCountryData'
+import { useAuth } from '../../../hooks/useAuth'
 import ProfileSummaryWidget from '../widgets/ProfileSummaryWidget'
 import RecommendationsWidget from '../widgets/RecommendationsWidget'
 import ChecklistWidget from '../widgets/ChecklistWidget'
@@ -10,6 +11,7 @@ import BudgetTrackerWidget from '../widgets/BudgetTrackerWidget'
 
 export default function PersonalizedDashboard() {
   const { data: projects, isLoading } = useProjects()
+  const { user } = useAuth()
   const [selectedProjectId, setSelectedProjectId] = useState<number | null>(null)
   const [editMode, setEditMode] = useState(false)
   const [hiddenWidgets, setHiddenWidgets] = useState<string[]>([])
@@ -21,6 +23,15 @@ export default function PersonalizedDashboard() {
     'recommendations'
   ])
 
+  // 🔄 Initialiser avec le dernier projet créé (le plus récent)
+  useEffect(() => {
+    if (projects && projects.length > 0 && selectedProjectId === null) {
+      const mostRecentProject = projects[projects.length - 1]
+      console.log('🎯 Auto-selecting most recent project:', mostRecentProject)
+      setSelectedProjectId(mostRecentProject.idProject)
+    }
+  }, [projects, selectedProjectId])
+
   const availableWidgets = [
     { id: 'profile-summary', name: 'Résumé du profil', icon: '👤', description: 'Vos informations personnelles' },
     { id: 'checklist', name: 'Checklist', icon: '✅', description: 'Vos étapes d\'expatriation' },
@@ -28,8 +39,26 @@ export default function PersonalizedDashboard() {
     { id: 'recommendations', name: 'Recommandations', icon: '💡', description: 'Conseils personnalisés' },
   ]
 
-  const activeProject = projects?.find(p => p.idProject === selectedProjectId) || projects?.[0]
+  // ✅ Ne pas utiliser de fallback, attendre que selectedProjectId soit initialisé
+  const activeProject = projects?.find(p => p.idProject === selectedProjectId)
+  
+  // 🔍 Debug: Afficher le projet actif
+  useEffect(() => {
+    if (activeProject) {
+      console.log('📊 Active project:', activeProject)
+      console.log('   - ID:', activeProject.idProject)
+      console.log('   - Destination Country ID:', activeProject.idDestinationCountry)
+      console.log('   - Budget:', activeProject.housingBudget)
+    }
+  }, [activeProject])
+  
   const countryData = useCountryData(activeProject?.idDestinationCountry)
+  
+  // 🔍 Debug: Afficher countryData reçu
+  useEffect(() => {
+    console.log('🌍 countryData received:', countryData)
+    console.log('   - Country ID asked:', activeProject?.idDestinationCountry)
+  }, [countryData, activeProject?.idDestinationCountry])
 
   if (isLoading) {
     return (
@@ -64,7 +93,7 @@ export default function PersonalizedDashboard() {
   }
 
   const userData = {
-    name: 'Utilisateur', 
+    name: user?.fullName || 'Utilisateur', 
     onboardingData: {
       destination: {
         fromCountry: 'FR',
@@ -75,7 +104,7 @@ export default function PersonalizedDashboard() {
           : new Date().getFullYear().toString()
       },
       profile: {
-        age: '30',
+        age: user?.age?.toString() || '25',
         status: activeProject?.travelType || 'alone',
         travelParty: activeProject?.travelType || 'alone'
       },
@@ -127,6 +156,7 @@ export default function PersonalizedDashboard() {
           <ChecklistWidget
             key={widgetId}
             countryData={countryData || null}
+            projectId={activeProject?.idProject || 0}
             {...commonProps}
           />
         )
@@ -160,17 +190,27 @@ export default function PersonalizedDashboard() {
               </p>
             </div>
             <div className="flex items-center space-x-3">
-              {projects.length > 1 && (
+              {projects.length >= 1 && selectedProjectId && (
                 <select
-                  value={selectedProjectId || activeProject?.idProject || ''}
+                  value={selectedProjectId}
                   onChange={(e) => setSelectedProjectId(Number(e.target.value))}
-                  className="px-3 py-2 border border-gray-300 rounded-lg bg-white text-sm"
+                  className="px-3 py-2 border border-gray-300 rounded-lg bg-white text-sm font-medium"
                 >
-                  {projects.map((project) => (
-                    <option key={project.idProject} value={project.idProject}>
-                      Projet #{project.idProject}
-                    </option>
-                  ))}
+                  {projects.map((project) => {
+                    // Trouver le nom du pays
+                    const countryNames: Record<number, string> = {
+                      1: 'France', 2: 'Canada', 3: 'Suisse', 4: 'Allemagne', 
+                      5: 'Espagne', 6: 'Italie', 7: 'Portugal', 8: 'Belgique',
+                      9: 'Pays-Bas', 10: 'Luxembourg', 11: 'Royaume-Uni', 
+                      12: 'Irlande', 13: 'États-Unis', 14: 'Australie'
+                    }
+                    const countryName = countryNames[project.idDestinationCountry] || 'Destination'
+                    return (
+                      <option key={project.idProject} value={project.idProject}>
+                        Projet #{project.idProject} - {countryName}
+                      </option>
+                    )
+                  })}
                 </select>
               )}
               <button

@@ -7,6 +7,7 @@ export interface ExpatriationProject {
   mainObjective?: 'work' | 'study' | 'retirement' | 'adventure' | 'family_reunion' | 'other';
   expectedDuration?: number;
   housingBudget?: number;
+  stepsDone?: string;
   priorities?: string;
   needsSupport: boolean;
   projectStatus: 'planning' | 'active' | 'completed' | 'cancelled' | 'on_hold';
@@ -22,6 +23,7 @@ export interface CreateExpatriationProjectDto {
   mainObjective?: 'work' | 'study' | 'retirement' | 'adventure' | 'family_reunion' | 'other';
   expectedDuration?: number;
   housingBudget?: number;
+  stepsDone?: string;
   priorities?: string;
   needsSupport?: boolean;
   projectStatus?: 'planning' | 'active' | 'completed' | 'cancelled' | 'on_hold';
