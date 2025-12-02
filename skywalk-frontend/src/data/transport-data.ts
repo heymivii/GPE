@@ -27,16 +27,17 @@ export interface DriverLicenseInfo {
 
 // TODO: Ajouter les données réelles pour chaque pays
 // Sources France:
-// - Prix essence: https://carbu.com/france/prixmoyens
-// - Pass transport: https://www.bonjour-ratp.fr/actualites/articles/tarifs-forfaits-navigo-2025/
-// - Assurance: https://goodassur.com/assurance-auto/tarif
-// - Entretien: https://www.largus.fr/actualite-automobile/
+// - Prix essence: https://carbu.com/france/prixmoyens (27 nov 2025: 1.78€/L SP95-E10)
+// - Pass transport: https://www.iledefrance-mobilites.fr/ (Navigo 88.40€)
+// - Assurance: https://goodassur.com/assurance-auto/tarif-moyen-assurance-auto (637€/an)
+// - Entretien: https://www.largus.fr/actualite-automobile/ (540€/an = 45€/mois)
+// - Parking: https://parkopedia.com + paris.fr (250€/mois Paris centre)
 export const transportPricesByCountry: Record<string, TransportPrices> = {
   france: {
-    fuelPricePerLiter: 1.72, // Prix moyen essence France 2025
-    publicTransportMonthly: 88.4, // Forfait Navigo toutes zones Île-de-France
-    parkingMonthly: 100, // Péages ~16€ + parking ~80€ en grande ville
-    vehicleInsuranceYearly: 637, // 53.1€/mois × 12 (moyenne toutes formules)
+    fuelPricePerLiter: 1.78, // SP95-E10 France 27 nov 2025
+    publicTransportMonthly: 88.40, // Forfait Navigo zones 1-5 Île-de-France
+    parkingMonthly: 250, // Parking centre Paris (moyenne)
+    vehicleInsuranceYearly: 637, // 53.08€/mois × 12 (tous risques moyen)
   },
   canada: {
     fuelPricePerLiter: 1.50, // TODO: Mettre à jour

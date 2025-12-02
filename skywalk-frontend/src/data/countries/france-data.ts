@@ -2,115 +2,259 @@
  * DONNÉES COMPLÈTES POUR LA FRANCE
  * 
  * Sources officielles utilisées:
- * - Transport: carbu.com, RATP, goodassur.com, largus.fr
- * - Santé: ameli.fr, service-public.fr, drees.solidarites-sante.gouv.fr
- * - Dernière mise à jour: 2 décembre 2025
+ * - Transport: carbu.com, Île-de-France Mobilités, service-public.fr, ANTS
+ * - Santé: ameli.fr, sécurité-sociale.fr, info.gouv.fr, magnolia.fr
+ * - Dernière mise à jour: 2 décembre 2025 (prix essence 27 novembre 2025)
  */
 
 export const franceData = {
+  country: "France",
+  code: "FR",
+  currency: "EUR",
+  
   transport: {
-    fuelPricePerLiter: 1.72,
-    fuelPriceSource: "https://carbu.com/france/prixmoyens",
-    publicTransportMonthlyPass: 88.4,
-    publicTransportPassNote: "Forfait Navigo mois toutes zones en Île-de-France (référence grande métropole).",
-    publicTransportSource: "https://www.bonjour-ratp.fr/actualites/articles/tarifs-forfaits-navigo-2025/",
-    averageInsuranceCostMonthly: 53.1,
-    insuranceCostNote: "Prix moyen d'une assurance auto en 2025, toutes formules confondues.",
-    insuranceCostSource: "https://goodassur.com/assurance-auto/tarif",
-    averageMaintenanceCostMonthly: 44,
-    maintenanceCostNote: "Entretien moyen mensuel selon étude sur le budget auto (entretien seul).",
-    maintenanceCostSource: "https://www.largus.fr/actualite-automobile/achat-carburant-entretien-combien-une-voiture-coute-t-elle-chaque-mois-30043992.html",
-    averageTollsAndParkingMonthly: 100,
-    tollsParkingNote: "Base indicative: environ 16 €/mois de péages (source L'Argus) + ordre de grandeur 80 €/mois de stationnement en grande ville.",
-    tollsSource: "https://www.largus.fr/actualite-automobile/achat-carburant-entretien-combien-une-voiture-coute-t-elle-chaque-mois-30043992.html",
-    defaultCarConsumptionLPer100km: 6.5,
-    licenseExchange: {
-      euEeaLicense: {
-        exchangeRequired: false,
-        notes: "Un permis UE/EEE est valable sans limite en France, l'échange n'est obligatoire que dans certains cas particuliers (infractions, perte, etc.).",
-        officialLink: "https://www.service-public.fr/particuliers/vosdroits/F1758"
-      },
-      nonEuLicense: {
-        exchangeRequiredAfterMonths: 12,
-        internationalPermitRecommended: true,
-        requiresDrivingTestInSomeCases: true,
-        notes: "Un permis non européen est valable 1 an à partir de l'installation en France. Passé ce délai, un échange est nécessaire si le pays est éligible, sinon il faut repasser le permis.",
-        officialLink: "https://www.service-public.fr/particuliers/vosdroits/F1460"
-      },
-      generalHelpLink: "https://permisdeconduire.ants.gouv.fr/aide-et-contact/permis-de-conduire-etranger"
+    fuel: {
+      averagePetrolPricePerLitre: 1.78,
+      currency: "EUR",
+      note: "Prix moyen essence SP95-E10 en France au 27 novembre 2025",
+      source: "https://carbu.com/france/prixmoyens"
     },
-    vehicleChecklist: {
-      registrationDocuments: [
-        "Justificatif d'identité (passeport, carte nationale d'identité)",
-        "Justificatif de domicile de moins de 6 mois",
-        "Certificat de cession ou facture d'achat",
-        "Ancienne carte grise (si véhicule d'occasion)",
-        "Quitus fiscal pour un véhicule acheté dans l'UE",
-        "Certificat de conformité ou attestation d'identification",
-        "Preuve d'assurance du véhicule"
-      ],
-      registrationOfficialLinks: [
-        "https://immatriculation.ants.gouv.fr/demarches-en-ligne/immatriculer-pour-la-premiere-fois-un-vehicule-en-france",
-        "https://www.service-public.fr/particuliers/vosdroits/N367"
-      ],
-      insuranceRequired: [
-        "Assurance responsabilité civile (obligatoire)",
-        "Assurance tous risques recommandée pour véhicule récent"
-      ],
-      technicalInspectionFrequency: "Contrôle technique à partir des 4 ans du véhicule, puis tous les 2 ans.",
-      technicalInspectionSource: "https://www.dekra-norisko.fr/faq/date-controle-technique-/quand-faire-le-controle-technique-auto-%2Cid-3048?faqId=1045",
-      notes: "Certaines démarches (carte grise, changement de titulaire) se font uniquement en ligne via l'ANTS."
-    }
-  },
-  healthcare: {
-    publicHealthcare: true,
-    publicSystemDescription: "Système de Sécurité sociale avec remboursement d'environ 70% du tarif conventionné pour la plupart des soins, le reste étant couvert par la mutuelle ou à charge.",
-    publicCoverageRate: 0.7,
-    publicCoverageSource: "https://www.ameli.fr/assure/remboursements/rembourse/tableau-recapitulatif-taux-remboursement",
-    gpConsultationTariff: 30,
-    gpTariffSource: "https://www.info.gouv.fr/actualite/sante-consultation-a-30-euros-chez-le-medecin-generaliste",
-    privateInsuranceRecommended: true,
-    averagePrivateInsuranceMonthly: 70,
-    privateInsuranceNote: "Prix moyen d'une complémentaire santé pour un adulte seul en 2025.",
-    privateInsuranceSource: "https://www.magnolia.fr/mutuelle-sante/prix",
-    coverageQualityRating: 9.0,
-    requiresHealthInsuranceForLongStayVisa: true,
-    visaHealthRequirementNote: "Pour un visa long séjour, une couverture santé (publique ou privée) est généralement exigée.",
-    medicalChecklist: {
-      mandatoryVaccinesForEntry: [
-        "Aucune vaccination spécifique obligatoire pour entrer en France depuis la plupart des pays.",
-        "Vaccin fièvre jaune obligatoire uniquement pour les voyageurs en provenance de zones à risque."
-      ],
-      mandatoryVaccinesSources: [
-        "https://sante.gouv.fr/prevention-en-sante/sante-des-populations/article/recommandations-sanitaires-pour-les-voyageurs",
-        "https://www.diplomatie.gouv.fr/fr/conseils-aux-voyageurs/informations-pratiques/risques/risques-sanitaires/article/sante-vaccinations"
-      ],
-      recommendedVaccinesForExpat: [
-        "Vaccins de base à jour (DTP, ROR)",
-        "Hépatite A (selon profil et conditions de vie)",
-        "Hépatite B",
-        "Vaccin grippe saisonnière recommandé chaque année"
-      ],
-      recommendedVaccinesSources: [
-        "https://www.passporthealthglobal.com/fr-ca/conseils-destination/france/"
-      ],
-      documentsToTranslateOrBring: [
-        "Résumé des antécédents médicaux",
-        "Ordonnances en cours (avec DCI des médicaments)",
-        "Compte-rendus d'examens importants (imagerie, analyses)",
-        "Carnet de vaccination"
-      ],
-      euHealthCardInfo: {
-        applies: true,
-        note: "La Carte européenne d'assurance maladie (CEAM) est valable pour les ressortissants de l'UE séjournant temporairement en France.",
-        officialLink: "https://www.ameli.fr/assure/remboursements/rembourse/soins-etranger/carte-europeenne-assurance-maladie"
+    
+    publicTransport: {
+      referenceCity: "Paris",
+      monthlyPassName: "Navigo Mois (zones 1-5)",
+      monthlyPassPrice: 88.40,
+      currency: "EUR",
+      note: "Forfait mensuel toutes zones Île-de-France",
+      source: "https://www.iledefrance-mobilites.fr/titres-et-tarifs/detail/navigo-mois"
+    },
+    
+    carInsurance: {
+      averageAnnualPremium: 637,
+      averageMonthlyPremium: 53.08,
+      currency: "EUR",
+      note: "Prix moyen assurance auto tous risques selon étude 2025",
+      source: "https://goodassur.com/assurance-auto/tarif-moyen-assurance-auto"
+    },
+    
+    maintenance: {
+      averageMaintenanceAndRepairsPerYear: 540,
+      averageMaintenanceAndRepairsPerMonth: 45,
+      currency: "EUR",
+      note: "Entretien + petites réparations (moyenne nationale)",
+      source: "https://www.largus.fr/actualite-automobile/combien-coute-lentretien-dune-voiture-30043992.html"
+    },
+    
+    parking: {
+      residentPermitAverageAnnual: 120,
+      residentPermitAverageMonthly: 10,
+      cityCentreParkingMonthlyAverageParis: 250,
+      currency: "EUR",
+      note: "Estimation moyenne pour parking Paris intramuros",
+      sources: [
+        "https://parkopedia.com — estimations parkings Paris",
+        "https://www.paris.fr/pages/stationnement-2025-19941"
+      ]
+    },
+    
+    drivingLicenceRules: {
+      euEeaLicence: {
+        exchangeRequired: false,
+        canDriveOnExistingLicence: true,
+        note: "Permis UE/EEE utilisable sans échange tant qu'il est valide.",
+        source: "https://www.service-public.fr/particuliers/vosdroits/F1758"
+      },
+      nonEuLicence: {
+        mustExchangeWithinMonths: 12,
+        practicalTestRequired: false,
+        internationalDrivingPermitAccepted: true,
+        note: "Permis hors UE valable 1 an. Échange obligatoire si accord bilatéral, sinon repasser le permis français.",
+        source: "https://www.service-public.fr/particuliers/vosdroits/F1460"
       }
     },
-    healthBudget: {
-      annualPublicHealthcareCostPerCapitaOutOfPocket: 292,
-      outOfPocketSource: "https://drees.solidarites-sante.gouv.fr/publications-communique-de-presse-infographie-documents-de-reference/250930-Panorama-d%C3%A9penses-de-sant%C3%A9",
-      annualPrivateInsuranceCost: 840,
-      healthBudgetNote: "840 € = 70 €/mois x 12 mois pour une mutuelle moyenne ; le reste à charge moyen (hors mutuelle) est d'environ 292 €/an par habitant."
+    
+    vehiclePurchaseAndRegistration: {
+      requiredDocuments: [
+        "Justificatif d'identité",
+        "Justificatif de domicile de moins de 6 mois",
+        "Certificat de cession ou facture d'achat",
+        "Ancienne carte grise (si occasion)",
+        "Preuve contrôle technique (si > 4 ans)",
+        "Preuve d'assurance",
+        "Quitus fiscal (si véhicule acheté dans l'UE)"
+      ],
+      note: "Immatriculation obligatoire via l'ANTS.",
+      sources: [
+        "https://immatriculation.ants.gouv.fr",
+        "https://www.service-public.fr/particuliers/vosdroits/N367"
+      ]
+    },
+    
+    vehicleInspection: {
+      motRequiredFromAgeYears: 4,
+      motFrequencyYears: 2,
+      note: "Contrôle technique obligatoire à partir des 4 ans du véhicule puis tous les 2 ans.",
+      source: "https://www.service-public.fr/particuliers/vosdroits/F328"
+    }
+  },
+  
+  health: {
+    systemOverview: {
+      type: "Public + privé complémentaire",
+      universalCoverage: true,
+      description: "Le système français repose sur la Sécurité sociale (70% remboursement en moyenne) + mutuelle privée (complémentaire).",
+      sources: [
+        "https://www.ameli.fr",
+        "https://www.securite-sociale.fr"
+      ]
+    },
+    
+    publicSystemCost: {
+      forResidents: {
+        directMonthlyContribution: 0,
+        currency: "EUR",
+        note: "Financé par cotisations sociales, pas de paiement direct mensuel.",
+        source: "https://www.securite-sociale.fr"
+      },
+      forLongTermVisaHolders: {
+        annualCostEstimate: 0,
+        currency: "EUR",
+        note: "Les titulaires d'un visa long séjour doivent être affiliés à la Sécurité sociale après installation et doivent avoir une assurance privée les 3 premiers mois.",
+        source: "https://france-visas.gouv.fr"
+      }
+    },
+    
+    privateInsurance: {
+      averageMonthlyPremiumIndividual: 55,
+      currency: "EUR",
+      note: "Mutuelle santé adulte seule, formule intermédiaire",
+      source: "https://www.magnolia.fr/mutuelle-sante/prix-moyen-mutuelle"
+    },
+    
+    coverageDetails: {
+      gpConsultationCost: {
+        price: 30,
+        currency: "EUR",
+        note: "Tarif consultation médecin généraliste secteur 1",
+        source: "https://www.info.gouv.fr/actualite/sante-consultation-a-30-euros"
+      },
+      emergencyCare: {
+        aAndEVisitCost: 0,
+        currency: "EUR",
+        note: "Urgences gratuites sans avance pour cas graves, sinon ticket modérateur appliqué.",
+        sources: [
+          "https://www.ameli.fr/assure/remboursements",
+          "https://sante.fr/urgences"
+        ]
+      },
+      hospitalCareForResidents: {
+        costPerDay: 20,
+        currency: "EUR",
+        note: "Forfait journalier hospitalier",
+        source: "https://www.ameli.fr/assure/remboursements"
+      }
+    },
+    
+    reimbursementAndCharges: {
+      publicReimbursementRate: {
+        model: "Remboursement partiel (70% soins courants, 80% hospitalisation)",
+        sources: [
+          "https://www.ameli.fr/assure/remboursements"
+        ]
+      },
+      typicalOutOfPocketExamples: {
+        gpAfterReimbursement: 7.5,
+        prescriptionsTypical: 2,
+        opticalAnnual: 150,
+        dentalAnnual: 300,
+        currency: "EUR"
+      }
+    },
+    
+    vaccinations: {
+      mandatoryForVisa: {
+        vaccines: [
+          "Aucun vaccin obligatoire pour entrer en France (hors fièvre jaune pour voyageurs provenant de zones à risque)"
+        ],
+        source: "https://www.diplomatie.gouv.fr/fr/conseils-aux-voyageurs/sante/"
+      },
+      recommendedForExpat: {
+        vaccines: [
+          "Vaccins de base à jour (DTP, ROR)",
+          "Hépatite B",
+          "Grippe saisonnière",
+          "COVID-19 (selon recommandations)"
+        ],
+        source: "https://www.santepubliquefrance.fr"
+      }
+    },
+    
+    medicalDocumentsForExpat: {
+      recommendedDocuments: [
+        "Résumé des antécédents médicaux",
+        "Ordonnances récentes",
+        "Carnet de vaccination",
+        "Traductions certifiées des documents importants (si nécessaire)",
+        "Liste des traitements en cours avec DCI"
+      ],
+      sources: [
+        "https://france-visas.gouv.fr",
+        "https://www.ameli.fr"
+      ]
+    },
+    
+    annualHealthBudgetEstimates: {
+      currency: "EUR",
+      isApproximation: true,
+      note: "Estimations basées sur mutuelle moyenne + reste à charge typique selon profil",
+      profiles: [
+        {
+          profile: "Jeune adulte 18-30, bonne santé",
+          insurancePerYear: 450,
+          consultationsAndGPPerYear: 80,
+          medicationPerYear: 120,
+          dentalPerYear: 200,
+          opticalPerYear: 80,
+          totalEstimatedPerYear: 930
+        },
+        {
+          profile: "Adulte 30-60, santé moyenne",
+          insurancePerYear: 660,
+          consultationsAndGPPerYear: 120,
+          medicationPerYear: 180,
+          dentalPerYear: 350,
+          opticalPerYear: 150,
+          totalEstimatedPerYear: 1460
+        },
+        {
+          profile: "Senior 60+",
+          insurancePerYear: 1200,
+          consultationsAndGPPerYear: 200,
+          medicationPerYear: 300,
+          dentalPerYear: 400,
+          opticalPerYear: 200,
+          totalEstimatedPerYear: 2300
+        },
+        {
+          profile: "Adulte avec maladie chronique",
+          insurancePerYear: 900,
+          consultationsAndGPPerYear: 250,
+          medicationPerYear: 400,
+          dentalPerYear: 300,
+          opticalPerYear: 100,
+          totalEstimatedPerYear: 1950
+        }
+      ]
+    },
+    
+    europeanHealthCardEquivalent: {
+      name: "Carte Européenne d'Assurance Maladie (CEAM)",
+      appliesTo: "Ressortissants UE/EEE voyageant temporairement dans un autre pays de l'UE/EEE",
+      cost: 0,
+      note: "Permet d'être soigné dans l'UE au même tarif que les résidents locaux.",
+      sources: [
+        "https://www.ameli.fr/assure/remboursements/soins-etranger/carte-europeenne-assurance-maladie"
+      ]
     }
   }
 };

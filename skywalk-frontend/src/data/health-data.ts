@@ -107,40 +107,40 @@ export const vaccinationsByCountry: Record<string, VaccinationRequirement[]> = {
 };
 
 // Budget santé par profil (valeurs moyennes annuelles en €)
-// Sources France: Reste à charge moyen 292€/an + mutuelle 840€/an (70€/mois)
-// Source: https://drees.solidarites-sante.gouv.fr/
+// Sources France: Mutuelle moyenne 55€/mois + reste à charge selon profil
+// Source: https://www.magnolia.fr/mutuelle-sante/prix-moyen-mutuelle + ameli.fr
 export const healthBudgetByProfile: Record<string, HealthBudgetEstimate> = {
   young_healthy: {
-    insurance: 840, // 70€/mois mutuelle France 2025
-    consultations: 200, // 2-3 consultations médecin généraliste à 30€
-    medications: 100, // Faible besoin médicaments
-    dental: 150, // Contrôle annuel
-    optical: 100, // Peu de besoins
-    emergency: 50, // Rarement
+    insurance: 450, // 55€/mois mutuelle France (formule intermédiaire)
+    consultations: 80, // 2-3 consultations médecin généraliste
+    medications: 120, // Faible besoin médicaments
+    dental: 200, // Contrôle annuel + petits soins
+    optical: 80, // Peu de besoins
+    emergency: 0, // Rarement (inclus dans consultations)
   },
   adult_average: {
-    insurance: 840, // 70€/mois mutuelle France 2025
-    consultations: 400, // 4-5 consultations/an
-    medications: 240, // Besoins moyens
-    dental: 300, // Soins + détartrage
+    insurance: 660, // 55€/mois mutuelle France
+    consultations: 120, // 4-5 consultations/an
+    medications: 180, // Besoins moyens
+    dental: 350, // Soins + détartrage
     optical: 150, // Lunettes/lentilles
-    emergency: 100, // Occasionnel
+    emergency: 0, // Inclus
   },
   senior: {
     insurance: 1200, // 100€/mois (mutuelle senior plus chère)
-    consultations: 800, // Suivi régulier 8-10 consultations/an
-    medications: 600, // 50€/mois
-    dental: 500,
+    consultations: 200, // Suivi régulier 6-8 consultations/an
+    medications: 300, // Traitements plus fréquents
+    dental: 400,
     optical: 200,
-    emergency: 200,
+    emergency: 0,
   },
   chronic_condition: {
-    insurance: 1200,
-    consultations: 1000,
-    medications: 1200, // Traitements réguliers
+    insurance: 900, // Mutuelle adaptée aux maladies chroniques
+    consultations: 250, // Suivi médical régulier
+    medications: 400, // Traitements réguliers (ALD 100% remboursée Sécu)
     dental: 300,
-    optical: 150,
-    emergency: 150,
+    optical: 100,
+    emergency: 0,
   },
 };
 
