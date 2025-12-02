@@ -54,45 +54,38 @@ export default function ServicePage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gray-50">
       {/* Header Section */}
       <PageHeader 
         title={service.title} 
         description={service.description} 
       />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-16">
-        {/* Country Selector + Context Banner */}
-        <div className="bg-white rounded-2xl p-8 border border-gray-100">
-          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
-            <div className="flex-1 max-w-2xl">
+      {/* Context Banner - Full Width */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+            <div className="flex-1">
               {displayMode === 'generic' && (
                 <div>
-                  <div className="inline-flex items-center px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-xs font-medium mb-4 uppercase tracking-wide">
+                  <div className="inline-flex items-center px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-xs font-bold mb-3 uppercase tracking-wider">
                     Mode découverte
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">
+                  <h3 className="text-lg font-bold text-gray-900 mb-1">
                     Informations générales
                   </h3>
-                  <p className="text-gray-500 leading-relaxed mb-4">
-                    Découvrez nos guides et conseils universels pour réussir votre expatriation, quelle que soit votre destination.
+                  <p className="text-sm text-gray-600 leading-relaxed">
+                    Découvrez nos guides et conseils universels pour réussir votre expatriation.
                   </p>
                   {!isAuthenticated && (
-                    <div className="flex items-start gap-3 p-4 bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200 rounded-lg">
-                      <div className="flex-shrink-0 w-8 h-8 bg-[#5EA3C0] rounded-full flex items-center justify-center">
-                        <Plus className="w-4 h-4 text-white" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm text-gray-800 mb-2">
-                          <strong>💡 Astuce :</strong> Créez un compte gratuit pour accéder à du contenu personnalisé selon votre pays de destination !
-                        </p>
-                        <Link
-                          to="/auth/register"
-                          className="inline-flex items-center text-sm font-semibold text-[#5EA3C0] hover:text-[#4d8a9d] underline"
-                        >
-                          Créer mon compte →
+                    <div className="mt-4 flex items-center gap-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                      <Plus className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                      <p className="text-xs text-gray-700">
+                        <Link to="/auth/register" className="font-semibold text-blue-600 hover:text-blue-700 underline">
+                          Créez un compte gratuit
                         </Link>
-                      </div>
+                        {' '}pour accéder à du contenu personnalisé !
+                      </p>
                     </div>
                   )}
                 </div>
@@ -100,24 +93,19 @@ export default function ServicePage() {
 
               {displayMode === 'with-project' && (
                 <div>
-                  <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-medium mb-4 uppercase tracking-wide">
+                  <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold mb-3 uppercase tracking-wider">
                     Personnalisé
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">
+                  <h3 className="text-lg font-bold text-gray-900 mb-1">
                     {content.hasCountryContent ? (
-                      <>
-                        Tout savoir sur l'expatriation en{' '}
-                        <span className="text-gray-900 capitalize">
-                          {selectedCountry}
-                        </span>
-                      </>
+                      <>Expatriation en <span className="capitalize">{selectedCountry}</span></>
                     ) : (
                       'Informations de votre projet'
                     )}
                   </h3>
-                  <p className="text-gray-500 leading-relaxed">
+                  <p className="text-sm text-gray-600 leading-relaxed">
                     {content.hasCountryContent
-                      ? 'Nous avons adapté tous les guides, chiffres et conseils ci-dessous spécifiquement pour votre destination.'
+                      ? 'Contenu adapté spécifiquement pour votre destination.'
                       : 'Utilisez le sélecteur pour voir le contenu spécifique à un pays.'}
                   </p>
                 </div>
@@ -125,18 +113,18 @@ export default function ServicePage() {
 
               {displayMode === 'without-project' && (
                 <div>
-                  <div className="inline-flex items-center px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-xs font-medium mb-4 uppercase tracking-wide">
+                  <div className="inline-flex items-center px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-xs font-bold mb-3 uppercase tracking-wider">
                     Exploration
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">
+                  <h3 className="text-lg font-bold text-gray-900 mb-1">
                     Explorez par destination
                   </h3>
-                  <p className="text-gray-500 mb-6 leading-relaxed">
-                    Sélectionnez un pays dans la liste pour accéder à des informations précises et adaptées.
+                  <p className="text-sm text-gray-600 leading-relaxed mb-4">
+                    Sélectionnez un pays pour accéder à des informations précises.
                   </p>
                   <Link
                     to="/onboarding"
-                    className="inline-flex items-center space-x-2 px-5 py-2.5 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium text-sm"
+                    className="inline-flex items-center space-x-2 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium text-sm"
                   >
                     <Plus className="w-4 h-4" />
                     <span>Créer mon projet</span>
@@ -157,31 +145,41 @@ export default function ServicePage() {
             )}
           </div>
         </div>
+      </div>
 
-        {/* Stats Section */}
-        {content.stats && content.stats.length > 0 && (
-          <ServiceStats stats={content.stats} color={service.color} />
-        )}
+      {/* Main Content Area with Sidebar Layout */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Sidebar - Tools */}
+          <aside className="lg:w-80 flex-shrink-0">
+            <div className="lg:sticky lg:top-8 space-y-6">
+              <ServiceTools category={category || ''} countryName={selectedCountry || undefined} />
+            </div>
+          </aside>
 
-        {/* Interactive Tools Section */}
-        <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150">
-          <ServiceTools category={category || ''} countryName={selectedCountry || undefined} />
+          {/* Main Content */}
+          <main className="flex-1 min-w-0 space-y-8">
+            {/* Stats Section */}
+            {content.stats && content.stats.length > 0 && (
+              <ServiceStats stats={content.stats} color={service.color} />
+            )}
+
+            {/* Guides Section */}
+            <ServiceGuides
+              guides={content.guides}
+              tips={content.tips}
+              faq={service.faq}
+            />
+
+            {/* Search Results Section */}
+            {service.searchCategory && (
+              <ServiceResults
+                category={service.searchCategory}
+                title={service.title}
+              />
+            )}
+          </main>
         </div>
-
-        {/* Guides Section */}
-        <ServiceGuides
-          guides={content.guides}
-          tips={content.tips}
-          faq={service.faq}
-        />
-
-        {/* Search Results Section */}
-        {service.searchCategory && (
-          <ServiceResults
-            category={service.searchCategory}
-            title={service.title}
-          />
-        )}
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CheckCircle2, Circle, Trophy, Calculator, ArrowRight, Sparkles, Layout, FileText, MessageSquare, Building2, Wallet, FileCheck } from 'lucide-react';
+import { CheckCircle2, Circle, Trophy, Calculator, ArrowRight, Sparkles, FileText, MessageSquare, Building2, FileCheck } from 'lucide-react';
 
 interface ServiceToolsProps {
   category: string;
@@ -14,13 +14,13 @@ export default function ServiceTools({ category, countryName }: ServiceToolsProp
     
     return (
       <ToolContainer 
-        title="Boîte à outils Emploi" 
-        description="Des outils pratiques pour optimiser votre recherche d'emploi à l'international."
+        title="Boîte à outils" 
+        description="Outils pratiques pour votre recherche"
         activeToolId={currentTool}
         onToolChange={setActiveTool}
         tools={[
-          { id: 'cv', label: 'Analyseur de CV', icon: FileText, active: true },
-          { id: 'interview', label: 'Simulateur d\'entretien', icon: MessageSquare, active: false, comingSoon: true },
+          { id: 'cv', label: 'Analyseur CV', icon: FileText, active: true },
+          { id: 'interview', label: 'Simulateur entretien', icon: MessageSquare, active: false, comingSoon: true },
         ]}
       >
         {currentTool === 'cv' && <CVReadinessTool countryName={countryName} />}
@@ -33,13 +33,13 @@ export default function ServiceTools({ category, countryName }: ServiceToolsProp
 
     return (
       <ToolContainer 
-        title="Boîte à outils Logement" 
-        description="Estimez vos coûts et préparez votre dossier locatif."
+        title="Boîte à outils" 
+        description="Estimez et préparez votre dossier"
         activeToolId={currentTool}
         onToolChange={setActiveTool}
         tools={[
-          { id: 'calc', label: 'Calculateur de budget', icon: Calculator, active: true },
-          { id: 'application', label: 'Dossier de location', icon: FileCheck, active: true },
+          { id: 'calc', label: 'Budget', icon: Calculator, active: true },
+          { id: 'application', label: 'Dossier', icon: FileCheck, active: true },
           { id: 'guarantor', label: 'Garantie', icon: Building2, active: false, comingSoon: true },
         ]}
       >
@@ -64,45 +64,45 @@ interface ToolContainerProps {
 function ToolContainer({ title, description, tools, activeToolId, onToolChange, children }: ToolContainerProps) {
   return (
     <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-      <div className="border-b border-gray-100 bg-gray-50/50 px-6 py-4">
-        <div className="flex items-center gap-3 mb-1">
-          <div className="p-2 bg-white rounded-lg border border-gray-200 shadow-sm">
-            <Layout className="w-5 h-5 text-gray-700" />
-          </div>
-          <h3 className="text-lg font-bold text-gray-900">{title}</h3>
+      {/* Header */}
+      <div className="px-6 py-4 border-b border-gray-100 bg-gradient-to-b from-gray-50 to-white">
+        <div className="flex items-center gap-2 mb-1">
+          <Sparkles className="w-4 h-4 text-gray-600" />
+          <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wide">{title}</h3>
         </div>
-        <p className="text-sm text-gray-500 ml-12">{description}</p>
+        <p className="text-xs text-gray-500">{description}</p>
       </div>
 
-      <div className="flex flex-col md:flex-row min-h-[400px]">
-        {/* Navigation Sidebar */}
-        <div className="w-full md:w-64 border-r border-gray-100 bg-gray-50/30 p-4 space-y-1">
-          {tools.map((tool) => (
-            <button
-              key={tool.id}
-              onClick={() => tool.active && onToolChange(tool.id)}
-              disabled={!tool.active}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-                activeToolId === tool.id
-                  ? 'bg-white text-gray-900 shadow-sm border border-gray-200' 
-                  : 'text-gray-500 hover:bg-gray-100/50'
-              } ${!tool.active && 'opacity-60 cursor-not-allowed'}`}
-            >
-              <tool.icon className={`w-4 h-4 ${activeToolId === tool.id ? 'text-gray-900' : 'text-gray-400'}`} />
-              <span>{tool.label}</span>
-              {tool.comingSoon && (
-                <span className="ml-auto text-[10px] font-bold px-1.5 py-0.5 bg-gray-100 text-gray-500 rounded-full">
-                  Bientôt
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
+      {/* Navigation */}
+      <div className="px-4 py-3 space-y-1">
+        {tools.map((tool) => (
+          <button
+            key={tool.id}
+            onClick={() => tool.active && onToolChange(tool.id)}
+            disabled={!tool.active}
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all group ${
+              activeToolId === tool.id
+                ? 'bg-gray-900 text-white shadow-md' 
+                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+            } ${!tool.active && 'opacity-50 cursor-not-allowed'}`}
+          >
+            <tool.icon className={`w-4 h-4 ${activeToolId === tool.id ? 'text-white' : 'text-gray-400 group-hover:text-gray-600'}`} />
+            <span className="flex-1 text-left">{tool.label}</span>
+            {tool.comingSoon && (
+              <span className="text-[10px] font-bold px-1.5 py-0.5 bg-gray-100 text-gray-500 rounded">
+                Bientôt
+              </span>
+            )}
+            {activeToolId === tool.id && (
+              <div className="w-1.5 h-1.5 rounded-full bg-white"></div>
+            )}
+          </button>
+        ))}
+      </div>
 
-        {/* Active Tool Content */}
-        <div className="flex-1 p-6 md:p-8 bg-white">
-          {children}
-        </div>
+      {/* Active Tool Content */}
+      <div className="p-6 bg-gray-50/50">
+        {children}
       </div>
     </div>
   );
@@ -126,48 +126,48 @@ function CVReadinessTool({ countryName }: { countryName?: string }) {
   const progress = Math.round((checklist.filter(c => c.checked).length / checklist.length) * 100);
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <div className="mb-8 text-center">
-        <h4 className="text-xl font-bold text-gray-900 mb-2">
-          Checklist CV {countryName ? `pour ${countryName}` : 'International'}
+    <div>
+      <div className="mb-6">
+        <h4 className="text-sm font-bold text-gray-900 mb-1">
+          Checklist CV {countryName && `- ${countryName}`}
         </h4>
-        <p className="text-gray-500 text-sm">
-          Assurez-vous que votre candidature respecte les standards locaux avant de postuler.
+        <p className="text-xs text-gray-500">
+          Assurez-vous que votre CV respecte les standards locaux.
         </p>
       </div>
 
-      <div className="mb-8 bg-gray-50 rounded-2xl p-6 border border-gray-100">
-        <div className="flex justify-between items-end mb-3">
-          <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Progression</span>
-          <span className="text-2xl font-bold text-gray-900">{progress}%</span>
+      <div className="mb-6 bg-white rounded-xl p-4 border border-gray-200">
+        <div className="flex justify-between items-center mb-2">
+          <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Progression</span>
+          <span className="text-lg font-bold text-gray-900">{progress}%</span>
         </div>
-        <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+        <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
           <div 
-            className="h-full bg-gray-900 rounded-full transition-all duration-500 ease-out"
+            className="h-full bg-gray-900 rounded-full transition-all duration-500"
             style={{ width: `${progress}%` }}
           ></div>
         </div>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-2">
         {checklist.map((item) => (
           <button
             key={item.id}
             onClick={() => toggleItem(item.id)}
-            className={`w-full flex items-center gap-4 p-4 rounded-xl border transition-all duration-200 text-left group ${
+            className={`w-full flex items-center gap-3 p-3 rounded-lg border transition-all text-left group ${
               item.checked 
-                ? 'bg-gray-50 border-gray-200 text-gray-400' 
+                ? 'bg-white border-gray-200 text-gray-400' 
                 : 'bg-white border-gray-200 hover:border-gray-300 hover:shadow-sm text-gray-700'
             }`}
           >
-            <div className={`flex-shrink-0 w-5 h-5 rounded-full border flex items-center justify-center transition-colors ${
+            <div className={`flex-shrink-0 w-4 h-4 rounded border flex items-center justify-center transition-colors ${
               item.checked 
-                ? 'bg-gray-200 border-gray-200 text-white' 
+                ? 'bg-gray-900 border-gray-900 text-white' 
                 : 'bg-white border-gray-300 text-transparent group-hover:border-gray-400'
             }`}>
-              <CheckCircle2 className="w-3.5 h-3.5" />
+              <CheckCircle2 className="w-3 h-3" />
             </div>
-            <span className={`text-sm font-medium ${item.checked ? 'line-through' : ''}`}>
+            <span className={`text-xs font-medium ${item.checked ? 'line-through' : ''}`}>
               {item.text}
             </span>
           </button>
@@ -175,17 +175,9 @@ function CVReadinessTool({ countryName }: { countryName?: string }) {
       </div>
 
       {progress === 100 && (
-        <div className="mt-8 p-4 bg-gray-50 border border-gray-200 rounded-xl flex items-center gap-4 animate-in fade-in slide-in-from-bottom-2">
-          <div className="p-2 bg-white rounded-lg border border-gray-200 shadow-sm">
-            <Sparkles className="w-5 h-5 text-gray-900" />
-          </div>
-          <div className="flex-1">
-            <p className="text-sm font-medium text-gray-900">Votre CV est prêt !</p>
-            <p className="text-xs text-gray-500">Vous pouvez commencer à postuler.</p>
-          </div>
-          <button className="px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors">
-            Voir les offres
-          </button>
+        <div className="mt-4 p-3 bg-white border border-gray-200 rounded-lg flex items-center gap-3">
+          <Trophy className="w-4 h-4 text-gray-900 flex-shrink-0" />
+          <p className="text-xs font-medium text-gray-700">CV prêt à être envoyé !</p>
         </div>
       )}
     </div>
