@@ -28,7 +28,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       try {
         const userData = await authApi.getProfile();
         setUser(userData);
-      } catch {
+      } catch (error) {
+        // Si l'erreur est 401, l'utilisateur n'est pas authentifié (normal)
+        // On ne fait rien, setUser reste null
+        console.log('Utilisateur non authentifié ou token expiré');
       } finally {
         setIsLoading(false);
       }
@@ -40,6 +43,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (data: LoginDto): Promise<void> => {
     try {
       const response: AuthResponse = await authApi.login(data);
+      if (response.access_token) {
+        localStorage.setItem('access_token', response.access_token);
+      }
       setUser(response.user);
     } catch (error) {
       console.error('Erreur lors de la connexion:', error);
@@ -50,6 +56,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const register = async (data: RegisterDto): Promise<void> => {
     try {
       const response: AuthResponse = await authApi.register(data);
+      if (response.access_token) {
+        localStorage.setItem('access_token', response.access_token);
+      }
       setUser(response.user);
     } catch (error) {
       console.error("Erreur lors de l'inscription:", error);
@@ -63,6 +72,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } catch (error) {
       console.error('Erreur lors de la déconnexion:', error);
     } finally {
+      // Suppression de toutes les données locales
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('skywalk-onboarding-completed');
+      localStorage.removeItem('skywalk-onboarding-draft');
+      localStorage.removeItem('skywalk-user-data');
+      localStorage.removeItem('skywalk-dashboard-preferences');
       setUser(null);
     }
   };
