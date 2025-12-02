@@ -8,6 +8,10 @@ import ServiceStats from '../components/ServiceStats';
 import ServiceResults from '../components/ServiceResults';
 import CountrySelector from '../components/CountrySelector';
 import ServiceTools from '../components/ServiceTools';
+import HealthStats from '../components/HealthStats';
+import TransportStats from '../components/TransportStats';
+import LogementStats from '../components/LogementStats';
+import EmploiStats from '../components/EmploiStats';
 import { useServiceContent } from '../hooks/useServiceContent';
 
 export default function ServicePage() {
@@ -168,10 +172,21 @@ export default function ServicePage() {
 
           {/* Main Content */}
           <main className="flex-1 min-w-0 space-y-8">
-            {/* Stats Section */}
-            {content.stats && content.stats.length > 0 && (
+            {/* Stats Section - Dynamique pour tous les services avec données complètes */}
+            {selectedCountry && ['france', 'royaume-uni', 'suisse'].includes(selectedCountry) ? (
+              <>
+                {category === 'sante' && <HealthStats countryName={selectedCountry} />}
+                {category === 'transport' && <TransportStats countryName={selectedCountry} />}
+                {category === 'logement' && <LogementStats countryName={selectedCountry} />}
+                {category === 'emploi' && <EmploiStats countryName={selectedCountry} />}
+                {!['sante', 'transport', 'logement', 'emploi'].includes(category || '') && 
+                  content.stats && content.stats.length > 0 && (
+                    <ServiceStats stats={content.stats} color={service.color} />
+                  )}
+              </>
+            ) : content.stats && content.stats.length > 0 ? (
               <ServiceStats stats={content.stats} color={service.color} />
-            )}
+            ) : null}
 
             {/* Guides Section */}
             <ServiceGuides

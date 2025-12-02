@@ -8,10 +8,7 @@ interface Country {
 }
 
 const AVAILABLE_COUNTRIES: Country[] = [
-  { slug: 'canada', name: 'Canada', flag: '🇨🇦' },
   { slug: 'france', name: 'France', flag: '🇫🇷' },
-  { slug: 'allemagne', name: 'Allemagne', flag: '🇩🇪' },
-  { slug: 'espagne', name: 'Espagne', flag: '🇪🇸' },
   { slug: 'royaume-uni', name: 'Royaume-Uni', flag: '🇬🇧' },
   { slug: 'suisse', name: 'Suisse', flag: '🇨🇭' },
 ];
