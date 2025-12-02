@@ -2,12 +2,16 @@ export interface User {
   idUser: number;
   id?: number;    
   email: string;
+  firstName?: string;
+  lastName?: string;
   fullName: string;
   role?: 'USER' | 'ADMIN';
   userRole?: string;
   age?: number;
   status?: string;
   languageLevel?: string;
+  motherTongue?: string;
+  spokenLanguages?: string[];
   idOriginCountry?: number;
   createdAt: string;
   updatedAt: string;
@@ -21,18 +25,25 @@ export interface LoginDto {
 export interface RegisterDto {
   email: string;
   password: string;
-  fullName: string;
+  firstName: string;
+  lastName: string;
   age?: number;
   status?: string;
   languageLevel?: string;
+  motherTongue?: string;
+  spokenLanguages?: string[];
   idOriginCountry?: number;
 }
 
 export interface UpdateProfileDto {
+  firstName?: string;
+  lastName?: string;
   fullName?: string;
   age?: number;
   status?: string;
   languageLevel?: string;
+  motherTongue?: string;
+  spokenLanguages?: string[];
   idOriginCountry?: number;
   password?: string; 
 }

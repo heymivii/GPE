@@ -7,7 +7,7 @@ const categories = [
     subtitle: 'Trouver un emploi',
     description: 'Explorez les opportunités professionnelles dans votre pays de destination et obtenez des conseils pour votre recherche d\'emploi.',
     ctaText: 'Voir les offres d\'emploi',
-    ctaLink: '/emploi',
+    ctaLink: '/services/emploi',
     icon: Briefcase,
     backgroundColor: 'bg-blue-50'
   },
@@ -16,7 +16,7 @@ const categories = [
     subtitle: 'Explorer les logements',
     description: 'Trouvez le logement idéal selon votre budget et vos préférences dans votre nouvelle ville.',
     ctaText: 'Explorer les logements',
-    ctaLink: '/logement',
+    ctaLink: '/services/logement',
     icon: Home,
     backgroundColor: 'bg-green-50'
   },
@@ -25,7 +25,7 @@ const categories = [
     subtitle: 'Se déplacer facilement',
     description: 'Découvrez les moyens de transport disponibles et planifiez vos déplacements dans votre nouveau pays.',
     ctaText: 'Voir les infos transport',
-    ctaLink: '/transport',
+    ctaLink: '/services/transport',
     icon: Car,
     backgroundColor: 'bg-purple-50'
   },
@@ -34,7 +34,7 @@ const categories = [
     subtitle: 'Système de santé',
     description: 'Informez-vous sur le système de santé local, les assurances et les démarches médicales nécessaires.',
     ctaText: 'En savoir plus sur la santé',
-    ctaLink: '/sante',
+    ctaLink: '/services/sante',
     icon: Heart,
     backgroundColor: 'bg-red-50'
   },
@@ -43,7 +43,7 @@ const categories = [
     subtitle: 'Démarches et papiers',
     description: 'Simplifiez vos démarches administratives avec nos guides et conseils pour vos documents officiels.',
     ctaText: 'Voir les démarches',
-    ctaLink: '/demarches',
+    ctaLink: '/services/demarches',
     icon: FileText,
     backgroundColor: 'bg-yellow-50'
   }

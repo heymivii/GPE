@@ -8,14 +8,18 @@ import {
   BookOpen, 
   ArrowLeft, 
   CheckCircle2,
-  Globe
+  Globe,
+  Sparkles
 } from 'lucide-react';
+import { useAuth } from '../../../hooks/useAuth';
+import AuthPromptCard from '../../../components/AuthPromptCard';
 
 /**
  * Detailed page for a specific destination country
  */
 export function DestinationDetailPage() {
   const { countrySlug } = useParams<{ countrySlug: string }>();
+  const { isAuthenticated } = useAuth();
   const [activeTab, setActiveTab] = useState<
     'overview' | 'opportunities' | 'forum' | 'resources'
   >('overview');
@@ -171,6 +175,22 @@ export function DestinationDetailPage() {
                 </div>
               </div>
             </div>
+
+            {!isAuthenticated && (
+              <AuthPromptCard
+                icon={Sparkles}
+                title="Créez votre projet d'expatriation"
+                description={`Rejoignez ${destination.stats.memberCount.toLocaleString('fr-FR')} expatriés en ${destination.name} et accédez à du contenu personnalisé.`}
+                ctaText="Créer mon compte gratuitement"
+                ctaLink="/auth/register"
+                benefits={[
+                  'Suivi personnalisé de votre projet',
+                  'Accès aux offres d\'emploi exclusives',
+                  'Connexion avec la communauté locale',
+                  'Guides et ressources détaillées'
+                ]}
+              />
+            )}
 
             <div className="bg-[#5EA3C0] rounded-xl shadow-sm p-6 text-white">
               <h3 className="font-bold text-lg mb-4">Prêt à partir ?</h3>

@@ -6,6 +6,7 @@ import { expatriationProjectApi } from '../../../api/expatriation-project';
 import { countryApi } from '../../../api/country';
 import { useDeleteProject } from '../hooks/useProjectMutations';
 import type { ExpatriationProject } from '../../../types/expatriation-project';
+import { PageHeader } from '../../../components/PageHeader';
 
 const PROJECT_STATUS_LABELS = {
   planning: 'En planification',
@@ -16,7 +17,7 @@ const PROJECT_STATUS_LABELS = {
 };
 
 const PROJECT_STATUS_STYLES = {
-  planning: 'bg-blue-50 text-blue-700 ring-1 ring-blue-600/10',
+  planning: 'bg-[#5EA3C0]/10 text-[#5EA3C0] ring-1 ring-[#5EA3C0]/20',
   active: 'bg-green-50 text-green-700 ring-1 ring-green-600/10',
   completed: 'bg-gray-50 text-gray-700 ring-1 ring-gray-600/10',
   cancelled: 'bg-red-50 text-red-700 ring-1 ring-red-600/10',
@@ -63,7 +64,7 @@ export default function ProjectsPage() {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="relative">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#5EA3C0]"></div>
         </div>
       </div>
     );
@@ -91,19 +92,19 @@ export default function ProjectsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50/50">
+      <PageHeader 
+        title="Mes Projets" 
+        description="Gérez vos projets d'expatriation, suivez votre avancement et accédez à vos outils personnalisés."
+      />
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
-              Mes Projets
-            </h1>
-            <p className="text-sm text-gray-500 mt-1">
-              Gérez vos projets d'expatriation
-            </p>
+            {/* Title removed */}
           </div>
           <Link
             to="/onboarding"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium shadow-sm"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium shadow-sm"
           >
             <Plus className="w-4 h-4" />
             Nouveau projet
@@ -123,7 +124,7 @@ export default function ProjectsPage() {
             </p>
             <Link
               to="/onboarding"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium"
             >
               <Plus className="w-4 h-4" />
               Créer un projet
@@ -181,7 +182,7 @@ function ProjectCard({ project, countryName, countryFlag }: { project: Expatriat
 
   return (
     <>
-      <div className="group bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 flex flex-col h-full">
+      <div className="group bg-white rounded-xl shadow-sm border border-gray-200 transition-all duration-200 flex flex-col h-full">
         <div className="p-5 flex-1 flex flex-col">
           <div className="flex justify-between items-start mb-4">
             <div className="flex items-center gap-3">
@@ -249,7 +250,7 @@ function ProjectCard({ project, countryName, countryFlag }: { project: Expatriat
           <div className="space-y-3 flex-1">
             {project.mainObjective && (
               <div className="flex items-center gap-3 text-sm text-gray-600">
-                <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 shrink-0">
+                <div className="w-8 h-8 rounded-full bg-[#5EA3C0]/10 flex items-center justify-center text-[#5EA3C0] shrink-0">
                   {getObjectiveIcon(project.mainObjective)}
                 </div>
                 <span className="font-medium">
@@ -285,7 +286,7 @@ function ProjectCard({ project, countryName, countryFlag }: { project: Expatriat
         <div className="px-5 py-4 border-t border-gray-100 bg-gray-50/50 rounded-b-xl">
           <Link
             to={`/projects/${project.idProject}`}
-            className="flex items-center justify-between w-full text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+            className="flex items-center justify-between w-full text-sm font-medium text-[#5EA3C0] hover:text-[#4A8299] transition-colors"
           >
             Accéder au tableau de bord
             <ArrowRight className="w-4 h-4" />

@@ -14,9 +14,10 @@ interface PreparationStepProps {
   data?: PreparationStepData
   onNext: (data: PreparationStepData) => void
   onBack?: () => void
+  currency?: string
 }
 
-export default function PreparationStep({ data, onNext, onBack }: PreparationStepProps) {
+export default function PreparationStep({ data, onNext, onBack, currency = "€" }: PreparationStepProps) {
   const [formData, setFormData] = useState<PreparationStepData>({
     stepsDone: data?.stepsDone || [],
     housingBudget: data?.housingBudget || ''
@@ -31,8 +32,8 @@ export default function PreparationStep({ data, onNext, onBack }: PreparationSte
       newErrors.housingBudget = 'Le budget logement est requis'
     } else {
       const budget = parseFloat(formData.housingBudget)
-      if (isNaN(budget) || budget < 0 || budget > 10000) {
-        newErrors.housingBudget = 'Le budget doit être entre 0 et 10 000 €'
+      if (isNaN(budget) || budget < 0) {
+        newErrors.housingBudget = `Le budget doit être supérieur ou égal à 0 ${currency}`
       }
     }
 
@@ -100,6 +101,7 @@ export default function PreparationStep({ data, onNext, onBack }: PreparationSte
             value={formData.housingBudget}
             onChange={handleBudgetChange}
             placeholder="Ex: 800"
+            currency={currency}
             aria-describedby={errors.housingBudget ? 'housingBudget-error' : 'housingBudget-helper'}
           />
         </FormField>

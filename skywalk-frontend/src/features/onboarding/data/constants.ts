@@ -33,9 +33,10 @@ export const LANGUAGE_LEVELS = [
 
 export const STATUS_OPTIONS = [
   { value: 'student', label: 'Étudiant' },
-  { value: 'job_seeker', label: 'Demandeur d\'emploi' },
   { value: 'employee', label: 'Salarié' },
-  { value: 'freelancer', label: 'Indépendant' },
+  { value: 'self_employed', label: 'Indépendant' },
+  { value: 'unemployed', label: 'Demandeur d\'emploi' },
+  { value: 'retired', label: 'Retraité' },
   { value: 'other', label: 'Autre' }
 ]
 

@@ -1,6 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 import { AdminProcedure } from '../../admin-procedure/entities/admin-procedure.entity';
+import { ExpatriationProject } from '../../expatriation-project/entities/expatriation-project.entity';
 
 @Entity({ name: 'procedure_tracking' })
 export class ProcedureTracking {
@@ -26,5 +27,9 @@ export class ProcedureTracking {
   @ManyToOne(() => AdminProcedure, { nullable: false })
   @JoinColumn({ name: 'admin_procedure_id'})
   admin_procedure: AdminProcedure;
+
+  @ManyToOne(() => ExpatriationProject, { nullable: false })
+  @JoinColumn({ name: 'id_project' })
+  project: ExpatriationProject;
 }
 

@@ -389,15 +389,30 @@ export default function PostDetailPage() {
             </form>
           </div>
         ) : (
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
-            <h3 className="text-yellow-800 font-semibold mb-2">Connexion requise</h3>
-            <p className="text-yellow-700 mb-4">Vous devez être connecté pour répondre</p>
-            <button
-              onClick={() => navigate('/auth/login')}
-              className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700"
-            >
-              Se connecter
-            </button>
+          <div className="bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200 rounded-xl p-8 text-center">
+            <div className="max-w-md mx-auto">
+              <div className="w-16 h-16 bg-[#5EA3C0] rounded-full flex items-center justify-center mx-auto mb-4">
+                <MessageCircle className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Rejoignez la conversation</h3>
+              <p className="text-gray-600 mb-6">
+                Connectez-vous pour partager votre expérience, poser vos questions et échanger avec la communauté d'expatriés.
+              </p>
+              <div className="flex gap-3 justify-center">
+                <Link
+                  to="/auth/register"
+                  className="px-6 py-3 bg-[#5EA3C0] text-white font-semibold rounded-full hover:bg-[#4d8a9d] transition-colors"
+                >
+                  Créer un compte
+                </Link>
+                <Link
+                  to="/auth/login"
+                  className="px-6 py-3 bg-white text-[#5EA3C0] font-semibold rounded-full border-2 border-[#5EA3C0] hover:bg-blue-50 transition-colors"
+                >
+                  Se connecter
+                </Link>
+              </div>
+            </div>
           </div>
         )}
       </div>

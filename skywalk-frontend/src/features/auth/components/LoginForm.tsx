@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { useAuth } from "../../../hooks/useAuth";
 
@@ -10,6 +10,8 @@ export default function LoginForm() {
   
   const { login } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirect = searchParams.get("redirect") || "/dashboard/";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,9 +20,9 @@ export default function LoginForm() {
     try {
       await login({ email, password });
       toast.success("Connexion réussie !");
-      navigate("/dashboard");
-    } catch (err: any) {
-      const message = err.response?.data?.message || "Erreur de connexion";
+      navigate(redirect);
+    } catch (err: unknown) {
+      const message = (err as any).response?.data?.message || "Erreur de connexion";
       toast.error(message);
     } finally {
       setIsLoading(false);
@@ -78,7 +80,7 @@ export default function LoginForm() {
         {isLoading ? "Connexion..." : "Se connecter"}
       </button>
       
-      <p>Vous n'avez pas encore de compte ? <Link to="/auth/register">Inscrivez-vous</Link> </p>
+      <p>Vous n'avez pas encore de compte ? <Link to={`/auth/register?redirect=${encodeURIComponent(redirect)}`}>Inscrivez-vous</Link> </p>
     </form>
   );
 }

@@ -8,6 +8,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import { Continent } from '../../continent/entities/continent.entity';
+import { AdminProcedure } from '../../admin-procedure/entities/admin-procedure.entity';
 
 @Entity('country')
 export class Country {
@@ -41,4 +42,7 @@ export class Country {
   @ManyToOne(() => Continent, { nullable: false })
   @JoinColumn({ name: 'id_continent' })
   continent: Continent;
+
+  @OneToMany(() => AdminProcedure, (process) => process.country)
+  administrativeProcedures: AdminProcedure[];
 }

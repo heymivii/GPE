@@ -1,87 +1,209 @@
-import Widget from './Widget'
-import { CheckCircle, Circle, ChevronDown, ChevronRight } from 'lucide-react'
-import { useState, useEffect } from 'react'
-import type { CountryData } from '../../../hooks/useCountryData'
+import Widget from './Widget';
+import { CheckCircle, Circle, ChevronDown, ChevronRight } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import type { CountryData } from '../../../hooks/useCountryData';
+import { useChecklistProgress } from '../hooks/useChecklistProgress';
 
 interface ChecklistItem {
-  id: string
-  title: string
-  completed: boolean
-  category: string
-  substeps?: Array<{ 
-    id: string
-    label: string
-    isOptional: boolean
-    completed?: boolean
-  }>
-  expanded?: boolean
+  id: string;
+  title: string;
+  completed: boolean;
+  category: string;
+  substeps?: Array<{
+    id: string;
+    label: string;
+    isOptional: boolean;
+    completed?: boolean;
+  }>;
+  expanded?: boolean;
 }
 
 interface ChecklistWidgetProps {
-  countryData: CountryData | null
-  onEdit?: () => void
-  onHide?: () => void
+  countryData: CountryData | null;
+  projectId: number;
+  onEdit?: () => void;
+  onHide?: () => void;
 }
 
-export default function ChecklistWidget({ countryData, onEdit, onHide }: ChecklistWidgetProps) {
-  const [checklist, setChecklist] = useState<ChecklistItem[]>([])
+export default function ChecklistWidget({
+  countryData,
+  projectId,
+  onEdit,
+  onHide,
+}: ChecklistWidgetProps) {
+  const [checklist, setChecklist] = useState<ChecklistItem[]>([]);
+  const { progress, updateStep, isLoading } = useChecklistProgress(projectId);
 
+  // 🔄 Fusionner countries-data.json avec la progression sauvegardée en BDD
   useEffect(() => {
     if (!countryData?.expatProjectTemplate) {
-      return
+      return;
     }
 
-    const steps = countryData.expatProjectTemplate.steps.map((step) => ({
-      id: step.id.toString(),
-      title: step.title,
-      completed: false, 
-      category: step.category,
-      substeps: step.substeps?.map(sub => ({ ...sub, completed: false })),
-      expanded: false,
-    }))
+    const steps = countryData.expatProjectTemplate.steps.map((step) => {
+      const stepProgress = progress[step.id.toString()];
 
-    setChecklist(steps)
-  }, [countryData])
+      return {
+        id: step.id.toString(),
+        title: step.title,
+        completed: stepProgress?.completed || false,
+        category: step.category,
+        substeps: step.substeps?.map((sub) => ({
+          ...sub,
+          completed: stepProgress?.substeps?.[sub.id]?.completed || false,
+        })),
+        expanded: false,
+      };
+    });
 
-  const toggleItem = (id: string) => {
-    setChecklist(prev => 
-      prev.map(item => 
-        item.id === id ? { ...item, completed: !item.completed } : item
+    setChecklist(steps);
+  }, [countryData, progress]);
+
+  // ✅ Toggle une étape principale (coche/décoche toutes les sous-étapes)
+  const toggleItem = async (id: string) => {
+    const item = checklist.find((i) => i.id === id);
+    if (!item) return;
+
+    const newCompletedStatus = !item.completed;
+    const previousState = [...checklist];
+
+    // Mise à jour optimiste locale immédiate
+    setChecklist((prev) =>
+      prev.map((listItem) =>
+        listItem.id === id
+          ? {
+              ...listItem,
+              completed: newCompletedStatus,
+              substeps: listItem.substeps?.map((sub) => ({
+                ...sub,
+                completed: newCompletedStatus,
+              })),
+            }
+          : listItem
       )
-    )
-  }
+    );
 
-  const toggleSubstep = (itemId: string, substepId: string, e: React.MouseEvent) => {
-    e.stopPropagation()
-    setChecklist(prev => 
-      prev.map(item => {
-        if (item.id === itemId && item.substeps) {
-          const updatedSubsteps = item.substeps.map(sub =>
-            sub.id === substepId ? { ...sub, completed: !sub.completed } : sub
-          )
-          const allSubstepsCompleted = updatedSubsteps.every(sub => sub.completed)
-          return { 
-            ...item, 
-            substeps: updatedSubsteps,
-            completed: allSubstepsCompleted 
-          }
+    try {
+      // Si l'étape a des sous-étapes, on les met toutes à jour en BDD
+      if (item.substeps && item.substeps.length > 0) {
+        // Mettre à jour la dernière sous-étape seulement, le backend s'occupera du reste
+        const lastSubstep = item.substeps[item.substeps.length - 1];
+        await updateStep({
+          stepId: id,
+          substepId: lastSubstep.id,
+          completed: newCompletedStatus,
+        });
+        
+        // Mettre à jour les autres sous-étapes
+        for (let i = 0; i < item.substeps.length - 1; i++) {
+          await updateStep({
+            stepId: id,
+            substepId: item.substeps[i].id,
+            completed: newCompletedStatus,
+          });
         }
-        return item
-      })
-    )
-  }
+      } else {
+        // Pas de sous-étapes, juste l'étape principale
+        await updateStep({
+          stepId: id,
+          completed: newCompletedStatus,
+        });
+      }
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour de l\'étape:', error);
+      // Rollback avec l'état précédent
+      setChecklist(previousState);
+    }
+  };
+
+  // ✅ Toggle une sous-étape
+  const toggleSubstep = async (
+    itemId: string,
+    substepId: string,
+    e: React.MouseEvent,
+  ) => {
+    e.stopPropagation();
+
+    const item = checklist.find((i) => i.id === itemId);
+    const substep = item?.substeps?.find((s) => s.id === substepId);
+    if (!substep) return;
+
+    const newCompletedStatus = !substep.completed;
+    const previousState = [...checklist];
+
+    // Mise à jour optimiste locale AVANT l'appel API
+    setChecklist((prev) =>
+      prev.map((item) => {
+        if (item.id === itemId && item.substeps) {
+          const updatedSubsteps = item.substeps.map((sub) =>
+            sub.id === substepId
+              ? { ...sub, completed: newCompletedStatus }
+              : sub,
+          );
+          const allSubstepsCompleted = updatedSubsteps.every(
+            (sub) => sub.completed,
+          );
+          return {
+            ...item,
+            substeps: updatedSubsteps,
+            completed: allSubstepsCompleted,
+          };
+        }
+        return item;
+      }),
+    );
+
+    try {
+      await updateStep({
+        stepId: itemId,
+        substepId,
+        completed: newCompletedStatus,
+      });
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour de la sous-étape:', error);
+      // Rollback avec l'état précédent en cas d'erreur
+      setChecklist(previousState);
+    }
+  };
 
   const toggleExpand = (id: string, e: React.MouseEvent) => {
-    e.stopPropagation()
-    setChecklist(prev => 
-      prev.map(item => 
-        item.id === id ? { ...item, expanded: !item.expanded } : item
-      )
-    )
-  }
+    e.stopPropagation();
+    setChecklist((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, expanded: !item.expanded } : item,
+      ),
+    );
+  };
 
-  const completedCount = checklist.filter(item => item.completed).length
-  const progressPercentage = checklist.length > 0 ? (completedCount / checklist.length) * 100 : 0
+  // ✅ Calcul du pourcentage en tenant compte des sous-étapes
+  const { totalSteps, completedSteps } = checklist.reduce(
+    (acc, item) => {
+      if (item.substeps && item.substeps.length > 0) {
+        // Si l'item a des sous-étapes, on compte les sous-étapes
+        acc.totalSteps += item.substeps.length;
+        acc.completedSteps += item.substeps.filter((sub) => sub.completed).length;
+      } else {
+        // Sinon on compte l'étape principale
+        acc.totalSteps += 1;
+        acc.completedSteps += item.completed ? 1 : 0;
+      }
+      return acc;
+    },
+    { totalSteps: 0, completedSteps: 0 }
+  );
+  
+  const completionPercentage =
+    totalSteps > 0 ? (completedSteps / totalSteps) * 100 : 0;
+
+  if (isLoading) {
+    return (
+      <Widget title="Ma Checklist" onEdit={onEdit} onHide={onHide}>
+        <div className="flex items-center justify-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        </div>
+      </Widget>
+    );
+  }
 
   if (!countryData || checklist.length === 0) {
     return (
@@ -98,15 +220,18 @@ export default function ChecklistWidget({ countryData, onEdit, onHide }: Checkli
       <div className="space-y-4">
         <div className="bg-gray-100 rounded-lg p-3">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-700">Progression</span>
+            <span className="text-sm font-medium text-gray-700">
+              Progression
+            </span>
             <span className="text-sm font-medium text-blue-600">
-              {completedCount}/{checklist.length}
+              {completedSteps}/{totalSteps} ({Math.round(completionPercentage)}
+              %)
             </span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
-            <div 
+            <div
               className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${progressPercentage}%` }}
+              style={{ width: `${completionPercentage}%` }}
             />
           </div>
         </div>
@@ -166,7 +291,10 @@ export default function ChecklistWidget({ countryData, onEdit, onHide }: Checkli
                   {item.substeps.map((substep) => (
                     <div 
                       key={substep.id}
-                      onClick={(e) => toggleSubstep(item.id, substep.id, e)}
+                      onClick={(e) => {
+                        e.stopPropagation(); // Empêche le clic de remonter au parent
+                        toggleSubstep(item.id, substep.id, e);
+                      }}
                       className={`flex items-start gap-2 p-2 text-xs rounded cursor-pointer hover:bg-gray-100 transition-colors
                         ${substep.completed ? 'bg-green-50' : 'bg-gray-50'}
                       `}

@@ -19,7 +19,9 @@ export default function DashboardPage() {
     }
   }, [projects, isLoading, navigate])
 
-  if (isLoading) {
+  // Afficher le loading pendant la vérification des projets
+  // pour éviter le flash du contenu avant la redirection
+  if (isLoading || (projects && projects.length > 0)) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>

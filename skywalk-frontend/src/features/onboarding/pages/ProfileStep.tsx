@@ -1,13 +1,17 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import FormField from '../ui/FormField'
 import Select from '../ui/Select'
 import TextInput from '../ui/TextInput'
 import ToggleGroup from '../ui/ToggleGroup'
+import MultiPillSelect from '../ui/MultiPillSelect'
 import WizardNav from '../components/WizardNav'
 import { STATUS_OPTIONS, TRAVEL_PARTY_OPTIONS, LANGUAGE_LEVELS } from '../data/constants'
+import countriesData from '../../../data/countries-data.json'
 
 interface ProfileStepData {
   age: string
+  motherTongue?: string
+  spokenLanguages?: string[]
   status: string
   travelParty: string
   languageLevel: string
@@ -22,10 +26,23 @@ interface ProfileStepProps {
 export default function ProfileStep({ data, onNext, onBack }: ProfileStepProps) {
   const [formData, setFormData] = useState<ProfileStepData>({
     age: data?.age || '',
+    motherTongue: data?.motherTongue || '',
+    spokenLanguages: data?.spokenLanguages || [],
     status: data?.status || '',
     travelParty: data?.travelParty || '',
     languageLevel: data?.languageLevel || ''
   })
+
+  const availableLanguages = useMemo(() => {
+    const languages = new Set<string>()
+    countriesData.countries.forEach(country => {
+      country.languages.forEach(lang => languages.add(lang))
+    })
+    return Array.from(languages).sort().map(lang => ({
+      value: lang,
+      label: lang
+    }))
+  }, [])
 
   const [errors, setErrors] = useState<Partial<ProfileStepData>>({})
 
@@ -39,6 +56,10 @@ export default function ProfileStep({ data, onNext, onBack }: ProfileStepProps) 
       if (isNaN(age) || age < 16 || age > 90) {
         newErrors.age = 'L\'âge doit être entre 16 et 90 ans'
       }
+    }
+
+    if (!formData.motherTongue) {
+      newErrors.motherTongue = 'La langue maternelle est requise'
     }
 
     if (!formData.status) {
@@ -63,14 +84,14 @@ export default function ProfileStep({ data, onNext, onBack }: ProfileStepProps) 
     }
   }
 
-  const handleFieldChange = (field: keyof ProfileStepData) => (value: string) => {
+  const handleFieldChange = (field: keyof ProfileStepData) => (value: string | string[]) => {
     setFormData(prev => ({ ...prev, [field]: value }))
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: undefined }))
     }
   }
 
-  const isNextDisabled = !formData.age || !formData.status || !formData.travelParty || !formData.languageLevel
+  const isNextDisabled = !formData.age || !formData.motherTongue || !formData.status || !formData.travelParty || !formData.languageLevel
 
   return (
     <div className="space-y-6">
@@ -99,6 +120,33 @@ export default function ProfileStep({ data, onNext, onBack }: ProfileStepProps) 
             min={16}
             max={90}
             aria-describedby={errors.age ? 'age-error' : undefined}
+          />
+        </FormField>
+
+        <FormField
+          label="Langue maternelle"
+          required
+          error={errors.motherTongue}
+          id="motherTongue"
+        >
+          <Select
+            id="motherTongue"
+            value={formData.motherTongue}
+            onChange={handleFieldChange('motherTongue')}
+            options={availableLanguages}
+            placeholder="Sélectionnez votre langue maternelle"
+            aria-describedby={errors.motherTongue ? 'motherTongue-error' : undefined}
+          />
+        </FormField>
+
+        <FormField
+          label="Autres langues parlées (optionnel)"
+          id="spokenLanguages"
+        >
+          <MultiPillSelect
+            options={availableLanguages}
+            values={formData.spokenLanguages || []}
+            onChange={handleFieldChange('spokenLanguages')}
           />
         </FormField>
 
@@ -136,7 +184,7 @@ export default function ProfileStep({ data, onNext, onBack }: ProfileStepProps) 
           label="Niveau de langue du pays de destination"
           required
           error={errors.languageLevel}
-          helper="Selon le Cadre européen commun de référence (CECRL)"
+          helper="Indiquez votre niveau de maîtrise de la langue principale parlée dans le pays où vous souhaitez vous expatrier. (Selon le Cadre européen commun de référence - CECRL)"
           id="languageLevel"
         >
           <Select

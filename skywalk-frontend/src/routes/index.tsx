@@ -22,6 +22,8 @@ import { DestinationDetailPage } from '../features/destinations/pages/Destinatio
 import ProjectsPage from '../features/projects/pages/ProjectsPage';
 import ProjectDetailPage from '../features/projects/pages/ProjectDetailPage';
 import CountryComparison from '../features/comparison/pages/CountryComparison';
+import ServicePage from '../features/services/pages/ServicePage';
+import ServicesIndexPage from '../features/services/pages/ServicesIndexPage';
 
 export const router = createBrowserRouter([
   {
@@ -51,9 +53,12 @@ export const router = createBrowserRouter([
     element: <MainLayout />,
     children: [
       { path: 'search', element: <SearchPage /> },
+      { path: 'services', element: <ServicesIndexPage /> },
+      { path: 'services/:category', element: <ServicePage /> },
       { path: 'forum', element: <ForumPage /> },
       { path: 'destinations', element: <DestinationsPage /> },
       { path: 'destinations/:countrySlug', element: <DestinationDetailPage /> },
+      { path: 'comparison', element: <CountryComparison /> },
     ],
   },
   {
@@ -65,6 +70,15 @@ export const router = createBrowserRouter([
       { path: 'post/:id/edit', element: <EditTopicPage /> },
       { path: 'new', element: <NewPostPage /> },
     ],
+  },
+
+  {
+    path: '/onboarding',
+    element: <OnboardingFlow />,
+  },
+  {
+    path: '/onboarding/:id',
+    element: <OnboardingFlow />,
   },
   
   {
@@ -92,21 +106,6 @@ export const router = createBrowserRouter([
           { index: true, element: <ProjectsPage /> },
           { path: ':id', element: <ProjectDetailPage /> },
         ],
-      },
-      {
-        path: '/comparison',
-        element: <MainLayout />,
-        children: [
-          { index: true, element: <CountryComparison /> },
-        ],
-      },
-      {
-        path: '/onboarding',
-        element: <OnboardingFlow />,
-      },
-      {
-        path: '/onboarding/:id',
-        element: <OnboardingFlow />,
       },
       {
         path: '/profile',

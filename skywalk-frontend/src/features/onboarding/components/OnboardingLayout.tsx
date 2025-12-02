@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import Stepper from './Stepper'
 import type { Step } from './Stepper'
+import { useAuth } from '../../../hooks/useAuth'
 
 interface OnboardingLayoutProps {
   children: ReactNode
@@ -15,6 +16,8 @@ export default function OnboardingLayout({
   onStepClick,
   title
 }: OnboardingLayoutProps) {
+  const { isAuthenticated } = useAuth()
+
   return (
     <div className="min-h-screen bg-neutral-100">
       <header className="bg-white shadow-sm border-b border-gray-200">
@@ -36,9 +39,11 @@ export default function OnboardingLayout({
                 <option>FR</option>
                 <option>EN</option>
               </select>
-              <a href="/profile" className="text-sm text-gray-600 hover:text-gray-900">
-                Mon profil
-              </a>
+              {isAuthenticated && (
+                <a href="/profile" className="text-sm text-gray-600 hover:text-gray-900">
+                  Mon profil
+                </a>
+              )}
             </div>
           </div>
         </div>

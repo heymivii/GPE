@@ -10,6 +10,7 @@ const languages = [
 
 export default function NavBar() {
   const [langOpen, setLangOpen] = useState(false);
+  const [exploreOpen, setExploreOpen] = useState(false);
   const [selectedLang, setSelectedLang] = useState(languages[0]);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   
@@ -33,22 +34,53 @@ export default function NavBar() {
           SkyWalk
         </Link>
         
-        <div className="hidden md:flex gap-6">
-          {!isAuthenticated && (
-            <Link to="/" className="text-gray-700 hover:text-black">Accueil</Link>
-          )}
-          
-          {isAuthenticated && (
+        <div className="hidden md:flex gap-6 items-center">
+          {!isAuthenticated ? (
+            // Non connecté : afficher tous les liens directement
+            <>
+              <Link to="/" className="text-gray-700 hover:text-black">Accueil</Link>
+              <Link to="/destinations" className="text-gray-700 hover:text-black">Destinations</Link>
+              <Link to="/services" className="text-gray-700 hover:text-black">Services</Link>
+              <Link to="/comparison" className="text-gray-700 hover:text-black">Comparateur</Link>
+              <Link to="/search" className="text-gray-700 hover:text-black">Recherche</Link>
+              <Link to="/forum" className="text-gray-700 hover:text-black">Forum</Link>
+            </>
+          ) : (
+            // Connecté : afficher les liens personnalisés avec dropdown Explorer
             <>
               <Link to="/dashboard" className="text-gray-700 hover:text-black">Tableau de bord</Link>
               <Link to="/projects" className="text-gray-700 hover:text-black">Mes Projets</Link>
-              <Link to="/comparison" className="text-gray-700 hover:text-black">Comparateur</Link>
+              <Link to="/services" className="text-gray-700 hover:text-black">Services</Link>
+              
+              {/* Menu Explorer pour utilisateurs connectés */}
+              <div className="relative">
+                <button 
+                  className="flex items-center gap-1 text-gray-700 hover:text-black"
+                  onClick={() => setExploreOpen(!exploreOpen)}
+                  onBlur={() => setTimeout(() => setExploreOpen(false), 200)}
+                >
+                  Explorer
+                  <svg className={`w-4 h-4 transition-transform ${exploreOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                </button>
+                
+                {exploreOpen && (
+                  <div className="absolute left-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-20 py-1">
+                    <Link to="/destinations" className="block px-4 py-2 hover:bg-gray-100 text-gray-700">
+                      Destinations
+                    </Link>
+                    <Link to="/comparison" className="block px-4 py-2 hover:bg-gray-100 text-gray-700">
+                      Comparateur
+                    </Link>
+                    <Link to="/search" className="block px-4 py-2 hover:bg-gray-100 text-gray-700">
+                      Moteur de Recherche
+                    </Link>
+                  </div>
+                )}
+              </div>
+              
+              <Link to="/forum" className="text-gray-700 hover:text-black">Forum</Link>
             </>
           )}
-          
-          <Link to="/search" className="text-gray-700 hover:text-black">Moteur de Recherche</Link>
-          <Link to="/destinations" className="text-gray-700 hover:text-black">Destinations</Link>
-          <Link to="/forum" className="text-gray-700 hover:text-black">Forum</Link>
         </div>
       </div>
 

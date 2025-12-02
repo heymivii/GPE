@@ -26,18 +26,18 @@ export default function CountrySelector({
             onClick={() => !isDisabled && onCountryToggle(country.idCountry)}
             disabled={isDisabled}
             className={`
-              group relative flex items-center gap-4 p-4 rounded-xl border transition-all duration-200
+              group relative flex items-center gap-4 p-4 rounded-2xl border transition-all duration-300
               ${isSelected 
-                ? 'border-blue-500 bg-blue-50/50 ring-1 ring-blue-500 shadow-md' 
+                ? 'border-[#5EA3C0] bg-[#5EA3C0]/5 ring-1 ring-[#5EA3C0] shadow-sm' 
                 : isDisabled
-                ? 'border-gray-100 bg-gray-50 opacity-40 cursor-not-allowed grayscale'
-                : 'border-gray-200 hover:border-blue-300 hover:bg-white hover:shadow-lg hover:-translate-y-0.5 cursor-pointer bg-white'
+                ? 'border-gray-100 bg-gray-50 opacity-50 cursor-not-allowed grayscale'
+                : 'border-gray-200 bg-white hover:border-[#5EA3C0]'
               }
             `}
           >
             <div className={`
-              w-12 h-12 rounded-full overflow-hidden flex-shrink-0 border border-gray-100 shadow-sm
-              ${isSelected ? 'ring-2 ring-white' : ''}
+              w-12 h-12 rounded-xl overflow-hidden flex-shrink-0 shadow-sm transition-transform duration-300
+              ${isSelected ? 'scale-110 ring-2 ring-white' : 'group-hover:scale-105'}
             `}>
               {country.flagUrl ? (
                 <img 
@@ -46,28 +46,28 @@ export default function CountrySelector({
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-2xl bg-gray-50">
+                <div className="w-full h-full flex items-center justify-center text-2xl bg-gray-100">
                   {country.flagEmoji || '🌍'}
                 </div>
               )}
             </div>
 
             <div className="flex-1 text-left">
-              <span className={`block font-semibold text-base ${
-                isSelected ? 'text-blue-900' : 'text-gray-700 group-hover:text-gray-900'
+              <span className={`block font-bold text-base mb-0.5 ${
+                isSelected ? 'text-gray-900' : 'text-gray-700 group-hover:text-gray-900'
               }`}>
                 {country.countryName}
               </span>
-              <span className="text-xs text-gray-500">
+              <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">
                 {country.continent || 'Destination'}
               </span>
             </div>
 
             <div className={`
-              w-6 h-6 rounded-full flex items-center justify-center transition-all duration-200
+              w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300
               ${isSelected 
-                ? 'bg-blue-600 scale-100 opacity-100' 
-                : 'bg-gray-100 scale-90 opacity-0 group-hover:opacity-100'
+                ? 'bg-[#5EA3C0] scale-100 opacity-100 shadow-sm' 
+                : 'bg-gray-100 scale-75 opacity-0 group-hover:opacity-100'
               }
             `}>
               <Check className={`w-3.5 h-3.5 ${isSelected ? 'text-white' : 'text-gray-400'}`} />

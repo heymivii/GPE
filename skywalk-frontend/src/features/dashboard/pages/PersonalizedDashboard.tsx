@@ -1,35 +1,72 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Settings, Plus, LayoutGrid, X, Check, User, CheckSquare, Wallet, Lightbulb } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useProjects } from '../../projects/hooks/useProjectMutations'
 import { useCountryData } from '../../../hooks/useCountryData'
+import { useAuth } from '../../../hooks/useAuth'
+import { useDashboardPreferences } from '../hooks/useDashboardPreferences'
 import ProfileSummaryWidget from '../widgets/ProfileSummaryWidget'
 import RecommendationsWidget from '../widgets/RecommendationsWidget'
 import ChecklistWidget from '../widgets/ChecklistWidget'
 import BudgetTrackerWidget from '../widgets/BudgetTrackerWidget'
+import LocalTimeWidget from '../widgets/LocalTimeWidget'
+import WeatherWidget from '../widgets/WeatherWidget'
 
 export default function PersonalizedDashboard() {
   const { data: projects, isLoading } = useProjects()
+  const { user } = useAuth()
+  const { hiddenWidgets, toggleWidget } = useDashboardPreferences()
   const [selectedProjectId, setSelectedProjectId] = useState<number | null>(null)
   const [editMode, setEditMode] = useState(false)
-  const [hiddenWidgets, setHiddenWidgets] = useState<string[]>([])
   const [showAddWidget, setShowAddWidget] = useState(false)
   const [dashboardLayout] = useState<string[]>([
     'profile-summary',
+    'local-time',
+    'weather',
     'checklist', 
     'budget-tracker',
     'recommendations'
   ])
 
+  // 🔄 Initialiser avec le dernier projet créé (le plus récent)
+  useEffect(() => {
+    if (projects && projects.length > 0 && selectedProjectId === null) {
+      const mostRecentProject = projects[projects.length - 1]
+      console.log('🎯 Auto-selecting most recent project:', mostRecentProject)
+      setSelectedProjectId(mostRecentProject.idProject)
+    }
+  }, [projects, selectedProjectId])
+
   const availableWidgets = [
     { id: 'profile-summary', name: 'Résumé du profil', icon: '👤', description: 'Vos informations personnelles' },
+    { id: 'local-time', name: 'Heure locale', icon: '⏰', description: 'Heure dans le pays de destination' },
+    { id: 'weather', name: 'Météo', icon: '🌤️', description: 'Météo du pays de destination' },
     { id: 'checklist', name: 'Checklist', icon: '✅', description: 'Vos étapes d\'expatriation' },
     { id: 'budget-tracker', name: 'Budget', icon: '💰', description: 'Suivi de votre budget' },
     { id: 'recommendations', name: 'Recommandations', icon: '💡', description: 'Conseils personnalisés' },
   ]
 
-  const activeProject = projects?.find(p => p.idProject === selectedProjectId) || projects?.[0]
+  // ✅ Ne pas utiliser de fallback, attendre que selectedProjectId soit initialisé
+  const activeProject = projects?.find(p => p.idProject === selectedProjectId)
+  
+  // 🔍 Debug: Afficher le projet actif
+  useEffect(() => {
+    if (activeProject) {
+      console.log('📊 Active project:', activeProject)
+      console.log('   - ID:', activeProject.idProject)
+      console.log('   - Destination Country ID:', activeProject.idDestinationCountry)
+      console.log('   - Budget:', activeProject.housingBudget)
+    }
+  }, [activeProject])
+  
   const countryData = useCountryData(activeProject?.idDestinationCountry)
+  const originCountryData = useCountryData(activeProject?.idOriginCountry)
+  
+  // 🔍 Debug: Afficher countryData reçu
+  useEffect(() => {
+    console.log('🌍 countryData received:', countryData)
+    console.log('   - Country ID asked:', activeProject?.idDestinationCountry)
+  }, [countryData, activeProject?.idDestinationCountry])
 
   if (isLoading) {
     return (
@@ -64,7 +101,7 @@ export default function PersonalizedDashboard() {
   }
 
   const userData = {
-    name: 'Utilisateur', 
+    name: user?.fullName || 'Utilisateur', 
     onboardingData: {
       destination: {
         fromCountry: 'FR',
@@ -75,7 +112,7 @@ export default function PersonalizedDashboard() {
           : new Date().getFullYear().toString()
       },
       profile: {
-        age: '30',
+        age: user?.age?.toString() || '25',
         status: activeProject?.travelType || 'alone',
         travelParty: activeProject?.travelType || 'alone'
       },
@@ -86,11 +123,7 @@ export default function PersonalizedDashboard() {
   }
 
   const toggleWidgetVisibility = (widgetId: string) => {
-    setHiddenWidgets(prev => 
-      prev.includes(widgetId) 
-        ? prev.filter(id => id !== widgetId)
-        : [...prev, widgetId]
-    )
+    toggleWidget(widgetId)
   }
 
   const visibleWidgets = dashboardLayout.filter(
@@ -113,6 +146,26 @@ export default function PersonalizedDashboard() {
           />
         )
       
+      case 'local-time':
+        return (
+          <LocalTimeWidget
+            key={widgetId}
+            countryCode={countryData?.code || 'FR'}
+            countryName={countryData?.name || 'France'}
+            onHide={() => toggleWidgetVisibility(widgetId)}
+          />
+        )
+      
+      case 'weather':
+        return (
+          <WeatherWidget
+            key={widgetId}
+            countryName={countryData?.name || 'France'}
+            cityName={countryData?.capital || ''}
+            onHide={() => toggleWidgetVisibility(widgetId)}
+          />
+        )
+      
       case 'recommendations':
         return (
           <RecommendationsWidget
@@ -127,6 +180,7 @@ export default function PersonalizedDashboard() {
           <ChecklistWidget
             key={widgetId}
             countryData={countryData || null}
+            projectId={activeProject?.idProject || 0}
             {...commonProps}
           />
         )
@@ -160,17 +214,27 @@ export default function PersonalizedDashboard() {
               </p>
             </div>
             <div className="flex items-center space-x-3">
-              {projects.length > 1 && (
+              {projects.length >= 1 && selectedProjectId && (
                 <select
-                  value={selectedProjectId || activeProject?.idProject || ''}
+                  value={selectedProjectId}
                   onChange={(e) => setSelectedProjectId(Number(e.target.value))}
-                  className="px-3 py-2 border border-gray-300 rounded-lg bg-white text-sm"
+                  className="px-3 py-2 border border-gray-300 rounded-lg bg-white text-sm font-medium"
                 >
-                  {projects.map((project) => (
-                    <option key={project.idProject} value={project.idProject}>
-                      Projet #{project.idProject}
-                    </option>
-                  ))}
+                  {projects.map((project) => {
+                    // Trouver le nom du pays
+                    const countryNames: Record<number, string> = {
+                      1: 'France', 2: 'Canada', 3: 'Suisse', 4: 'Allemagne', 
+                      5: 'Espagne', 6: 'Italie', 7: 'Portugal', 8: 'Belgique',
+                      9: 'Pays-Bas', 10: 'Luxembourg', 11: 'Royaume-Uni', 
+                      12: 'Irlande', 13: 'États-Unis', 14: 'Australie', 16: 'Japon'
+                    }
+                    const countryName = countryNames[project.idDestinationCountry] || 'Destination'
+                    return (
+                      <option key={project.idProject} value={project.idProject}>
+                        Projet #{project.idProject} - {countryName}
+                      </option>
+                    )
+                  })}
                 </select>
               )}
               <button
@@ -206,7 +270,7 @@ export default function PersonalizedDashboard() {
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transition-shadow">
             <div className="flex items-center justify-between mb-4">
               <div className="p-3 bg-blue-50 rounded-lg">
                 <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -239,7 +303,7 @@ export default function PersonalizedDashboard() {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transition-shadow">
             <div className="flex items-center justify-between mb-4">
               <div className="p-3 bg-green-50 rounded-lg">
                 <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -266,7 +330,7 @@ export default function PersonalizedDashboard() {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transition-shadow">
             <div className="flex items-center justify-between mb-4">
               <div className="p-3 bg-purple-50 rounded-lg">
                 <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -279,13 +343,13 @@ export default function PersonalizedDashboard() {
               <p className="text-sm text-gray-500 mb-1">Budget logement</p>
               <p className="text-2xl font-bold text-gray-900">
                 {activeProject?.housingBudget
-                  ? `${activeProject.housingBudget} ${countryData?.currency || '€'}`
+                  ? `${activeProject.housingBudget} ${originCountryData?.currency || '€'}`
                   : 'Non défini'}
               </p>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transition-shadow">
             <div className="flex items-center justify-between mb-4">
               <div className="p-3 bg-orange-50 rounded-lg">
                 <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -379,7 +443,7 @@ export default function PersonalizedDashboard() {
                       className={`group relative flex items-start p-5 rounded-xl border-2 text-left transition-all duration-200 ${
                         isAdded
                           ? 'border-gray-200 bg-gray-50 opacity-60 cursor-default'
-                          : 'border-white bg-white shadow-sm hover:border-blue-500 hover:shadow-md cursor-pointer'
+                          : 'border-white bg-white shadow-sm hover:border-blue-500 cursor-pointer'
                       }`}
                     >
                       <div className={`p-3 rounded-lg mr-4 ${

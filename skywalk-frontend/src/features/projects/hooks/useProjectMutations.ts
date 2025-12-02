@@ -10,10 +10,11 @@ import type {
 /**
  * Hook to fetch all projects for the authenticated user
  */
-export function useProjects() {
+export function useProjects(enabled: boolean = true) {
   return useQuery({
     queryKey: ['expatriation-projects'],
     queryFn: expatriationProjectApi.getAll,
+    enabled,
   });
 }
 

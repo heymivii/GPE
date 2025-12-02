@@ -5,8 +5,13 @@ import FilterSection from '../components/FilterSection'
 import ResultsSection from '../components/ResultsSection'
 import useSearch from '../hooks/useSearch'
 import type { SearchFilters } from '../types'
+import { useAuth } from '../../../hooks/useAuth'
+import { Link } from 'react-router-dom'
+import { PageHeader } from '../../../components/PageHeader'
+import { PageSearch } from '../../../components/PageSearch'
 
 export default function SearchPage() {
+  const { isAuthenticated } = useAuth();
   const {
     filters,
     results,
@@ -19,6 +24,10 @@ export default function SearchPage() {
 
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
+
+  // Limit to 10 results for non-authenticated users
+  const displayedResults = !isAuthenticated ? results.slice(0, 10) : results;
+  const hasMoreResults = !isAuthenticated && results.length > 10;
 
   useEffect(() => {
     const onboardingData = localStorage.getItem('skywalk-onboarding-data')
@@ -61,56 +70,50 @@ export default function SearchPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-            <div className="flex-1 max-w-2xl">
-              <SearchBar
-                initialQuery={filters.query}
-                onSearch={handleSearch}
-                placeholder="Rechercher emplois, logements, transports..."
-              />
-            </div>
-            
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => setIsFilterOpen(!isFilterOpen)}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-              >
-                <Filter className="w-4 h-4" />
-                <span>Filtres</span>
-                <ChevronDown className={`w-4 h-4 transition-transform ${isFilterOpen ? 'rotate-180' : ''}`} />
-              </button>
+      <PageHeader 
+        title="Recherche Avancée" 
+        description="Trouvez des emplois, logements et services adaptés à votre projet d'expatriation."
+      />
 
-              <div className="flex items-center bg-gray-100 rounded-lg p-1">
-                <button
-                  onClick={() => setViewMode('grid')}
-                  className={`p-2 rounded ${viewMode === 'grid' ? 'bg-white shadow-sm' : ''}`}
-                >
-                  <Grid className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => setViewMode('list')}
-                  className={`p-2 rounded ${viewMode === 'list' ? 'bg-white shadow-sm' : ''}`}
-                >
-                  <List className="w-4 h-4" />
-                </button>
-              </div>
+      <PageSearch>
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <div className="flex-1 max-w-2xl">
+            <SearchBar
+              initialQuery={filters.query}
+              onSearch={handleSearch}
+              placeholder="Rechercher emplois, logements, transports..."
+            />
+          </div>
+          
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setIsFilterOpen(!isFilterOpen)}
+              className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+            >
+              <Filter className="w-4 h-4" />
+              <span>Filtres</span>
+              <ChevronDown className={`w-4 h-4 transition-transform ${isFilterOpen ? 'rotate-180' : ''}`} />
+            </button>
+
+            <div className="flex items-center bg-gray-100 rounded-lg p-1">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`p-2 rounded ${viewMode === 'grid' ? 'bg-white shadow-sm' : ''}`}
+              >
+                <Grid className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                className={`p-2 rounded ${viewMode === 'list' ? 'bg-white shadow-sm' : ''}`}
+              >
+                <List className="w-4 h-4" />
+              </button>
             </div>
           </div>
-
-          {isFilterOpen && (
-            <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-              <FilterSection
-                filters={filters}
-                onFiltersChange={handleFilterChange}
-              />
-            </div>
-          )}
         </div>
-      </div>
+      </PageSearch>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
             <h1 className="text-2xl font-bold text-gray-900">
@@ -144,11 +147,40 @@ export default function SearchPage() {
         </div>
 
         <ResultsSection
-          results={results}
+          results={displayedResults}
           isLoading={isLoading}
           viewMode={viewMode}
           onLoadMore={loadMore}
         />
+
+        {/* Limit prompt for non-authenticated users */}
+        {hasMoreResults && (
+          <div className="mt-8 bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200 rounded-2xl p-8 text-center">
+            <div className="max-w-md mx-auto">
+              <div className="w-16 h-16 bg-[#5EA3C0] rounded-full flex items-center justify-center mx-auto mb-4">
+                <Search className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Découvrez {results.length - 10}+ résultats supplémentaires</h3>
+              <p className="text-gray-600 mb-6">
+                Créez un compte gratuit pour accéder à tous les résultats, sauvegarder vos recherches et recevoir des alertes personnalisées.
+              </p>
+              <div className="flex gap-3 justify-center">
+                <Link
+                  to="/auth/register"
+                  className="px-6 py-3 bg-[#5EA3C0] text-white font-semibold rounded-full hover:bg-[#4d8a9d] transition-colors"
+                >
+                  Créer un compte gratuit
+                </Link>
+                <Link
+                  to="/auth/login"
+                  className="px-6 py-3 bg-white text-[#5EA3C0] font-semibold rounded-full border-2 border-[#5EA3C0] hover:bg-blue-50 transition-colors"
+                >
+                  Se connecter
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
 
       
         {!isLoading && results.length === 0 && filters.query && (
@@ -172,7 +204,7 @@ export default function SearchPage() {
                 })
                 search()
               }}
-              className="text-blue-600 hover:text-blue-800 font-medium"
+              className="text-[#5EA3C0] hover:text-[#4A8299] font-medium"
             >
               Réinitialiser les filtres
             </button>
