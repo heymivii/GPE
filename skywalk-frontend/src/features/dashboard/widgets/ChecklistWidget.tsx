@@ -65,6 +65,7 @@ export default function ChecklistWidget({
     if (!item) return;
 
     const newCompletedStatus = !item.completed;
+    const previousState = [...checklist];
 
     // Mise à jour optimiste locale immédiate
     setChecklist((prev) =>
@@ -85,11 +86,19 @@ export default function ChecklistWidget({
     try {
       // Si l'étape a des sous-étapes, on les met toutes à jour en BDD
       if (item.substeps && item.substeps.length > 0) {
-        // Mettre à jour chaque sous-étape séquentiellement
-        for (const substep of item.substeps) {
+        // Mettre à jour la dernière sous-étape seulement, le backend s'occupera du reste
+        const lastSubstep = item.substeps[item.substeps.length - 1];
+        await updateStep({
+          stepId: id,
+          substepId: lastSubstep.id,
+          completed: newCompletedStatus,
+        });
+        
+        // Mettre à jour les autres sous-étapes
+        for (let i = 0; i < item.substeps.length - 1; i++) {
           await updateStep({
             stepId: id,
-            substepId: substep.id,
+            substepId: item.substeps[i].id,
             completed: newCompletedStatus,
           });
         }
@@ -102,21 +111,8 @@ export default function ChecklistWidget({
       }
     } catch (error) {
       console.error('Erreur lors de la mise à jour de l\'étape:', error);
-      // Rollback en cas d'erreur
-      setChecklist((prev) =>
-        prev.map((listItem) =>
-          listItem.id === id
-            ? {
-                ...listItem,
-                completed: !newCompletedStatus,
-                substeps: listItem.substeps?.map((sub) => ({
-                  ...sub,
-                  completed: !newCompletedStatus,
-                })),
-              }
-            : listItem
-        )
-      );
+      // Rollback avec l'état précédent
+      setChecklist(previousState);
     }
   };
 
@@ -133,6 +129,29 @@ export default function ChecklistWidget({
     if (!substep) return;
 
     const newCompletedStatus = !substep.completed;
+    const previousState = [...checklist];
+
+    // Mise à jour optimiste locale AVANT l'appel API
+    setChecklist((prev) =>
+      prev.map((item) => {
+        if (item.id === itemId && item.substeps) {
+          const updatedSubsteps = item.substeps.map((sub) =>
+            sub.id === substepId
+              ? { ...sub, completed: newCompletedStatus }
+              : sub,
+          );
+          const allSubstepsCompleted = updatedSubsteps.every(
+            (sub) => sub.completed,
+          );
+          return {
+            ...item,
+            substeps: updatedSubsteps,
+            completed: allSubstepsCompleted,
+          };
+        }
+        return item;
+      }),
+    );
 
     try {
       await updateStep({
@@ -140,30 +159,10 @@ export default function ChecklistWidget({
         substepId,
         completed: newCompletedStatus,
       });
-
-      // Mise à jour optimiste locale
-      setChecklist((prev) =>
-        prev.map((item) => {
-          if (item.id === itemId && item.substeps) {
-            const updatedSubsteps = item.substeps.map((sub) =>
-              sub.id === substepId
-                ? { ...sub, completed: newCompletedStatus }
-                : sub,
-            );
-            const allSubstepsCompleted = updatedSubsteps.every(
-              (sub) => sub.completed,
-            );
-            return {
-              ...item,
-              substeps: updatedSubsteps,
-              completed: allSubstepsCompleted,
-            };
-          }
-          return item;
-        }),
-      );
     } catch (error) {
       console.error('Erreur lors de la mise à jour de la sous-étape:', error);
+      // Rollback avec l'état précédent en cas d'erreur
+      setChecklist(previousState);
     }
   };
 
