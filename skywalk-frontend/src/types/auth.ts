@@ -10,6 +10,8 @@ export interface User {
   age?: number;
   status?: string;
   languageLevel?: string;
+  motherTongue?: string;
+  spokenLanguages?: string[];
   idOriginCountry?: number;
   createdAt: string;
   updatedAt: string;
@@ -28,6 +30,8 @@ export interface RegisterDto {
   age?: number;
   status?: string;
   languageLevel?: string;
+  motherTongue?: string;
+  spokenLanguages?: string[];
   idOriginCountry?: number;
 }
 
@@ -38,6 +42,8 @@ export interface UpdateProfileDto {
   age?: number;
   status?: string;
   languageLevel?: string;
+  motherTongue?: string;
+  spokenLanguages?: string[];
   idOriginCountry?: number;
   password?: string; 
 }

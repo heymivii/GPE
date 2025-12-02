@@ -1,8 +1,23 @@
+export interface ChecklistProgress {
+  [stepId: string]: {
+    completed: boolean;
+    completedAt?: string;
+    substeps?: {
+      [substepId: string]: {
+        completed: boolean;
+        completedAt?: string;
+      };
+    };
+  };
+}
+
 export interface ExpatriationProject {
   idProject: number;
   idUser: number;
   idDestinationCountry: number;
   idDestinationCity?: number;
+  idOriginCountry?: number;
+  languageLevel?: string;
   travelType?: 'alone' | 'couple' | 'family' | 'friends' | 'other';
   mainObjective?: 'work' | 'study' | 'retirement' | 'adventure' | 'family_reunion' | 'other';
   expectedDuration?: number;
@@ -12,6 +27,7 @@ export interface ExpatriationProject {
   needsSupport: boolean;
   projectStatus: 'planning' | 'active' | 'completed' | 'cancelled' | 'on_hold';
   expectedDepartureDate?: string;
+  checklistProgress?: ChecklistProgress;
   createdAt: string;
   updatedAt: string;
 }
@@ -19,6 +35,8 @@ export interface ExpatriationProject {
 export interface CreateExpatriationProjectDto {
   idDestinationCountry: number;
   idDestinationCity?: number;
+  idOriginCountry?: number;
+  languageLevel?: string;
   travelType?: 'alone' | 'couple' | 'family' | 'friends' | 'other';
   mainObjective?: 'work' | 'study' | 'retirement' | 'adventure' | 'family_reunion' | 'other';
   expectedDuration?: number;
@@ -30,4 +48,6 @@ export interface CreateExpatriationProjectDto {
   expectedDepartureDate?: string;
 }
 
-export interface UpdateExpatriationProjectDto extends Partial<CreateExpatriationProjectDto> {}
+export interface UpdateExpatriationProjectDto extends Partial<CreateExpatriationProjectDto> {
+  checklistProgress?: ChecklistProgress;
+}
