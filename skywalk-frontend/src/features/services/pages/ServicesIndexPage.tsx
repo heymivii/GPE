@@ -1,17 +1,17 @@
 import { Link } from 'react-router-dom';
-import { getAllServices } from '../../../data/services-config';
+import { getServicesWithTools } from '../../../data/services-config';
 import { ArrowRight } from 'lucide-react';
 import { PageHeader } from '../../../components/PageHeader';
 
 export default function ServicesIndexPage() {
-  const services = getAllServices();
+  const services = getServicesWithTools(); // ✅ Seulement les services avec outils
 
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
       <PageHeader 
-        title="Nos Services" 
-        description="Tout ce dont vous avez besoin pour réussir votre expatriation. Des guides détaillés, des outils pratiques et des conseils d'experts pour chaque étape de votre projet."
+        title="Nos Outils & Services" 
+        description="Découvrez nos outils interactifs pour faciliter votre expatriation. Calculateurs, checklists et assistants personnalisés pour chaque étape de votre projet."
       />
 
       {/* Services Grid */}

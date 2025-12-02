@@ -14,6 +14,7 @@ export interface ServiceConfig {
   icon: any;
   color: string;
   bgColor: string;
+  hasTools?: boolean; // Indique si le service a des outils interactifs
   stats?: {
     label: string;
     value: string;
@@ -36,6 +37,7 @@ export const servicesConfig: Record<string, ServiceConfig> = {
     icon: Briefcase,
     color: 'text-blue-600',
     bgColor: 'bg-blue-50',
+    hasTools: true, // ✅ A des outils (CV, Interview)
     stats: [
       { label: 'Offres disponibles', value: '2,500+' },
       { label: 'Secteurs actifs', value: '15' },
@@ -89,6 +91,7 @@ export const servicesConfig: Record<string, ServiceConfig> = {
     icon: Home,
     color: 'text-green-600',
     bgColor: 'bg-green-50',
+    hasTools: true, // ✅ A des outils (Budget, Dossier, Garantie)
     stats: [
       { label: 'Annonces actives', value: '1,800+' },
       { label: 'Villes couvertes', value: '45' },
@@ -143,6 +146,7 @@ export const servicesConfig: Record<string, ServiceConfig> = {
     icon: Car,
     color: 'text-purple-600',
     bgColor: 'bg-purple-50',
+    hasTools: true, // ✅ A des outils (Coût, Permis, Véhicule)
     stats: [
       { label: 'Réseaux de transport', value: '120+' },
       { label: 'Pass disponibles', value: '35' },
@@ -186,6 +190,7 @@ export const servicesConfig: Record<string, ServiceConfig> = {
     icon: Heart,
     color: 'text-red-600',
     bgColor: 'bg-red-50',
+    hasTools: true, // ✅ A des outils (Couverture, Dossier médical, Budget)
     stats: [
       { label: 'Professionnels référencés', value: '5,000+' },
       { label: 'Langues disponibles', value: '25' },
@@ -389,4 +394,8 @@ export const getServiceBySlug = (slug: string): ServiceConfig | undefined => {
 
 export const getAllServices = (): ServiceConfig[] => {
   return Object.values(servicesConfig);
+};
+
+export const getServicesWithTools = (): ServiceConfig[] => {
+  return Object.values(servicesConfig).filter(service => service.hasTools === true);
 };

@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { CheckCircle2, Trophy, Calculator, Sparkles, FileText, MessageSquare, Building2, FileCheck, Maximize2, Minimize2 } from 'lucide-react';
+import { CheckCircle2, Trophy, Calculator, Sparkles, FileText, MessageSquare, Building2, FileCheck, Maximize2, Minimize2, Car, Heart } from 'lucide-react';
+import { TransportCostTool, DriverLicenseTool, VehicleChecklistTool } from './TransportTools';
+import { HealthCoverageTool, MedicalChecklistTool, HealthBudgetTool } from './HealthTools';
 
 interface ServiceToolsProps {
   category: string;
@@ -55,13 +57,61 @@ export default function ServiceTools({ category, countryName, isExpanded = false
     );
   }
 
+  if (category === 'transport') {
+    const currentTool = activeTool === 'default' ? 'cost' : activeTool;
+
+    return (
+      <ToolContainer 
+        title="Boîte à outils" 
+        description="Optimisez vos déplacements"
+        activeToolId={currentTool}
+        onToolChange={setActiveTool}
+        isExpanded={isExpanded}
+        onToggleExpand={onToggleExpand}
+        tools={[
+          { id: 'cost', label: 'Coût transport', icon: Calculator, active: true },
+          { id: 'license', label: 'Permis conduire', icon: Car, active: true },
+          { id: 'vehicle', label: 'Achat véhicule', icon: FileCheck, active: true },
+        ]}
+      >
+        {currentTool === 'cost' && <TransportCostTool countryName={countryName} />}
+        {currentTool === 'license' && <DriverLicenseTool countryName={countryName} />}
+        {currentTool === 'vehicle' && <VehicleChecklistTool />}
+      </ToolContainer>
+    );
+  }
+
+  if (category === 'sante') {
+    const currentTool = activeTool === 'default' ? 'coverage' : activeTool;
+
+    return (
+      <ToolContainer 
+        title="Boîte à outils" 
+        description="Préparez votre couverture santé"
+        activeToolId={currentTool}
+        onToolChange={setActiveTool}
+        isExpanded={isExpanded}
+        onToggleExpand={onToggleExpand}
+        tools={[
+          { id: 'coverage', label: 'Couverture santé', icon: Heart, active: true },
+          { id: 'medical', label: 'Dossier médical', icon: FileCheck, active: true },
+          { id: 'budget', label: 'Budget santé', icon: Calculator, active: true },
+        ]}
+      >
+        {currentTool === 'coverage' && <HealthCoverageTool countryName={countryName} />}
+        {currentTool === 'medical' && <MedicalChecklistTool countryName={countryName} />}
+        {currentTool === 'budget' && <HealthBudgetTool />}
+      </ToolContainer>
+    );
+  }
+
   return null;
 }
 
 interface ToolContainerProps {
   title: string;
   description: string;
-  tools: Array<{ id: string; label: string; icon: any; active: boolean; comingSoon?: boolean }>;
+  tools: Array<{ id: string; label: string; icon: React.ComponentType<{ className?: string }>; active: boolean; comingSoon?: boolean }>;
   activeToolId: string;
   onToolChange: (id: string) => void;
   isExpanded?: boolean;
