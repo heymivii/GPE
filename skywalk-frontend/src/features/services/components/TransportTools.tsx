@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { CheckCircle2 } from 'lucide-react';
+import { transportPricesByCountry } from '../../../data/transport-data';
 
 // ==================== OUTILS TRANSPORT ====================
 
@@ -8,9 +9,18 @@ export function TransportCostTool({ countryName }: { countryName?: string }) {
   const [distance, setDistance] = useState('');
   const [fuelConsumption, setFuelConsumption] = useState('7'); // L/100km
 
-  // TODO: Remplacer par vraies données depuis transport-data.ts
-  const fuelPrice = 1.80; // €/L
-  const publicTransportCost = 75; // €/mois
+  // Récupérer les données du pays sélectionné
+  // countryName est en fait le slug (ex: 'royaume-uni', 'france')
+  const countryKey = countryName || 'france';
+  const countryData = transportPricesByCountry[countryKey] || transportPricesByCountry['france'];
+  
+  const fuelPrice = countryData.fuelPricePerLiter;
+  const publicTransportCost = countryData.publicTransportMonthly;
+  
+  // Formater le nom du pays pour l'affichage
+  const displayName = countryName 
+    ? countryName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('-')
+    : undefined;
 
   const calculateCost = () => {
     if (transportType === 'public') return publicTransportCost;
@@ -30,7 +40,7 @@ export function TransportCostTool({ countryName }: { countryName?: string }) {
     <div>
       <div className="mb-6">
         <h4 className="text-sm font-bold text-gray-900 mb-1">
-          Calculateur transport {countryName && `- ${countryName}`}
+          Calculateur transport {displayName && `- ${displayName}`}
         </h4>
         <p className="text-xs text-gray-500">
           Comparez le coût voiture vs transports en commun
@@ -112,8 +122,8 @@ export function TransportCostTool({ countryName }: { countryName?: string }) {
         <div className="flex items-start gap-2 p-3 rounded-lg bg-white border border-gray-200">
           <div className="flex-shrink-0 w-4 h-4 mt-0.5 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 font-bold text-[10px]">i</div>
           <p className="text-[10px] text-gray-500 leading-relaxed">
-            Prix essence: {fuelPrice}€/L • Abonnement transport: {publicTransportCost}€/mois
-            {countryName && ` • Données pour ${countryName}`}
+            Prix essence: {fuelPrice.toFixed(2)}€/L • Abonnement transport: {Math.round(publicTransportCost)}€/mois
+            {displayName && ` • Données ${displayName}`}
           </p>
         </div>
       </div>

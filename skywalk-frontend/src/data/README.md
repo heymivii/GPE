@@ -41,10 +41,10 @@ Les fichiers `transport-data.ts` et `health-data.ts` sont **utilisés directemen
 | Pays | Transport | Santé | Fichier détaillé |
 |------|-----------|-------|------------------|
 | 🇫🇷 France | ✅ | ✅ | `france-data.ts` |
-| 🇨🇦 Canada | ⏳ | ⏳ | TODO |
+| �🇧 Royaume-Uni | ✅ | ✅ | `uk-data.ts` |
+| �🇨🇦 Canada | ⏳ | ⏳ | TODO |
 | 🇩🇪 Allemagne | ⏳ | ⏳ | TODO |
 | 🇪🇸 Espagne | ⏳ | ⏳ | TODO |
-| 🇬🇧 Royaume-Uni | ⏳ | ⏳ | TODO |
 
 ## 🔍 Sources officielles utilisées
 
@@ -63,6 +63,21 @@ Les fichiers `transport-data.ts` et `health-data.ts` sont **utilisés directemen
 - Dépenses santé : https://drees.solidarites-sante.gouv.fr/
 - Vaccinations : https://sante.gouv.fr/
 - CEAM : https://www.ameli.fr/ (Carte européenne)
+
+### Royaume-Uni - Transport
+- Prix essence : https://www.globalpetrolprices.com/United-Kingdom/ (1.35 GBP/L)
+- Transport Londres : https://tfl.gov.uk/fares
+- Permis étranger : https://www.gov.uk/exchange-foreign-driving-licence
+- MOT (contrôle technique) : https://www.gov.uk/get-an-m-o-t
+- Immatriculation : https://www.gov.uk/vehicle-registration
+
+### Royaume-Uni - Santé
+- NHS : https://www.nhs.uk/
+- Commonwealth Fund : https://www.commonwealthfund.org/
+- Immigration Health Surcharge : https://www.gov.uk/healthcare-immigration-application
+- Enregistrement GP : https://www.nhs.uk/nhs-services/gps/
+- Vaccinations : https://www.nhs.uk/conditions/vaccinations/
+- GHIC : https://www.nhs.uk/using-the-nhs/healthcare-abroad/
 
 ## 📝 Comment ajouter un nouveau pays
 

@@ -1,20 +1,29 @@
 import { useState } from 'react';
 import { CheckCircle2 } from 'lucide-react';
+import { healthSystemByCountry, healthBudgetByProfile } from '../../../data/health-data';
 
 // ==================== OUTILS SANTÉ ====================
 
 export function HealthCoverageTool({ countryName }: { countryName?: string }) {
   const [profile, setProfile] = useState<'employee' | 'self-employed' | 'student'>('employee');
 
-  // TODO: Utiliser healthSystemByCountry depuis health-data.ts
-  const publicCost = profile === 'employee' ? 0 : 180;
-  const privateCost = profile === 'self-employed' ? 300 : 50;
+  // Récupérer les données du pays sélectionné (countryName est le slug)
+  const countryKey = countryName || 'france';
+  const countryData = healthSystemByCountry[countryKey] || healthSystemByCountry['france'];
+  
+  const publicCost = countryData.publicCostMonthly || 0;
+  const privateCost = countryData.privateCostMonthly || 50;
+  
+  // Formater le nom du pays pour l'affichage
+  const displayName = countryName 
+    ? countryName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('-')
+    : undefined;
 
   return (
     <div>
       <div className="mb-6">
         <h4 className="text-sm font-bold text-gray-900 mb-1">
-          Couverture santé {countryName && `- ${countryName}`}
+          Couverture santé {displayName && `- ${displayName}`}
         </h4>
         <p className="text-xs text-gray-500">
           Estimez vos besoins en assurance santé
@@ -154,14 +163,19 @@ export function MedicalChecklistTool({ countryName }: { countryName?: string }) 
 export function HealthBudgetTool() {
   const [profile, setProfile] = useState<'young' | 'adult' | 'senior'>('adult');
 
-  // TODO: Utiliser healthBudgetByProfile depuis health-data.ts
-  const budgets = {
-    young: { insurance: 600, consultations: 200, medications: 120, dental: 150, total: 1070 },
-    adult: { insurance: 900, consultations: 400, medications: 240, dental: 300, total: 1840 },
-    senior: { insurance: 1500, consultations: 800, medications: 600, dental: 500, total: 3400 },
-  };
-
-  const budget = budgets[profile];
+  // Utiliser les vraies données depuis health-data.ts
+  const profileMap = {
+    young: 'young_healthy',
+    adult: 'adult_average',
+    senior: 'senior',
+  } as const;
+  
+  const budgetKey = profileMap[profile];
+  const budget = healthBudgetByProfile[budgetKey];
+  
+  // Calculer le total
+  const total = budget.insurance + budget.consultations + budget.medications + 
+                budget.dental + budget.optical + budget.emergency;
 
   return (
     <div>
@@ -210,7 +224,7 @@ export function HealthBudgetTool() {
           
           <div className="pt-3 border-t border-gray-200 mt-3 flex justify-between items-center">
             <span className="text-xs font-bold text-gray-900">Total estimé</span>
-            <span className="text-xl font-bold text-gray-900">{budget.total}€/an</span>
+            <span className="text-xl font-bold text-gray-900">{total}€/an</span>
           </div>
         </div>
 

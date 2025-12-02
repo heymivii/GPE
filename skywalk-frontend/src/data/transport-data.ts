@@ -57,10 +57,10 @@ export const transportPricesByCountry: Record<string, TransportPrices> = {
     vehicleInsuranceYearly: 550,
   },
   'royaume-uni': {
-    fuelPricePerLiter: 1.70, // TODO: Mettre à jour (convertir de £)
-    publicTransportMonthly: 150,
-    parkingMonthly: 250,
-    vehicleInsuranceYearly: 800,
+    fuelPricePerLiter: 1.58, // 1.36 GBP × 1.16 (taux EUR/GBP)
+    publicTransportMonthly: 364, // 313.40 GBP Travelcard zones 1-6 × 1.16
+    parkingMonthly: 348, // 300 GBP parking centre Londres × 1.16
+    vehicleInsuranceYearly: 652, // 562 GBP/an × 1.16
   },
   // TODO: Ajouter les autres pays
 };

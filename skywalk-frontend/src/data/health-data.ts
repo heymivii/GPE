@@ -80,13 +80,13 @@ export const healthSystemByCountry: Record<string, HealthSystemInfo> = {
     prescriptionSubsidized: true,
   },
   'royaume-uni': {
-    type: 'public',
+    type: 'public', // NHS (National Health Service)
     hasUniversalCoverage: true,
-    publicCostMonthly: 0, // NHS gratuit via impôts
-    privateCostMonthly: 120,
-    coPaymentRate: 100,
-    emergencyFree: true,
-    prescriptionSubsidized: true,
+    publicCostMonthly: 0, // NHS gratuit via impôts + IHS (£624/an pour visas)
+    privateCostMonthly: 81, // 70 GBP × 1.16 (pour éviter délais NHS)
+    coPaymentRate: 80, // NHS couvre ~80% en moyenne
+    emergencyFree: true, // Urgences NHS gratuites pour résidents
+    prescriptionSubsidized: true, // Prescriptions NHS ~£9.90 par item
   },
   // TODO: Ajouter les autres pays
 };
