@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { CheckCircle2 } from 'lucide-react';
 import { transportPricesByCountry } from '../../../data/transport-data';
 
 // ==================== OUTILS TRANSPORT ====================
 
 export function TransportCostTool({ countryName }: { countryName?: string }) {
+  const { t } = useTranslation();
   const [transportType, setTransportType] = useState<'car' | 'public'>('car');
   const [distance, setDistance] = useState('');
   const [fuelConsumption, setFuelConsumption] = useState('7'); // L/100km
@@ -40,91 +42,87 @@ export function TransportCostTool({ countryName }: { countryName?: string }) {
     <div>
       <div className="mb-6">
         <h4 className="text-sm font-bold text-gray-900 mb-1">
-          Calculateur transport {displayName && `- ${displayName}`}
+          {t('services.tools.transportCost.title')} {displayName && `- ${displayName}`}
         </h4>
         <p className="text-xs text-gray-500">
-          Comparez le coût voiture vs transports en commun
+          {t('services.tools.transportCost.description')}
         </p>
       </div>
 
       <div className="space-y-4">
-        {/* Type de transport */}
-        <div>
-          <label className="block text-[10px] font-bold text-gray-500 mb-2 uppercase tracking-wider">
-            Type de transport
-          </label>
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              onClick={() => setTransportType('car')}
-              className={`px-3 py-2 rounded-lg text-xs font-medium transition-all ${
-                transportType === 'car'
-                  ? 'bg-gray-900 text-white'
-                  : 'bg-white border border-gray-200 text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              🚗 Voiture
-            </button>
-            <button
-              onClick={() => setTransportType('public')}
-              className={`px-3 py-2 rounded-lg text-xs font-medium transition-all ${
-                transportType === 'public'
-                  ? 'bg-gray-900 text-white'
-                  : 'bg-white border border-gray-200 text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              🚇 Transports publics
-            </button>
-          </div>
+        <div className="flex p-1 bg-gray-100 rounded-lg">
+          <button
+            onClick={() => setTransportType('car')}
+            className={`flex-1 py-2 text-xs font-medium rounded-md transition-all ${
+              transportType === 'car' 
+                ? 'bg-white text-gray-900 shadow-sm' 
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            {t('services.tools.transportCost.car')}
+          </button>
+          <button
+            onClick={() => setTransportType('public')}
+            className={`flex-1 py-2 text-xs font-medium rounded-md transition-all ${
+              transportType === 'public' 
+                ? 'bg-white text-gray-900 shadow-sm' 
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            {t('services.tools.transportCost.publicTransport')}
+          </button>
         </div>
 
-        {/* Distance (seulement pour voiture) */}
-        {transportType === 'car' && (
-          <>
+        {transportType === 'car' ? (
+          <div className="space-y-3">
             <div>
-              <label className="block text-[10px] font-bold text-gray-500 mb-2 uppercase tracking-wider">
-                Distance domicile-travail (km)
+              <label className="block text-xs font-medium text-gray-700 mb-1">
+                {t('services.tools.transportCost.dailyDistance')}
               </label>
               <input
                 type="number"
                 value={distance}
                 onChange={(e) => setDistance(e.target.value)}
-                placeholder="Ex: 15"
+                placeholder="Ex: 30"
                 className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:border-gray-900 focus:ring-0 text-sm"
               />
             </div>
-
             <div>
-              <label className="block text-[10px] font-bold text-gray-500 mb-2 uppercase tracking-wider">
-                Consommation (L/100km)
+              <label className="block text-xs font-medium text-gray-700 mb-1">
+                {t('services.tools.transportCost.fuelConsumption')}
               </label>
               <input
                 type="number"
                 value={fuelConsumption}
                 onChange={(e) => setFuelConsumption(e.target.value)}
-                step="0.1"
                 className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:border-gray-900 focus:ring-0 text-sm"
               />
             </div>
-          </>
+            <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
+              <div className="flex justify-between items-center mb-1">
+                <span className="text-xs text-gray-500">{t('services.tools.transportCost.fuelPrice')}</span>
+                <span className="text-xs font-bold text-gray-900">{fuelPrice} €/L</span>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 text-center">
+            <p className="text-xs text-gray-500 mb-2">{t('services.tools.transportCost.publicPass')}</p>
+            <p className="text-2xl font-bold text-gray-900">{publicTransportCost} €</p>
+            <p className="text-xs text-gray-400 mt-1">/ mois</p>
+          </div>
         )}
 
-        {/* Résultat */}
-        <div className="p-6 bg-white rounded-xl border border-gray-200 text-center">
-          <p className="text-[10px] font-bold text-gray-500 mb-2 uppercase tracking-wider">Coût mensuel estimé</p>
-          <div className="flex items-baseline justify-center gap-1">
-            <span className="text-3xl font-bold text-gray-900 tracking-tight">
-              {monthlyCost > 0 ? monthlyCost : '---'}
-            </span>
-            <span className="text-lg font-medium text-gray-400">€</span>
+        <div className="pt-4 border-t border-gray-100">
+          <div className="flex justify-between items-center">
+            <span className="text-sm font-bold text-gray-900">{t('services.tools.transportCost.monthlyCost')}</span>
+            <span className="text-xl font-bold text-gray-900">{monthlyCost} €</span>
           </div>
-        </div>
-
-        <div className="flex items-start gap-2 p-3 rounded-lg bg-white border border-gray-200">
-          <div className="flex-shrink-0 w-4 h-4 mt-0.5 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 font-bold text-[10px]">i</div>
-          <p className="text-[10px] text-gray-500 leading-relaxed">
-            Prix essence: {fuelPrice.toFixed(2)}€/L • Abonnement transport: {Math.round(publicTransportCost)}€/mois
-            {displayName && ` • Données ${displayName}`}
-          </p>
+          {transportType === 'car' && (
+            <p className="text-[10px] text-gray-400 mt-2 text-right">
+              {t('services.tools.transportCost.info')}
+            </p>
+          )}
         </div>
       </div>
     </div>

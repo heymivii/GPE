@@ -1,4 +1,5 @@
 import { Briefcase, Home, Car, Heart, FileText, GraduationCap, Building2, Users } from 'lucide-react';
+import type { TFunction } from 'i18next';
 
 export interface ServiceGuide {
   title: string;
@@ -28,374 +29,236 @@ export interface ServiceConfig {
   }[];
 }
 
-export const servicesConfig: Record<string, ServiceConfig> = {
+// Fonction pour obtenir les services traduits
+export const getServicesConfig = (t: TFunction): Record<string, ServiceConfig> => ({
   emploi: {
     id: 'emploi',
-    title: 'Trouver un emploi',
-    subtitle: 'Opportunités professionnelles',
-    description: 'Découvrez les meilleures opportunités d\'emploi adaptées à votre profil et facilitez votre intégration professionnelle dans votre nouveau pays.',
+    title: t('services.categories.emploi.title'),
+    subtitle: t('services.categories.emploi.subtitle'),
+    description: t('services.categories.emploi.description'),
     icon: Briefcase,
     color: 'text-blue-600',
     bgColor: 'bg-blue-50',
     hasTools: true, // ✅ A des outils (CV, Interview)
     stats: [
-      { label: 'Offres disponibles', value: '2,500+' },
-      { label: 'Secteurs actifs', value: '15' },
-      { label: 'Taux de placement', value: '85%' },
+      { label: t('services.categories.emploi.stats.offers'), value: '2,500+' },
+      { label: t('services.categories.emploi.stats.sectors'), value: '15' },
+      { label: t('services.categories.emploi.stats.placement'), value: '85%' },
     ],
     guides: [
       {
-        title: 'Comment préparer votre candidature',
-        steps: [
-          'Adaptez votre CV au format local (CV européen, américain, etc.)',
-          'Rédigez une lettre de motivation personnalisée',
-          'Traduisez vos diplômes et certifications',
-          'Préparez votre portfolio ou LinkedIn',
-          'Identifiez les entreprises qui recrutent des expatriés',
-        ],
+        title: t('services.categories.emploi.guides.candidature.title'),
+        steps: t('services.categories.emploi.guides.candidature.steps', { returnObjects: true }) as string[],
       },
       {
-        title: 'Démarches administratives',
-        steps: [
-          'Vérifiez votre permis de travail ou visa',
-          'Renseignez-vous sur la reconnaissance de vos qualifications',
-          'Inscrivez-vous aux plateformes d\'emploi locales',
-          'Contactez les agences de recrutement spécialisées',
-        ],
+        title: t('services.categories.emploi.guides.demarches.title'),
+        steps: t('services.categories.emploi.guides.demarches.steps', { returnObjects: true }) as string[],
       },
     ],
-    tips: [
-      'Commencez vos recherches 3-6 mois avant votre départ',
-      'Réseautez sur LinkedIn avec des professionnels du pays',
-      'Apprenez les bases de la langue locale',
-      'Renseignez-vous sur la culture d\'entreprise locale',
-    ],
+    tips: t('services.categories.emploi.tips', { returnObjects: true }) as string[],
     searchCategory: 'emploi',
-    faq: [
-      {
-        question: 'Comment faire reconnaître mes diplômes ?',
-        answer: 'Contactez l\'organisme de reconnaissance des qualifications du pays cible (ex: ENIC-NARIC en Europe). La procédure prend généralement 2-3 mois.',
-      },
-      {
-        question: 'Ai-je besoin d\'un permis de travail ?',
-        answer: 'Cela dépend de votre nationalité et du pays de destination. Les citoyens de l\'UE/EEE n\'ont généralement pas besoin de permis pour travailler dans l\'UE.',
-      },
-    ],
+    faq: t('services.categories.emploi.faq', { returnObjects: true }) as { question: string; answer: string }[],
   },
 
   logement: {
     id: 'logement',
-    title: 'Trouver un logement',
-    subtitle: 'Logements et hébergements',
-    description: 'Trouvez le logement idéal pour votre expatriation : appartements, maisons, colocations. Comparez les prix et les quartiers.',
+    title: t('services.categories.logement.title'),
+    subtitle: t('services.categories.logement.subtitle'),
+    description: t('services.categories.logement.description'),
     icon: Home,
     color: 'text-green-600',
     bgColor: 'bg-green-50',
     hasTools: true, // ✅ A des outils (Budget, Dossier, Garantie)
     stats: [
-      { label: 'Annonces actives', value: '1,800+' },
-      { label: 'Villes couvertes', value: '45' },
-      { label: 'Prix moyen/mois', value: '€850' },
+      { label: t('services.categories.logement.stats.ads'), value: '1,800+' },
+      { label: t('services.categories.logement.stats.cities'), value: '45' },
+      { label: t('services.categories.logement.stats.avgPrice'), value: '€850' },
     ],
     guides: [
       {
-        title: 'Étapes de recherche',
-        steps: [
-          'Définissez votre budget (loyer + charges + dépôt)',
-          'Choisissez le quartier selon vos priorités (travail, écoles, transports)',
-          'Comparez les types de logement (studio, T2, colocation)',
-          'Vérifiez les conditions de location (durée, caution, garanties)',
-          'Visitez plusieurs logements avant de décider',
-        ],
+        title: t('services.categories.logement.guides.recherche.title'),
+        steps: t('services.categories.logement.guides.recherche.steps', { returnObjects: true }) as string[],
       },
       {
-        title: 'Documents nécessaires',
-        steps: [
-          'Pièce d\'identité ou passeport',
-          'Justificatif de revenus (3 dernières fiches de paie)',
-          'Justificatif de domicile actuel',
-          'Lettre de recommandation de l\'ancien propriétaire',
-          'RIB pour les prélèvements',
-        ],
+        title: t('services.categories.logement.guides.documents.title'),
+        steps: t('services.categories.logement.guides.documents.steps', { returnObjects: true }) as string[],
       },
     ],
-    tips: [
-      'Prévoyez 2-3 mois de loyer pour le dépôt de garantie',
-      'Utilisez les sites locaux de petites annonces',
-      'Méfiez-vous des arnaques : ne payez jamais avant la visite',
-      'Vérifiez l\'état du logement et faites un état des lieux détaillé',
-    ],
+    tips: t('services.categories.logement.tips', { returnObjects: true }) as string[],
     searchCategory: 'logement',
-    faq: [
-      {
-        question: 'Quel budget prévoir pour le logement ?',
-        answer: 'Prévoyez 30-40% de vos revenus pour le loyer. Ajoutez 2-3 mois de loyer pour le dépôt initial et les frais d\'agence.',
-      },
-      {
-        question: 'Comment louer sans historique local ?',
-        answer: 'Proposez un garant, payez plusieurs mois d\'avance, ou utilisez des services comme Garantme pour rassurer les propriétaires.',
-      },
-    ],
+    faq: t('services.categories.logement.faq', { returnObjects: true }) as { question: string; answer: string }[],
   },
 
   transport: {
     id: 'transport',
-    title: 'Se déplacer',
-    subtitle: 'Transport et mobilité',
-    description: 'Découvrez les solutions de transport : transports en commun, location de voiture, vélo. Obtenez les bons abonnements.',
+    title: t('services.categories.transport.title'),
+    subtitle: t('services.categories.transport.subtitle'),
+    description: t('services.categories.transport.description'),
     icon: Car,
     color: 'text-purple-600',
     bgColor: 'bg-purple-50',
     hasTools: true, // ✅ A des outils (Coût, Permis, Véhicule)
     stats: [
-      { label: 'Réseaux de transport', value: '120+' },
-      { label: 'Pass disponibles', value: '35' },
-      { label: 'Économie moyenne', value: '40%' },
+      { label: t('services.categories.transport.stats.networks'), value: '120+' },
+      { label: t('services.categories.transport.stats.passes'), value: '35' },
+      { label: t('services.categories.transport.stats.savings'), value: '40%' },
     ],
     guides: [
       {
-        title: 'Choisir votre mode de transport',
-        steps: [
-          'Évaluez vos besoins quotidiens (travail, école, loisirs)',
-          'Comparez les coûts : transports en commun vs voiture',
-          'Renseignez-vous sur les abonnements mensuels/annuels',
-          'Vérifiez les applications mobiles de transport local',
-          'Explorez les options écologiques (vélo, trottinette)',
-        ],
+        title: t('services.categories.transport.guides.choix.title'),
+        steps: t('services.categories.transport.guides.choix.steps', { returnObjects: true }) as string[],
       },
       {
-        title: 'Permis de conduire',
-        steps: [
-          'Vérifiez si votre permis est valide dans le pays',
-          'Faites échanger votre permis si nécessaire',
-          'Souscrivez une assurance auto adaptée',
-          'Apprenez le code de la route local',
-        ],
+        title: t('services.categories.transport.guides.permis.title'),
+        steps: t('services.categories.transport.guides.permis.steps', { returnObjects: true }) as string[],
       },
     ],
-    tips: [
-      'Les pass étudiants/seniors offrent souvent des réductions',
-      'Certaines villes offrent le vélo en libre-service gratuitement',
-      'Téléchargez l\'application de transport locale dès votre arrivée',
-      'Comparez les tarifs des taxis vs VTC (Uber, Bolt)',
-    ],
+    tips: t('services.categories.transport.tips', { returnObjects: true }) as string[],
     searchCategory: 'transport',
   },
 
   sante: {
     id: 'sante',
-    title: 'Santé et bien-être',
-    subtitle: 'Services de santé',
-    description: 'Accédez aux services de santé : médecins, hôpitaux, assurances. Trouvez des professionnels parlant votre langue.',
+    title: t('services.categories.sante.title'),
+    subtitle: t('services.categories.sante.subtitle'),
+    description: t('services.categories.sante.description'),
     icon: Heart,
     color: 'text-red-600',
     bgColor: 'bg-red-50',
     hasTools: true, // ✅ A des outils (Couverture, Dossier médical, Budget)
     stats: [
-      { label: 'Professionnels référencés', value: '5,000+' },
-      { label: 'Langues disponibles', value: '25' },
-      { label: 'Assurances partenaires', value: '18' },
+      { label: t('services.categories.sante.stats.professionals'), value: '5,000+' },
+      { label: t('services.categories.sante.stats.languages'), value: '25' },
+      { label: t('services.categories.sante.stats.insurances'), value: '18' },
     ],
     guides: [
       {
-        title: 'Couverture santé',
-        steps: [
-          'Vérifiez votre couverture actuelle à l\'étranger',
-          'Souscrivez une assurance internationale si nécessaire',
-          'Inscrivez-vous au système de santé local',
-          'Obtenez votre carte vitale ou équivalent',
-          'Trouvez un médecin généraliste de référence',
-        ],
+        title: t('services.categories.sante.guides.couverture.title'),
+        steps: t('services.categories.sante.guides.couverture.steps', { returnObjects: true }) as string[],
       },
       {
-        title: 'Documents médicaux',
-        steps: [
-          'Traduisez votre dossier médical',
-          'Obtenez des copies de vos ordonnances',
-          'Faites un bilan de santé avant le départ',
-          'Vérifiez les vaccins obligatoires',
-        ],
+        title: t('services.categories.sante.guides.documents.title'),
+        steps: t('services.categories.sante.guides.documents.steps', { returnObjects: true }) as string[],
       },
     ],
-    tips: [
-      'Gardez vos ordonnances en version originale et traduite',
-      'Repérez l\'hôpital le plus proche de votre domicile',
-      'Enregistrez les numéros d\'urgence locaux',
-      'Vérifiez la prise en charge des soins à l\'étranger',
-    ],
+    tips: t('services.categories.sante.tips', { returnObjects: true }) as string[],
     searchCategory: 'sante',
   },
 
   demarches: {
     id: 'demarches',
-    title: 'Démarches administratives',
-    subtitle: 'Papiers et formalités',
-    description: 'Simplifiez vos démarches : visa, permis de séjour, carte vitale, impôts. Suivez vos procédures étape par étape.',
+    title: t('services.categories.demarches.title'),
+    subtitle: t('services.categories.demarches.subtitle'),
+    description: t('services.categories.demarches.description'),
     icon: FileText,
     color: 'text-orange-600',
     bgColor: 'bg-orange-50',
     stats: [
-      { label: 'Procédures guidées', value: '50+' },
-      { label: 'Taux de succès', value: '92%' },
-      { label: 'Délai moyen', value: '6 semaines' },
+      { label: t('services.categories.demarches.stats.procedures'), value: '50+' },
+      { label: t('services.categories.demarches.stats.successRate'), value: '92%' },
+      { label: t('services.categories.demarches.stats.avgDelay'), value: '6 semaines' },
     ],
     guides: [
       {
-        title: 'Démarches prioritaires',
-        steps: [
-          'Demandez votre visa/permis de séjour',
-          'Enregistrez-vous auprès des autorités locales',
-          'Ouvrez un compte bancaire local',
-          'Obtenez un numéro de sécurité sociale',
-          'Faites traduire vos documents officiels',
-        ],
+        title: t('services.categories.demarches.guides.prioritaires.title'),
+        steps: t('services.categories.demarches.guides.prioritaires.steps', { returnObjects: true }) as string[],
       },
       {
-        title: 'Organisation',
-        steps: [
-          'Créez un dossier avec toutes vos copies',
-          'Scannez tous vos documents importants',
-          'Notez les dates limites de chaque procédure',
-          'Gardez les justificatifs de dépôt',
-        ],
+        title: t('services.categories.demarches.guides.organisation.title'),
+        steps: t('services.categories.demarches.guides.organisation.steps', { returnObjects: true }) as string[],
       },
     ],
-    tips: [
-      'Commencez les démarches 3 mois avant le départ',
-      'Faites certifier vos traductions par un traducteur assermenté',
-      'Gardez toujours des photocopies de vos documents',
-      'Inscrivez-vous au registre des Français de l\'étranger si applicable',
-    ],
+    tips: t('services.categories.demarches.tips', { returnObjects: true }) as string[],
     searchCategory: 'demarches',
   },
 
   education: {
     id: 'education',
-    title: 'Éducation et formation',
-    subtitle: 'Écoles et formations',
-    description: 'Trouvez des écoles, universités et formations pour vous et vos enfants. Cours de langue et programmes d\'intégration.',
+    title: t('services.categories.education.title'),
+    subtitle: t('services.categories.education.subtitle'),
+    description: t('services.categories.education.description'),
     icon: GraduationCap,
     color: 'text-indigo-600',
     bgColor: 'bg-indigo-50',
     stats: [
-      { label: 'Établissements', value: '800+' },
-      { label: 'Formations', value: '3,200+' },
-      { label: 'Cours de langue', value: '450+' },
+      { label: t('services.categories.education.stats.establishments'), value: '800+' },
+      { label: t('services.categories.education.stats.trainings'), value: '3,200+' },
+      { label: t('services.categories.education.stats.languageCourses'), value: '450+' },
     ],
     guides: [
       {
-        title: 'Scolarisation des enfants',
-        steps: [
-          'Recherchez les écoles dans votre quartier',
-          'Vérifiez le système éducatif local (âge, niveaux)',
-          'Renseignez-vous sur les écoles internationales',
-          'Inscrivez vos enfants le plus tôt possible',
-          'Préparez les documents nécessaires (bulletins, vaccins)',
-        ],
+        title: t('services.categories.education.guides.scolarisation.title'),
+        steps: t('services.categories.education.guides.scolarisation.steps', { returnObjects: true }) as string[],
       },
       {
-        title: 'Formation continue',
-        steps: [
-          'Identifiez vos besoins de formation',
-          'Recherchez les cours de langue disponibles',
-          'Vérifiez les reconnaissances de diplômes',
-          'Explorez les formations professionnelles',
-        ],
+        title: t('services.categories.education.guides.formation.title'),
+        steps: t('services.categories.education.guides.formation.steps', { returnObjects: true }) as string[],
       },
     ],
-    tips: [
-      'Les écoles internationales sont chères mais facilitent la transition',
-      'Les cours de langue gratuits existent souvent pour les nouveaux arrivants',
-      'Certaines universités offrent des bourses pour étudiants internationaux',
-    ],
+    tips: t('services.categories.education.tips', { returnObjects: true }) as string[],
     searchCategory: 'education',
   },
 
   culture: {
     id: 'culture',
-    title: 'Culture et loisirs',
-    subtitle: 'Découverte et intégration',
-    description: 'Découvrez la culture locale, les événements, les communautés d\'expatriés. Facilitez votre intégration sociale.',
+    title: t('services.categories.culture.title'),
+    subtitle: t('services.categories.culture.subtitle'),
+    description: t('services.categories.culture.description'),
     icon: Users,
     color: 'text-pink-600',
     bgColor: 'bg-pink-50',
     stats: [
-      { label: 'Événements/mois', value: '200+' },
-      { label: 'Communautés', value: '85' },
-      { label: 'Activités', value: '1,500+' },
+      { label: t('services.categories.culture.stats.eventsPerMonth'), value: '200+' },
+      { label: t('services.categories.culture.stats.communities'), value: '85' },
+      { label: t('services.categories.culture.stats.activities'), value: '1,500+' },
     ],
     guides: [
       {
-        title: 'Intégration sociale',
-        steps: [
-          'Rejoignez des groupes d\'expatriés sur les réseaux sociaux',
-          'Participez aux événements de networking',
-          'Apprenez les bases de la langue locale',
-          'Découvrez les coutumes et traditions',
-          'Explorez les quartiers et lieux emblématiques',
-        ],
+        title: t('services.categories.culture.guides.integration.title'),
+        steps: t('services.categories.culture.guides.integration.steps', { returnObjects: true }) as string[],
       },
     ],
-    tips: [
-      'Meetup et Internations sont d\'excellentes plateformes pour rencontrer des gens',
-      'Participez aux fêtes locales pour mieux comprendre la culture',
-      'Rejoignez des clubs ou associations selon vos centres d\'intérêt',
-    ],
+    tips: t('services.categories.culture.tips', { returnObjects: true }) as string[],
     searchCategory: 'culture',
   },
 
   business: {
     id: 'business',
-    title: 'Créer son entreprise',
-    subtitle: 'Entrepreneuriat à l\'étranger',
-    description: 'Lancez votre activité à l\'étranger : création d\'entreprise, freelance, statuts juridiques. Accompagnement personnalisé.',
+    title: t('services.categories.business.title'),
+    subtitle: t('services.categories.business.subtitle'),
+    description: t('services.categories.business.description'),
     icon: Building2,
     color: 'text-teal-600',
     bgColor: 'bg-teal-50',
     stats: [
-      { label: 'Créations/an', value: '1,200+' },
-      { label: 'Taux de réussite', value: '78%' },
-      { label: 'Délai moyen', value: '3 mois' },
+      { label: t('services.categories.business.stats.creationsPerYear'), value: '1,200+' },
+      { label: t('services.categories.business.stats.successRate'), value: '78%' },
+      { label: t('services.categories.business.stats.avgDelay'), value: '3 mois' },
     ],
     guides: [
       {
-        title: 'Étapes de création',
-        steps: [
-          'Étudiez le marché local et la concurrence',
-          'Choisissez votre statut juridique',
-          'Rédigez votre business plan',
-          'Obtenez les autorisations nécessaires',
-          'Ouvrez un compte professionnel',
-          'Inscrivez-vous aux organismes sociaux et fiscaux',
-        ],
+        title: t('services.categories.business.guides.creation.title'),
+        steps: t('services.categories.business.guides.creation.steps', { returnObjects: true }) as string[],
       },
       {
-        title: 'Freelance à l\'étranger',
-        steps: [
-          'Vérifiez les règles du travail indépendant',
-          'Déclarez votre activité',
-          'Souscrivez une assurance professionnelle',
-          'Gérez votre facturation et comptabilité',
-        ],
+        title: t('services.categories.business.guides.freelance.title'),
+        steps: t('services.categories.business.guides.freelance.steps', { returnObjects: true }) as string[],
       },
     ],
-    tips: [
-      'Faites-vous accompagner par un expert-comptable local',
-      'Renseignez-vous sur les aides à la création d\'entreprise',
-      'Rejoignez des incubateurs ou espaces de coworking',
-    ],
+    tips: t('services.categories.business.tips', { returnObjects: true }) as string[],
     searchCategory: 'business',
   },
+});
+
+export const getServiceBySlug = (slug: string, t: TFunction): ServiceConfig | undefined => {
+  const services = getServicesConfig(t);
+  return services[slug];
 };
 
-export const getServiceBySlug = (slug: string): ServiceConfig | undefined => {
-  return servicesConfig[slug];
+export const getAllServices = (t: TFunction): ServiceConfig[] => {
+  return Object.values(getServicesConfig(t));
 };
 
-export const getAllServices = (): ServiceConfig[] => {
-  return Object.values(servicesConfig);
-};
-
-export const getServicesWithTools = (): ServiceConfig[] => {
-  return Object.values(servicesConfig).filter(service => service.hasTools === true);
+export const getServicesWithTools = (t: TFunction): ServiceConfig[] => {
+  return Object.values(getServicesConfig(t)).filter(service => service.hasTools === true);
 };

@@ -8,7 +8,7 @@ export default function RegisterForm() {
   const { register } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const redirect = searchParams.get("redirect") || "/dashboard/";
+  const redirect = searchParams.get("redirect") || "/dashboard";
   const initialAge = searchParams.get("age") || "";
 
   const [firstName, setFirstName] = useState("");

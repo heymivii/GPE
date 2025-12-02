@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../../hooks/useAuth';
 import { useQuery } from '@tanstack/react-query';
 import { expatriationProjectApi } from '../../../api/expatriation-project';
@@ -11,8 +12,17 @@ interface UseServiceContentParams {
 }
 
 export function useServiceContent({ service, category }: UseServiceContentParams) {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated } = useAuth();
+  const [searchParams] = useSearchParams();
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+
+  // Mettre à jour le pays sélectionné si un paramètre d'URL est présent
+  useEffect(() => {
+    const countryParam = searchParams.get('country');
+    if (countryParam) {
+      setSelectedCountry(countryParam.toLowerCase());
+    }
+  }, [searchParams]);
 
   // Récupérer le projet actif de l'utilisateur
   const { data: projects } = useQuery({
@@ -21,18 +31,15 @@ export function useServiceContent({ service, category }: UseServiceContentParams
     enabled: isAuthenticated,
   });
 
-  // Déterminer le pays par défaut
+  // Déterminer le pays par défaut à partir du projet si pas de paramètre d'URL
   useEffect(() => {
-    if (projects && projects.length > 0 && !selectedCountry) {
-      // Prendre le pays du premier projet (ou projet actif)
-      const activeProject = projects[0];
-      if (activeProject.idDestinationCountry) {
-        // Mapper l'ID pays vers le slug (à adapter selon votre data)
-        // Pour l'instant, on utilise le nom du pays en lowercase
-        setSelectedCountry(activeProject.destinationCountry?.name?.toLowerCase() || null);
-      }
+    const countryParam = searchParams.get('country');
+    if (!countryParam && projects && projects.length > 0 && !selectedCountry) {
+      // TODO: Mapper l'ID pays vers le nom du pays
+      // Pour l'instant, on ne peut pas faire le mapping sans l'info du pays
+      // Cette fonctionnalité sera ajoutée quand les projets incluront les détails du pays
     }
-  }, [projects, selectedCountry]);
+  }, [projects, selectedCountry, searchParams]);
 
   // Combiner contenu générique + contenu spécifique pays
   const enrichedContent = useMemo(() => {

@@ -3,6 +3,7 @@ import { CheckCircle, Circle, ChevronDown, ChevronRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import type { CountryData } from '../../../hooks/useCountryData';
 import { useChecklistProgress } from '../hooks/useChecklistProgress';
+import { useTranslation } from 'react-i18next';
 
 interface ChecklistItem {
   id: string;
@@ -31,6 +32,7 @@ export default function ChecklistWidget({
   onEdit,
   onHide,
 }: ChecklistWidgetProps) {
+  const { t } = useTranslation()
   const [checklist, setChecklist] = useState<ChecklistItem[]>([]);
   const { progress, updateStep, isLoading } = useChecklistProgress(projectId);
 
@@ -197,7 +199,7 @@ export default function ChecklistWidget({
 
   if (isLoading) {
     return (
-      <Widget title="Ma Checklist" onEdit={onEdit} onHide={onHide}>
+      <Widget title={t('dashboard.personalized.widgets.checklist.title')} onEdit={onEdit} onHide={onHide}>
         <div className="flex items-center justify-center py-8">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
         </div>
@@ -207,25 +209,28 @@ export default function ChecklistWidget({
 
   if (!countryData || checklist.length === 0) {
     return (
-      <Widget title="Ma Checklist" onEdit={onEdit} onHide={onHide}>
+      <Widget title={t('dashboard.personalized.widgets.checklist.title')} onEdit={onEdit} onHide={onHide}>
         <div className="text-center py-8 text-gray-500">
-          <p>Aucune checklist disponible pour ce pays.</p>
+          <p>{t('dashboard.personalized.widgets.checklist.emptyState')}</p>
         </div>
       </Widget>
     )
   }
 
   return (
-    <Widget title="Ma Checklist" onEdit={onEdit} onHide={onHide}>
+    <Widget title={t('dashboard.personalized.widgets.checklist.title')} onEdit={onEdit} onHide={onHide}>
       <div className="space-y-4">
         <div className="bg-gray-100 rounded-lg p-3">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium text-gray-700">
-              Progression
+              {t('dashboard.personalized.widgets.checklist.progression')}
             </span>
             <span className="text-sm font-medium text-blue-600">
-              {completedSteps}/{totalSteps} ({Math.round(completionPercentage)}
-              %)
+              {t('dashboard.personalized.widgets.checklist.completed', {
+                completed: completedSteps,
+                total: totalSteps,
+                percentage: Math.round(completionPercentage)
+              })}
             </span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
@@ -272,12 +277,12 @@ export default function ChecklistWidget({
                         {item.expanded ? (
                           <>
                             <ChevronDown className="w-3 h-3" />
-                            Masquer
+                            {t('dashboard.personalized.widgets.checklist.hide')}
                           </>
                         ) : (
                           <>
                             <ChevronRight className="w-3 h-3" />
-                            {item.substeps.length} sous-étapes
+                            {t('dashboard.personalized.widgets.checklist.show', { count: item.substeps.length })}
                           </>
                         )}
                       </button>
@@ -309,7 +314,7 @@ export default function ChecklistWidget({
                       <span className={`flex-1 ${substep.completed ? 'text-gray-500 line-through' : 'text-gray-600'}`}>
                         {substep.label}
                         {substep.isOptional && (
-                          <span className="ml-1 text-gray-400 italic">(optionnel)</span>
+                          <span className="ml-1 text-gray-400 italic">{t('dashboard.personalized.widgets.checklist.optional')}</span>
                         )}
                       </span>
                     </div>

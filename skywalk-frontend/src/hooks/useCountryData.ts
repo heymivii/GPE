@@ -1,5 +1,7 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import countriesData from '../data/countries-data.json';
+import { getCountryTranslation } from '../locales/countryTranslations';
 
 export interface ExpatStep {
   id: number;
@@ -45,6 +47,15 @@ export interface CountryData {
     language?: string;
     visaDifficulty?: string;
   };
+  jobMarket?: {
+    topSectors: string[];
+    averageSalary?: number;
+    unemploymentRate?: string;
+    keyJobSites?: Array<{
+      name: string;
+      url: string;
+    }>;
+  };
   costOfLiving?: {
     averageRent: {
       oneBedroom?: number;
@@ -70,23 +81,93 @@ export interface CountryData {
 }
 
 export function useCountryData(countryId?: number | null) {
+  const { i18n } = useTranslation();
+  
   const country = useMemo(() => {
     if (!countryId) return null;
-    return (countriesData.countries as unknown as CountryData[]).find(
+    const rawCountry = (countriesData.countries as unknown as CountryData[]).find(
       (c) => c.id === countryId
     );
-  }, [countryId]);
+    
+    if (!rawCountry) return null;
+    
+    // Apply translations if available
+    const translation = getCountryTranslation(rawCountry.code, i18n.language);
+    if (translation && rawCountry.expatProjectTemplate) {
+      return {
+        ...rawCountry,
+        expatProjectTemplate: {
+          ...rawCountry.expatProjectTemplate,
+          steps: rawCountry.expatProjectTemplate.steps.map(step => {
+            const stepTranslation = translation.expatSteps[step.slug];
+            if (!stepTranslation) return step;
+            
+            return {
+              ...step,
+              title: stepTranslation.title,
+              description: stepTranslation.description,
+              substeps: step.substeps.map(substep => ({
+                ...substep,
+                label: stepTranslation.substeps[substep.id] || substep.label,
+              })),
+            };
+          }),
+        },
+        jobMarket: rawCountry.jobMarket ? {
+          ...rawCountry.jobMarket,
+          topSectors: translation.jobMarket?.topSectors || rawCountry.jobMarket.topSectors,
+        } : undefined,
+      };
+    }
+    
+    return rawCountry;
+  }, [countryId, i18n.language]);
 
   return country;
 }
 
 export function useCountryDataByCode(countryCode?: string) {
+  const { i18n } = useTranslation();
+  
   const country = useMemo(() => {
     if (!countryCode) return null;
-    return (countriesData.countries as unknown as CountryData[]).find(
+    const rawCountry = (countriesData.countries as unknown as CountryData[]).find(
       (c) => c.code === countryCode
     );
-  }, [countryCode]);
+    
+    if (!rawCountry) return null;
+    
+    // Apply translations if available
+    const translation = getCountryTranslation(rawCountry.code, i18n.language);
+    if (translation && rawCountry.expatProjectTemplate) {
+      return {
+        ...rawCountry,
+        expatProjectTemplate: {
+          ...rawCountry.expatProjectTemplate,
+          steps: rawCountry.expatProjectTemplate.steps.map(step => {
+            const stepTranslation = translation.expatSteps[step.slug];
+            if (!stepTranslation) return step;
+            
+            return {
+              ...step,
+              title: stepTranslation.title,
+              description: stepTranslation.description,
+              substeps: step.substeps.map(substep => ({
+                ...substep,
+                label: stepTranslation.substeps[substep.id] || substep.label,
+              })),
+            };
+          }),
+        },
+        jobMarket: rawCountry.jobMarket ? {
+          ...rawCountry.jobMarket,
+          topSectors: translation.jobMarket?.topSectors || rawCountry.jobMarket.topSectors,
+        } : undefined,
+      };
+    }
+    
+    return rawCountry;
+  }, [countryCode, i18n.language]);
 
   return country;
 }

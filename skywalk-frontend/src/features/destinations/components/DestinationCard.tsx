@@ -1,4 +1,5 @@
 import { Link } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import type { Destination } from '../types';
 import { Users, Briefcase, ArrowRight } from 'lucide-react';
 
@@ -11,6 +12,8 @@ interface DestinationCardProps {
  * Redesigned for a spacious, modern, and soft look.
  */
 export function DestinationCard({ destination }: DestinationCardProps) {
+  const { t } = useTranslation();
+  
   return (
     <Link
       to={`/destinations/${destination.slug}`}
@@ -40,7 +43,7 @@ export function DestinationCard({ destination }: DestinationCardProps) {
         {/* Footer: Stats & Action */}
         <div className="mt-auto pt-6 border-t border-gray-50 flex items-center justify-between">
           <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2 text-gray-400" title="Membres">
+            <div className="flex items-center gap-2 text-gray-400" title={t('destinations.card.members')}>
               <Users className="w-4 h-4" />
               <span className="text-sm font-medium text-gray-600">
                 {destination.stats.memberCount > 1000 
@@ -48,7 +51,7 @@ export function DestinationCard({ destination }: DestinationCardProps) {
                   : destination.stats.memberCount}
               </span>
             </div>
-            <div className="flex items-center gap-2 text-gray-400" title="Offres d'emploi">
+            <div className="flex items-center gap-2 text-gray-400" title={t('destinations.card.jobs')}>
               <Briefcase className="w-4 h-4" />
               <span className="text-sm font-medium text-gray-600">
                 {destination.stats.jobOffersCount}

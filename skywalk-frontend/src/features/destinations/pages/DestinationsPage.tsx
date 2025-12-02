@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { mockDestinations } from '../mockData';
 import { DestinationCard } from '../components/DestinationCard';
 import { Search, MapPin, SlidersHorizontal } from 'lucide-react';
@@ -9,6 +10,7 @@ import { PageSearch } from '../../../components/PageSearch';
  * Main destinations page displaying popular countries among Skywalk members
  */
 export function DestinationsPage() {
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('popularity');
 
@@ -25,8 +27,8 @@ export function DestinationsPage() {
     <div className="min-h-screen bg-[#FAFAFA]">
       {/* Header Section */}
       <PageHeader 
-        title="Explorez le monde." 
-        description="Découvrez les destinations préférées de notre communauté. Guides, emplois et conseils pour réussir votre expatriation."
+        title={t('destinations.title')}
+        description={t('destinations.subtitle')}
       />
 
       {/* Search & Filter Bar - Sticky */}
@@ -40,7 +42,7 @@ export function DestinationsPage() {
             <input
               type="text"
               className="block w-full pl-11 pr-4 py-3 bg-gray-50 border-none rounded-2xl text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-100 focus:bg-white transition-all"
-              placeholder="Rechercher une destination..."
+              placeholder={t('destinations.searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -51,7 +53,7 @@ export function DestinationsPage() {
             <div className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-xl shadow-sm">
               <MapPin className="w-4 h-4 text-gray-400" />
               <span className="text-sm font-medium text-gray-600">
-                {filteredDestinations.length} pays
+                {filteredDestinations.length} {t('destinations.countries')}
               </span>
             </div>
             
@@ -64,9 +66,9 @@ export function DestinationsPage() {
                 onChange={(e) => setSortBy(e.target.value)}
                 className="block w-full pl-10 pr-10 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:ring-2 focus:ring-blue-100 focus:border-blue-200 cursor-pointer shadow-sm hover:border-gray-300 transition-colors appearance-none"
               >
-                <option value="popularity">Les plus populaires</option>
-                <option value="name">Ordre alphabétique</option>
-                <option value="jobs">Offres d'emploi</option>
+                <option value="popularity">{t('destinations.sortOptions.popularity')}</option>
+                <option value="name">{t('destinations.sortOptions.alphabetical')}</option>
+                <option value="jobs">{t('destinations.sortOptions.jobs')}</option>
               </select>
             </div>
           </div>
@@ -86,9 +88,9 @@ export function DestinationsPage() {
             <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6">
               <Search className="w-10 h-10 text-gray-300" />
             </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">Aucun résultat</h3>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">{t('destinations.noResults.title')}</h3>
             <p className="text-gray-500 max-w-md mx-auto">
-              Nous n'avons pas trouvé de destination correspondant à votre recherche. Essayez d'autres mots-clés.
+              {t('destinations.noResults.message')}
             </p>
           </div>
         )}

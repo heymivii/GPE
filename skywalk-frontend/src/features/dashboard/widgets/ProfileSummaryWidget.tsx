@@ -1,6 +1,7 @@
 import Widget from './Widget'
 import { User, MapPin, Target } from 'lucide-react'
 import { COUNTRIES, STATUS_OPTIONS, TRAVEL_PARTY_OPTIONS, GOAL_OPTIONS } from '../../onboarding/data/constants'
+import { useTranslation } from 'react-i18next'
 
 interface ProfileSummaryWidgetProps {
   userData: {
@@ -27,6 +28,8 @@ interface ProfileSummaryWidgetProps {
 }
 
 export default function ProfileSummaryWidget({ userData, onEdit, onHide }: ProfileSummaryWidgetProps) {
+  const { t } = useTranslation()
+  
   const getCountryLabel = (code: string) => 
     COUNTRIES.find(c => c.value === code)?.label || code
 
@@ -35,10 +38,10 @@ export default function ProfileSummaryWidget({ userData, onEdit, onHide }: Profi
 
   if (!userData.onboardingData) {
     return (
-      <Widget title="Mon Profil" onEdit={onEdit} onHide={onHide}>
+      <Widget title={t('dashboard.personalized.widgets.profileSummary.title')} onEdit={onEdit} onHide={onHide}>
         <div className="text-center text-gray-500 py-8">
           <User className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-          <p>Profil en cours de configuration</p>
+          <p>{t('dashboard.personalized.widgets.profileSummary.emptyState')}</p>
         </div>
       </Widget>
     )
@@ -47,14 +50,14 @@ export default function ProfileSummaryWidget({ userData, onEdit, onHide }: Profi
   const { destination, profile, objective } = userData.onboardingData
 
   return (
-    <Widget title="Mon Profil" onEdit={onEdit} onHide={onHide}>
+    <Widget title={t('dashboard.personalized.widgets.profileSummary.title')} onEdit={onEdit} onHide={onHide}>
       <div className="space-y-4">
         <div className="flex items-center space-x-3">
           <User className="w-5 h-5 text-blue-600" />
           <div>
             <p className="font-medium text-gray-900">{userData.name}</p>
             <p className="text-sm text-gray-600">
-              {profile.age} ans • {getOptionLabel(STATUS_OPTIONS, profile.status)} • {getOptionLabel(TRAVEL_PARTY_OPTIONS, profile.travelParty)}
+              {profile.age} {t('dashboard.personalized.widgets.profileSummary.age')} • {getOptionLabel(STATUS_OPTIONS, profile.status)} • {getOptionLabel(TRAVEL_PARTY_OPTIONS, profile.travelParty)}
             </p>
           </div>
         </div>
@@ -66,7 +69,7 @@ export default function ProfileSummaryWidget({ userData, onEdit, onHide }: Profi
               {getCountryLabel(destination.fromCountry)} → {getCountryLabel(destination.toCountry)}
             </p>
             <p className="text-sm text-gray-600">
-              {destination.targetCity && `${destination.targetCity} • `}Départ prévu en {destination.departureYear}
+              {destination.targetCity && `${destination.targetCity} • `}{t('dashboard.personalized.widgets.profileSummary.departureIn')} {destination.departureYear}
             </p>
           </div>
         </div>
@@ -77,13 +80,13 @@ export default function ProfileSummaryWidget({ userData, onEdit, onHide }: Profi
             <p className="font-medium text-gray-900">
               {getOptionLabel(GOAL_OPTIONS, objective.goal)}
             </p>
-            <p className="text-sm text-gray-600">Objectif principal</p>
+            <p className="text-sm text-gray-600">{t('dashboard.personalized.widgets.profileSummary.mainGoal')}</p>
           </div>
         </div>
 
         <div className="mt-6 pt-4 border-t border-gray-200">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-700">Profil complété</span>
+            <span className="text-sm font-medium text-gray-700">{t('dashboard.personalized.widgets.profileSummary.profileCompleted')}</span>
             <span className="text-sm font-medium text-green-600">100%</span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">

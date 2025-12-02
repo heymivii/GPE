@@ -1,0 +1,89 @@
+{
+  "expatSteps": {
+    "offre-emploi": {
+      "title": "Obtenir une offre d'emploi",
+      "description": "Condition préalable pour le permis",
+      "substeps": {
+        "1.1": "Rechercher emploi sur JobUp, Indeed Suisse",
+        "1.2": "Postuler et passer entretiens",
+        "1.3": "Recevoir offre d'emploi écrite",
+        "1.4": "Vérifier que l'employeur peut sponsoriser"
+      }
+    },
+    "permis-travail": {
+      "title": "Demande de permis de travail",
+      "description": "L'employeur fait la demande",
+      "substeps": {
+        "2.1": "Employeur dépose demande auprès du canton",
+        "2.2": "Fournir documents (CV, diplômes, contrat)",
+        "2.3": "Attendre approbation (8-12 semaines)"
+      }
+    },
+    "arrivee-suisse": {
+      "title": "Arrivée en Suisse",
+      "description": "S'enregistrer dans les 14 jours",
+      "substeps": {
+        "3.1": "Arriver avec permis approuvé",
+        "3.2": "S'inscrire au contrôle des habitants (14 jours)",
+        "3.3": "Fournir contrat travail, bail, passeport",
+        "3.4": "Payer taxes d'inscription (~100 CHF)"
+      }
+    },
+    "assurance-maladie": {
+      "title": "Assurance maladie obligatoire",
+      "description": "À souscrire dans les 3 mois",
+      "substeps": {
+        "4.1": "Comparer les caisses (Comparis.ch)",
+        "4.2": "Souscrire assurance de base LAMal",
+        "4.3": "Recevoir carte d'assurance"
+      }
+    },
+    "logement-suisse": {
+      "title": "Trouver un logement",
+      "description": "Marché très compétitif",
+      "substeps": {
+        "5.1": "Chercher sur Homegate, ImmoScout24",
+        "5.2": "Préparer dossier complet (CV, fiches paie, références)",
+        "5.3": "Visiter rapidement les logements",
+        "5.4": "Signer bail et payer 3 mois de dépôt"
+      }
+    },
+    "permis-sejour-carte": {
+      "title": "Recevoir le permis de séjour",
+      "description": "Carte physique permis B/L",
+      "substeps": {
+        "6.1": "Attendre fabrication carte (4-6 semaines)",
+        "6.2": "Récupérer carte au contrôle des habitants",
+        "6.3": "Vérifier durée de validité"
+      }
+    },
+    "banque-suisse": {
+      "title": "Ouvrir compte bancaire",
+      "description": "Compte courant suisse",
+      "substeps": {
+        "7.1": "Choisir banque (UBS, CS, PostFinance, néobanque)",
+        "7.2": "Prendre RDV avec permis + bail + contrat",
+        "7.3": "Ouvrir compte et recevoir carte"
+      }
+    },
+    "quotidien-suisse": {
+      "title": "Installation quotidienne",
+      "description": "Abonnements et services",
+      "substeps": {
+        "8.1": "Souscrire abonnement transports (demi-tarif, AG)",
+        "8.2": "Obtenir forfait mobile suisse (Swisscom, Salt, Sunrise)",
+        "8.3": "Souscrire assurance RC (responsabilité civile)",
+        "8.4": "Échanger permis conduire si nécessaire"
+      }
+    }
+  },
+  "jobMarket": {
+    "topSectors": [
+      "Finance et banque",
+      "Pharmaceutique et biotechnologie",
+      "Technologies de l'information",
+      "Horlogerie et précision",
+      "Ingénierie"
+    ]
+  }
+}

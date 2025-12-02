@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Search, Filter, Grid, List, ChevronDown } from 'lucide-react'
 import SearchBar from '../components/SearchBar'
 import FilterSection from '../components/FilterSection'
@@ -6,12 +6,13 @@ import ResultsSection from '../components/ResultsSection'
 import useSearch from '../hooks/useSearch'
 import type { SearchFilters } from '../types'
 import { useAuth } from '../../../hooks/useAuth'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { PageHeader } from '../../../components/PageHeader'
 import { PageSearch } from '../../../components/PageSearch'
 
 export default function SearchPage() {
   const { isAuthenticated } = useAuth();
+  const [searchParams] = useSearchParams();
   const {
     filters,
     results,
@@ -24,17 +25,38 @@ export default function SearchPage() {
 
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
+  const hasInitialized = useRef(false)
 
   // Limit to 10 results for non-authenticated users
   const displayedResults = !isAuthenticated ? results.slice(0, 10) : results;
   const hasMoreResults = !isAuthenticated && results.length > 10;
 
+  // Lire les paramètres URL au chargement (une seule fois)
   useEffect(() => {
+    if (hasInitialized.current) return;
+    
+    const urlFilters: Partial<SearchFilters> = {};
+    
+    const country = searchParams.get('country');
+    const category = searchParams.get('category');
+    const query = searchParams.get('query');
+    
+    if (country) urlFilters.country = country;
+    if (category) urlFilters.category = category;
+    if (query) urlFilters.query = query;
+    
+    // Si des paramètres URL sont présents, les appliquer
+    if (Object.keys(urlFilters).length > 0) {
+      updateFilters(urlFilters);
+      hasInitialized.current = true;
+      return;
+    }
+    
+    // Sinon, vérifier les données d'onboarding
     const onboardingData = localStorage.getItem('skywalk-onboarding-data')
     if (onboardingData) {
       const data = JSON.parse(onboardingData)
       const destination = data.destination
-      const profile = data.profile
       
       const defaultFilters: Partial<SearchFilters> = {}
       
@@ -56,16 +78,18 @@ export default function SearchPage() {
         updateFilters(defaultFilters)
       }
     }
-  }, [updateFilters])
+    
+    // Effectuer la recherche initiale une seule fois
+    search()
+    hasInitialized.current = true;
+  }, [searchParams, updateFilters, search])
 
   const handleSearch = (searchQuery: string) => {
     updateFilters({ query: searchQuery })
-    search()
   }
 
   const handleFilterChange = (newFilters: Partial<SearchFilters>) => {
     updateFilters(newFilters)
-    search()
   }
 
   return (
@@ -117,11 +141,14 @@ export default function SearchPage() {
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
             <h1 className="text-2xl font-bold text-gray-900">
-              Résultats de recherche
+              {filters.query || filters.category || filters.country 
+                ? 'Résultats de recherche'
+                : 'Destinations & Services Populaires'
+              }
             </h1>
             {totalResults > 0 && (
               <span className="text-sm text-gray-600">
-                {totalResults.toLocaleString('fr-FR')} résultat{totalResults > 1 ? 's' : ''} trouvé{totalResults > 1 ? 's' : ''}
+                {totalResults.toLocaleString('fr-FR')} résultat{totalResults > 1 ? 's' : ''} {filters.query || filters.category || filters.country ? 'trouvé' : 'disponible'}{totalResults > 1 ? 's' : ''}
               </span>
             )}
           </div>
@@ -145,6 +172,54 @@ export default function SearchPage() {
             </select>
           </div>
         </div>
+
+        {/* Message pour les résultats par défaut */}
+        {!filters.query && !filters.category && !filters.country && (
+          <div className="mb-6 space-y-4">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="flex items-start gap-3">
+                <div className="flex-shrink-0">
+                  <svg className="w-5 h-5 text-blue-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-blue-900 mb-1">
+                    Découvrez nos destinations populaires
+                  </h3>
+                  <p className="text-sm text-blue-800">
+                    Vous voyez ici une sélection d'opportunités et de services dans les destinations les plus prisées. 
+                    Utilisez la barre de recherche et les filtres pour affiner vos résultats.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick filters */}
+            <div className="flex flex-wrap gap-2">
+              <span className="text-sm text-gray-600 font-medium">Recherches populaires :</span>
+              {[
+                { label: '🇫🇷 France', filters: { country: 'France' } },
+                { label: '🇬🇧 Royaume-Uni', filters: { country: 'Royaume-Uni' } },
+                { label: '🇨🇭 Suisse', filters: { country: 'Suisse' } },
+                { label: '🇨🇦 Canada', filters: { country: 'Canada' } },
+                { label: '💼 Emploi', filters: { category: 'emploi' } },
+                { label: '🏠 Logement', filters: { category: 'logement' } },
+                { label: '🚇 Transport', filters: { category: 'transport' } },
+              ].map((item, index) => (
+                <button
+                  key={index}
+                  onClick={() => {
+                    handleFilterChange(item.filters);
+                  }}
+                  className="px-3 py-1.5 bg-white border border-gray-300 rounded-full text-sm hover:bg-gray-50 hover:border-[#5EA3C0] hover:text-[#5EA3C0] transition-colors"
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         <ResultsSection
           results={displayedResults}

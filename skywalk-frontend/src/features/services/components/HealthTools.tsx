@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { CheckCircle2 } from 'lucide-react';
 import { healthSystemByCountry, healthBudgetByProfile, healthBudgetByProfileSwitzerland } from '../../../data/health-data';
 
 // ==================== OUTILS SANTÉ ====================
 
 export function HealthCoverageTool({ countryName }: { countryName?: string }) {
+  const { t } = useTranslation();
   const [profile, setProfile] = useState<'employee' | 'self-employed' | 'student'>('employee');
 
   // Récupérer les données du pays sélectionné (countryName est le slug)
@@ -23,26 +25,26 @@ export function HealthCoverageTool({ countryName }: { countryName?: string }) {
     <div>
       <div className="mb-6">
         <h4 className="text-sm font-bold text-gray-900 mb-1">
-          Couverture santé {displayName && `- ${displayName}`}
+          {t('services.tools.healthCoverage.title')} {displayName && `- ${displayName}`}
         </h4>
         <p className="text-xs text-gray-500">
-          Estimez vos besoins en assurance santé
+          {t('services.tools.healthCoverage.description')}
         </p>
       </div>
 
       <div className="space-y-4">
         <div>
           <label className="block text-[10px] font-bold text-gray-500 mb-2 uppercase tracking-wider">
-            Votre situation
+            {t('services.tools.healthCoverage.situation')}
           </label>
           <select
             value={profile}
             onChange={(e) => setProfile(e.target.value as typeof profile)}
             className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:border-gray-900 focus:ring-0 text-sm"
           >
-            <option value="employee">Salarié</option>
-            <option value="self-employed">Indépendant</option>
-            <option value="student">Étudiant</option>
+            <option value="employee">{t('services.tools.healthCoverage.employee')}</option>
+            <option value="self-employed">{t('services.tools.healthCoverage.selfEmployed')}</option>
+            <option value="student">{t('services.tools.healthCoverage.student')}</option>
           </select>
         </div>
 
@@ -50,31 +52,31 @@ export function HealthCoverageTool({ countryName }: { countryName?: string }) {
           <div className="pb-3 border-b border-gray-100">
             <div className="flex justify-between items-start mb-2">
               <div>
-                <p className="text-xs font-bold text-gray-900">Couverture publique</p>
-                <p className="text-xs text-gray-500">Sécurité sociale / système public</p>
+                <p className="text-xs font-bold text-gray-900">{t('services.tools.healthCoverage.publicCoverage')}</p>
+                <p className="text-xs text-gray-500">{t('services.tools.healthCoverage.publicDesc')}</p>
               </div>
               <span className="text-lg font-bold text-gray-900">{publicCost}€</span>
             </div>
             <p className="text-[10px] text-gray-500">
-              {publicCost === 0 ? 'Inclus dans cotisations sociales' : 'Cotisation mensuelle'}
+              {publicCost === 0 ? t('services.tools.healthCoverage.included') : t('services.tools.healthCoverage.monthlyFee')}
             </p>
           </div>
 
           <div>
             <div className="flex justify-between items-start mb-2">
               <div>
-                <p className="text-xs font-bold text-gray-900">Assurance complémentaire</p>
-                <p className="text-xs text-gray-500">Mutuelle privée recommandée</p>
+                <p className="text-xs font-bold text-gray-900">{t('services.tools.healthCoverage.complementary')}</p>
+                <p className="text-xs text-gray-500">{t('services.tools.healthCoverage.complementaryDesc')}</p>
               </div>
               <span className="text-lg font-bold text-gray-900">{privateCost}€</span>
             </div>
-            <p className="text-[10px] text-gray-500">Par mois</p>
+            <p className="text-[10px] text-gray-500">{t('services.tools.healthCoverage.perMonth')}</p>
           </div>
 
           <div className="pt-3 border-t border-gray-100">
             <div className="flex justify-between items-center">
-              <span className="text-xs font-bold text-gray-900">Total estimé</span>
-              <span className="text-xl font-bold text-gray-900">{publicCost + privateCost}€/mois</span>
+              <span className="text-xs font-bold text-gray-900">{t('services.tools.healthCoverage.totalEstimated')}</span>
+              <span className="text-xl font-bold text-gray-900">{publicCost + privateCost}€/{t('services.tools.rentCalculator.perMonth').replace('/', '').trim()}</span>
             </div>
           </div>
         </div>
@@ -91,13 +93,14 @@ export function HealthCoverageTool({ countryName }: { countryName?: string }) {
 }
 
 export function MedicalChecklistTool({ countryName }: { countryName?: string }) {
+  const { t } = useTranslation();
   const [checklist, setChecklist] = useState([
-    { id: 1, text: 'Dossier médical complet traduit', checked: false },
-    { id: 2, text: 'Carnet de vaccination à jour', checked: false },
-    { id: 3, text: 'Ordonnances en cours traduites', checked: false },
-    { id: 4, text: 'Carte européenne d\'assurance maladie (si UE)', checked: false },
-    { id: 5, text: 'Attestation assurance santé internationale', checked: false },
-    { id: 6, text: 'Liste allergies et conditions préexistantes', checked: false },
+    { id: 1, text: t('services.tools.medicalChecklist.items.records'), checked: false },
+    { id: 2, text: t('services.tools.medicalChecklist.items.vaccination'), checked: false },
+    { id: 3, text: t('services.tools.medicalChecklist.items.prescriptions'), checked: false },
+    { id: 4, text: t('services.tools.medicalChecklist.items.ehic'), checked: false },
+    { id: 5, text: t('services.tools.medicalChecklist.items.insurance'), checked: false },
+    { id: 6, text: t('services.tools.medicalChecklist.items.allergies'), checked: false },
   ]);
 
   const toggleItem = (id: number) => {
@@ -112,16 +115,16 @@ export function MedicalChecklistTool({ countryName }: { countryName?: string }) 
     <div>
       <div className="mb-6">
         <h4 className="text-sm font-bold text-gray-900 mb-1">
-          Dossier médical {countryName && `- ${countryName}`}
+          {t('services.tools.medicalChecklist.title')} {countryName && `- ${countryName}`}
         </h4>
         <p className="text-xs text-gray-500">
-          Documents médicaux nécessaires
+          {t('services.tools.medicalChecklist.description')}
         </p>
       </div>
 
       <div className="mb-6 bg-white rounded-xl p-4 border border-gray-200">
         <div className="flex justify-between items-center mb-2">
-          <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Complétude</span>
+          <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">{t('services.tools.medicalChecklist.completeness')}</span>
           <span className="text-lg font-bold text-gray-900">{progress}%</span>
         </div>
         <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">

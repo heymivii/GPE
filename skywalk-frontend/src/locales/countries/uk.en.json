@@ -1,0 +1,91 @@
+{
+  "expatSteps": {
+    "choisir-visa": {
+      "title": "Choose your visa",
+      "description": "Choose visa type (work, study, talent, entrepreneur), check requirements and gather documents.",
+      "substeps": {
+        "1.1": "Choose visa type (work, study, talent, entrepreneur)",
+        "1.2": "Check requirements on UK government official website",
+        "1.3": "List and gather all necessary documents"
+      }
+    },
+    "deposer-demande": {
+      "title": "Submit visa application",
+      "description": "Complete online application, pay fees + IHS, then attend biometrics.",
+      "substeps": {
+        "2.1": "Create an account on UK visa platform",
+        "2.2": "Complete application form",
+        "2.3": "Pay visa fees and IHS",
+        "2.4": "Book biometrics appointment",
+        "2.5": "Attend biometrics appointment with documents"
+      }
+    },
+    "preparer-arrivee": {
+      "title": "Prepare arrival",
+      "description": "Receive visa/BRP, book travel and temporary accommodation.",
+      "substeps": {
+        "3.1": "Check information on visa/BRP",
+        "3.2": "Book flight ticket",
+        "3.3": "Book temporary accommodation (Airbnb, hotel, residence)"
+      }
+    },
+    "arrivee": {
+      "title": "Arrive in the UK",
+      "description": "Arrive in UK, collect BRP, get UK number, keep entry proofs.",
+      "substeps": {
+        "4.1": "Pass border control",
+        "4.2": "Keep entry proofs (stamp/eGate, tickets)",
+        "4.3": "Collect BRP at designated office",
+        "4.4": "Buy UK SIM and get local number"
+      }
+    },
+    "administratif-base": {
+      "title": "Basic administration",
+      "description": "Apply for NINo, open bank account, prepare financial proofs.",
+      "substeps": {
+        "5.1": "Apply for NINo (National Insurance Number)",
+        "5.2": "Open bank account (Monzo, Starling, traditional bank)",
+        "5.3": "Prepare financial proofs for rental"
+      }
+    },
+    "logement": {
+      "title": "Find accommodation",
+      "description": "Search for accommodation, visit properties, provide references + income.",
+      "substeps": {
+        "6.1": "Create accounts on Rightmove, Zoopla, SpareRoom…",
+        "6.2": "Select listings and schedule viewings",
+        "6.3": "Prepare references, payslips, employment contract"
+      }
+    },
+    "signer-bail": {
+      "title": "Sign tenancy agreement",
+      "description": "Pay deposit + first rent, move in, get deposit protection certificate.",
+      "substeps": {
+        "7.1": "Read and sign tenancy agreement",
+        "7.2": "Pay security deposit",
+        "7.3": "Pay first month's rent",
+        "7.4": "Obtain deposit protection certificate",
+        "7.5": "Move into accommodation"
+      }
+    },
+    "stabilisation": {
+      "title": "Stabilization",
+      "description": "Register with GP, update address, arrange energy/Internet, check tax code.",
+      "substeps": {
+        "8.1": "Register with a GP (general practitioner)",
+        "8.2": "Update address with key organizations",
+        "8.3": "Set up energy + Internet contracts",
+        "8.4": "Check your tax code on payslips"
+      }
+    },
+    "vie-quotidienne": {
+      "title": "Daily life",
+      "description": "Oyster/Railcard, license/insurance, France departure procedures.",
+      "substeps": {
+        "9.1": "Get an Oyster card or Railcard",
+        "9.2": "Get home and car insurance if needed",
+        "9.3": "Finalize departure procedures in France (taxes, social security, cancellations)"
+      }
+    }
+  }
+}

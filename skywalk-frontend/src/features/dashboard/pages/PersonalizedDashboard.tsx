@@ -11,8 +11,10 @@ import ChecklistWidget from '../widgets/ChecklistWidget'
 import BudgetTrackerWidget from '../widgets/BudgetTrackerWidget'
 import LocalTimeWidget from '../widgets/LocalTimeWidget'
 import WeatherWidget from '../widgets/WeatherWidget'
+import { useTranslation } from 'react-i18next'
 
 export default function PersonalizedDashboard() {
+  const { t } = useTranslation()
   const { data: projects, isLoading } = useProjects()
   const { user } = useAuth()
   const { hiddenWidgets, toggleWidget } = useDashboardPreferences()
@@ -38,12 +40,12 @@ export default function PersonalizedDashboard() {
   }, [projects, selectedProjectId])
 
   const availableWidgets = [
-    { id: 'profile-summary', name: 'Résumé du profil', icon: '👤', description: 'Vos informations personnelles' },
-    { id: 'local-time', name: 'Heure locale', icon: '⏰', description: 'Heure dans le pays de destination' },
-    { id: 'weather', name: 'Météo', icon: '🌤️', description: 'Météo du pays de destination' },
-    { id: 'checklist', name: 'Checklist', icon: '✅', description: 'Vos étapes d\'expatriation' },
-    { id: 'budget-tracker', name: 'Budget', icon: '💰', description: 'Suivi de votre budget' },
-    { id: 'recommendations', name: 'Recommandations', icon: '💡', description: 'Conseils personnalisés' },
+    { id: 'profile-summary', name: t('dashboard.personalized.widgets.available.profileSummary.name'), icon: '👤', description: t('dashboard.personalized.widgets.available.profileSummary.description') },
+    { id: 'local-time', name: t('dashboard.personalized.widgets.available.localTime.name'), icon: '⏰', description: t('dashboard.personalized.widgets.available.localTime.description') },
+    { id: 'weather', name: t('dashboard.personalized.widgets.available.weather.name'), icon: '🌤️', description: t('dashboard.personalized.widgets.available.weather.description') },
+    { id: 'checklist', name: t('dashboard.personalized.widgets.available.checklist.name'), icon: '✅', description: t('dashboard.personalized.widgets.available.checklist.description') },
+    { id: 'budget-tracker', name: t('dashboard.personalized.widgets.available.budgetTracker.name'), icon: '💰', description: t('dashboard.personalized.widgets.available.budgetTracker.description') },
+    { id: 'recommendations', name: t('dashboard.personalized.widgets.available.recommendations.name'), icon: '💡', description: t('dashboard.personalized.widgets.available.recommendations.description') },
   ]
 
   // ✅ Ne pas utiliser de fallback, attendre que selectedProjectId soit initialisé
@@ -73,7 +75,7 @@ export default function PersonalizedDashboard() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Chargement de votre dashboard personnalisé...</p>
+          <p className="text-gray-600">{t('dashboard.personalized.loading')}</p>
         </div>
       </div>
     )
@@ -84,16 +86,16 @@ export default function PersonalizedDashboard() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center max-w-md mx-auto p-6">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">
-            Dashboard en cours de préparation
+            {t('dashboard.personalized.noProjects.title')}
           </h2>
           <p className="text-gray-600 mb-6">
-            Complétez votre onboarding pour accéder à votre dashboard personnalisé
+            {t('dashboard.personalized.noProjects.description')}
           </p>
           <Link
             to="/onboarding"
             className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
           >
-            Compléter mon profil
+            {t('dashboard.personalized.noProjects.cta')}
           </Link>
         </div>
       </div>
@@ -207,10 +209,10 @@ export default function PersonalizedDashboard() {
           <div className="flex justify-between items-center h-16">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
-                Bonjour ! 👋
+                {t('dashboard.personalized.greeting')}
               </h1>
               <p className="text-sm text-gray-600">
-                Votre projet d'expatriation vers {countryData?.name || 'Destination'}
+                {t('dashboard.personalized.projectTo', { country: countryData?.name || 'Destination' })}
               </p>
             </div>
             <div className="flex items-center space-x-3">
@@ -231,7 +233,7 @@ export default function PersonalizedDashboard() {
                     const countryName = countryNames[project.idDestinationCountry] || 'Destination'
                     return (
                       <option key={project.idProject} value={project.idProject}>
-                        Projet #{project.idProject} - {countryName}
+                        {countryName}
                       </option>
                     )
                   })}
@@ -241,12 +243,12 @@ export default function PersonalizedDashboard() {
                 <Link
                   to={`/onboarding/${selectedProjectId}`}
                   className="flex items-center space-x-2 px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 hover:border-gray-400 transition-all"
-                  title="Modifier le projet"
+                  title={t('dashboard.personalized.editProject')}
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                   </svg>
-                  <span className="text-sm">Modifier le projet</span>
+                  <span className="text-sm">{t('dashboard.personalized.editProject')}</span>
                 </Link>
               )}
               <button
@@ -260,19 +262,19 @@ export default function PersonalizedDashboard() {
                 {editMode ? (
                   <>
                     <Check className="w-4 h-4" />
-                    <span className="text-sm">Terminer</span>
+                    <span className="text-sm">{t('dashboard.personalized.finish')}</span>
                   </>
                 ) : (
                   <>
                     <LayoutGrid className="w-4 h-4" />
-                    <span className="text-sm">Modifier les widgets</span>
+                    <span className="text-sm">{t('dashboard.personalized.modifyWidgets')}</span>
                   </>
                 )}
               </button>
               <Link
                 to="/profile"
                 className="flex items-center space-x-2 text-gray-600 hover:bg-gray-100 px-3 py-2 rounded-lg transition-colors"
-                title="Paramètres du profil"
+                title={t('dashboard.personalized.settings')}
               >
                 <Settings className="w-4 h-4" />
               </Link>
@@ -285,7 +287,7 @@ export default function PersonalizedDashboard() {
         {editMode && (
           <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
             <p className="text-sm text-blue-800">
-              <strong>Mode édition activé</strong> - Cliquez sur le menu (⋯) de chaque widget pour le modifier ou le masquer
+              <strong>{t('dashboard.personalized.editModeActive')}</strong> - {t('dashboard.personalized.editModeDescription')}
             </p>
           </div>
         )}
@@ -300,26 +302,26 @@ export default function PersonalizedDashboard() {
               </div>
               {activeProject?.projectStatus === 'planning' && (
                 <span className="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">
-                  En cours
+                  {t('dashboard.personalized.stats.projectStatus.ongoing')}
                 </span>
               )}
               {activeProject?.projectStatus === 'active' && (
                 <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
-                  Actif
+                  {t('dashboard.personalized.stats.projectStatus.active')}
                 </span>
               )}
               {activeProject?.projectStatus === 'completed' && (
                 <span className="px-3 py-1 bg-purple-100 text-purple-700 text-xs font-semibold rounded-full">
-                  Terminé
+                  {t('dashboard.personalized.stats.projectStatus.completed')}
                 </span>
               )}
             </div>
             <div>
-              <p className="text-sm text-gray-500 mb-1">Statut du projet</p>
+              <p className="text-sm text-gray-500 mb-1">{t('dashboard.personalized.stats.projectStatus.label')}</p>
               <p className="text-2xl font-bold text-gray-900">
-                {activeProject?.projectStatus === 'planning' && 'Planification'}
-                {activeProject?.projectStatus === 'active' && 'Actif'}
-                {activeProject?.projectStatus === 'completed' && 'Complété'}
+                {activeProject?.projectStatus === 'planning' && t('dashboard.personalized.stats.projectStatus.planning')}
+                {activeProject?.projectStatus === 'active' && t('dashboard.personalized.stats.projectStatus.active')}
+                {activeProject?.projectStatus === 'completed' && t('dashboard.personalized.stats.projectStatus.completed')}
               </p>
             </div>
           </div>
@@ -333,12 +335,14 @@ export default function PersonalizedDashboard() {
               </div>
               {activeProject?.expectedDepartureDate && (
                 <span className="text-xs text-gray-400 font-medium">
-                  {Math.ceil((new Date(activeProject.expectedDepartureDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24))} jours
+                  {t('dashboard.personalized.stats.departureDate.days', { 
+                    count: Math.ceil((new Date(activeProject.expectedDepartureDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+                  })}
                 </span>
               )}
             </div>
             <div>
-              <p className="text-sm text-gray-500 mb-1">Date de départ</p>
+              <p className="text-sm text-gray-500 mb-1">{t('dashboard.personalized.stats.departureDate.label')}</p>
               <p className="text-2xl font-bold text-gray-900">
                 {activeProject?.expectedDepartureDate
                   ? new Date(activeProject.expectedDepartureDate).toLocaleDateString('fr-FR', { 
@@ -346,7 +350,7 @@ export default function PersonalizedDashboard() {
                       month: 'short', 
                       year: 'numeric' 
                     })
-                  : 'Non défini'}
+                  : t('dashboard.personalized.stats.departureDate.undefined')}
               </p>
             </div>
           </div>
@@ -358,14 +362,14 @@ export default function PersonalizedDashboard() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                 </svg>
               </div>
-              <span className="text-xs text-gray-400 font-medium">Par mois</span>
+              <span className="text-xs text-gray-400 font-medium">{t('dashboard.personalized.stats.housingBudget.perMonth')}</span>
             </div>
             <div>
-              <p className="text-sm text-gray-500 mb-1">Budget logement</p>
+              <p className="text-sm text-gray-500 mb-1">{t('dashboard.personalized.stats.housingBudget.label')}</p>
               <p className="text-2xl font-bold text-gray-900">
                 {activeProject?.housingBudget
                   ? `${activeProject.housingBudget} ${originCountryData?.currency || '€'}`
-                  : 'Non défini'}
+                  : t('dashboard.personalized.stats.housingBudget.undefined')}
               </p>
             </div>
           </div>
@@ -377,12 +381,14 @@ export default function PersonalizedDashboard() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <span className="text-xs text-gray-400 font-medium">Estimé</span>
+              <span className="text-xs text-gray-400 font-medium">{t('dashboard.personalized.stats.duration.estimated')}</span>
             </div>
             <div>
-              <p className="text-sm text-gray-500 mb-1">Durée du séjour</p>
+              <p className="text-sm text-gray-500 mb-1">{t('dashboard.personalized.stats.duration.label')}</p>
               <p className="text-2xl font-bold text-gray-900">
-                {activeProject?.expectedDuration ? `${activeProject.expectedDuration} mois` : 'Non défini'}
+                {activeProject?.expectedDuration 
+                  ? t('dashboard.personalized.stats.duration.months', { count: activeProject.expectedDuration })
+                  : t('dashboard.personalized.stats.duration.undefined')}
               </p>
             </div>
           </div>
@@ -397,14 +403,14 @@ export default function PersonalizedDashboard() {
               className="border-2 border-dashed border-gray-300 rounded-xl p-6 flex flex-col items-center justify-center text-gray-500 hover:border-gray-400 hover:text-gray-600 cursor-pointer transition-colors"
             >
               <Plus className="w-8 h-8 mb-2" />
-              <span className="text-sm font-medium">Ajouter un widget</span>
+              <span className="text-sm font-medium">{t('dashboard.personalized.widgets.addWidget')}</span>
             </button>
           )}
         </div>
 
         {hiddenWidgets.length > 0 && editMode && (
           <div className="mt-8">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Widgets masqués</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.personalized.widgets.hiddenWidgets')}</h3>
             <div className="flex flex-wrap gap-2">
               {hiddenWidgets.map((widgetId) => (
                 <button
@@ -412,7 +418,7 @@ export default function PersonalizedDashboard() {
                   onClick={() => toggleWidgetVisibility(widgetId)}
                   className="px-3 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 text-sm"
                 >
-                  Restaurer {widgetId.replace('-', ' ')}
+                  {t('dashboard.personalized.widgets.restore', { name: widgetId.replace('-', ' ') })}
                 </button>
               ))}
             </div>
@@ -425,9 +431,9 @@ export default function PersonalizedDashboard() {
           <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[85vh] overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200">
             <div className="px-8 py-6 border-b border-gray-100 flex items-center justify-between bg-white">
               <div>
-                <h2 className="text-2xl font-bold text-gray-900">Bibliothèque de widgets</h2>
+                <h2 className="text-2xl font-bold text-gray-900">{t('dashboard.personalized.widgets.library.title')}</h2>
                 <p className="text-gray-500 mt-1">
-                  Personnalisez votre tableau de bord en ajoutant les outils dont vous avez besoin.
+                  {t('dashboard.personalized.widgets.library.description')}
                 </p>
               </div>
               <button
@@ -481,7 +487,7 @@ export default function PersonalizedDashboard() {
                           {isAdded && (
                             <span className="flex items-center text-xs font-medium text-green-600 bg-green-100 px-2 py-1 rounded-full">
                               <Check className="w-3 h-3 mr-1" />
-                              Ajouté
+                              {t('dashboard.personalized.widgets.library.added')}
                             </span>
                           )}
                         </div>
@@ -492,7 +498,7 @@ export default function PersonalizedDashboard() {
                         {!isAdded && (
                           <div className="mt-4 flex items-center text-sm font-medium text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
                             <Plus className="w-4 h-4 mr-1" />
-                            Ajouter au dashboard
+                            {t('dashboard.personalized.widgets.library.addToDashboard')}
                           </div>
                         )}
                       </div>
@@ -507,7 +513,7 @@ export default function PersonalizedDashboard() {
                 onClick={() => setShowAddWidget(false)}
                 className="px-6 py-2.5 bg-gray-900 text-white font-medium rounded-xl hover:bg-gray-800 transition-colors shadow-lg shadow-gray-200"
               >
-                Terminé
+                {t('dashboard.personalized.widgets.library.done')}
               </button>
             </div>
           </div>

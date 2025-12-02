@@ -2,16 +2,18 @@ import { Link } from 'react-router-dom';
 import { getServicesWithTools } from '../../../data/services-config';
 import { ArrowRight } from 'lucide-react';
 import { PageHeader } from '../../../components/PageHeader';
+import { useTranslation } from 'react-i18next';
 
 export default function ServicesIndexPage() {
-  const services = getServicesWithTools(); // ✅ Seulement les services avec outils
+  const { t } = useTranslation();
+  const services = getServicesWithTools(t); // ✅ Seulement les services avec outils
 
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
       <PageHeader 
-        title="Nos Outils & Services" 
-        description="Découvrez nos outils interactifs pour faciliter votre expatriation. Calculateurs, checklists et assistants personnalisés pour chaque étape de votre projet."
+        title={t('services.indexPage.title')}
+        description={t('services.indexPage.description')}
       />
 
       {/* Services Grid */}
@@ -43,7 +45,7 @@ export default function ServicesIndexPage() {
                 </p>
 
                 <div className="flex items-center text-sm font-medium text-[#5EA3C0] opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
-                  En savoir plus
+                  {t('services.indexPage.learnMore')}
                 </div>
               </Link>
             );

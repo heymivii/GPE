@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { CheckCircle2, Trophy, Sparkles, Maximize2, Minimize2, FileText, Calculator, Car, Heart } from 'lucide-react';
 import { TransportCostTool } from './TransportTools';
 import { HealthCoverageTool } from './HealthTools';
@@ -11,20 +12,21 @@ interface ServiceToolsProps {
 }
 
 export default function ServiceTools({ category, countryName, isExpanded = false, onToggleExpand }: ServiceToolsProps) {
+  const { t } = useTranslation();
   const [activeTool, setActiveTool] = useState<string>('default');
 
   if (category === 'emploi') {
     const currentTool = activeTool === 'default' ? 'cv' : activeTool;
     return (
       <ToolContainer 
-        title="Boîte à outils" 
-        description="Outils pratiques pour votre recherche"
+        title={t('services.tools.title')} 
+        description={t('services.tools.cvAnalyzer.description')}
         activeToolId={currentTool}
         onToolChange={setActiveTool}
         isExpanded={isExpanded}
         onToggleExpand={onToggleExpand}
         tools={[
-          { id: 'cv', label: 'Analyseur CV', icon: FileText, active: true },
+          { id: 'cv', label: t('services.tools.cvAnalyzer.title'), icon: FileText, active: true },
         ]}
       >
         {currentTool === 'cv' && <CVReadinessTool countryName={countryName} />}
@@ -36,14 +38,14 @@ export default function ServiceTools({ category, countryName, isExpanded = false
     const currentTool = activeTool === 'default' ? 'calc' : activeTool;
     return (
       <ToolContainer 
-        title="Boîte à outils" 
-        description="Estimez et préparez votre dossier"
+        title={t('services.tools.title')} 
+        description={t('services.tools.budgetCalculator.description')}
         activeToolId={currentTool}
         onToolChange={setActiveTool}
         isExpanded={isExpanded}
         onToggleExpand={onToggleExpand}
         tools={[
-          { id: 'calc', label: 'Budget', icon: Calculator, active: true },
+          { id: 'calc', label: t('services.tools.budgetCalculator.title'), icon: Calculator, active: true },
         ]}
       >
         {currentTool === 'calc' && <RentCalculatorTool countryName={countryName} />}
@@ -55,14 +57,14 @@ export default function ServiceTools({ category, countryName, isExpanded = false
     const currentTool = activeTool === 'default' ? 'cost' : activeTool;
     return (
       <ToolContainer 
-        title="Boîte à outils" 
-        description="Optimisez vos déplacements"
+        title={t('services.tools.title')} 
+        description={t('services.tools.transportCost.description')}
         activeToolId={currentTool}
         onToolChange={setActiveTool}
         isExpanded={isExpanded}
         onToggleExpand={onToggleExpand}
         tools={[
-          { id: 'cost', label: 'Coût transport', icon: Car, active: true },
+          { id: 'cost', label: t('services.tools.transportCost.title'), icon: Car, active: true },
         ]}
       >
         {currentTool === 'cost' && <TransportCostTool countryName={countryName} />}
@@ -74,14 +76,14 @@ export default function ServiceTools({ category, countryName, isExpanded = false
     const currentTool = activeTool === 'default' ? 'coverage' : activeTool;
     return (
       <ToolContainer 
-        title="Boîte à outils" 
-        description="Préparez votre couverture santé"
+        title={t('services.tools.title')} 
+        description={t('services.tools.healthCoverage.description')}
         activeToolId={currentTool}
         onToolChange={setActiveTool}
         isExpanded={isExpanded}
         onToggleExpand={onToggleExpand}
         tools={[
-          { id: 'coverage', label: 'Couverture santé', icon: Heart, active: true },
+          { id: 'coverage', label: t('services.tools.healthCoverage.title'), icon: Heart, active: true },
         ]}
       >
         {currentTool === 'coverage' && <HealthCoverageTool countryName={countryName} />}
@@ -104,6 +106,7 @@ interface ToolContainerProps {
 }
 
 function ToolContainer({ title, description, tools, activeToolId, onToolChange, isExpanded, onToggleExpand, children }: ToolContainerProps) {
+  const { t } = useTranslation();
   return (
     <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden h-full flex flex-col">
       {/* Header */}
@@ -117,7 +120,7 @@ function ToolContainer({ title, description, tools, activeToolId, onToolChange, 
             <button
               onClick={onToggleExpand}
               className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
-              title={isExpanded ? "Réduire" : "Agrandir"}
+              title={isExpanded ? t('common.reduce', 'Réduire') : t('common.expand', 'Agrandir')}
             >
               {isExpanded ? (
                 <Minimize2 className="w-4 h-4 text-gray-600" />
@@ -146,19 +149,16 @@ function ToolContainer({ title, description, tools, activeToolId, onToolChange, 
             <tool.icon className={`w-4 h-4 ${activeToolId === tool.id ? 'text-white' : 'text-gray-400 group-hover:text-gray-600'}`} />
             <span className="flex-1 text-left">{tool.label}</span>
             {tool.comingSoon && (
-              <span className="text-[10px] font-bold px-1.5 py-0.5 bg-gray-100 text-gray-500 rounded">
-                Bientôt
+              <span className="text-[10px] font-bold px-1.5 py-0.5 bg-gray-100 text-gray-500 rounded border border-gray-200">
+                {t('common.comingSoon')}
               </span>
-            )}
-            {activeToolId === tool.id && (
-              <div className="w-1.5 h-1.5 rounded-full bg-white"></div>
             )}
           </button>
         ))}
       </div>
 
-      {/* Active Tool Content */}
-      <div className="p-6 bg-gray-50/50 flex-grow overflow-y-auto">
+      {/* Content Area */}
+      <div className="flex-1 overflow-y-auto p-6 bg-gray-50/50">
         {children}
       </div>
     </div>
@@ -166,12 +166,13 @@ function ToolContainer({ title, description, tools, activeToolId, onToolChange, 
 }
 
 function CVReadinessTool({ countryName }: { countryName?: string }) {
+  const { t } = useTranslation();
   const [checklist, setChecklist] = useState([
-    { id: 1, text: 'CV traduit dans la langue du pays', checked: false },
-    { id: 2, text: 'Expériences mises en valeur (résultats chiffrés)', checked: false },
-    { id: 3, text: 'Coordonnées à jour (avec indicatif pays)', checked: false },
-    { id: 4, text: 'Lien LinkedIn fonctionnel et profil à jour', checked: false },
-    { id: 5, text: 'Format adapté (1-2 pages max)', checked: false },
+    { id: 1, text: t('services.tools.cvReadiness.items.translated'), checked: false },
+    { id: 2, text: t('services.tools.cvReadiness.items.highlighted'), checked: false },
+    { id: 3, text: t('services.tools.cvReadiness.items.contact'), checked: false },
+    { id: 4, text: t('services.tools.cvReadiness.items.linkedin'), checked: false },
+    { id: 5, text: t('services.tools.cvReadiness.items.format'), checked: false },
   ]);
 
   const toggleItem = (id: number) => {
@@ -186,16 +187,16 @@ function CVReadinessTool({ countryName }: { countryName?: string }) {
     <div>
       <div className="mb-6">
         <h4 className="text-sm font-bold text-gray-900 mb-1">
-          Checklist CV {countryName && `- ${countryName}`}
+          {t('services.tools.cvReadiness.title')} {countryName && `- ${countryName}`}
         </h4>
         <p className="text-xs text-gray-500">
-          Assurez-vous que votre CV respecte les standards locaux.
+          {t('services.tools.cvReadiness.description')}
         </p>
       </div>
 
       <div className="mb-6 bg-white rounded-xl p-4 border border-gray-200">
         <div className="flex justify-between items-center mb-2">
-          <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Progression</span>
+          <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">{t('services.tools.cvReadiness.progress')}</span>
           <span className="text-lg font-bold text-gray-900">{progress}%</span>
         </div>
         <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
@@ -234,7 +235,7 @@ function CVReadinessTool({ countryName }: { countryName?: string }) {
       {progress === 100 && (
         <div className="mt-4 p-3 bg-white border border-gray-200 rounded-lg flex items-center gap-3">
           <Trophy className="w-4 h-4 text-gray-900 flex-shrink-0" />
-          <p className="text-xs font-medium text-gray-700">CV prêt à être envoyé !</p>
+          <p className="text-xs font-medium text-gray-700">{t('services.tools.cvReadiness.ready')}</p>
         </div>
       )}
     </div>
@@ -242,6 +243,7 @@ function CVReadinessTool({ countryName }: { countryName?: string }) {
 }
 
 function RentCalculatorTool({ countryName }: { countryName?: string }) {
+  const { t } = useTranslation();
   const [salary, setSalary] = useState<string>('');
   const [period, setPeriod] = useState<'month' | 'year'>('month');
 
@@ -258,17 +260,17 @@ function RentCalculatorTool({ countryName }: { countryName?: string }) {
     <div className="max-w-3xl mx-auto">
       <div className="mb-8 text-center">
         <h4 className="text-xl font-bold text-gray-900 mb-2">
-          Calculateur de Loyer
+          {t('services.tools.rentCalculator.title')}
         </h4>
         <p className="text-gray-500 text-sm">
-          Estimez votre capacité locative selon la règle des 33%.
+          {t('services.tools.rentCalculator.description')}
         </p>
       </div>
 
       <div className="space-y-6">
         <div>
           <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wide">
-            Revenu net estimé
+            {t('services.tools.rentCalculator.netIncome')}
           </label>
           <div className="flex gap-3">
             <div className="relative flex-1">
@@ -285,27 +287,27 @@ function RentCalculatorTool({ countryName }: { countryName?: string }) {
               onChange={(e) => setPeriod(e.target.value as 'month' | 'year')}
               className="px-4 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-700 focus:border-gray-900 focus:ring-0 cursor-pointer hover:bg-gray-100 transition-colors text-sm"
             >
-              <option value="month">/ mois</option>
-              <option value="year">/ an</option>
+              <option value="month">{t('services.tools.rentCalculator.perMonth')}</option>
+              <option value="year">{t('services.tools.rentCalculator.perYear')}</option>
             </select>
           </div>
         </div>
 
         <div className="p-8 bg-gray-50 rounded-2xl border border-gray-200 text-center">
-          <p className="text-xs font-bold text-gray-500 mb-3 uppercase tracking-wide">Budget recommandé</p>
+          <p className="text-xs font-bold text-gray-500 mb-3 uppercase tracking-wide">{t('services.tools.rentCalculator.recommendedBudget')}</p>
           <div className="flex items-baseline justify-center gap-1 mb-2">
             <span className="text-4xl font-bold text-gray-900 tracking-tight">
               {budget > 0 ? budget : '---'}
             </span>
             <span className="text-xl font-medium text-gray-400">€</span>
           </div>
-          <p className="text-sm text-gray-400">par mois maximum</p>
+          <p className="text-sm text-gray-400">{t('services.tools.rentCalculator.maxPerMonth')}</p>
         </div>
 
         <div className="flex items-start gap-3 p-4 rounded-xl bg-white border border-gray-200 shadow-sm">
           <div className="flex-shrink-0 w-5 h-5 mt-0.5 bg-gray-100 rounded-full flex items-center justify-center text-gray-500 font-bold text-xs">i</div>
           <p className="text-xs text-gray-500 leading-relaxed">
-            Ce calcul se base sur un taux d'effort de 33%. 
+            {t('services.tools.rentCalculator.info')}
             {countryName && ` À ${countryName}, les propriétaires peuvent exiger des garanties supplémentaires.`}
           </p>
         </div>
@@ -314,5 +316,4 @@ function RentCalculatorTool({ countryName }: { countryName?: string }) {
   );
 }
 
-// ...existing code...
 // RentalApplicationTool removed as we only keep one tool per service
