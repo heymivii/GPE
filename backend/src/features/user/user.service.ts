@@ -35,6 +35,8 @@ export class UserService {
       age: createUserDto.age,
       status: createUserDto.status,
       languageLevel: createUserDto.languageLevel,
+      motherTongue: createUserDto.motherTongue,
+      spokenLanguages: createUserDto.spokenLanguages,
       idOriginCountry: createUserDto.idOriginCountry,
       userRole: 'user',
     });

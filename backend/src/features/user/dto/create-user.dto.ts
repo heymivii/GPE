@@ -7,6 +7,7 @@ import {
   IsEnum,
   Min,
   Max,
+  IsArray,
 } from 'class-validator';
 
 export class CreateUserDto {
@@ -42,4 +43,13 @@ export class CreateUserDto {
   @IsOptional()
   @IsInt()
   idOriginCountry?: number;
+
+  @IsOptional()
+  @IsString()
+  motherTongue?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  spokenLanguages?: string[];
 }

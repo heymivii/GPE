@@ -9,7 +9,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import { Country } from '../../country/entities/country.entity';
-import { ProcessTracking } from '../../process-tracking/entities/process-tracking.entity';
+import { ProcedureTracking } from '../../procedure-tracking/entities/procedure-tracking.entity';
 
 @Entity('app_user')
 export class User {
@@ -43,6 +43,12 @@ export class User {
   @Column({ name: 'language_level', type: 'varchar', length: 50, nullable: true })
   languageLevel?: string;
 
+  @Column({ name: 'mother_tongue', nullable: true })
+  motherTongue: string;
+
+  @Column('text', { name: 'spoken_languages', array: true, nullable: true })
+  spokenLanguages: string[];
+
   @Column({ name: 'id_origin_country', nullable: true })
   idOriginCountry?: number;
 
@@ -56,6 +62,6 @@ export class User {
   @JoinColumn({ name: 'id_origin_country' })
   originCountry?: Country;
 
-  @OneToMany(() => ProcessTracking, (tracking) => tracking.user)
-  processTrackings: ProcessTracking[];
+  @OneToMany(() => ProcedureTracking, (tracking) => tracking.user)
+  processTrackings: ProcedureTracking[];
 }
