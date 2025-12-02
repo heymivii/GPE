@@ -218,7 +218,7 @@ export default function PersonalizedDashboard() {
                 <select
                   value={selectedProjectId}
                   onChange={(e) => setSelectedProjectId(Number(e.target.value))}
-                  className="px-3 py-2 border border-gray-300 rounded-lg bg-white text-sm font-medium"
+                  className="px-3 py-2 border border-gray-300 rounded-lg bg-white text-sm font-medium hover:border-gray-400 transition-colors"
                 >
                   {projects.map((project) => {
                     // Trouver le nom du pays
@@ -237,23 +237,44 @@ export default function PersonalizedDashboard() {
                   })}
                 </select>
               )}
+              {selectedProjectId && (
+                <Link
+                  to={`/onboarding/${selectedProjectId}`}
+                  className="flex items-center space-x-2 px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 hover:border-gray-400 transition-all"
+                  title="Modifier le projet"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  <span className="text-sm">Modifier le projet</span>
+                </Link>
+              )}
               <button
                 onClick={() => setEditMode(!editMode)}
-                className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors ${
+                className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all ${
                   editMode 
-                    ? 'bg-blue-100 text-blue-700' 
-                    : 'text-gray-600 hover:bg-gray-100'
+                    ? 'bg-blue-600 text-white shadow-md hover:bg-blue-700' 
+                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 hover:border-gray-400'
                 }`}
               >
-                <LayoutGrid className="w-4 h-4" />
-                <span className="text-sm">Personnaliser</span>
+                {editMode ? (
+                  <>
+                    <Check className="w-4 h-4" />
+                    <span className="text-sm">Terminer</span>
+                  </>
+                ) : (
+                  <>
+                    <LayoutGrid className="w-4 h-4" />
+                    <span className="text-sm">Modifier les widgets</span>
+                  </>
+                )}
               </button>
               <Link
                 to="/profile"
-                className="flex items-center space-x-2 text-gray-600 hover:bg-gray-100 px-3 py-2 rounded-lg"
+                className="flex items-center space-x-2 text-gray-600 hover:bg-gray-100 px-3 py-2 rounded-lg transition-colors"
+                title="Paramètres du profil"
               >
                 <Settings className="w-4 h-4" />
-                <span className="text-sm">Paramètres</span>
               </Link>
             </div>
           </div>
