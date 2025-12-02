@@ -1,6 +1,15 @@
 # 📊 Structure des Données Pays
 
-Ce dossier contient toutes les données nécessaires pour alimenter les outils interactifs de Skywalk.
+Ce do## ✅ Statut par pays
+
+| Pays | Transport | Santé | Fichier détaillé |
+|------|-----------|-------|------------------|
+| 🇫🇷 France | ✅ | ✅ | `france-data.ts` |
+| 🇬🇧 Royaume-Uni | ✅ | ✅ | `uk-data.ts` |
+| 🇨🇭 Suisse | ✅ | ✅ | `switzerland-data.ts` |
+| 🇨🇦 Canada | ⏳ | ⏳ | TODO |
+| 🇩🇪 Allemagne | ⏳ | ⏳ | TODO |
+| 🇪🇸 Espagne | ⏳ | ⏳ | TODO |tient toutes les données nécessaires pour alimenter les outils interactifs de Skywalk.
 
 ## 📁 Organisation
 
@@ -78,6 +87,23 @@ Les fichiers `transport-data.ts` et `health-data.ts` sont **utilisés directemen
 - Enregistrement GP : https://www.nhs.uk/nhs-services/gps/
 - Vaccinations : https://www.nhs.uk/conditions/vaccinations/
 - GHIC : https://www.nhs.uk/using-the-nhs/healthcare-abroad/
+
+### Suisse - Transport
+- Prix essence : https://www.globalpetrolprices.com/Switzerland/gasoline_prices/
+- Transports Zurich : https://www.expatistan.com/price/gas/zurich
+- Calculateur coûts auto : https://www.schwiizerfranke.com/en/benzinkosten-berechnen-schweiz
+- Comparis assurances : https://en.comparis.ch/
+
+### Suisse - Santé
+- FOPH (Office fédéral santé publique) : https://www.bag.admin.ch/en/
+- Primes LAMal 2026 : https://www.bag.admin.ch/en/premiums-and-costs-answers-to-frequently-asked-questions
+- International Insurance (Swiss system) : https://www.internationalinsurance.com/health/systems/switzerland.php
+- Comparis assurance maladie : https://en.comparis.ch/krankenkassen/
+- Assurance Genevoise (primes) : https://assurance-genevoise.ch/en/blog/combien-coute-lassurance-maladie-en-suisse
+- Moneyland healthcare costs : https://www.moneyland.ch/en/basic-swiss-health-insurance-costs-covered-overview
+- InterNations Swiss healthcare : https://www.internations.org/switzerland-expats/guide/healthcare
+- Expatica Swiss insurance guide : https://www.expatica.com/ch/healthcare/healthcare-basics/a-guide-to-swiss-health-insurance-693473/
+- EHIC Switzerland : https://employment-social-affairs.ec.europa.eu/policies-and-activities/moving-working-europe/eu-social-security-coordination/european-health-insurance-card/how-use-card/switzerland-european-health-insurance-card_en
 
 ## 📝 Comment ajouter un nouveau pays
 

@@ -63,6 +63,12 @@ export const transportPricesByCountry: Record<string, TransportPrices> = {
     parkingMonthly: 348, // 300 GBP parking centre Londres × 1.16
     vehicleInsuranceYearly: 652, // 562 GBP/an × 1.16
   },
+  suisse: {
+    fuelPricePerLiter: 1.77, // 1.69 CHF × 1.05 (taux EUR/CHF, 10 Nov 2025)
+    publicTransportMonthly: 105, // 100 CHF Zurich Monatskarte × 1.05
+    parkingMonthly: 231, // 220 CHF parking centre Zurich × 1.05
+    vehicleInsuranceYearly: 735, // 700 CHF/an × 1.05
+  },
   // TODO: Ajouter les autres pays
 };
 

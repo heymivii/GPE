@@ -88,6 +88,15 @@ export const healthSystemByCountry: Record<string, HealthSystemInfo> = {
     emergencyFree: true, // Urgences NHS gratuites pour résidents
     prescriptionSubsidized: true, // Prescriptions NHS ~£9.90 par item
   },
+  suisse: {
+    type: 'mixed', // Assurance obligatoire privée (LAMal) + complémentaires
+    hasUniversalCoverage: true,
+    publicCostMonthly: 413, // 393.30 CHF × 1.05 = Prime LAMal moyenne 2026 (OBLIGATOIRE)
+    privateCostMonthly: 473, // 450 CHF × 1.05 = Complémentaires privées optionnelles
+    coPaymentRate: 90, // 90% remboursé après franchise + 10% quote-part (max 700 CHF/an)
+    emergencyFree: false, // Franchise + quote-part s'appliquent
+    prescriptionSubsidized: true, // Après franchise
+  },
   // TODO: Ajouter les autres pays
 };
 
@@ -109,6 +118,7 @@ export const vaccinationsByCountry: Record<string, VaccinationRequirement[]> = {
 // Budget santé par profil (valeurs moyennes annuelles en €)
 // Sources France: Mutuelle moyenne 55€/mois + reste à charge selon profil
 // Source: https://www.magnolia.fr/mutuelle-sante/prix-moyen-mutuelle + ameli.fr
+// Suisse: Primes LAMal obligatoires TRÈS ÉLEVÉES (source: FOPH 2026 + conversion CHF→EUR)
 export const healthBudgetByProfile: Record<string, HealthBudgetEstimate> = {
   young_healthy: {
     insurance: 450, // 55€/mois mutuelle France (formule intermédiaire)
@@ -140,6 +150,43 @@ export const healthBudgetByProfile: Record<string, HealthBudgetEstimate> = {
     medications: 400, // Traitements réguliers (ALD 100% remboursée Sécu)
     dental: 300,
     optical: 100,
+    emergency: 0,
+  },
+};
+
+// Budgets santé Suisse (⚠️ BEAUCOUP PLUS ÉLEVÉS que reste de l'Europe)
+// Source: switzerland-mapping.ts (budgets CHF convertis en EUR)
+export const healthBudgetByProfileSwitzerland: Record<string, HealthBudgetEstimate> = {
+  young_healthy: {
+    insurance: 4725, // 4500 CHF × 1.05 (LAMal obligatoire + franchise)
+    consultations: 158, // 150 CHF × 1.05
+    medications: 263, // 250 CHF × 1.05
+    dental: 315, // 300 CHF × 1.05 (NON couvert par LAMal)
+    optical: 158, // 150 CHF × 1.05 (NON couvert par LAMal)
+    emergency: 0,
+  },
+  adult_average: {
+    insurance: 6300, // 6000 CHF × 1.05
+    consultations: 263, // 250 CHF × 1.05
+    medications: 420, // 400 CHF × 1.05
+    dental: 525, // 500 CHF × 1.05
+    optical: 210, // 200 CHF × 1.05
+    emergency: 0,
+  },
+  senior: {
+    insurance: 9450, // 9000 CHF × 1.05 (primes seniors très élevées)
+    consultations: 420, // 400 CHF × 1.05
+    medications: 630, // 600 CHF × 1.05
+    dental: 735, // 700 CHF × 1.05
+    optical: 315, // 300 CHF × 1.05
+    emergency: 0,
+  },
+  chronic_condition: {
+    insurance: 8400, // 8000 CHF × 1.05
+    consultations: 315, // 300 CHF × 1.05
+    medications: 840, // 800 CHF × 1.05
+    dental: 525, // 500 CHF × 1.05
+    optical: 210, // 200 CHF × 1.05
     emergency: 0,
   },
 };

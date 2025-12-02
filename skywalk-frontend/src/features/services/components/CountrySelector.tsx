@@ -13,6 +13,7 @@ const AVAILABLE_COUNTRIES: Country[] = [
   { slug: 'allemagne', name: 'Allemagne', flag: '🇩🇪' },
   { slug: 'espagne', name: 'Espagne', flag: '🇪🇸' },
   { slug: 'royaume-uni', name: 'Royaume-Uni', flag: '🇬🇧' },
+  { slug: 'suisse', name: 'Suisse', flag: '🇨🇭' },
 ];
 
 interface CountrySelectorProps {

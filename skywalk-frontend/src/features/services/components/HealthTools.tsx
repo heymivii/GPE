@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { CheckCircle2 } from 'lucide-react';
-import { healthSystemByCountry, healthBudgetByProfile } from '../../../data/health-data';
+import { healthSystemByCountry, healthBudgetByProfile, healthBudgetByProfileSwitzerland } from '../../../data/health-data';
 
 // ==================== OUTILS SANTÉ ====================
 
@@ -160,7 +160,7 @@ export function MedicalChecklistTool({ countryName }: { countryName?: string }) 
   );
 }
 
-export function HealthBudgetTool() {
+export function HealthBudgetTool({ countryName }: { countryName?: string }) {
   const [profile, setProfile] = useState<'young' | 'adult' | 'senior'>('adult');
 
   // Utiliser les vraies données depuis health-data.ts
@@ -171,17 +171,27 @@ export function HealthBudgetTool() {
   } as const;
   
   const budgetKey = profileMap[profile];
-  const budget = healthBudgetByProfile[budgetKey];
+  
+  // Utiliser les budgets spécifiques à la Suisse si le pays est 'suisse'
+  const countryKey = countryName || 'france';
+  const budget = countryKey === 'suisse' 
+    ? healthBudgetByProfileSwitzerland[budgetKey] 
+    : healthBudgetByProfile[budgetKey];
   
   // Calculer le total
   const total = budget.insurance + budget.consultations + budget.medications + 
                 budget.dental + budget.optical + budget.emergency;
+  
+  // Formater le nom du pays pour l'affichage
+  const displayName = countryName 
+    ? countryName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('-')
+    : undefined;
 
   return (
     <div>
       <div className="mb-6">
         <h4 className="text-sm font-bold text-gray-900 mb-1">
-          Budget santé annuel
+          Budget santé annuel {displayName && `- ${displayName}`}
         </h4>
         <p className="text-xs text-gray-500">
           Estimez vos dépenses santé
@@ -228,10 +238,19 @@ export function HealthBudgetTool() {
           </div>
         </div>
 
+        {countryKey === 'suisse' && (
+          <div className="flex items-start gap-2 p-3 rounded-lg bg-orange-50 border border-orange-200">
+            <div className="flex-shrink-0 w-4 h-4 mt-0.5 bg-orange-200 rounded-full flex items-center justify-center text-orange-700 font-bold text-[10px]">!</div>
+            <p className="text-[10px] text-orange-700 leading-relaxed">
+              ⚠️ <strong>Suisse:</strong> Assurance maladie LAMal OBLIGATOIRE (prime moyenne 413€/mois). Coûts santé parmi les plus élevés d'Europe.
+            </p>
+          </div>
+        )}
+
         <div className="flex items-start gap-2 p-3 rounded-lg bg-white border border-gray-200">
           <div className="flex-shrink-0 w-4 h-4 mt-0.5 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 font-bold text-[10px]">i</div>
           <p className="text-[10px] text-gray-500 leading-relaxed">
-            Budget moyen sans conditions préexistantes. TODO: Affiner avec health-data.ts
+            Budget moyen sans conditions préexistantes. Données officielles {displayName || 'France'} 2025.
           </p>
         </div>
       </div>

@@ -100,7 +100,7 @@ export default function ServiceTools({ category, countryName, isExpanded = false
       >
         {currentTool === 'coverage' && <HealthCoverageTool countryName={countryName} />}
         {currentTool === 'medical' && <MedicalChecklistTool countryName={countryName} />}
-        {currentTool === 'budget' && <HealthBudgetTool />}
+        {currentTool === 'budget' && <HealthBudgetTool countryName={countryName} />}
       </ToolContainer>
     );
   }
