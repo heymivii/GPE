@@ -1,22 +1,25 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "../../../hooks/useAuth";
 import { countryApi } from "../../../api/country";
 
 export default function RegisterForm() {
+  const { register } = useAuth();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirect = searchParams.get("redirect") || "/dashboard/";
+  const initialAge = searchParams.get("age") || "";
+
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [age, setAge] = useState("");
+  const [age, setAge] = useState(initialAge);
   const [idOriginCountry, setIdOriginCountry] = useState<number | undefined>();
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  
-  const { register } = useAuth();
-  const navigate = useNavigate();
 
   // Récupérer la liste des pays
   const { data: countries = [] } = useQuery({
@@ -49,7 +52,7 @@ export default function RegisterForm() {
         age: age ? parseInt(age) : undefined,
         idOriginCountry,
       });
-      navigate("/dashboard");
+      navigate(redirect);
     } catch (err: unknown) {
       const errorMessage = err instanceof Error 
         ? err.message 
@@ -193,7 +196,7 @@ export default function RegisterForm() {
         {isLoading ? "Inscription..." : "Rejoindre l'aventure SkyWalk"}
       </button>
       
-      <p>Vous avez déjà un compte ? <Link to="/auth/login">Connectez-vous</Link> </p>
+      <p>Vous avez déjà un compte ? <Link to={`/auth/login?redirect=${encodeURIComponent(redirect)}`}>Connectez-vous</Link> </p>
     </form>
   );
 }
