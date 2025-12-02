@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import FormField from '../ui/FormField'
 import Select from '../ui/Select'
 import TextInput from '../ui/TextInput'
 import WizardNav from '../components/WizardNav'
-import { COUNTRIES } from '../data/constants'
+import { countryApi } from '../../../api/country'
 
 interface DestinationStepData {
   fromCountry: string
@@ -25,6 +26,19 @@ export default function DestinationStep({ data, onNext, onBack }: DestinationSte
     targetCity: data?.targetCity || '',
     departureYear: data?.departureYear || ''
   })
+
+  const { data: countries = [] } = useQuery({
+    queryKey: ['countries'],
+    queryFn: countryApi.getAll
+  })
+
+  const countryOptions = countries
+    .filter(c => c.isoCode) // Ensure we have an ISO code
+    .map(c => ({
+      value: c.isoCode!,
+      label: c.countryName
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label))
 
   // 🔄 Synchroniser avec les données du projet en mode édition
   useEffect(() => {
@@ -79,8 +93,15 @@ export default function DestinationStep({ data, onNext, onBack }: DestinationSte
   }
 
   const handleFieldChange = (field: keyof DestinationStepData) => (value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
-    if (errors[field]) {
+    const newFormData = { ...formData, [field]: value }
+    setFormData(newFormData)
+    
+    // Vérification immédiate si les pays sont identiques
+    if (field === 'toCountry' && value && newFormData.fromCountry && value === newFormData.fromCountry) {
+      setErrors(prev => ({ ...prev, toCountry: 'Le pays de destination doit être différent du pays de départ' }))
+    } else if (field === 'fromCountry' && value && newFormData.toCountry && value === newFormData.toCountry) {
+      setErrors(prev => ({ ...prev, toCountry: 'Le pays de destination doit être différent du pays de départ' }))
+    } else if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: undefined }))
     }
   }
@@ -107,7 +128,7 @@ export default function DestinationStep({ data, onNext, onBack }: DestinationSte
         >
           <Select
             id="fromCountry"
-            options={COUNTRIES}
+            options={countryOptions}
             value={formData.fromCountry}
             onChange={handleFieldChange('fromCountry')}
             placeholder="Sélectionnez votre pays de départ"
@@ -123,7 +144,7 @@ export default function DestinationStep({ data, onNext, onBack }: DestinationSte
         >
           <Select
             id="toCountry"
-            options={COUNTRIES}
+            options={countryOptions}
             value={formData.toCountry}
             onChange={handleFieldChange('toCountry')}
             placeholder="Sélectionnez votre pays de destination"
