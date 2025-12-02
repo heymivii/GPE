@@ -1,0 +1,161 @@
+import { Cloud, Sun, CloudRain, Wind, Droplets, Eye } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import Widget from './Widget';
+
+interface WeatherWidgetProps {
+  countryName: string;
+  cityName?: string;
+  onHide?: () => void;
+}
+
+interface WeatherData {
+  temperature: number;
+  description: string;
+  humidity: number;
+  windSpeed: number;
+  icon: string;
+  feelsLike: number;
+}
+
+export default function WeatherWidget({ 
+  countryName, 
+  cityName = '',
+  onHide 
+}: WeatherWidgetProps) {
+  const location = cityName || countryName;
+
+  const { data: weather, isLoading: loading, isError: error } = useQuery({
+    queryKey: ['weather', location],
+    queryFn: async () => {
+      const apiKey = import.meta.env.VITE_OPENWEATHER_API_KEY;
+      
+      const response = await fetch(
+        `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${apiKey}&units=metric&lang=fr`
+      );
+      
+      if (!response.ok) throw new Error('Erreur API');
+      
+      const data = await response.json();
+      
+      return {
+        temperature: Math.round(data.main.temp),
+        description: data.weather[0].description,
+        humidity: data.main.humidity,
+        windSpeed: Math.round(data.wind.speed * 3.6), // m/s vers km/h
+        icon: data.weather[0].icon,
+        feelsLike: Math.round(data.main.feels_like),
+      } as WeatherData;
+    },
+    // ⏰ Données fraîches pendant 10 minutes
+    staleTime: 10 * 60 * 1000,
+    // 🔄 Re-fetch automatiquement toutes les 30 minutes
+    refetchInterval: 30 * 60 * 1000,
+    // ✅ Re-fetch quand la fenêtre reprend le focus
+    refetchOnWindowFocus: true,
+  });
+
+  const getWeatherIcon = () => {
+    if (!weather) return <Cloud className="w-12 h-12 text-gray-400" />;
+    
+    const icon = weather.icon;
+    if (icon.includes('01')) return <Sun className="w-12 h-12 text-yellow-500" />;
+    if (icon.includes('09') || icon.includes('10')) return <CloudRain className="w-12 h-12 text-blue-500" />;
+    return <Cloud className="w-12 h-12 text-gray-500" />;
+  };
+
+  if (loading) {
+    return (
+      <Widget title="Météo" icon={Cloud} onHide={onHide}>
+        <div className="flex items-center justify-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        </div>
+      </Widget>
+    );
+  }
+
+  if (error || !weather) {
+    return (
+      <Widget title="Météo" icon={Cloud} onHide={onHide}>
+        <div className="text-center py-8">
+          <Cloud className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+          <p className="text-sm text-gray-500">
+            Données météo non disponibles
+          </p>
+          <p className="text-xs text-gray-400 mt-1">
+            Configurez votre clé API OpenWeatherMap
+          </p>
+        </div>
+      </Widget>
+    );
+  }
+
+  return (
+    <Widget title="Météo" icon={Cloud} onHide={onHide}>
+      <div className="space-y-4">
+        {/* Météo principale */}
+        <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-6 border border-blue-100">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-sm font-medium text-gray-600 mb-1">
+                {cityName || countryName}
+              </h3>
+              <p className="text-xs text-gray-500 capitalize">
+                {weather.description}
+              </p>
+            </div>
+            {getWeatherIcon()}
+          </div>
+          
+          <div className="flex items-baseline space-x-2">
+            <span className="text-5xl font-bold text-gray-900 font-outfit">
+              {weather.temperature}°
+            </span>
+            <span className="text-lg text-gray-500">C</span>
+          </div>
+          
+          <p className="text-sm text-gray-600 mt-2">
+            Ressenti : {weather.feelsLike}°C
+          </p>
+        </div>
+
+        {/* Détails météo */}
+        <div className="grid grid-cols-3 gap-3">
+          <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
+            <div className="flex items-center mb-2">
+              <Droplets className="w-4 h-4 text-blue-500 mr-2" />
+              <span className="text-xs text-gray-500">Humidité</span>
+            </div>
+            <p className="text-lg font-semibold text-gray-900 font-outfit">
+              {weather.humidity}%
+            </p>
+          </div>
+          
+          <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
+            <div className="flex items-center mb-2">
+              <Wind className="w-4 h-4 text-gray-500 mr-2" />
+              <span className="text-xs text-gray-500">Vent</span>
+            </div>
+            <p className="text-lg font-semibold text-gray-900 font-outfit">
+              {weather.windSpeed} km/h
+            </p>
+          </div>
+          
+          <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
+            <div className="flex items-center mb-2">
+              <Eye className="w-4 h-4 text-gray-500 mr-2" />
+              <span className="text-xs text-gray-500">Temp.</span>
+            </div>
+            <p className="text-lg font-semibold text-gray-900 font-outfit">
+              {weather.feelsLike}°
+            </p>
+          </div>
+        </div>
+
+        {/* Info */}
+        <p className="text-xs text-gray-400 text-center">
+          Mis à jour il y a quelques instants
+        </p>
+      </div>
+    </Widget>
+  );
+}
