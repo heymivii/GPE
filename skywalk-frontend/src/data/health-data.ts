@@ -37,15 +37,20 @@ export interface HealthBudgetEstimate {
 }
 
 // TODO: Ajouter les données réelles pour chaque pays
+// Sources France:
+// - Ameli.fr: https://www.ameli.fr/assure/remboursements/rembourse/tableau-recapitulatif-taux-remboursement
+// - Info.gouv.fr: https://www.info.gouv.fr/actualite/sante-consultation-a-30-euros-chez-le-medecin-generaliste
+// - Magnolia.fr: https://www.magnolia.fr/mutuelle-sante/prix
+// - DREES: https://drees.solidarites-sante.gouv.fr/
 export const healthSystemByCountry: Record<string, HealthSystemInfo> = {
   france: {
     type: 'mixed',
     hasUniversalCoverage: true,
-    publicCostMonthly: 0, // Sécurité sociale via cotisations
-    privateCostMonthly: 50, // Mutuelle complémentaire moyenne
-    coPaymentRate: 70, // 70% remboursé par sécu
+    publicCostMonthly: 0, // Sécurité sociale via cotisations automatiques
+    privateCostMonthly: 70, // Mutuelle complémentaire moyenne 2025
+    coPaymentRate: 70, // 70% remboursé par sécurité sociale
     emergencyFree: true,
-    prescriptionSubsidized: true,
+    prescriptionSubsidized: true, // Remboursement selon tarif conventionné
   },
   canada: {
     type: 'public',
@@ -102,27 +107,28 @@ export const vaccinationsByCountry: Record<string, VaccinationRequirement[]> = {
 };
 
 // Budget santé par profil (valeurs moyennes annuelles en €)
-// TODO: Affiner avec données réelles par pays
+// Sources France: Reste à charge moyen 292€/an + mutuelle 840€/an (70€/mois)
+// Source: https://drees.solidarites-sante.gouv.fr/
 export const healthBudgetByProfile: Record<string, HealthBudgetEstimate> = {
   young_healthy: {
-    insurance: 600, // 50€/mois
-    consultations: 200, // 2-3 consultations/an
-    medications: 120, // 10€/mois
-    dental: 150,
-    optical: 100,
-    emergency: 50,
+    insurance: 840, // 70€/mois mutuelle France 2025
+    consultations: 200, // 2-3 consultations médecin généraliste à 30€
+    medications: 100, // Faible besoin médicaments
+    dental: 150, // Contrôle annuel
+    optical: 100, // Peu de besoins
+    emergency: 50, // Rarement
   },
   adult_average: {
-    insurance: 900, // 75€/mois
+    insurance: 840, // 70€/mois mutuelle France 2025
     consultations: 400, // 4-5 consultations/an
-    medications: 240, // 20€/mois
-    dental: 300,
-    optical: 150,
-    emergency: 100,
+    medications: 240, // Besoins moyens
+    dental: 300, // Soins + détartrage
+    optical: 150, // Lunettes/lentilles
+    emergency: 100, // Occasionnel
   },
   senior: {
-    insurance: 1500, // 125€/mois
-    consultations: 800, // 8-10 consultations/an
+    insurance: 1200, // 100€/mois (mutuelle senior plus chère)
+    consultations: 800, // Suivi régulier 8-10 consultations/an
     medications: 600, // 50€/mois
     dental: 500,
     optical: 200,

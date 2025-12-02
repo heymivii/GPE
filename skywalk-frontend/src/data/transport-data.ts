@@ -26,12 +26,17 @@ export interface DriverLicenseInfo {
 }
 
 // TODO: Ajouter les données réelles pour chaque pays
+// Sources France:
+// - Prix essence: https://carbu.com/france/prixmoyens
+// - Pass transport: https://www.bonjour-ratp.fr/actualites/articles/tarifs-forfaits-navigo-2025/
+// - Assurance: https://goodassur.com/assurance-auto/tarif
+// - Entretien: https://www.largus.fr/actualite-automobile/
 export const transportPricesByCountry: Record<string, TransportPrices> = {
   france: {
-    fuelPricePerLiter: 1.85, // TODO: Mettre à jour
-    publicTransportMonthly: 75,
-    parkingMonthly: 150,
-    vehicleInsuranceYearly: 600,
+    fuelPricePerLiter: 1.72, // Prix moyen essence France 2025
+    publicTransportMonthly: 88.4, // Forfait Navigo toutes zones Île-de-France
+    parkingMonthly: 100, // Péages ~16€ + parking ~80€ en grande ville
+    vehicleInsuranceYearly: 637, // 53.1€/mois × 12 (moyenne toutes formules)
   },
   canada: {
     fuelPricePerLiter: 1.50, // TODO: Mettre à jour
