@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import Stepper from './Stepper'
 import type { Step } from './Stepper'
 import { useAuth } from '../../../hooks/useAuth'
+import Breadcrumbs from '../../../components/Breadcrumbs'
 
 interface OnboardingLayoutProps {
   children: ReactNode
@@ -17,6 +18,14 @@ export default function OnboardingLayout({
   title
 }: OnboardingLayoutProps) {
   const { isAuthenticated } = useAuth()
+
+  const currentStep = steps.find(s => s.state === 'current');
+  
+  const breadcrumbItems = [
+    ...(isAuthenticated ? [{ label: 'Tableau de bord', path: '/dashboard' }] : []),
+    { label: 'Projet d\'expatriation', path: '/onboarding' },
+    ...(currentStep ? [{ label: currentStep.label }] : [])
+  ];
 
   return (
     <div className="min-h-screen bg-neutral-100">
@@ -56,6 +65,9 @@ export default function OnboardingLayout({
      
       <main className="flex-1 py-8">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mb-6">
+            <Breadcrumbs items={breadcrumbItems} />
+          </div>
           <div className="rounded-2xl bg-neutral-50 p-6 md:p-8 shadow-sm">
             {children}
           </div>

@@ -1,12 +1,14 @@
 import { X, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Banner displayed to non-authenticated users to encourage sign-up
  * Shows benefits of creating an account
  */
 export default function GuestBanner() {
+  const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(true);
 
   if (!isVisible) return null;
@@ -18,7 +20,7 @@ export default function GuestBanner() {
           <div className="flex items-center gap-3 flex-1">
             <Sparkles className="w-5 h-5 text-[#5EA3C0] flex-shrink-0" />
             <p className="text-sm text-gray-700">
-              <span className="font-semibold">Explorez librement !</span> Créez un compte gratuit pour une expérience personnalisée avec des recommandations adaptées à votre projet d'expatriation.
+              <span className="font-semibold">{t('common.guestBanner.exploreFreely')}</span> {t('common.guestBanner.signupMessage')}
             </p>
           </div>
           
@@ -27,12 +29,12 @@ export default function GuestBanner() {
               to="/auth/register"
               className="px-4 py-2 bg-[#5EA3C0] text-white text-sm font-medium rounded-full hover:bg-[#4d8a9d] transition-colors whitespace-nowrap"
             >
-              Créer un compte
+              {t('common.guestBanner.createAccount')}
             </Link>
             <button
               onClick={() => setIsVisible(false)}
               className="p-1 text-gray-500 hover:text-gray-700 transition-colors"
-              aria-label="Fermer"
+              aria-label={t('common.guestBanner.close')}
             >
               <X className="w-5 h-5" />
             </button>

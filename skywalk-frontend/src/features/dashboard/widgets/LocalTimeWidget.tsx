@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Clock } from 'lucide-react';
 import Widget from './Widget';
+import { useTranslation } from 'react-i18next';
 
 interface LocalTimeWidgetProps {
   countryCode: string;
@@ -31,6 +32,7 @@ export default function LocalTimeWidget({
   countryName, 
   onHide 
 }: LocalTimeWidgetProps) {
+  const { t } = useTranslation()
   const [localTime, setLocalTime] = useState<Date>(new Date());
   const [destinationTime, setDestinationTime] = useState<Date>(new Date());
   
@@ -71,14 +73,14 @@ export default function LocalTimeWidget({
 
   const getTimeDifference = () => {
     const diff = Math.round((destinationTime.getTime() - localTime.getTime()) / (1000 * 60 * 60));
-    if (diff === 0) return 'Même fuseau horaire';
+    if (diff === 0) return t('dashboard.personalized.widgets.localTime.sameTimezone');
     if (diff > 0) return `+${diff}h`;
     return `${diff}h`;
   };
 
   return (
     <Widget 
-      title="Heure locale" 
+      title={t('dashboard.personalized.widgets.localTime.title')} 
       icon={Clock}
       onHide={onHide}
     >
@@ -107,7 +109,7 @@ export default function LocalTimeWidget({
         {/* Heure locale (votre fuseau) */}
         <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
           <h4 className="text-xs font-medium text-gray-500 mb-2 uppercase tracking-wide">
-            Votre heure locale
+            {t('dashboard.personalized.widgets.localTime.yourLocalTime')}
           </h4>
           <div className="flex items-center justify-between">
             <div className="text-2xl font-semibold text-gray-700 font-outfit">

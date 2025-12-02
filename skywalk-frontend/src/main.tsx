@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './styles/index.css';
+import './i18n'; // Import i18n configuration
 import { RouterProvider } from 'react-router-dom';
 import { router } from './routes';
 import { AuthProvider } from './contexts/AuthContext';

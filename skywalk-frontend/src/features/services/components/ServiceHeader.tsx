@@ -29,9 +29,9 @@ export default function ServiceHeader({ service }: ServiceHeaderProps) {
         {/* Header Content */}
         <div className="flex flex-col md:flex-row items-start md:items-center gap-8">
           <div
-            className={`flex-shrink-0 w-20 h-20 rounded-2xl bg-gray-50 flex items-center justify-center`}
+            className={`flex-shrink-0 w-20 h-20 rounded-2xl bg-gray-50 flex items-center justify-center border border-gray-100`}
           >
-            <Icon className="w-10 h-10 text-blue-600" strokeWidth={1.5} />
+            <Icon className="w-10 h-10 text-gray-700" strokeWidth={1.5} />
           </div>
 
           <div className="flex-1">

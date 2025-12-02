@@ -1,0 +1,96 @@
+{
+  "expatSteps": {
+    "type-visa": {
+      "title": "Determine visa type",
+      "description": "Identify the appropriate visa (work, study, visitor)",
+      "substeps": {
+        "1.1": "Determine the required visa type",
+        "1.2": "Consult France-Visas for requirements",
+        "1.3": "Gather required documents"
+      }
+    },
+    "demande-visa": {
+      "title": "Apply for long-stay visa",
+      "description": "Complete application, pay fees and obtain visa",
+      "substeps": {
+        "2.1": "Create a France-Visas account",
+        "2.2": "Fill out the application form",
+        "2.3": "Pay visa fees (€99)",
+        "2.4": "Schedule appointment at consulate",
+        "2.5": "Submit complete application"
+      }
+    },
+    "validation-ofii": {
+      "title": "OFII Validation",
+      "description": "Validate visa with OFII within 3 months",
+      "substeps": {
+        "3.1": "Send OFII form by registered mail",
+        "3.2": "Wait for appointment notification",
+        "3.3": "Attend medical examination",
+        "3.4": "Pay OFII tax (€200)"
+      }
+    },
+    "logement": {
+      "title": "Find accommodation",
+      "description": "Search and sign lease agreement",
+      "substeps": {
+        "4.1": "Search on SeLoger, LeBonCoin, PAP",
+        "4.2": "Prepare complete rental application",
+        "4.3": "Visit properties",
+        "4.4": "Sign lease and move-in inventory",
+        "4.5": "Pay security deposit and first rent"
+      }
+    },
+    "carte-sejour": {
+      "title": "Apply for residence permit",
+      "description": "Obtain official residence permit",
+      "substeps": {
+        "5.1": "Schedule appointment at prefecture",
+        "5.2": "Prepare complete application",
+        "5.3": "Attend appointment",
+        "5.4": "Pay tax (€225)",
+        "5.5": "Collect residence permit"
+      }
+    },
+    "securite-sociale": {
+      "title": "Register with Social Security",
+      "description": "Obtain social security number",
+      "substeps": {
+        "6.1": "Create account on Ameli.fr",
+        "6.2": "Provide ID and residence documents",
+        "6.3": "Receive social security number",
+        "6.4": "Obtain Vitale card"
+      }
+    },
+    "banque": {
+      "title": "Open bank account",
+      "description": "French current account",
+      "substeps": {
+        "7.1": "Choose a bank (physical or online)",
+        "7.2": "Schedule appointment or apply online",
+        "7.3": "Provide documents (ID, residence, income)",
+        "7.4": "Receive IBAN and bank card"
+      }
+    },
+    "installation": {
+      "title": "Daily setup",
+      "description": "Electricity, internet, subscriptions",
+      "substeps": {
+        "8.1": "Subscribe to electricity/gas contract",
+        "8.2": "Subscribe to internet box",
+        "8.3": "Get French mobile plan",
+        "8.4": "Register on Impots.gouv.fr",
+        "8.5": "Apply for housing assistance (CAF)"
+      }
+    }
+  },
+  "jobMarket": {
+    "topSectors": [
+      "Information Technology",
+      "Healthcare and Social Services",
+      "Engineering",
+      "Finance and Insurance",
+      "Sales and Retail"
+    ]
+  }
+}

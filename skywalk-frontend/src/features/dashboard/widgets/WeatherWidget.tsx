@@ -1,6 +1,7 @@
 import { Cloud, Sun, CloudRain, Wind, Droplets, Eye } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import Widget from './Widget';
+import { useTranslation } from 'react-i18next';
 
 interface WeatherWidgetProps {
   countryName: string;
@@ -22,6 +23,7 @@ export default function WeatherWidget({
   cityName = '',
   onHide 
 }: WeatherWidgetProps) {
+  const { t } = useTranslation()
   const location = cityName || countryName;
 
   const { data: weather, isLoading: loading, isError: error } = useQuery({
@@ -65,7 +67,7 @@ export default function WeatherWidget({
 
   if (loading) {
     return (
-      <Widget title="Météo" icon={Cloud} onHide={onHide}>
+      <Widget title={t('dashboard.personalized.widgets.weather.title')} icon={Cloud} onHide={onHide}>
         <div className="flex items-center justify-center py-8">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
         </div>
@@ -75,14 +77,14 @@ export default function WeatherWidget({
 
   if (error || !weather) {
     return (
-      <Widget title="Météo" icon={Cloud} onHide={onHide}>
+      <Widget title={t('dashboard.personalized.widgets.weather.title')} icon={Cloud} onHide={onHide}>
         <div className="text-center py-8">
           <Cloud className="w-12 h-12 text-gray-300 mx-auto mb-3" />
           <p className="text-sm text-gray-500">
-            Données météo non disponibles
+            {t('dashboard.personalized.widgets.weather.error.title')}
           </p>
           <p className="text-xs text-gray-400 mt-1">
-            Configurez votre clé API OpenWeatherMap
+            {t('dashboard.personalized.widgets.weather.error.message')}
           </p>
         </div>
       </Widget>
@@ -90,7 +92,7 @@ export default function WeatherWidget({
   }
 
   return (
-    <Widget title="Météo" icon={Cloud} onHide={onHide}>
+    <Widget title={t('dashboard.personalized.widgets.weather.title')} icon={Cloud} onHide={onHide}>
       <div className="space-y-4">
         {/* Météo principale */}
         <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-6 border border-blue-100">
@@ -114,7 +116,7 @@ export default function WeatherWidget({
           </div>
           
           <p className="text-sm text-gray-600 mt-2">
-            Ressenti : {weather.feelsLike}°C
+            {t('dashboard.personalized.widgets.weather.feelsLike', { temp: weather.feelsLike })}
           </p>
         </div>
 
@@ -123,7 +125,7 @@ export default function WeatherWidget({
           <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
             <div className="flex items-center mb-2">
               <Droplets className="w-4 h-4 text-blue-500 mr-2" />
-              <span className="text-xs text-gray-500">Humidité</span>
+              <span className="text-xs text-gray-500">{t('dashboard.personalized.widgets.weather.humidity')}</span>
             </div>
             <p className="text-lg font-semibold text-gray-900 font-outfit">
               {weather.humidity}%
@@ -133,7 +135,7 @@ export default function WeatherWidget({
           <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
             <div className="flex items-center mb-2">
               <Wind className="w-4 h-4 text-gray-500 mr-2" />
-              <span className="text-xs text-gray-500">Vent</span>
+              <span className="text-xs text-gray-500">{t('dashboard.personalized.widgets.weather.wind')}</span>
             </div>
             <p className="text-lg font-semibold text-gray-900 font-outfit">
               {weather.windSpeed} km/h
@@ -143,7 +145,7 @@ export default function WeatherWidget({
           <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
             <div className="flex items-center mb-2">
               <Eye className="w-4 h-4 text-gray-500 mr-2" />
-              <span className="text-xs text-gray-500">Temp.</span>
+              <span className="text-xs text-gray-500">{t('dashboard.personalized.widgets.weather.temp')}</span>
             </div>
             <p className="text-lg font-semibold text-gray-900 font-outfit">
               {weather.feelsLike}°
@@ -153,7 +155,7 @@ export default function WeatherWidget({
 
         {/* Info */}
         <p className="text-xs text-gray-400 text-center">
-          Mis à jour il y a quelques instants
+          {t('dashboard.personalized.widgets.weather.updated')}
         </p>
       </div>
     </Widget>

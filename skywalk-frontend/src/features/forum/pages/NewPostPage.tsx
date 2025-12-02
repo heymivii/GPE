@@ -4,6 +4,7 @@ import { ArrowLeft, Loader2 } from 'lucide-react';
 import { useCreateForumTopic } from '../../../hooks/useForum';
 import { useAuth } from '../../../hooks/useAuth';
 import { TopicCategoryValues, type TopicCategory } from '../../../types/forum';
+import { useTranslation } from 'react-i18next';
 
 const categories = [
   { id: TopicCategoryValues.QUESTION, name: 'Question', icon: '❓' },
@@ -15,6 +16,7 @@ const categories = [
 ];
 
 export default function NewPostPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
   const createTopic = useCreateForumTopic();
@@ -30,25 +32,25 @@ export default function NewPostPage() {
     e.preventDefault();
     
     if (!user) {
-      alert('Vous devez être connecté');
+      alert(t('forum.newTopic.mustBeLoggedIn'));
       navigate('/auth/login');
       return;
     }
 
     if (!formData.title.trim()) {
-      alert('Le titre est requis');
+      alert(t('forum.newTopic.titleRequired'));
       return;
     }
 
     if (!formData.content.trim()) {
-      alert('Le contenu est requis');
+      alert(t('forum.newTopic.contentRequired'));
       return;
     }
 
     try {
       const userId = user.idUser || user.id;
       if (!userId) {
-        alert('Erreur ID utilisateur');
+        alert(t('forum.newTopic.userIdError'));
         return;
       }
 
@@ -63,8 +65,8 @@ export default function NewPostPage() {
       navigate(`/forum/post/${newTopic.topic_id}`);
     } catch (error: unknown) {
       console.error('Erreur:', error);
-      const msg = error instanceof Error ? error.message : 'Erreur';
-      alert(`Erreur: ${msg}`);
+      const msg = error instanceof Error ? error.message : t('forum.newTopic.submitError');
+      alert(`${t('forum.newTopic.submitError')}: ${msg}`);
     }
   };
 
@@ -73,9 +75,9 @@ export default function NewPostPage() {
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
-            <h2 className="text-yellow-800 font-semibold mb-2">Connexion requise</h2>
+            <h2 className="text-yellow-800 font-semibold mb-2">{t('forum.newTopic.loginRequired')}</h2>
             <button onClick={() => navigate('/auth/login')} className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700">
-              Se connecter
+              {t('forum.newTopic.loginButton')}
             </button>
           </div>
         </div>
@@ -89,26 +91,26 @@ export default function NewPostPage() {
         <div className="mb-6">
           <Link to="/forum" className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium">
             <ArrowLeft className="w-4 h-4" />
-            Retour au forum
+            {t('forum.newTopic.backToForum')}
           </Link>
         </div>
 
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Créer un nouveau topic</h1>
-          <p className="text-gray-600">Posez votre question ou partagez votre expérience</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('forum.newTopic.title')}</h1>
+          <p className="text-gray-600">{t('forum.newTopic.subtitle')}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="bg-white rounded-lg border border-gray-200 p-6">
             <label htmlFor="title" className="block text-sm font-medium text-gray-900 mb-2">
-              Titre <span className="text-red-500">*</span>
+              {t('forum.newTopic.titleLabel')} <span className="text-red-500">{t('forum.newTopic.required')}</span>
             </label>
             <input
               type="text"
               id="title"
               value={formData.title}
               onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-              placeholder="Ex: Comment obtenir un visa?"
+              placeholder={t('forum.newTopic.titlePlaceholder')}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               maxLength={255}
               required
@@ -117,25 +119,25 @@ export default function NewPostPage() {
 
           <div className="bg-white rounded-lg border border-gray-200 p-6">
             <label htmlFor="content" className="block text-sm font-medium text-gray-900 mb-2">
-              Description / Contenu <span className="text-red-500">*</span>
+              {t('forum.newTopic.contentLabel')} <span className="text-red-500">{t('forum.newTopic.required')}</span>
             </label>
             <textarea
               id="content"
               value={formData.content}
               onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
-              placeholder="Décrivez votre question ou partagez plus de détails..."
+              placeholder={t('forum.newTopic.contentPlaceholder')}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 min-h-[150px] resize-y"
               rows={6}
               required
             />
             <p className="mt-2 text-sm text-gray-500">
-              Expliquez votre question ou situation en détail
+              {t('forum.newTopic.contentHelp')}
             </p>
           </div>
 
           <div className="bg-white rounded-lg border border-gray-200 p-6">
             <label className="block text-sm font-medium text-gray-900 mb-3">
-              Catégorie <span className="text-red-500">*</span>
+              {t('forum.newTopic.categoryLabel')} <span className="text-red-500">{t('forum.newTopic.required')}</span>
             </label>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {categories.map((category) => (
@@ -151,7 +153,7 @@ export default function NewPostPage() {
                 >
                   <div className="flex items-center gap-2">
                     <span className="text-lg">{category.icon}</span>
-                    <span className="font-medium">{category.name}</span>
+                    <span className="font-medium">{t(`forum.categories.${category.id}.name`)}</span>
                   </div>
                 </button>
               ))}
@@ -160,7 +162,7 @@ export default function NewPostPage() {
 
           <div className="flex items-center justify-end gap-4">
             <Link to="/forum" className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
-              Annuler
+              {t('forum.newTopic.cancel')}
             </Link>
             <button
               type="submit"
@@ -170,10 +172,10 @@ export default function NewPostPage() {
               {createTopic.isPending ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  Création...
+                  {t('forum.newTopic.publishing')}
                 </>
               ) : (
-                'Créer le topic'
+                t('forum.newTopic.publish')
               )}
             </button>
           </div>

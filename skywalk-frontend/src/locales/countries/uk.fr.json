@@ -1,0 +1,91 @@
+{
+  "expatSteps": {
+    "choisir-visa": {
+      "title": "Choisir le visa",
+      "description": "Choisir le type de visa (travail, études, talent, entrepreneur), vérifier les conditions et rassembler les documents.",
+      "substeps": {
+        "1.1": "Choisir le type de visa (travail, études, talent, entrepreneur)",
+        "1.2": "Vérifier les conditions sur le site officiel du gouvernement UK",
+        "1.3": "Lister et rassembler tous les documents nécessaires"
+      }
+    },
+    "deposer-demande": {
+      "title": "Déposer la demande de visa",
+      "description": "Remplir la demande en ligne, payer les frais + IHS, puis passer la biométrie.",
+      "substeps": {
+        "2.1": "Créer un compte sur la plateforme de visa UK",
+        "2.2": "Remplir le formulaire de demande",
+        "2.3": "Payer les frais de visa et l'IHS",
+        "2.4": "Prendre un rendez-vous biométrique",
+        "2.5": "Aller au rendez-vous biométrique avec les documents"
+      }
+    },
+    "preparer-arrivee": {
+      "title": "Préparer l'arrivée",
+      "description": "Recevoir le visa/BRP, réserver le voyage et un logement temporaire.",
+      "substeps": {
+        "3.1": "Vérifier les informations sur le visa/BRP",
+        "3.2": "Réserver le billet d'avion",
+        "3.3": "Réserver un logement temporaire (Airbnb, hôtel, résidence)"
+      }
+    },
+    "arrivee": {
+      "title": "Arriver au Royaume-Uni",
+      "description": "Arriver au UK, récupérer le BRP, obtenir un numéro UK, garder les preuves d'entrée.",
+      "substeps": {
+        "4.1": "Passer le contrôle aux frontières",
+        "4.2": "Garder les preuves d'entrée (tampon/eGate, billets)",
+        "4.3": "Récupérer le BRP au bureau désigné",
+        "4.4": "Acheter une SIM UK et obtenir un numéro local"
+      }
+    },
+    "administratif-base": {
+      "title": "Administratif de base",
+      "description": "Demander le NINo, ouvrir un compte bancaire, préparer les preuves financières.",
+      "substeps": {
+        "5.1": "Demander un NINo (National Insurance Number)",
+        "5.2": "Ouvrir un compte bancaire (Monzo, Starling, banque traditionnelle)",
+        "5.3": "Préparer les preuves financières pour la location"
+      }
+    },
+    "logement": {
+      "title": "Chercher un logement",
+      "description": "Chercher un logement, visiter, fournir références + revenus.",
+      "substeps": {
+        "6.1": "Créer des comptes sur Rightmove, Zoopla, SpareRoom…",
+        "6.2": "Sélectionner des annonces et planifier des visites",
+        "6.3": "Préparer références, fiches de paie, contrat de travail"
+      }
+    },
+    "signer-bail": {
+      "title": "Signer le bail",
+      "description": "Payer dépôt + premier loyer, emménager, obtenir le certificat de dépôt protégé.",
+      "substeps": {
+        "7.1": "Lire et signer le contrat de location",
+        "7.2": "Payer le dépôt de garantie",
+        "7.3": "Payer le premier loyer",
+        "7.4": "Obtenir le certificat de dépôt protégé",
+        "7.5": "Emménager dans le logement"
+      }
+    },
+    "stabilisation": {
+      "title": "Stabilisation",
+      "description": "Enregistrer un GP, mettre à jour l'adresse, gérer énergie/Internet, vérifier le tax code.",
+      "substeps": {
+        "8.1": "S'enregistrer chez un GP (médecin généraliste)",
+        "8.2": "Mettre à jour l'adresse auprès des organismes clés",
+        "8.3": "Souscrire aux contrats énergie + Internet",
+        "8.4": "Vérifier son tax code sur ses fiches de paie"
+      }
+    },
+    "vie-quotidienne": {
+      "title": "Vie quotidienne",
+      "description": "Oyster/Railcard, permis/assurance, démarches de départ en France.",
+      "substeps": {
+        "9.1": "Prendre une Oyster card ou une Railcard",
+        "9.2": "Prendre une assurance habitation et assurance auto si nécessaire",
+        "9.3": "Finaliser les démarches de départ en France (impôts, sécu, résiliations)"
+      }
+    }
+  }
+}

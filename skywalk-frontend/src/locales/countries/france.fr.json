@@ -1,0 +1,96 @@
+{
+  "expatSteps": {
+    "type-visa": {
+      "title": "Déterminer le type de visa",
+      "description": "Identifier le visa adapté (travail, études, visiteur)",
+      "substeps": {
+        "1.1": "Déterminer le type de visa nécessaire",
+        "1.2": "Consulter France-Visas pour les conditions",
+        "1.3": "Rassembler les justificatifs requis"
+      }
+    },
+    "demande-visa": {
+      "title": "Demander le visa long séjour",
+      "description": "Remplir le dossier, payer et obtenir le visa",
+      "substeps": {
+        "2.1": "Créer un compte France-Visas",
+        "2.2": "Remplir le formulaire de demande",
+        "2.3": "Payer les frais de visa (99€)",
+        "2.4": "Prendre rendez-vous au consulat",
+        "2.5": "Déposer le dossier complet"
+      }
+    },
+    "validation-ofii": {
+      "title": "Validation OFII",
+      "description": "Valider le visa auprès de l'OFII dans les 3 mois",
+      "substeps": {
+        "3.1": "Envoyer le formulaire OFII par courrier recommandé",
+        "3.2": "Attendre la convocation",
+        "3.3": "Se présenter à la visite médicale",
+        "3.4": "Payer la taxe OFII (200€)"
+      }
+    },
+    "logement": {
+      "title": "Trouver un logement",
+      "description": "Recherche et signature du bail",
+      "substeps": {
+        "4.1": "Rechercher sur SeLoger, LeBonCoin, PAP",
+        "4.2": "Préparer dossier locatif complet",
+        "4.3": "Visiter les logements",
+        "4.4": "Signer le bail et état des lieux",
+        "4.5": "Payer dépôt de garantie et premier loyer"
+      }
+    },
+    "carte-sejour": {
+      "title": "Demander la carte de séjour",
+      "description": "Obtenir le titre de séjour officiel",
+      "substeps": {
+        "5.1": "Prendre RDV en préfecture",
+        "5.2": "Constituer le dossier complet",
+        "5.3": "Se présenter au rendez-vous",
+        "5.4": "Payer la taxe (225€)",
+        "5.5": "Récupérer la carte de séjour"
+      }
+    },
+    "securite-sociale": {
+      "title": "S'affilier à la Sécurité sociale",
+      "description": "Obtenir le numéro de sécurité sociale",
+      "substeps": {
+        "6.1": "Créer un compte sur Ameli.fr",
+        "6.2": "Fournir justificatifs d'identité et de résidence",
+        "6.3": "Recevoir le numéro de sécurité sociale",
+        "6.4": "Obtenir la carte Vitale"
+      }
+    },
+    "banque": {
+      "title": "Ouvrir un compte bancaire",
+      "description": "Compte courant français",
+      "substeps": {
+        "7.1": "Choisir une banque (physique ou en ligne)",
+        "7.2": "Prendre RDV ou faire la demande en ligne",
+        "7.3": "Fournir justificatifs (ID, résidence, revenus)",
+        "7.4": "Recevoir RIB et carte bancaire"
+      }
+    },
+    "installation": {
+      "title": "Installation quotidienne",
+      "description": "Électricité, internet, abonnements",
+      "substeps": {
+        "8.1": "Souscrire contrat électricité/gaz",
+        "8.2": "Souscrire box internet",
+        "8.3": "Obtenir forfait mobile français",
+        "8.4": "S'inscrire sur Impots.gouv.fr",
+        "8.5": "Demander aide au logement (CAF)"
+      }
+    }
+  },
+  "jobMarket": {
+    "topSectors": [
+      "Technologies de l'information",
+      "Santé et services sociaux",
+      "Ingénierie",
+      "Finance et assurance",
+      "Commerce et vente"
+    ]
+  }
+}

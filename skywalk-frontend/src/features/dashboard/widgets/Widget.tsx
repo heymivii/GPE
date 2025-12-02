@@ -1,6 +1,7 @@
 import type { ReactNode, ComponentType } from 'react'
 import { MoreHorizontal } from 'lucide-react'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface WidgetProps {
   id?: string
@@ -30,6 +31,7 @@ export default function Widget({
   size = 'medium',
   isEditable = true
 }: WidgetProps) {
+  const { t } = useTranslation()
   const [showMenu, setShowMenu] = useState(false)
 
   const getSizeClasses = () => {
@@ -93,7 +95,7 @@ export default function Widget({
                     }}
                     className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                   >
-                    Modifier
+                    {t('dashboard.personalized.widgets.menu.edit')}
                   </button>
                 )}
                 
@@ -105,7 +107,7 @@ export default function Widget({
                     }}
                     className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                   >
-                    Agrandir
+                    {t('dashboard.personalized.widgets.menu.expand')}
                   </button>
                 )}
                 
@@ -117,7 +119,7 @@ export default function Widget({
                     }}
                     className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
                   >
-                    Masquer ce widget
+                    {t('dashboard.personalized.widgets.menu.hide')}
                   </button>
                 )}
               </div>

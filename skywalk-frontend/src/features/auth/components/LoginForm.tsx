@@ -11,7 +11,7 @@ export default function LoginForm() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const redirect = searchParams.get("redirect") || "/dashboard/";
+  const redirect = searchParams.get("redirect") || "/dashboard";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,8 +22,10 @@ export default function LoginForm() {
       toast.success("Connexion réussie !");
       navigate(redirect);
     } catch (err: unknown) {
-      const message = (err as any).response?.data?.message || "Erreur de connexion";
-      toast.error(message);
+      const errorMessage = err instanceof Error 
+        ? err.message 
+        : (err as { response?: { data?: { message?: string } } })?.response?.data?.message || "Erreur de connexion";
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }

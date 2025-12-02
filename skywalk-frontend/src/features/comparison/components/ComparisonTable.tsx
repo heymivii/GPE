@@ -3,6 +3,7 @@ import {
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import type { EnrichedCountry } from '../hooks/useCountriesWithData'
+import { useTranslation } from 'react-i18next'
 
 interface ComparisonTableProps {
   countries: EnrichedCountry[]
@@ -10,6 +11,8 @@ interface ComparisonTableProps {
 }
 
 export default function ComparisonTable({ countries, isAuthenticated = true }: ComparisonTableProps) {
+  const { t } = useTranslation()
+  
   return (
     <div className="space-y-8">
       <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-xl border-b border-gray-200/80 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] py-6 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 transition-all">
@@ -28,7 +31,7 @@ export default function ComparisonTable({ countries, isAuthenticated = true }: C
                       <img src={country.flagUrl} alt={country.countryName} className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full bg-gray-50 flex items-center justify-center text-lg">
-                        {country.flagEmoji || '🌍'}
+                        🌍
                       </div>
                     )}
                   </div>
@@ -48,73 +51,73 @@ export default function ComparisonTable({ countries, isAuthenticated = true }: C
       </div>
 
       <ComparisonSection
-        title="Informations générales"
+        title={t('comparison.sections.general')}
         icon={<Globe className="w-5 h-5" />}
       >
         <ComparisonRow
-          label="Continent"
-          values={countries.map(c => c.continent || 'Non renseigné')}
+          label={t('comparison.fields.continent')}
+          values={countries.map(c => c.continent || t('comparison.fields.notSpecified'))}
         />
         <ComparisonRow
-          label="Capitale"
-          values={countries.map(c => c.capital || 'Non renseignée')}
+          label={t('comparison.fields.capital')}
+          values={countries.map(c => c.capital || t('comparison.fields.notSpecifiedFeminine'))}
         />
         <ComparisonRow
-          label="Langue(s) parlée(s)"
-          values={countries.map(c => c.languages || 'Non renseigné')}
+          label={t('comparison.fields.languages')}
+          values={countries.map(c => c.languages || t('comparison.fields.notSpecified'))}
         />
         <ComparisonRow
-          label="Devise"
-          values={countries.map(c => c.currency || 'Non renseignée')}
+          label={t('comparison.fields.currency')}
+          values={countries.map(c => c.currency || t('comparison.fields.notSpecifiedFeminine'))}
         />
       </ComparisonSection>
 
       <ComparisonSection
-        title="Coût de la vie"
+        title={t('comparison.sections.costOfLiving')}
         icon={<DollarSign className="w-5 h-5" />}
       >
         <ComparisonRow
-          label="Salaire moyen mensuel"
+          label={t('comparison.fields.averageSalary')}
           values={countries.map(c => 
             c.costOfLiving?.averageSalary 
               ? `${c.costOfLiving.averageSalary.toLocaleString()} ${c.currency}` 
-              : 'Non renseigné'
+              : t('comparison.fields.notSpecified')
           )}
           highlightBest="highest"
         />
         <ComparisonRow
-          label="Loyer 1 chambre (centre)"
+          label={t('comparison.fields.rentOneRoom')}
           values={countries.map(c => 
             c.costOfLiving?.averageRent?.oneBedroom
               ? `${c.costOfLiving.averageRent.oneBedroom.toLocaleString()} ${c.currency}` 
-              : 'Non renseigné'
+              : t('comparison.fields.notSpecified')
           )}
           highlightBest="lowest"
         />
         <ComparisonRow
-          label="Loyer 3 chambres (centre)"
+          label={t('comparison.fields.rentThreeRooms')}
           values={countries.map(c => 
             c.costOfLiving?.averageRent?.threeBedroom
               ? `${c.costOfLiving.averageRent.threeBedroom.toLocaleString()} ${c.currency}` 
-              : 'Non renseigné'
+              : t('comparison.fields.notSpecified')
           )}
           highlightBest="lowest"
         />
         <ComparisonRow
-          label="Repas au restaurant"
+          label={t('comparison.fields.restaurantMeal')}
           values={countries.map(c => 
             c.costOfLiving?.food?.restaurantMeal
               ? `${c.costOfLiving.food.restaurantMeal.toLocaleString()} ${c.currency}` 
-              : 'Non renseigné'
+              : t('comparison.fields.notSpecified')
           )}
           highlightBest="lowest"
         />
         <ComparisonRow
-          label="Courses hebdomadaires"
+          label={t('comparison.fields.groceries')}
           values={countries.map(c => 
             c.costOfLiving?.food?.groceriesWeekly
               ? `${c.costOfLiving.food.groceriesWeekly.toLocaleString()} ${c.currency}` 
-              : 'Non renseigné'
+              : t('comparison.fields.notSpecified')
           )}
           highlightBest="lowest"
         />
@@ -123,38 +126,38 @@ export default function ComparisonTable({ countries, isAuthenticated = true }: C
       {isAuthenticated ? (
         <>
           <ComparisonSection
-            title="Procédures d'immigration"
+            title={t('comparison.sections.immigration')}
             icon={<MapPin className="w-5 h-5" />}
           >
             <ComparisonRow
-              label="Nombre d'étapes"
+              label={t('comparison.fields.steps')}
               values={countries.map(c => {
                 const stepsCount = c.expatProjectTemplate?.steps?.length
-                return stepsCount ? `${stepsCount} étapes` : 'Non renseigné'
+                return stepsCount ? t('comparison.fields.stepsValue', { count: stepsCount }) : t('comparison.fields.notSpecified')
               })}
             />
             <ComparisonRow
-              label="Difficulté"
+              label={t('comparison.fields.difficulty')}
               values={countries.map(c => 
-                c.recommendations?.visaDifficulty || 'Non renseigné'
+                c.recommendations?.visaDifficulty || t('comparison.fields.notSpecified')
               )}
             />
             <ComparisonRow
-              label="Langue requise"
+              label={t('comparison.fields.languageRequired')}
               values={countries.map(c => 
-                c.recommendations?.language || 'Non renseigné'
+                c.recommendations?.language || t('comparison.fields.notSpecified')
               )}
             />
           </ComparisonSection>
 
           <ComparisonSection
-            title="Idéal pour"
+            title={t('comparison.sections.idealFor')}
             icon={<TrendingUp className="w-5 h-5" />}
           >
             <ComparisonRow
-              label="Profils recommandés"
+              label={t('comparison.fields.recommendedProfiles')}
               values={countries.map(c => 
-                c.recommendations?.bestFor?.join(', ') || 'Non renseigné'
+                c.recommendations?.bestFor?.join(', ') || t('comparison.fields.notSpecified')
               )}
             />
           </ComparisonSection>
@@ -171,19 +174,19 @@ export default function ComparisonTable({ countries, isAuthenticated = true }: C
             </div>
             
             <h3 className="text-3xl font-bold text-gray-900 mb-4 tracking-tight">
-              Accédez à l'analyse complète
+              {t('comparison.premiumAccess.title')}
             </h3>
             
             <p className="text-lg text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
-              Les données détaillées sur l'immigration et les recommandations personnalisées sont réservées à nos membres. Rejoignez Skywalk pour prendre la meilleure décision.
+              {t('comparison.premiumAccess.description')}
             </p>
             
             <div className="grid md:grid-cols-2 gap-4 max-w-3xl mx-auto mb-10 text-left">
               {[
-                'Procédures d\'immigration étape par étape',
-                'Analyse de difficulté des visas',
-                'Recommandations basées sur votre profil',
-                'Comparaison illimitée (jusqu\'à 5 pays)'
+                t('comparison.premiumAccess.benefits.procedures'),
+                t('comparison.premiumAccess.benefits.difficulty'),
+                t('comparison.premiumAccess.benefits.recommendations'),
+                t('comparison.premiumAccess.benefits.unlimited', { max: 5 })
               ].map((benefit, index) => (
                 <div key={index} className="flex items-center gap-4 p-4 rounded-2xl bg-white border border-gray-100 shadow-sm transition-shadow">
                   <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#5EA3C0]/10 text-[#5EA3C0] flex items-center justify-center">
@@ -201,18 +204,18 @@ export default function ComparisonTable({ countries, isAuthenticated = true }: C
                 to="/auth/register"
                 className="w-full sm:w-auto px-8 py-4 bg-black text-white rounded-xl font-bold hover:bg-gray-800 transition-all transform hover:-translate-y-0.5 shadow-xl shadow-gray-900/20"
               >
-                Créer un compte gratuit
+                {t('comparison.premiumAccess.createAccount')}
               </Link>
               <Link
                 to="/auth/login"
                 className="w-full sm:w-auto px-8 py-4 bg-white text-gray-900 rounded-xl font-bold border border-gray-200 hover:bg-gray-50 transition-all hover:border-[#5EA3C0] hover:text-[#5EA3C0]"
               >
-                Se connecter
+                {t('comparison.premiumAccess.login')}
               </Link>
             </div>
             
             <p className="mt-8 text-sm font-medium text-gray-400">
-              Aucune carte bancaire requise • Inscription en 30 secondes
+              {t('comparison.premiumAccess.footer')}
             </p>
           </div>
         </div>
@@ -256,6 +259,8 @@ function ComparisonRow({
   values: string[]
   highlightBest?: 'highest' | 'lowest'
 }) {
+  const { t } = useTranslation()
+  
   const getBestIndex = () => {
     if (!highlightBest) return -1
     
@@ -294,9 +299,9 @@ function ComparisonRow({
                 : 'text-gray-700'
             }`}
           >
-            <span className="truncate">{value}</span>
+            <span className="break-words">{value}</span>
             {index === bestIndex && (
-              <div className="flex-shrink-0 w-6 h-6 bg-[#5EA3C0]/20 text-[#5EA3C0] rounded-full flex items-center justify-center" title="Meilleure option">
+              <div className="flex-shrink-0 w-6 h-6 bg-[#5EA3C0]/20 text-[#5EA3C0] rounded-full flex items-center justify-center ml-2" title={t('comparison.bestOption')}>
                 <Trophy className="w-3.5 h-3.5" />
               </div>
             )}

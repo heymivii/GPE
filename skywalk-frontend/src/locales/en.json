@@ -1,0 +1,844 @@
+{
+  "nav": {
+    "home": "Home",
+    "destinations": "Destinations",
+    "services": "Services",
+    "comparison": "Comparison",
+    "search": "Search",
+    "forum": "Forum",
+    "dashboard": "Dashboard",
+    "projects": "My Projects",
+    "explore": "Explore",
+    "login": "Login",
+    "logout": "Logout",
+    "profile": "My Profile",
+    "myDashboard": "My Dashboard"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "comingSoon": "Coming soon",
+    "guestBanner": {
+      "exploreFreely": "Explore freely!",
+      "signupMessage": "Create a free account for a personalized experience with recommendations tailored to your expatriation project.",
+      "createAccount": "Create an account",
+      "close": "Close"
+    }
+  },
+  "services": {
+    "indexPage": {
+      "title": "Our Tools & Services",
+      "description": "Discover our interactive tools to facilitate your expatriation. Calculators, checklists and personalized assistants for every step of your project.",
+      "learnMore": "Learn more"
+    },
+    "servicePage": {
+      "notFound": {
+        "title": "Service not found",
+        "description": "The service \"{{category}}\" does not exist or is no longer available.",
+        "backHome": "Back to home"
+      },
+      "modes": {
+        "discovery": {
+          "badge": "Discovery mode",
+          "title": "General information",
+          "description": "Discover our universal guides and tips to succeed in your expatriation.",
+          "cta": "Create a free account",
+          "ctaSuffix": "to access personalized content!"
+        },
+        "personalized": {
+          "badge": "Personalized",
+          "titleWithCountry": "Expatriation to {{country}}",
+          "titleWithoutCountry": "Your project information",
+          "descriptionWithCountry": "Content specifically adapted for your destination.",
+          "descriptionWithoutCountry": "Use the selector to see country-specific content."
+        },
+        "exploration": {
+          "badge": "Exploration",
+          "title": "Explore by destination",
+          "description": "Select a country to access specific information.",
+          "cta": "Create my project"
+        }
+      }
+    },
+    "categories": {
+      "emploi": {
+        "title": "Find a job",
+        "subtitle": "Career opportunities",
+        "description": "Discover the best job opportunities tailored to your profile and facilitate your professional integration in your new country.",
+        "stats": {
+          "offers": "Available offers",
+          "sectors": "Active sectors",
+          "placement": "Placement rate"
+        },
+        "guides": {
+          "candidature": {
+            "title": "How to prepare your application",
+            "steps": [
+              "Adapt your CV to local format (European CV, American, etc.)",
+              "Write a personalized cover letter",
+              "Translate your diplomas and certifications",
+              "Prepare your portfolio or LinkedIn",
+              "Identify companies that recruit expatriates"
+            ]
+          },
+          "demarches": {
+            "title": "Administrative procedures",
+            "steps": [
+              "Check your work permit or visa",
+              "Inquire about recognition of your qualifications",
+              "Register on local job platforms",
+              "Contact specialized recruitment agencies"
+            ]
+          }
+        },
+        "tips": [
+          "Start your search 3-6 months before departure",
+          "Network on LinkedIn with professionals from the country",
+          "Learn the basics of the local language",
+          "Learn about local business culture"
+        ],
+        "faq": [
+          {
+            "question": "How to get my diplomas recognized?",
+            "answer": "Contact the qualifications recognition body of the target country (e.g. ENIC-NARIC in Europe). The procedure usually takes 2-3 months."
+          },
+          {
+            "question": "Do I need a work permit?",
+            "answer": "It depends on your nationality and destination country. EU/EEA citizens generally don't need a permit to work in the EU."
+          }
+        ]
+      },
+      "logement": {
+        "title": "Find accommodation",
+        "subtitle": "Housing and accommodation",
+        "description": "Find the ideal accommodation for your expatriation: apartments, houses, shared housing. Compare prices and neighborhoods.",
+        "stats": {
+          "ads": "Active ads",
+          "cities": "Cities covered",
+          "avgPrice": "Average price/month"
+        },
+        "guides": {
+          "recherche": {
+            "title": "Search steps",
+            "steps": [
+              "Define your budget (rent + utilities + deposit)",
+              "Choose the neighborhood according to your priorities (work, schools, transport)",
+              "Compare types of housing (studio, 1-bedroom, shared)",
+              "Check rental conditions (duration, deposit, guarantees)",
+              "Visit several properties before deciding"
+            ]
+          },
+          "documents": {
+            "title": "Required documents",
+            "steps": [
+              "ID or passport",
+              "Proof of income (last 3 pay slips)",
+              "Proof of current address",
+              "Recommendation letter from previous landlord",
+              "Bank details for direct debits"
+            ]
+          }
+        },
+        "tips": [
+          "Plan 2-3 months of rent for the security deposit",
+          "Use local classified ads websites",
+          "Beware of scams: never pay before viewing",
+          "Check the property condition and do a detailed inventory"
+        ],
+        "faq": [
+          {
+            "question": "What budget to plan for housing?",
+            "answer": "Plan 30-40% of your income for rent. Add 2-3 months of rent for initial deposit and agency fees."
+          },
+          {
+            "question": "How to rent without local history?",
+            "answer": "Offer a guarantor, pay several months in advance, or use services like Garantme to reassure landlords."
+          }
+        ]
+      },
+      "transport": {
+        "title": "Get around",
+        "subtitle": "Transport and mobility",
+        "description": "Discover transport solutions: public transport, car rental, bicycle. Get the right passes.",
+        "stats": {
+          "networks": "Transport networks",
+          "passes": "Available passes",
+          "savings": "Average savings"
+        },
+        "guides": {
+          "choix": {
+            "title": "Choose your mode of transport",
+            "steps": [
+              "Evaluate your daily needs (work, school, leisure)",
+              "Compare costs: public transport vs car",
+              "Inquire about monthly/annual passes",
+              "Check local transport mobile apps",
+              "Explore eco-friendly options (bike, scooter)"
+            ]
+          },
+          "permis": {
+            "title": "Driver's license",
+            "steps": [
+              "Check if your license is valid in the country",
+              "Exchange your license if necessary",
+              "Get suitable car insurance",
+              "Learn the local traffic code"
+            ]
+          }
+        },
+        "tips": [
+          "Student/senior passes often offer discounts",
+          "Some cities offer bike-sharing for free",
+          "Download the local transport app upon arrival",
+          "Compare taxi vs ride-sharing fares (Uber, Bolt)"
+        ]
+      },
+      "sante": {
+        "title": "Health and wellness",
+        "subtitle": "Health services",
+        "description": "Access health services: doctors, hospitals, insurance. Find professionals who speak your language.",
+        "stats": {
+          "professionals": "Listed professionals",
+          "languages": "Available languages",
+          "insurances": "Partner insurances"
+        },
+        "guides": {
+          "couverture": {
+            "title": "Health coverage",
+            "steps": [
+              "Check your current coverage abroad",
+              "Subscribe to international insurance if necessary",
+              "Register with the local healthcare system",
+              "Get your health card or equivalent",
+              "Find a general practitioner"
+            ]
+          },
+          "documents": {
+            "title": "Medical documents",
+            "steps": [
+              "Translate your medical records",
+              "Get copies of your prescriptions",
+              "Have a health check-up before departure",
+              "Check mandatory vaccinations"
+            ]
+          }
+        },
+        "tips": [
+          "Keep your prescriptions in original and translated version",
+          "Locate the nearest hospital to your home",
+          "Save local emergency numbers",
+          "Check coverage for medical care abroad"
+        ]
+      },
+      "demarches": {
+        "title": "Administrative procedures",
+        "subtitle": "Papers and formalities",
+        "description": "Simplify your procedures: visa, residence permit, health card, taxes. Follow your procedures step by step.",
+        "stats": {
+          "procedures": "Guided procedures",
+          "successRate": "Success rate",
+          "avgDelay": "Average delay"
+        },
+        "guides": {
+          "prioritaires": {
+            "title": "Priority procedures",
+            "steps": [
+              "Apply for your visa/residence permit",
+              "Register with local authorities",
+              "Open a local bank account",
+              "Get a social security number",
+              "Have your official documents translated"
+            ]
+          },
+          "organisation": {
+            "title": "Organization",
+            "steps": [
+              "Create a folder with all your copies",
+              "Scan all your important documents",
+              "Note deadlines for each procedure",
+              "Keep filing receipts"
+            ]
+          }
+        },
+        "tips": [
+          "Start procedures 3 months before departure",
+          "Have your translations certified by a sworn translator",
+          "Always keep photocopies of your documents",
+          "Register with French nationals abroad registry if applicable"
+        ]
+      },
+      "education": {
+        "title": "Education and training",
+        "subtitle": "Schools and training",
+        "description": "Find schools, universities and training for you and your children. Language courses and integration programs.",
+        "stats": {
+          "establishments": "Establishments",
+          "trainings": "Training courses",
+          "languageCourses": "Language courses"
+        },
+        "guides": {
+          "scolarisation": {
+            "title": "Children's schooling",
+            "steps": [
+              "Search for schools in your neighborhood",
+              "Check the local education system (age, levels)",
+              "Inquire about international schools",
+              "Enroll your children as soon as possible",
+              "Prepare necessary documents (reports, vaccinations)"
+            ]
+          },
+          "formation": {
+            "title": "Continuing education",
+            "steps": [
+              "Identify your training needs",
+              "Search for available language courses",
+              "Check diploma recognition",
+              "Explore professional training"
+            ]
+          }
+        },
+        "tips": [
+          "International schools are expensive but ease the transition",
+          "Free language courses often exist for newcomers",
+          "Some universities offer scholarships for international students"
+        ]
+      },
+      "culture": {
+        "title": "Culture and leisure",
+        "subtitle": "Discovery and integration",
+        "description": "Discover local culture, events, expat communities. Facilitate your social integration.",
+        "stats": {
+          "eventsPerMonth": "Events/month",
+          "communities": "Communities",
+          "activities": "Activities"
+        },
+        "guides": {
+          "integration": {
+            "title": "Social integration",
+            "steps": [
+              "Join expat groups on social media",
+              "Participate in networking events",
+              "Learn the basics of the local language",
+              "Discover customs and traditions",
+              "Explore neighborhoods and iconic places"
+            ]
+          }
+        },
+        "tips": [
+          "Meetup and Internations are excellent platforms to meet people",
+          "Participate in local festivals to better understand the culture",
+          "Join clubs or associations according to your interests"
+        ]
+      },
+      "business": {
+        "title": "Start your business",
+        "subtitle": "Entrepreneurship abroad",
+        "description": "Launch your business abroad: company creation, freelance, legal status. Personalized support.",
+        "stats": {
+          "creationsPerYear": "Creations/year",
+          "successRate": "Success rate",
+          "avgDelay": "Average delay"
+        },
+        "guides": {
+          "creation": {
+            "title": "Creation steps",
+            "steps": [
+              "Study the local market and competition",
+              "Choose your legal status",
+              "Write your business plan",
+              "Obtain necessary authorizations",
+              "Open a professional account",
+              "Register with social and tax organizations"
+            ]
+          },
+          "freelance": {
+            "title": "Freelance abroad",
+            "steps": [
+              "Check self-employment rules",
+              "Declare your activity",
+              "Subscribe to professional insurance",
+              "Manage your invoicing and accounting"
+            ]
+          }
+        },
+        "tips": [
+          "Get support from a local accountant",
+          "Inquire about business creation aids",
+          "Join incubators or coworking spaces"
+        ]
+      }
+    },
+    "tools": {
+      "title": "Toolkit",
+      "cvAnalyzer": {
+        "title": "CV Analyzer",
+        "description": "Check if your CV is ready for international markets"
+      },
+      "budgetCalculator": {
+        "title": "Budget Calculator",
+        "description": "Estimate your rental capacity (33% rule)"
+      },
+      "transportCost": {
+        "title": "Transport Calculator",
+        "description": "Compare car vs public transport costs",
+        "car": "Car",
+        "publicTransport": "Public Transport",
+        "dailyDistance": "Daily distance (km)",
+        "fuelConsumption": "Consumption (L/100km)",
+        "monthlyCost": "Estimated monthly cost",
+        "fuelPrice": "Fuel price",
+        "publicPass": "Monthly pass",
+        "info": "Calculation based on 22 working days per month."
+      },
+      "healthCoverage": {
+        "title": "Health Coverage",
+        "description": "Estimate your monthly health costs",
+        "public": "Public system",
+        "private": "Private insurance",
+        "age": "Your age",
+        "familyStatus": "Family status",
+        "single": "Single",
+        "couple": "Couple",
+        "family": "Family",
+        "estimatedCost": "Estimated cost",
+        "coverageLevel": "Coverage level",
+        "basic": "Basic",
+        "standard": "Standard",
+        "premium": "Premium",
+        "situation": "Your situation",
+        "employee": "Employee",
+        "selfEmployed": "Self-employed",
+        "student": "Student",
+        "publicCoverage": "Public coverage",
+        "publicDesc": "Social security / public system",
+        "included": "Included in social contributions",
+        "monthlyFee": "Monthly fee",
+        "complementary": "Complementary insurance",
+        "complementaryDesc": "Recommended private mutual",
+        "totalEstimated": "Total estimated",
+        "perMonth": "Per month"
+      },
+      "cvReadiness": {
+        "title": "CV Checklist",
+        "description": "Ensure your CV meets local standards.",
+        "progress": "Progress",
+        "ready": "CV ready to send!",
+        "items": {
+          "translated": "CV translated into the country's language",
+          "highlighted": "Experiences highlighted (quantified results)",
+          "contact": "Contact details up to date (with country code)",
+          "linkedin": "Functional LinkedIn link and updated profile",
+          "format": "Adapted format (1-2 pages max)"
+        }
+      },
+      "rentCalculator": {
+        "title": "Rent Calculator",
+        "description": "Estimate your rental capacity based on the 33% rule.",
+        "netIncome": "Estimated net income",
+        "perMonth": "/ month",
+        "perYear": "/ year",
+        "recommendedBudget": "Recommended budget",
+        "maxPerMonth": "per month maximum",
+        "info": "This calculation is based on a 33% effort rate."
+      },
+      "medicalChecklist": {
+        "title": "Medical Records",
+        "description": "Required medical documents",
+        "completeness": "Completeness",
+        "items": {
+          "records": "Complete translated medical records",
+          "vaccination": "Up-to-date vaccination record",
+          "prescriptions": "Current prescriptions translated",
+          "ehic": "European Health Insurance Card (if EU)",
+          "insurance": "International health insurance certificate",
+          "allergies": "List of allergies and pre-existing conditions"
+        }
+      }
+    }
+  },
+  "landing": {
+    "search": {
+      "origin": "Where I come from",
+      "destination": "Where I'm going",
+      "category": "Search category",
+      "position": "Job title",
+      "button": "Search",
+      "options": {
+        "job": "Job",
+        "housing": "Housing",
+        "studies": "Studies",
+        "health": "Health",
+        "other": "Other"
+      }
+    },
+    "tools": {
+      "title": "Our Free Tools",
+      "subtitle": "Prepare your expatriation with our simulators and analysis tools.",
+      "categories": {
+        "emploi": "Employment",
+        "logement": "Housing",
+        "transport": "Transport",
+        "sante": "Health"
+      }
+    },
+    "preview": {
+      "title": "Access all our tools",
+      "description": "Create your free account to use our simulators and prepare your departure.",
+      "cta": "Create my account"
+    },
+    "hero": {
+      "title": "Simplify your expatriation",
+      "subtitle": "Find clear information, exchange with expats, and prepare your departure serenely.",
+      "subtitle2": "Start by answering our questionnaire for personalized support.",
+      "cta": "I prepare my departure",
+      "stats": {
+        "expats": "expats supported",
+        "satisfaction": "satisfaction",
+        "countries": "countries covered"
+      }
+    },
+    "destinations": {
+      "title": "Popular Destinations",
+      "subtitle": "Discover the most popular countries in our community",
+      "viewAll": "View all destinations",
+      "canada": {
+        "description": "A welcoming country with excellent immigration opportunities and a dynamic job market."
+      },
+      "france": {
+        "description": "France attracts many expats with its rich culture, quality healthcare system, and varied professional opportunities."
+      },
+      "portugal": {
+        "description": "Mediterranean climate, affordable cost of living, and a dynamic French community await you."
+      }
+    }
+  },
+  "destinations": {
+    "title": "Explore the world.",
+    "subtitle": "Discover the favorite destinations of our community. Guides, jobs and advice to succeed in your expatriation.",
+    "searchPlaceholder": "Search for a destination...",
+    "countries": "countries",
+    "sortOptions": {
+      "popularity": "Most popular",
+      "alphabetical": "Alphabetical order",
+      "jobs": "Job offers"
+    },
+    "noResults": {
+      "title": "No results",
+      "message": "We did not find any destination matching your search. Try other keywords."
+    },
+    "card": {
+      "members": "Members",
+      "jobs": "Job offers"
+    }
+  },
+  "forum": {
+    "title": "SkyWalk Support Forum",
+    "description": "Ask questions, share your experiences and help the community",
+    "search": "Search in the forum...",
+    "newPost": "New post",
+    "categories": {
+      "question": {
+        "name": "Question",
+        "description": "Ask your questions to the community",
+        "icon": "❓"
+      },
+      "testimony": {
+        "name": "Testimony",
+        "description": "Share your expatriation experience",
+        "icon": "📝"
+      },
+      "advice": {
+        "name": "Advice",
+        "description": "Give or receive practical advice",
+        "icon": "💡"
+      },
+      "discussion": {
+        "name": "Discussion",
+        "description": "General discussions about expatriation",
+        "icon": "💬"
+      },
+      "announcement": {
+        "name": "Announcement",
+        "description": "Important announcements and information",
+        "icon": "📢"
+      },
+      "other": {
+        "name": "Other",
+        "description": "Other miscellaneous topics",
+        "icon": "📌"
+      }
+    },
+    "stats": {
+      "topics": "Topics",
+      "replies": "Replies",
+      "last24h": "Last 24h",
+      "categories": "Categories",
+      "myTopics": "My topics",
+      "totalReplies": "Total replies"
+    },
+    "filterByCategory": "Filter by category",
+    "reset": "Reset",
+    "allTopics": "All topics",
+    "myTopicsTitle": "My topics",
+    "topicsCategory": "Topics - {{category}}",
+    "loading": "Loading topics...",
+    "error": "Error loading topics",
+    "noTopics": "No topics found",
+    "createFirstTopic": "Create the first topic →",
+    "timeAgo": {
+      "lessThanHour": "Less than an hour ago",
+      "hours": "{{count}}h ago",
+      "days": "{{count}}d ago"
+    },
+    "user": "User #{{id}}",
+    "myStats": "My Statistics",
+    "quickActions": "Quick actions",
+    "createTopic": "Create a topic",
+    "followedTopics": "Followed topics",
+    "loginForMore": "Log in for more",
+    "resetFilters": "Reset filters",
+    "quickFilters": "Quick filters",
+    "recent24h": "Recent (24h)",
+    "allCategories": "All categories",
+    "newTopic": {
+      "title": "Create a new topic",
+      "subtitle": "Ask your question or share your experience",
+      "backToForum": "Back to forum",
+      "titleLabel": "Title",
+      "titlePlaceholder": "E.g.: How to get a visa?",
+      "contentLabel": "Description / Content",
+      "contentPlaceholder": "Describe your question or share more details...",
+      "contentHelp": "Explain your question or situation in detail",
+      "categoryLabel": "Category",
+      "required": "*",
+      "loginRequired": "Login required",
+      "loginButton": "Log in",
+      "mustBeLoggedIn": "You must be logged in",
+      "titleRequired": "Title is required",
+      "contentRequired": "Content is required",
+      "userIdError": "User ID error",
+      "submitError": "Error",
+      "cancel": "Cancel",
+      "publish": "Publish topic",
+      "publishing": "Publishing..."
+    },
+    "comingSoon": "Feature coming soon!"
+  },
+  "comparison": {
+    "title": "Comparison Tool",
+    "description": "Analyze differences in cost of living and opportunities between your favorite destinations.",
+    "selection": "Selection:",
+    "limitReached": {
+      "title": "Limit Reached (Guest Mode)",
+      "message": "You are comparing {{count}} countries.",
+      "cta": "Create a free account",
+      "ctaSuffix": "to compare up to {{max}} simultaneously."
+    },
+    "detailedAnalysis": "Detailed Analysis",
+    "startComparison": {
+      "title": "Start Comparison",
+      "description": "Select at least",
+      "destinations": "destinations",
+      "suffix": "above to see the comparison table."
+    },
+    "sections": {
+      "general": "General Information",
+      "costOfLiving": "Cost of Living",
+      "immigration": "Immigration Procedures",
+      "idealFor": "Ideal For"
+    },
+    "fields": {
+      "continent": "Continent",
+      "capital": "Capital",
+      "languages": "Spoken Language(s)",
+      "currency": "Currency",
+      "averageSalary": "Average Monthly Salary",
+      "rentOneRoom": "1-bedroom rent (center)",
+      "rentThreeRooms": "3-bedroom rent (center)",
+      "restaurantMeal": "Restaurant meal",
+      "groceries": "Weekly groceries",
+      "steps": "Number of steps",
+      "stepsValue": "{{count}} steps",
+      "difficulty": "Difficulty",
+      "languageRequired": "Required language",
+      "recommendedProfiles": "Recommended profiles",
+      "notSpecified": "Not specified",
+      "notSpecifiedFeminine": "Not specified"
+    },
+    "premiumAccess": {
+      "title": "Access Full Analysis",
+      "description": "Detailed immigration data and personalized recommendations are reserved for our members. Join Skywalk to make the best decision.",
+      "benefits": {
+        "procedures": "Step-by-step immigration procedures",
+        "difficulty": "Visa difficulty analysis",
+        "recommendations": "Recommendations based on your profile",
+        "unlimited": "Unlimited comparison (up to {{max}} countries)"
+      },
+      "createAccount": "Create free account",
+      "login": "Log in",
+      "footer": "No credit card required • Sign up in 30 seconds"
+    },
+    "bestOption": "Best option"
+  },
+  "dashboard": {
+    "personalized": {
+      "loading": "Loading your personalized dashboard...",
+      "noProjects": {
+        "title": "Dashboard in preparation",
+        "description": "Complete your onboarding to access your personalized dashboard",
+        "cta": "Complete my profile"
+      },
+      "greeting": "Hello ! 👋",
+      "projectTo": "Your expatriation project to {{country}}",
+      "editProject": "Edit project",
+      "modifyWidgets": "Modify widgets",
+      "finish": "Finish",
+      "settings": "Profile settings",
+      "editModeActive": "Edit mode active",
+      "editModeDescription": "Click on the menu (⋯) of each widget to edit or hide it",
+      "stats": {
+        "projectStatus": {
+          "label": "Project status",
+          "planning": "Planning",
+          "active": "Active",
+          "completed": "Completed",
+          "ongoing": "Ongoing"
+        },
+        "departureDate": {
+          "label": "Departure date",
+          "days": "{{count}} days",
+          "undefined": "Not defined"
+        },
+        "housingBudget": {
+          "label": "Housing budget",
+          "perMonth": "Per month",
+          "undefined": "Not defined"
+        },
+        "duration": {
+          "label": "Stay duration",
+          "estimated": "Estimated",
+          "months": "{{count}} months",
+          "undefined": "Not defined"
+        }
+      },
+      "widgets": {
+        "addWidget": "Add widget",
+        "hiddenWidgets": "Hidden widgets",
+        "restore": "Restore {{name}}",
+        "library": {
+          "title": "Widget library",
+          "description": "Customize your dashboard by adding the tools you need.",
+          "done": "Done",
+          "addToDashboard": "Add to dashboard",
+          "added": "Added"
+        },
+        "available": {
+          "profileSummary": {
+            "name": "Profile summary",
+            "description": "Your personal information"
+          },
+          "localTime": {
+            "name": "Local time",
+            "description": "Time in destination country"
+          },
+          "weather": {
+            "name": "Weather",
+            "description": "Destination country weather"
+          },
+          "checklist": {
+            "name": "Checklist",
+            "description": "Your expatriation steps"
+          },
+          "budgetTracker": {
+            "name": "Budget",
+            "description": "Track your budget"
+          },
+          "recommendations": {
+            "name": "Recommendations",
+            "description": "Personalized advice"
+          }
+        },
+        "menu": {
+          "edit": "Edit",
+          "expand": "Expand",
+          "hide": "Hide this widget"
+        },
+        "profileSummary": {
+          "title": "My Profile",
+          "emptyState": "Profile being configured",
+          "age": "years old",
+          "departureIn": "Departure planned in",
+          "mainGoal": "Main goal",
+          "profileCompleted": "Profile completed"
+        },
+        "checklist": {
+          "title": "My Checklist",
+          "loading": "Loading...",
+          "emptyState": "No checklist available for this country.",
+          "progression": "Progress",
+          "completed": "{{completed}}/{{total}} ({{percentage}}%)",
+          "hide": "Hide",
+          "show": "{{count}} substeps",
+          "optional": "(optional)"
+        },
+        "budgetTracker": {
+          "title": "Budget Analysis",
+          "subtitle": "Housing in {{destination}}",
+          "monthlyBudget": "Your planned monthly budget",
+          "apartment": {
+            "oneBedroom": "1 bedroom apt ({{price}} {{currency}})",
+            "threeBedroom": "3 bedroom apt ({{price}} {{currency}})"
+          },
+          "covered": "Covered ✅",
+          "coverage": "{{percentage}}%",
+          "advice": {
+            "excellent": "Excellent! Your budget is comfortable for a large apartment.",
+            "good": "Good budget. You can aim for a 1-bedroom apartment in the center.",
+            "tight": "Tight budget. Consider shared housing or move away from the city center."
+          },
+          "noData": {
+            "title": "Market data not available for this country.",
+            "message": "Market data not available for this country."
+          }
+        },
+        "localTime": {
+          "title": "Local time",
+          "sameTimezone": "Same timezone",
+          "yourLocalTime": "Your local time"
+        },
+        "weather": {
+          "title": "Weather",
+          "loading": "Loading...",
+          "feelsLike": "Feels like: {{temp}}°C",
+          "humidity": "Humidity",
+          "wind": "Wind",
+          "temp": "Temp.",
+          "updated": "Updated a few moments ago",
+          "error": {
+            "title": "Weather data unavailable",
+            "message": "Configure your OpenWeatherMap API key"
+          }
+        },
+        "recommendations": {
+          "title": "Personalized recommendations",
+          "emptyState": "No recommendations at the moment",
+          "importance": {
+            "urgent": "Urgent",
+            "important": "Important",
+            "todo": "To do"
+          },
+          "categories": {
+            "profile": "Recommended profiles",
+            "profileDesc": "This country is ideal for: {{profiles}}",
+            "language": "Required language",
+            "visa": "Visa difficulty",
+            "visaDesc": "The difficulty of obtaining a visa is {{difficulty}}"
+          },
+          "learnMore": "Learn more",
+          "seeAll": "See all recommendations"
+        }
+      },
+      "projectSelector": "Project #{{id}} - {{country}}"
+    }
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "expatSteps": {
+    "offre-emploi": {
+      "title": "Secure job offer",
+      "description": "Prerequisite for permit",
+      "substeps": {
+        "1.1": "Search for jobs on JobUp, Indeed Switzerland",
+        "1.2": "Apply and attend interviews",
+        "1.3": "Receive written job offer",
+        "1.4": "Verify employer can sponsor"
+      }
+    },
+    "permis-travail": {
+      "title": "Apply for work permit",
+      "description": "Employer submits application",
+      "substeps": {
+        "2.1": "Employer submits application to canton",
+        "2.2": "Provide documents (CV, diplomas, contract)",
+        "2.3": "Wait for approval (8-12 weeks)"
+      }
+    },
+    "arrivee-suisse": {
+      "title": "Arrive in Switzerland",
+      "description": "Register within 14 days",
+      "substeps": {
+        "3.1": "Arrive with approved permit",
+        "3.2": "Register with residents' registration office (14 days)",
+        "3.3": "Provide work contract, lease, passport",
+        "3.4": "Pay registration fees (~100 CHF)"
+      }
+    },
+    "assurance-maladie": {
+      "title": "Mandatory health insurance",
+      "description": "Must subscribe within 3 months",
+      "substeps": {
+        "4.1": "Compare health funds (Comparis.ch)",
+        "4.2": "Subscribe to basic LAMal insurance",
+        "4.3": "Receive insurance card"
+      }
+    },
+    "logement-suisse": {
+      "title": "Find accommodation",
+      "description": "Very competitive market",
+      "substeps": {
+        "5.1": "Search on Homegate, ImmoScout24",
+        "5.2": "Prepare complete application (CV, payslips, references)",
+        "5.3": "Visit properties quickly",
+        "5.4": "Sign lease and pay 3 months deposit"
+      }
+    },
+    "permis-sejour-carte": {
+      "title": "Receive residence permit",
+      "description": "Physical permit B/L card",
+      "substeps": {
+        "6.1": "Wait for card production (4-6 weeks)",
+        "6.2": "Collect card at residents' registration office",
+        "6.3": "Check validity period"
+      }
+    },
+    "banque-suisse": {
+      "title": "Open bank account",
+      "description": "Swiss current account",
+      "substeps": {
+        "7.1": "Choose bank (UBS, CS, PostFinance, neobank)",
+        "7.2": "Schedule appointment with permit + lease + contract",
+        "7.3": "Open account and receive card"
+      }
+    },
+    "quotidien-suisse": {
+      "title": "Daily setup",
+      "description": "Subscriptions and services",
+      "substeps": {
+        "8.1": "Subscribe to transport pass (half-fare, GA)",
+        "8.2": "Get Swiss mobile plan (Swisscom, Salt, Sunrise)",
+        "8.3": "Subscribe to liability insurance (RC)",
+        "8.4": "Exchange driving license if necessary"
+      }
+    }
+  },
+  "jobMarket": {
+    "topSectors": [
+      "Finance and Banking",
+      "Pharmaceutical and Biotechnology",
+      "Information Technology",
+      "Watchmaking and Precision",
+      "Engineering"
+    ]
+  }
+}

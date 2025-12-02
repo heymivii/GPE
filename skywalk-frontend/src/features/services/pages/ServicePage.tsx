@@ -1,5 +1,6 @@
 import { useParams, Navigate, Link } from 'react-router-dom';
 import { Plus } from 'lucide-react';
+import { useState } from 'react';
 import { getServiceBySlug } from '../../../data/services-config';
 import { PageHeader } from '../../../components/PageHeader';
 import ServiceGuides from '../components/ServiceGuides';
@@ -7,13 +8,20 @@ import ServiceStats from '../components/ServiceStats';
 import ServiceResults from '../components/ServiceResults';
 import CountrySelector from '../components/CountrySelector';
 import ServiceTools from '../components/ServiceTools';
+import HealthStats from '../components/HealthStats';
+import TransportStats from '../components/TransportStats';
+import LogementStats from '../components/LogementStats';
+import EmploiStats from '../components/EmploiStats';
 import { useServiceContent } from '../hooks/useServiceContent';
+import { useTranslation } from 'react-i18next';
 
 export default function ServicePage() {
+  const { t } = useTranslation();
   const { category } = useParams<{ category: string }>();
+  const [isToolsExpanded, setIsToolsExpanded] = useState(false);
 
   // Récupérer le service d'abord
-  const service = category ? getServiceBySlug(category) : null;
+  const service = category ? getServiceBySlug(category, t) : null;
 
   // Appeler le hook avant les early returns
   const {
@@ -37,16 +45,16 @@ export default function ServicePage() {
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Service non trouvé
+            {t('services.servicePage.notFound.title')}
           </h1>
           <p className="text-gray-600 mb-6">
-            Le service "{category}" n'existe pas ou n'est plus disponible.
+            {t('services.servicePage.notFound.description', { category })}
           </p>
           <Link
             to="/"
-            className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
           >
-            Retour à l'accueil
+            {t('services.servicePage.notFound.backHome')}
           </Link>
         </div>
       </div>
@@ -54,45 +62,38 @@ export default function ServicePage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gray-50">
       {/* Header Section */}
       <PageHeader 
         title={service.title} 
         description={service.description} 
       />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-16">
-        {/* Country Selector + Context Banner */}
-        <div className="bg-white rounded-2xl p-8 border border-gray-100">
-          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
-            <div className="flex-1 max-w-2xl">
+      {/* Context Banner - Full Width */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+            <div className="flex-1">
               {displayMode === 'generic' && (
                 <div>
-                  <div className="inline-flex items-center px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-xs font-medium mb-4 uppercase tracking-wide">
-                    Mode découverte
+                  <div className="inline-flex items-center px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-xs font-bold mb-3 uppercase tracking-wider">
+                    {t('services.servicePage.modes.discovery.badge')}
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">
-                    Informations générales
+                  <h3 className="text-lg font-bold text-gray-900 mb-1">
+                    {t('services.servicePage.modes.discovery.title')}
                   </h3>
-                  <p className="text-gray-500 leading-relaxed mb-4">
-                    Découvrez nos guides et conseils universels pour réussir votre expatriation, quelle que soit votre destination.
+                  <p className="text-sm text-gray-600 leading-relaxed">
+                    {t('services.servicePage.modes.discovery.description')}
                   </p>
                   {!isAuthenticated && (
-                    <div className="flex items-start gap-3 p-4 bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200 rounded-lg">
-                      <div className="flex-shrink-0 w-8 h-8 bg-[#5EA3C0] rounded-full flex items-center justify-center">
-                        <Plus className="w-4 h-4 text-white" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm text-gray-800 mb-2">
-                          <strong>💡 Astuce :</strong> Créez un compte gratuit pour accéder à du contenu personnalisé selon votre pays de destination !
-                        </p>
-                        <Link
-                          to="/auth/register"
-                          className="inline-flex items-center text-sm font-semibold text-[#5EA3C0] hover:text-[#4d8a9d] underline"
-                        >
-                          Créer mon compte →
+                    <div className="mt-4 flex items-center gap-2 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                      <Plus className="w-4 h-4 text-gray-600 flex-shrink-0" />
+                      <p className="text-xs text-gray-700">
+                        <Link to="/auth/register" className="font-semibold text-gray-900 hover:text-gray-700 underline">
+                          {t('services.servicePage.modes.discovery.cta')}
                         </Link>
-                      </div>
+                        {' '}{t('services.servicePage.modes.discovery.ctaSuffix')}
+                      </p>
                     </div>
                   )}
                 </div>
@@ -100,46 +101,41 @@ export default function ServicePage() {
 
               {displayMode === 'with-project' && (
                 <div>
-                  <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-medium mb-4 uppercase tracking-wide">
-                    Personnalisé
+                  <div className="inline-flex items-center px-3 py-1 rounded-full bg-[#5EA3C0]/10 text-[#5EA3C0] text-xs font-bold mb-3 uppercase tracking-wider">
+                    {t('services.servicePage.modes.personalized.badge')}
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">
+                  <h3 className="text-lg font-bold text-gray-900 mb-1">
                     {content.hasCountryContent ? (
-                      <>
-                        Tout savoir sur l'expatriation en{' '}
-                        <span className="text-gray-900 capitalize">
-                          {selectedCountry}
-                        </span>
-                      </>
+                      <>{t('services.servicePage.modes.personalized.titleWithCountry', { country: selectedCountry })}</>
                     ) : (
-                      'Informations de votre projet'
+                      t('services.servicePage.modes.personalized.titleWithoutCountry')
                     )}
                   </h3>
-                  <p className="text-gray-500 leading-relaxed">
+                  <p className="text-sm text-gray-600 leading-relaxed">
                     {content.hasCountryContent
-                      ? 'Nous avons adapté tous les guides, chiffres et conseils ci-dessous spécifiquement pour votre destination.'
-                      : 'Utilisez le sélecteur pour voir le contenu spécifique à un pays.'}
+                      ? t('services.servicePage.modes.personalized.descriptionWithCountry')
+                      : t('services.servicePage.modes.personalized.descriptionWithoutCountry')}
                   </p>
                 </div>
               )}
 
               {displayMode === 'without-project' && (
                 <div>
-                  <div className="inline-flex items-center px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-xs font-medium mb-4 uppercase tracking-wide">
-                    Exploration
+                  <div className="inline-flex items-center px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-xs font-bold mb-3 uppercase tracking-wider">
+                    {t('services.servicePage.modes.exploration.badge')}
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">
-                    Explorez par destination
+                  <h3 className="text-lg font-bold text-gray-900 mb-1">
+                    {t('services.servicePage.modes.exploration.title')}
                   </h3>
-                  <p className="text-gray-500 mb-6 leading-relaxed">
-                    Sélectionnez un pays dans la liste pour accéder à des informations précises et adaptées.
+                  <p className="text-sm text-gray-600 leading-relaxed mb-4">
+                    {t('services.servicePage.modes.exploration.description')}
                   </p>
                   <Link
                     to="/onboarding"
-                    className="inline-flex items-center space-x-2 px-5 py-2.5 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium text-sm"
+                    className="inline-flex items-center space-x-2 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium text-sm"
                   >
                     <Plus className="w-4 h-4" />
-                    <span>Créer mon projet</span>
+                    <span>{t('services.servicePage.modes.exploration.cta')}</span>
                   </Link>
                 </div>
               )}
@@ -157,31 +153,61 @@ export default function ServicePage() {
             )}
           </div>
         </div>
+      </div>
 
-        {/* Stats Section */}
-        {content.stats && content.stats.length > 0 && (
-          <ServiceStats stats={content.stats} color={service.color} />
-        )}
+      {/* Main Content Area with Sidebar Layout */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Sidebar - Tools (uniquement pour utilisateurs connectés) */}
+          {isAuthenticated && (
+            <aside className={`flex-shrink-0 transition-all duration-300 ${
+              isToolsExpanded ? 'lg:w-96' : 'lg:w-80'
+            }`}>
+              <div className="lg:sticky lg:top-8 space-y-6">
+                <ServiceTools 
+                  category={category || ''} 
+                  countryName={selectedCountry || undefined}
+                  isExpanded={isToolsExpanded}
+                  onToggleExpand={() => setIsToolsExpanded(!isToolsExpanded)}
+                />
+              </div>
+            </aside>
+          )}
 
-        {/* Interactive Tools Section */}
-        <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150">
-          <ServiceTools category={category || ''} countryName={selectedCountry || undefined} />
+          {/* Main Content */}
+          <main className="flex-1 min-w-0 space-y-8">
+            {/* Stats Section - Dynamique pour tous les services avec données complètes */}
+            {selectedCountry && ['france', 'royaume-uni', 'suisse'].includes(selectedCountry) ? (
+              <>
+                {category === 'sante' && <HealthStats countryName={selectedCountry} />}
+                {category === 'transport' && <TransportStats countryName={selectedCountry} />}
+                {category === 'logement' && <LogementStats countryName={selectedCountry} />}
+                {category === 'emploi' && <EmploiStats countryName={selectedCountry} />}
+                {!['sante', 'transport', 'logement', 'emploi'].includes(category || '') && 
+                  content.stats && content.stats.length > 0 && (
+                    <ServiceStats stats={content.stats} color={service.color} />
+                  )}
+              </>
+            ) : content.stats && content.stats.length > 0 ? (
+              <ServiceStats stats={content.stats} color={service.color} />
+            ) : null}
+
+            {/* Guides Section */}
+            <ServiceGuides
+              guides={content.guides}
+              tips={content.tips}
+              faq={service.faq}
+            />
+
+            {/* Search Results Section */}
+            {service.searchCategory && (
+              <ServiceResults
+                category={service.searchCategory}
+                title={service.title}
+              />
+            )}
+          </main>
         </div>
-
-        {/* Guides Section */}
-        <ServiceGuides
-          guides={content.guides}
-          tips={content.tips}
-          faq={service.faq}
-        />
-
-        {/* Search Results Section */}
-        {service.searchCategory && (
-          <ServiceResults
-            category={service.searchCategory}
-            title={service.title}
-          />
-        )}
       </div>
     </div>
   );
