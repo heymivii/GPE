@@ -5,6 +5,7 @@
       "name": "France",
       "code": "FR",
       "currency": "EUR",
+      "currencySymbol": "€",
       "languages": [
         "Français"
       ],
@@ -485,6 +486,7 @@
       "name": "Canada",
       "code": "CA",
       "currency": "CAD",
+      "currencySymbol": "$",
       "languages": [
         "Français",
         "Anglais"
@@ -986,6 +988,7 @@
       "name": "Suisse",
       "code": "CH",
       "currency": "CHF",
+      "currencySymbol": "CHF",
       "languages": [
         "Français",
         "Allemand",
@@ -1429,10 +1432,11 @@
       }
     },
     {
-      "id": 4,
+      "id": 11,
       "name": "Royaume-Uni",
       "code": "GB",
       "currency": "GBP",
+      "currencySymbol": "£",
       "languages": [
         "Anglais"
       ],
@@ -1914,10 +1918,11 @@
       }
     },
     {
-      "id": 5,
+      "id": 4,
       "name": "Allemagne",
       "code": "DE",
       "currency": "EUR",
+      "currencySymbol": "€",
       "languages": [
         "Allemand"
       ],
@@ -2401,10 +2406,11 @@
       }
     },
     {
-      "id": 6,
+      "id": 5,
       "name": "Espagne",
       "code": "ES",
       "currency": "EUR",
+      "currencySymbol": "€",
       "languages": [
         "Espagnol"
       ],
@@ -2903,10 +2909,11 @@
       }
     },
     {
-      "id": 7,
+      "id": 6,
       "name": "Italie",
       "code": "IT",
       "currency": "EUR",
+      "currencySymbol": "€",
       "languages": [
         "Italien"
       ],
@@ -3409,6 +3416,7 @@
       "name": "Belgique",
       "code": "BE",
       "currency": "EUR",
+      "currencySymbol": "€",
       "languages": [
         "Français",
         "Néerlandais",
@@ -3899,10 +3907,11 @@
       }
     },
     {
-      "id": 9,
+      "id": 14,
       "name": "Australie",
       "code": "AU",
       "currency": "AUD",
+      "currencySymbol": "$",
       "languages": [
         "Anglais"
       ],
@@ -4411,10 +4420,11 @@
       }
     },
     {
-      "id": 10,
+      "id": 16,
       "name": "Japon",
       "code": "JP",
       "currency": "JPY",
+      "currencySymbol": "¥",
       "languages": [
         "Japonais"
       ],
@@ -4958,10 +4968,11 @@
       }
     },
     {
-      "id": 11,
+      "id": 9,
       "name": "Pays-Bas",
       "code": "NL",
       "currency": "EUR",
+      "currencySymbol": "€",
       "languages": [
         "Néerlandais",
         "Anglais"
@@ -5436,6 +5447,7 @@
       "name": "Suède",
       "code": "SE",
       "currency": "SEK",
+      "currencySymbol": "kr",
       "languages": [
         "Suédois",
         "Anglais"
@@ -5916,6 +5928,7 @@
       "name": "États-Unis",
       "code": "US",
       "currency": "USD",
+      "currencySymbol": "$",
       "languages": [
         "Anglais"
       ],
@@ -6424,10 +6437,11 @@
       }
     },
     {
-      "id": 14,
+      "id": 7,
       "name": "Portugal",
       "code": "PT",
       "currency": "EUR",
+      "currencySymbol": "€",
       "languages": [
         "Portugais"
       ],
