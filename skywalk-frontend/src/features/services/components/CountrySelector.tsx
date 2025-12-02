@@ -41,25 +41,23 @@ export default function CountrySelector({
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center space-x-3 px-5 py-3 bg-white border rounded-xl transition-all duration-200 shadow-sm ${
-          isOpen ? 'border-blue-500 ring-2 ring-blue-100' : 'border-gray-200 hover:border-blue-300'
+        className={`flex items-center space-x-3 px-4 py-2.5 bg-white border rounded-lg transition-all shadow-sm ${
+          isOpen ? 'border-gray-900 ring-2 ring-gray-100' : 'border-gray-200 hover:border-gray-300'
         }`}
       >
-        <div className="p-1.5 bg-gray-50 rounded-lg">
-          <Globe className="w-5 h-5 text-blue-600" />
-        </div>
+        <Globe className="w-4 h-4 text-gray-600" />
         <div className="flex flex-col items-start text-left">
-          <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-            Pays sélectionné
+          <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+            Destination
           </span>
-          <span className="font-bold text-gray-900">
+          <span className="text-sm font-semibold text-gray-900">
             {selectedCountryData
               ? `${selectedCountryData.flag} ${selectedCountryData.name}`
-              : '🌍 Informations générales'}
+              : '🌍 Général'}
           </span>
         </div>
         <ChevronDown
-          className={`w-5 h-5 text-gray-400 transition-transform duration-200 ml-2 ${
+          className={`w-4 h-4 text-gray-400 transition-transform duration-200 ml-auto ${
             isOpen ? 'rotate-180' : ''
           }`}
         />
@@ -71,46 +69,46 @@ export default function CountrySelector({
             className="fixed inset-0 z-10"
             onClick={() => setIsOpen(false)}
           />
-          <div className="absolute top-full mt-3 right-0 w-72 bg-white border border-gray-100 rounded-2xl shadow-2xl z-20 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+          <div className="absolute top-full mt-2 right-0 w-64 bg-white border border-gray-200 rounded-xl shadow-xl z-20 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             <div className="p-2">
               {showGenericOption && (
                 <button
                   onClick={() => handleSelect(null)}
-                  className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all ${
+                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm transition-all ${
                     !selectedCountry 
-                      ? 'bg-blue-50 text-blue-700' 
+                      ? 'bg-gray-900 text-white' 
                       : 'hover:bg-gray-50 text-gray-700'
                   }`}
                 >
-                  <div className="flex items-center space-x-3">
-                    <span className="text-2xl filter grayscale opacity-80">🌍</span>
-                    <span className="font-semibold">Informations générales</span>
+                  <div className="flex items-center space-x-2.5">
+                    <span className="text-lg">🌍</span>
+                    <span className="font-medium">Informations générales</span>
                   </div>
                   {!selectedCountry && (
-                    <Check className="w-5 h-5 text-blue-600" />
+                    <Check className="w-4 h-4" />
                   )}
                 </button>
               )}
 
-              <div className="my-2 border-t border-gray-100 mx-2" />
+              {showGenericOption && <div className="my-2 border-t border-gray-100" />}
 
               <div className="space-y-1">
                 {AVAILABLE_COUNTRIES.map((country) => (
                   <button
                     key={country.slug}
                     onClick={() => handleSelect(country.slug)}
-                    className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all ${
+                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm transition-all ${
                       selectedCountry === country.slug 
-                        ? 'bg-blue-50 text-blue-700' 
+                        ? 'bg-gray-900 text-white' 
                         : 'hover:bg-gray-50 text-gray-700'
                     }`}
                   >
-                    <div className="flex items-center space-x-3">
-                      <span className="text-2xl shadow-sm rounded-sm">{country.flag}</span>
-                      <span className="font-semibold">{country.name}</span>
+                    <div className="flex items-center space-x-2.5">
+                      <span className="text-lg">{country.flag}</span>
+                      <span className="font-medium">{country.name}</span>
                     </div>
                     {selectedCountry === country.slug && (
-                      <Check className="w-5 h-5 text-blue-600" />
+                      <Check className="w-4 h-4" />
                     )}
                   </button>
                 ))}

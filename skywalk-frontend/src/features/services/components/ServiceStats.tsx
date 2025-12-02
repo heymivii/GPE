@@ -18,12 +18,12 @@ export default function ServiceStats({ stats, color }: ServiceStatsProps) {
         {stats.map((stat, index) => (
           <div
             key={index}
-            className="bg-white rounded-xl p-6 border border-gray-100 hover:border-gray-200 transition-colors"
+            className="bg-white rounded-xl p-6 border border-gray-200 hover:border-gray-300 transition-all hover:shadow-sm"
           >
             <p className="text-sm font-medium text-gray-500 mb-2 uppercase tracking-wider">
               {stat.label}
             </p>
-            <p className="text-3xl font-bold text-blue-600 tracking-tight">
+            <p className="text-3xl font-bold text-gray-900 tracking-tight">
               {stat.value}
             </p>
           </div>

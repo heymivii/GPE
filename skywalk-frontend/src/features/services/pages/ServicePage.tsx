@@ -44,7 +44,7 @@ export default function ServicePage() {
           </p>
           <Link
             to="/"
-            className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
           >
             Retour à l'accueil
           </Link>
@@ -78,10 +78,10 @@ export default function ServicePage() {
                     Découvrez nos guides et conseils universels pour réussir votre expatriation.
                   </p>
                   {!isAuthenticated && (
-                    <div className="mt-4 flex items-center gap-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                      <Plus className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                    <div className="mt-4 flex items-center gap-2 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                      <Plus className="w-4 h-4 text-gray-600 flex-shrink-0" />
                       <p className="text-xs text-gray-700">
-                        <Link to="/auth/register" className="font-semibold text-blue-600 hover:text-blue-700 underline">
+                        <Link to="/auth/register" className="font-semibold text-gray-900 hover:text-gray-700 underline">
                           Créez un compte gratuit
                         </Link>
                         {' '}pour accéder à du contenu personnalisé !
@@ -93,7 +93,7 @@ export default function ServicePage() {
 
               {displayMode === 'with-project' && (
                 <div>
-                  <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold mb-3 uppercase tracking-wider">
+                  <div className="inline-flex items-center px-3 py-1 rounded-full bg-[#5EA3C0]/10 text-[#5EA3C0] text-xs font-bold mb-3 uppercase tracking-wider">
                     Personnalisé
                   </div>
                   <h3 className="text-lg font-bold text-gray-900 mb-1">
