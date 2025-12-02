@@ -8,7 +8,7 @@ import {
   UpdateDateColumn,
   OneToMany,
 } from 'typeorm';
-import { ProcessTracking } from '../../process-tracking/entities/process-tracking.entity';
+import { ProcedureTracking } from '../../procedure-tracking/entities/procedure-tracking.entity';
 
 // Interface pour typer la progression de la checklist
 export interface ChecklistProgress {
@@ -73,12 +73,18 @@ export class ExpatriationProject {
   })
   checklistProgress: ChecklistProgress;
 
+  @Column({ name: 'language_level', length: 50, nullable: true })
+  languageLevel: string;
+
+  @Column({ name: 'id_origin_country', nullable: true })
+  idOriginCountry: number;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
-  @OneToMany(() => ProcessTracking, (tracking) => tracking.project)
-  processTrackings: ProcessTracking[];
+  @OneToMany(() => ProcedureTracking, (tracking) => tracking.project)
+  processTrackings: ProcedureTracking[];
 }

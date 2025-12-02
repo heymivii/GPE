@@ -1,4 +1,14 @@
-import { IsNotEmpty, IsOptional, IsNumber, IsString, IsBoolean, IsDateString, IsIn, Min } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsNumber,
+  IsString,
+  IsBoolean,
+  IsDateString,
+  IsIn,
+  Min,
+  IsObject,
+} from 'class-validator';
 
 export class CreateExpatriationProjectDto {
   @IsNotEmpty()
@@ -8,6 +18,10 @@ export class CreateExpatriationProjectDto {
   @IsOptional()
   @IsNumber()
   idDestinationCity?: number;
+
+  @IsOptional()
+  @IsNumber()
+  idOriginCountry?: number;
 
   @IsOptional()
   @IsString()
@@ -49,4 +63,12 @@ export class CreateExpatriationProjectDto {
   @IsOptional()
   @IsDateString()
   expectedDepartureDate?: string;
+
+  @IsOptional()
+  @IsString()
+  languageLevel?: string;
+
+  @IsOptional()
+  @IsObject()
+  checklistProgress?: Record<string, any>;
 }
