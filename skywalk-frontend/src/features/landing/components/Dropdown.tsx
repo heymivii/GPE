@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { ChevronDown, Home, Plane, Star, CheckCircle, Search } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { countryApi } from '../../../api/country';
 
 export default function JobSearchForm() {
   const [formData, setFormData] = useState({
@@ -9,10 +11,22 @@ export default function JobSearchForm() {
     position: 'Développeur'
   });
 
+  const { data: countries = [] } = useQuery({
+    queryKey: ['countries'],
+    queryFn: countryApi.getAll
+  });
+
+  const countryNames = countries.map(c => c.countryName).sort();
+
   const [activeField, setActiveField] = useState<string | null>(null);
 
   const handleFieldClick = (field: string) => {
     setActiveField(activeField === field ? null : field);
+  };
+
+  const handleSelect = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    setActiveField(null);
   };
 
   const handleSearch = () => {
@@ -24,30 +38,32 @@ export default function JobSearchForm() {
     label,
     value,
     field,
+    options = [],
     isHighlighted = false
   }: {
     icon: React.ComponentType<{ className?: string }>;
     label: string;
     value: string;
     field: string;
+    options?: string[];
     isHighlighted?: boolean;
   }) => (
     <div className="relative w-full min-w-[400px]">
       <div 
         className={`flex items-center space-x-4 p-4 border rounded-xl cursor-pointer transition-all duration-200 ${
           isHighlighted 
-            ? 'border-blue-200 bg-blue-50' 
+            ? 'border-[#5EA3C0]/30 bg-[#5EA3C0]/5' 
             : 'border-gray-200 hover:border-gray-300'
-        } ${activeField === field ? 'ring-2 ring-blue-500 ring-opacity-50' : ''}`}
+        } ${activeField === field ? 'ring-2 ring-[#5EA3C0] ring-opacity-50' : ''}`}
         onClick={() => handleFieldClick(field)}
       >
         <div className="flex-shrink-0">
-          <Icon className="w-6 h-6 text-gray-700" />
+          <Icon className={`w-6 h-6 ${isHighlighted ? 'text-[#5EA3C0]' : 'text-gray-700'}`} />
         </div>
         <div className="flex-1">
           <div className="text-sm text-gray-500">{label}</div>
           <div className={`text-base font-medium ${
-            isHighlighted ? 'text-blue-600' : 'text-gray-900'
+            isHighlighted ? 'text-[#5EA3C0]' : 'text-gray-900'
           }`}>
             {value}
           </div>
@@ -60,10 +76,27 @@ export default function JobSearchForm() {
       </div>
       
       {activeField === field && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-10 p-2">
-          <div className="text-sm text-gray-500 p-2">
-            Options pour {label.toLowerCase()}...
-          </div>
+        <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-10 max-h-60 overflow-y-auto">
+          {options.length > 0 ? (
+            <div className="py-2">
+              {options.map((option) => (
+                <div
+                  key={option}
+                  className="px-4 py-2 hover:bg-gray-50 cursor-pointer text-gray-700"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleSelect(field, option);
+                  }}
+                >
+                  {option}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-sm text-gray-500 p-4 text-center">
+              Aucune option disponible
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -80,6 +113,7 @@ export default function JobSearchForm() {
               label="D'où je viens"
               value={formData.origin}
               field="origin"
+              options={countryNames}
             />
 
             <SelectField
@@ -87,6 +121,7 @@ export default function JobSearchForm() {
               label="Où je vais"
               value={formData.destination}
               field="destination"
+              options={countryNames}
             />
 
             <SelectField
@@ -94,6 +129,7 @@ export default function JobSearchForm() {
               label="Catégorie de recherche"
               value={formData.category}
               field="category"
+              options={['Emploi', 'Logement', 'Études', 'Santé', 'Autre']}
             />
 
             <SelectField
@@ -102,6 +138,7 @@ export default function JobSearchForm() {
               value={formData.position}
               field="position"
               isHighlighted={true}
+              options={['Développeur', 'Designer', 'Manager', 'Commercial', 'Autre']}
             />
 
             <div className="pt-4">
@@ -116,14 +153,6 @@ export default function JobSearchForm() {
           </div>
         </div>
       </div>
-
-      {/* Affichage des données pour debug
-      <div className="max-w-2xl mx-auto mt-8 p-4 bg-gray-100 rounded-lg">
-        <h3 className="text-sm font-medium text-gray-700 mb-2">Données actuelles :</h3>
-        <pre className="text-xs text-gray-600">
-          {JSON.stringify(formData, null, 2)}
-        </pre>
-      </div> */}
     </div>
   );
 }

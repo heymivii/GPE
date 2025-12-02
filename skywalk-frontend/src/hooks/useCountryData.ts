@@ -29,6 +29,7 @@ export interface CountryData {
   name: string;
   code: string;
   currency: string;
+  currencySymbol?: string;
   languages: string[];
   flagUrl: string;
   flagEmoji: string;
@@ -46,22 +47,32 @@ export interface CountryData {
   };
   costOfLiving?: {
     averageRent: {
-      studio: number;
-      t2: number;
-      t3: number;
-      currency: string;
+      oneBedroom?: number;
+      threeBedroom?: number;
+      studio?: number;
+      t2?: number;
+      t3?: number;
+      currency?: string;
     };
     averageSalary: number;
+    food?: {
+      restaurantMeal?: number;
+      groceriesWeekly?: number;
+    };
+    utilities?: number;
     transportMonthly: number;
-    groceriesMonthly: number;
-    currency: string;
+    internetMonthly?: number;
+    gymMembership?: number;
+    groceriesMonthly?: number;
+    currency?: string;
+    byCity?: Record<string, Record<string, number>>;
   };
 }
 
 export function useCountryData(countryId?: number | null) {
   const country = useMemo(() => {
     if (!countryId) return null;
-    return (countriesData.countries as CountryData[]).find(
+    return (countriesData.countries as unknown as CountryData[]).find(
       (c) => c.id === countryId
     );
   }, [countryId]);
@@ -72,7 +83,7 @@ export function useCountryData(countryId?: number | null) {
 export function useCountryDataByCode(countryCode?: string) {
   const country = useMemo(() => {
     if (!countryCode) return null;
-    return (countriesData.countries as CountryData[]).find(
+    return (countriesData.countries as unknown as CountryData[]).find(
       (c) => c.code === countryCode
     );
   }, [countryCode]);
@@ -81,5 +92,5 @@ export function useCountryDataByCode(countryCode?: string) {
 }
 
 export function useAllCountries() {
-  return countriesData.countries as CountryData[];
+  return countriesData.countries as unknown as CountryData[];
 }

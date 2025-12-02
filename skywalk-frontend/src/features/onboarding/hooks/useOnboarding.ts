@@ -13,6 +13,8 @@ interface OnboardingData {
     status: string
     travelParty: string
     languageLevel: string
+    motherTongue?: string
+    spokenLanguages?: string[]
   }
   objective: {
     goal: string

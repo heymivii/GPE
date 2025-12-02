@@ -16,6 +16,8 @@ import {
 } from 'lucide-react'
 import { useForumTopics } from '../../../hooks/useForum'
 import { useAuth } from '../../../hooks/useAuth'
+import { PageHeader } from '../../../components/PageHeader'
+import { PageSearch } from '../../../components/PageSearch'
 
 
 const categoryConfig: Record<string, { name: string; description: string; icon: string; color: string }> = {
@@ -167,90 +169,94 @@ export default function ForumPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                Forum d'Entraide SkyWalk
-              </h1>
-              <p className="text-lg text-gray-600">
-                Posez vos questions, partagez vos expériences et aidez la communauté
-              </p>
+      <PageHeader 
+        title="Forum d'Entraide SkyWalk" 
+        description="Posez vos questions, partagez vos expériences et aidez la communauté"
+      />
+      
+      <PageSearch>
+        <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+          <div className="relative w-full sm:max-w-md group">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <Search className="h-5 w-5 text-gray-400 group-focus-within:text-[#5EA3C0] transition-colors" />
             </div>
-            
-            <div className="flex items-center gap-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Rechercher dans le forum..."
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-80"
-                />
-              </div>
-              
-              <Link
-                to="/forum/new"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
-              >
-                <Plus className="w-5 h-5" />
-                Nouveau post
-              </Link>
-            </div>
+            <input
+              type="text"
+              className="block w-full pl-11 pr-4 py-3 bg-gray-50 border-none rounded-2xl text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-[#5EA3C0]/20 focus:bg-white transition-all"
+              placeholder="Rechercher dans le forum..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          
+          <div className="flex items-center gap-4 w-full sm:w-auto">
+            <Link
+              to="/forum/new"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-black text-white rounded-xl hover:bg-gray-800 transition-colors font-medium shadow-sm"
+            >
+              <Plus className="w-5 h-5" />
+              Nouveau post
+            </Link>
           </div>
         </div>
-      </div>
+      </PageSearch>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           <div className="lg:col-span-3 space-y-8">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="bg-white rounded-lg p-4 border border-gray-200 hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-3">
-                  <MessageSquare className="w-8 h-8 text-blue-500" />
+              <div className="bg-white rounded-xl p-5 border border-gray-100">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-gray-50 rounded-xl">
+                    <MessageSquare className="w-6 h-6 text-gray-400" />
+                  </div>
                   <div>
-                    <div className="text-2xl font-bold text-gray-900">
+                    <div className="text-2xl font-bold text-gray-900 tracking-tight leading-none">
                       {updatedStats.totalPosts.toLocaleString('fr-FR')}
                     </div>
-                    <div className="text-sm text-gray-600">Topics</div>
+                    <div className="text-sm font-medium text-gray-500 mt-1">Topics</div>
                   </div>
                 </div>
               </div>
               
-              <div className="bg-white rounded-lg p-4 border border-gray-200 hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-3">
-                  <MessageCircle className="w-8 h-8 text-purple-500" />
+              <div className="bg-white rounded-xl p-5 border border-gray-100">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-gray-50 rounded-xl">
+                    <MessageCircle className="w-6 h-6 text-gray-400" />
+                  </div>
                   <div>
-                    <div className="text-2xl font-bold text-gray-900">
+                    <div className="text-2xl font-bold text-gray-900 tracking-tight leading-none">
                       {updatedStats.totalReplies.toLocaleString('fr-FR')}
                     </div>
-                    <div className="text-sm text-gray-600">Réponses</div>
+                    <div className="text-sm font-medium text-gray-500 mt-1">Réponses</div>
                   </div>
                 </div>
               </div>
               
-              <div className="bg-white rounded-lg p-4 border border-gray-200 hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-3">
-                  <TrendingUp className="w-8 h-8 text-orange-500" />
+              <div className="bg-white rounded-xl p-5 border border-gray-100">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-gray-50 rounded-xl">
+                    <TrendingUp className="w-6 h-6 text-gray-400" />
+                  </div>
                   <div>
-                    <div className="text-2xl font-bold text-gray-900">
+                    <div className="text-2xl font-bold text-gray-900 tracking-tight leading-none">
                       {updatedStats.activeUsers}
                     </div>
-                    <div className="text-sm text-gray-600">Dernières 24h</div>
+                    <div className="text-sm font-medium text-gray-500 mt-1">Dernières 24h</div>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg p-4 border border-gray-200 hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-3">
-                  <Filter className="w-8 h-8 text-green-500" />
+              <div className="bg-white rounded-xl p-5 border border-gray-100">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-gray-50 rounded-xl">
+                    <Filter className="w-6 h-6 text-gray-400" />
+                  </div>
                   <div>
-                    <div className="text-2xl font-bold text-gray-900">
+                    <div className="text-2xl font-bold text-gray-900 tracking-tight leading-none">
                       {stats.categories}
                     </div>
-                    <div className="text-sm text-gray-600">Catégories</div>
+                    <div className="text-sm font-medium text-gray-500 mt-1">Catégories</div>
                   </div>
                 </div>
               </div>
@@ -262,7 +268,7 @@ export default function ForumPage() {
                 {selectedCategory && (
                   <button
                     onClick={() => setSelectedCategory('')}
-                    className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800"
+                    className="flex items-center gap-1 text-sm text-[#5EA3C0] hover:text-[#4A8299]"
                   >
                     <X className="w-4 h-4" />
                     Réinitialiser
@@ -276,7 +282,7 @@ export default function ForumPage() {
                     onClick={() => handleCategoryClick(category.id)}
                     className={`flex items-center gap-3 p-4 rounded-lg border-2 transition-all text-left ${
                       selectedCategory === category.id
-                        ? 'border-blue-500 bg-blue-50 shadow-sm'
+                        ? 'border-[#5EA3C0] bg-[#5EA3C0]/5 shadow-sm'
                         : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                     }`}
                   >
@@ -326,7 +332,7 @@ export default function ForumPage() {
                       setSelectedCategory('')
                       setShowMyTopics(false)
                     }}
-                    className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 font-medium"
+                    className="flex items-center gap-1 text-sm text-[#5EA3C0] hover:text-[#4A8299] font-medium"
                   >
                     <X className="w-4 h-4" />
                     Réinitialiser
@@ -336,7 +342,7 @@ export default function ForumPage() {
 
               {isLoading && (
                 <div className="p-12 text-center">
-                  <Loader2 className="w-8 h-8 animate-spin text-blue-500 mx-auto mb-3" />
+                  <Loader2 className="w-8 h-8 animate-spin text-[#5EA3C0] mx-auto mb-3" />
                   <p className="text-gray-600">Chargement des topics...</p>
                 </div>
               )}
@@ -355,7 +361,7 @@ export default function ForumPage() {
                   <p className="text-gray-600 mb-2">Aucun topic trouvé</p>
                   <Link
                     to="/forum/new"
-                    className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                    className="text-[#5EA3C0] hover:text-[#4A8299] text-sm font-medium"
                   >
                     Créer le premier topic →
                   </Link>
@@ -410,13 +416,13 @@ export default function ForumPage() {
           <div className="space-y-6">
             {user && (
               <div className="bg-white rounded-lg border border-gray-200">
-                <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-purple-50">
+                <div className="p-4 border-b border-gray-200 bg-gray-50">
                   <h3 className="font-semibold text-gray-900">Mes Statistiques</h3>
                 </div>
                 <div className="p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-600">Mes topics</span>
-                    <span className="font-bold text-blue-600">{myTopics.length}</span>
+                    <span className="font-bold text-[#5EA3C0]">{myTopics.length}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-600">Total réponses</span>
@@ -435,7 +441,7 @@ export default function ForumPage() {
               <div className="p-4 space-y-2">
                 <Link
                   to="/forum/new"
-                  className="flex items-center gap-2 p-3 text-sm text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 rounded-lg transition-all font-medium shadow-sm hover:shadow"
+                  className="flex items-center gap-2 p-3 text-sm text-white bg-black hover:bg-gray-800 rounded-lg transition-all font-medium shadow-sm"
                 >
                   <Plus className="w-4 h-4" />
                   Créer un topic
@@ -447,7 +453,7 @@ export default function ForumPage() {
                       onClick={() => setShowMyTopics(!showMyTopics)}
                       className={`flex items-center gap-2 p-3 w-full text-sm rounded-lg transition-colors ${
                         showMyTopics 
-                          ? 'bg-blue-100 text-blue-700 font-medium' 
+                          ? 'bg-[#5EA3C0]/10 text-[#5EA3C0] font-medium' 
                           : 'text-gray-700 hover:bg-gray-50'
                       }`}
                     >

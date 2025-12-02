@@ -20,7 +20,7 @@ export default function DestinationCard({
     : 'h-64 md:h-72'
 
   return (
-    <div className={`relative ${heightClasses} ${className} rounded-2xl overflow-hidden group cursor-pointer transition-all duration-300 hover:scale-[1.02] shadow-lg hover:shadow-xl`}>
+    <div className={`relative ${heightClasses} ${className} rounded-2xl overflow-hidden group cursor-pointer transition-all duration-300 hover:scale-[1.02] shadow-lg`}>
       <div 
         className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
         style={{ backgroundImage: `url(${image})` }}

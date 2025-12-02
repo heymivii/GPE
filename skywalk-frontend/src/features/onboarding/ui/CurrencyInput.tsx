@@ -8,6 +8,7 @@ interface CurrencyInputProps {
   className?: string
   id?: string
   'aria-describedby'?: string
+  currency?: string
 }
 
 const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(({
@@ -18,6 +19,7 @@ const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(({
   className = "",
   id,
   'aria-describedby': ariaDescribedBy,
+  currency = "€",
   ...props
 }, ref) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -54,7 +56,7 @@ const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(({
         {...props}
       />
       <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-        <span className="text-gray-500 text-sm">€</span>
+        <span className="text-gray-500 text-sm">{currency}</span>
       </div>
     </div>
   )
