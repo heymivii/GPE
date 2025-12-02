@@ -1,5 +1,6 @@
 import { useParams, Navigate, Link } from 'react-router-dom';
 import { Plus } from 'lucide-react';
+import { useState } from 'react';
 import { getServiceBySlug } from '../../../data/services-config';
 import { PageHeader } from '../../../components/PageHeader';
 import ServiceGuides from '../components/ServiceGuides';
@@ -11,6 +12,7 @@ import { useServiceContent } from '../hooks/useServiceContent';
 
 export default function ServicePage() {
   const { category } = useParams<{ category: string }>();
+  const [isToolsExpanded, setIsToolsExpanded] = useState(false);
 
   // Récupérer le service d'abord
   const service = category ? getServiceBySlug(category) : null;
@@ -151,9 +153,16 @@ export default function ServicePage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar - Tools */}
-          <aside className="lg:w-80 flex-shrink-0">
+          <aside className={`flex-shrink-0 transition-all duration-300 ${
+            isToolsExpanded ? 'lg:w-96' : 'lg:w-80'
+          }`}>
             <div className="lg:sticky lg:top-8 space-y-6">
-              <ServiceTools category={category || ''} countryName={selectedCountry || undefined} />
+              <ServiceTools 
+                category={category || ''} 
+                countryName={selectedCountry || undefined}
+                isExpanded={isToolsExpanded}
+                onToggleExpand={() => setIsToolsExpanded(!isToolsExpanded)}
+              />
             </div>
           </aside>
 

@@ -1,12 +1,14 @@
 import { useState } from 'react';
-import { CheckCircle2, Circle, Trophy, Calculator, ArrowRight, Sparkles, FileText, MessageSquare, Building2, FileCheck } from 'lucide-react';
+import { CheckCircle2, Trophy, Calculator, Sparkles, FileText, MessageSquare, Building2, FileCheck, Maximize2, Minimize2 } from 'lucide-react';
 
 interface ServiceToolsProps {
   category: string;
   countryName?: string;
+  isExpanded?: boolean;
+  onToggleExpand?: () => void;
 }
 
-export default function ServiceTools({ category, countryName }: ServiceToolsProps) {
+export default function ServiceTools({ category, countryName, isExpanded = false, onToggleExpand }: ServiceToolsProps) {
   const [activeTool, setActiveTool] = useState<string>('default');
 
   if (category === 'emploi') {
@@ -18,6 +20,8 @@ export default function ServiceTools({ category, countryName }: ServiceToolsProp
         description="Outils pratiques pour votre recherche"
         activeToolId={currentTool}
         onToolChange={setActiveTool}
+        isExpanded={isExpanded}
+        onToggleExpand={onToggleExpand}
         tools={[
           { id: 'cv', label: 'Analyseur CV', icon: FileText, active: true },
           { id: 'interview', label: 'Simulateur entretien', icon: MessageSquare, active: false, comingSoon: true },
@@ -37,6 +41,8 @@ export default function ServiceTools({ category, countryName }: ServiceToolsProp
         description="Estimez et préparez votre dossier"
         activeToolId={currentTool}
         onToolChange={setActiveTool}
+        isExpanded={isExpanded}
+        onToggleExpand={onToggleExpand}
         tools={[
           { id: 'calc', label: 'Budget', icon: Calculator, active: true },
           { id: 'application', label: 'Dossier', icon: FileCheck, active: true },
@@ -58,17 +64,34 @@ interface ToolContainerProps {
   tools: Array<{ id: string; label: string; icon: any; active: boolean; comingSoon?: boolean }>;
   activeToolId: string;
   onToolChange: (id: string) => void;
+  isExpanded?: boolean;
+  onToggleExpand?: () => void;
   children: React.ReactNode;
 }
 
-function ToolContainer({ title, description, tools, activeToolId, onToolChange, children }: ToolContainerProps) {
+function ToolContainer({ title, description, tools, activeToolId, onToolChange, isExpanded, onToggleExpand, children }: ToolContainerProps) {
   return (
     <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
       {/* Header */}
       <div className="px-6 py-4 border-b border-gray-100 bg-gradient-to-b from-gray-50 to-white">
-        <div className="flex items-center gap-2 mb-1">
-          <Sparkles className="w-4 h-4 text-gray-600" />
-          <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wide">{title}</h3>
+        <div className="flex items-center justify-between mb-1">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-gray-600" />
+            <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wide">{title}</h3>
+          </div>
+          {onToggleExpand && (
+            <button
+              onClick={onToggleExpand}
+              className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
+              title={isExpanded ? "Réduire" : "Agrandir"}
+            >
+              {isExpanded ? (
+                <Minimize2 className="w-4 h-4 text-gray-600" />
+              ) : (
+                <Maximize2 className="w-4 h-4 text-gray-600" />
+              )}
+            </button>
+          )}
         </div>
         <p className="text-xs text-gray-500">{description}</p>
       </div>
