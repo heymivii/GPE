@@ -2,7 +2,6 @@ import { MigrationInterface, QueryRunner } from "typeorm";
 
 export class SeedCountries1732480000000 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
-        // Insert continents first
         await queryRunner.query(`
             INSERT INTO "continent" ("continent_name", "iso_code") VALUES
             ('Europe', 'EU'),
@@ -13,7 +12,6 @@ export class SeedCountries1732480000000 implements MigrationInterface {
             ON CONFLICT DO NOTHING;
         `);
 
-        // Get continent IDs for foreign keys
         const continents = await queryRunner.query(`
             SELECT id_continent, iso_code FROM "continent";
         `);
@@ -23,7 +21,6 @@ export class SeedCountries1732480000000 implements MigrationInterface {
             continentMap[c.iso_code] = c.id_continent;
         });
 
-        // Insert countries with proper continent foreign keys
         await queryRunner.query(`
             INSERT INTO "country" ("country_name", "iso_code", "id_continent", "currency", "language", "flag_url") VALUES
             ('France', 'FR', ${continentMap['EU']}, 'EUR', 'Français', 'https://flagcdn.com/fr.svg'),

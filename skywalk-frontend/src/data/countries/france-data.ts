@@ -1,11 +1,3 @@
-/**
- * DONNÉES COMPLÈTES POUR LA FRANCE
- * 
- * Sources officielles utilisées:
- * - Transport: carbu.com, Île-de-France Mobilités, service-public.fr, ANTS
- * - Santé: ameli.fr, sécurité-sociale.fr, info.gouv.fr, magnolia.fr
- * - Dernière mise à jour: 2 décembre 2025 (prix essence 27 novembre 2025)
- */
 
 export const franceData = {
   country: "France",

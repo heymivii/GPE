@@ -10,7 +10,6 @@ export default function JobCard({ job, viewMode }: JobCardProps) {
   const formatSalary = (price?: number, currency?: string) => {
     if (!price) return 'Salaire non spécifié';
     
-    // Si pas de currency ou currency invalide, afficher juste le montant
     if (!currency) {
       return `${price.toLocaleString('fr-FR')}+/an`;
     }
@@ -24,7 +23,6 @@ export default function JobCard({ job, viewMode }: JobCardProps) {
       
       return `${formatter.format(price)}+/an`;
     } catch {
-      // Si la devise n'est pas valide, afficher juste le montant avec le code de devise
       return `${price.toLocaleString('fr-FR')} ${currency}/an`;
     }
   };
@@ -104,7 +102,6 @@ export default function JobCard({ job, viewMode }: JobCardProps) {
     );
   }
 
-  // Grid view
   return (
     <div className="bg-white rounded-lg border border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all overflow-hidden group">
       <div className="p-4 pt-5">

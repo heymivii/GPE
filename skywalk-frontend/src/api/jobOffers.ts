@@ -1,9 +1,6 @@
 import api from '../lib/api';
 import type { AdzunaSearchResponse, JobSearchParams } from '../features/search/types/job';
 
-/**
- * Search for job offers using Adzuna API
- */
 export async function searchJobs(params: JobSearchParams): Promise<AdzunaSearchResponse> {
   const queryParams = new URLSearchParams();
   

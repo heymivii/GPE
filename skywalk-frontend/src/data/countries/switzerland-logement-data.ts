@@ -1,12 +1,3 @@
-/**
- * DONNÉES COMPLÈTES LOGEMENT - SUISSE
- * 
- * Sources officielles utilisées:
- * - Homegate, ImmoScout24 pour les prix moyens
- * - OFS (Office Fédéral de la Statistique) pour les statistiques
- * - Comparis pour les comparaisons de prix
- * - Dernière mise à jour: 2 décembre 2025
- */
 
 export const switzerlandLogementData = {
   country: "Switzerland",

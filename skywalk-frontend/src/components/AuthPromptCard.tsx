@@ -10,10 +10,6 @@ interface AuthPromptCardProps {
   benefits?: string[];
 }
 
-/**
- * Card component that prompts non-authenticated users to sign up
- * Highlights specific benefits and features
- */
 export default function AuthPromptCard({
   icon: Icon,
   title,

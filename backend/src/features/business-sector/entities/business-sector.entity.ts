@@ -20,7 +20,4 @@ export class BusinessSector {
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  // Relations (optionnel)
-  // @OneToMany(() => JobOffer, (jobOffer) => jobOffer.sector)
-  // jobOffers: JobOffer[];
 }

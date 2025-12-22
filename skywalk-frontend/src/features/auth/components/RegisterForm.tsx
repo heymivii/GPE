@@ -4,7 +4,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "../../../hooks/useAuth";
 import { countryApi } from "../../../api/country";
 
-// Password strength calculator
 const calculatePasswordStrength = (password: string) => {
   let strength = 0;
   const checks = {
@@ -41,13 +40,11 @@ export default function RegisterForm() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  // Récupérer la liste des pays
   const { data: countries = [] } = useQuery({
     queryKey: ['countries'],
     queryFn: countryApi.getAll,
   });
   
-  // Calculate password strength
   const passwordStrength = useMemo(() => {
     if (!password) return { strength: 0, checks: { length: false, uppercase: false, lowercase: false, number: false, special: false } };
     return calculatePasswordStrength(password);

@@ -8,15 +8,12 @@ interface HealthStatsProps {
 export default function HealthStats({ countryName }: HealthStatsProps) {
   const countryKey = countryName || 'france';
   
-  // Récupérer les données du pays
   const countryData = healthSystemByCountry[countryKey] || healthSystemByCountry['france'];
   
-  // Utiliser les budgets appropriés selon le pays
   const budgets = countryKey === 'suisse' 
     ? healthBudgetByProfileSwitzerland 
     : healthBudgetByProfile;
   
-  // Calculer les moyennes
   const avgYoungBudget = budgets.young_healthy.insurance + budgets.young_healthy.consultations + 
                          budgets.young_healthy.medications + budgets.young_healthy.dental + 
                          budgets.young_healthy.optical;
@@ -31,16 +28,13 @@ export default function HealthStats({ countryName }: HealthStatsProps) {
   
   const avgBudget = Math.round((avgYoungBudget + avgAdultBudget + avgSeniorBudget) / 3);
   
-  // Formater le nom du pays
   const displayName = countryName 
     ? countryName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('-')
     : 'France';
   
-  // Déterminer le type de système
   const systemType = countryData.type === 'public' ? 'Public' : 
                      countryData.type === 'mixed' ? 'Mixte' : 'Privé';
   
-  // Message personnalisé selon le pays
   const getSystemDescription = () => {
     if (countryKey === 'suisse') {
       return 'Assurance LAMal obligatoire';
@@ -52,7 +46,6 @@ export default function HealthStats({ countryName }: HealthStatsProps) {
     return 'Système de santé local';
   };
   
-  // Couleur de l'alerte selon le coût
   const getBudgetColor = () => {
     if (avgBudget > 6000) return { bg: 'bg-red-50', border: 'border-red-200', text: 'text-red-700' };
     if (avgBudget > 3000) return { bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-700' };

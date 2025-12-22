@@ -1,14 +1,3 @@
-/**
- * DONNÉES COMPLÈTES POUR LA SUISSE
- * 
- * Sources officielles utilisées:
- * - Transport: GlobalPetrolPrices, Expatistan, Schwiizerfranke
- * - Santé: FOPH (Federal Office of Public Health), Comparis, Moneyland
- * - Dernière mise à jour: 2 décembre 2025 (prix essence 10-Nov-2025)
- * 
- * Note importante: La Suisse a un système unique avec assurance maladie OBLIGATOIRE
- * fournie par des assureurs privés mais régulée par l'État (LAMal).
- */
 
 export const switzerlandData = {
   country: "Suisse",

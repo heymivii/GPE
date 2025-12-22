@@ -4,14 +4,12 @@ export class AddFirstNameLastNameToUser1732804000000 implements MigrationInterfa
   name = 'AddFirstNameLastNameToUser1732804000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    // Ajouter les colonnes first_name et last_name
     await queryRunner.query(`
       ALTER TABLE "app_user" 
       ADD COLUMN "first_name" VARCHAR(50),
       ADD COLUMN "last_name" VARCHAR(50)
     `);
 
-    // Migrer les données existantes : séparer full_name en first_name et last_name
     await queryRunner.query(`
       UPDATE "app_user"
       SET 
@@ -29,14 +27,12 @@ export class AddFirstNameLastNameToUser1732804000000 implements MigrationInterfa
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    // Restaurer full_name depuis first_name et last_name avant de supprimer
     await queryRunner.query(`
       UPDATE "app_user"
       SET "full_name" = CONCAT("first_name", ' ', "last_name")
       WHERE "first_name" IS NOT NULL OR "last_name" IS NOT NULL
     `);
 
-    // Supprimer les colonnes
     await queryRunner.query(`
       ALTER TABLE "app_user" 
       DROP COLUMN "first_name",

@@ -1,10 +1,4 @@
-/**
- * Destination types for popular countries
- */
 
-/**
- * Statistics for a destination country
- */
 export interface DestinationStats {
   memberCount: number;
   jobOffersCount: number;
@@ -12,9 +6,6 @@ export interface DestinationStats {
   resourcesCount: number;
 }
 
-/**
- * Destination country information
- */
 export interface Destination {
   id: string;
   name: string;

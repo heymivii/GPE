@@ -3,7 +3,6 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import api from "../../../lib/api";
 
-// Password strength calculator (same as RegisterForm)
 const calculatePasswordStrength = (password: string) => {
   let strength = 0;
   const checks = {
@@ -33,7 +32,6 @@ export default function ResetPasswordForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Calculate password strength
   const passwordStrength = useMemo(() => {
     if (!newPassword) return { strength: 0, checks: { length: false, uppercase: false, lowercase: false, number: false, special: false } };
     return calculatePasswordStrength(newPassword);

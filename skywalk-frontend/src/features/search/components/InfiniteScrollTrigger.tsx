@@ -7,10 +7,6 @@ interface InfiniteScrollTriggerProps {
   isLoading: boolean
 }
 
-/**
- * Composant optimisé pour le scroll infini avec Intersection Observer
- * Déclenche le chargement de plus de résultats quand l'utilisateur approche du bas
- */
 export default function InfiniteScrollTrigger({ 
   onLoadMore, 
   hasMore, 
@@ -19,20 +15,17 @@ export default function InfiniteScrollTrigger({
   const observerTarget = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    // Ne rien faire si on charge déjà ou s'il n'y a plus de résultats
     if (isLoading || !hasMore) return
 
     const target = observerTarget.current
     if (!target) return
 
-    // Configuration de l'Intersection Observer
     const options: IntersectionObserverInit = {
       root: null, // viewport
       rootMargin: '200px', // Commence à charger 200px avant d'atteindre l'élément
       threshold: 0.1 // Déclenche quand 10% de l'élément est visible
     }
 
-    // Callback appelé quand l'élément devient visible
     const handleIntersection = (entries: IntersectionObserverEntry[]) => {
       const [entry] = entries
       
@@ -41,11 +34,9 @@ export default function InfiniteScrollTrigger({
       }
     }
 
-    // Créer l'observer
     const observer = new IntersectionObserver(handleIntersection, options)
     observer.observe(target)
 
-    // Cleanup : détruire l'observer quand le composant est démonté
     return () => {
       if (target) {
         observer.unobserve(target)
@@ -54,7 +45,6 @@ export default function InfiniteScrollTrigger({
     }
   }, [onLoadMore, hasMore, isLoading])
 
-  // Ne rien afficher si pas de résultats à charger
   if (!hasMore) return null
 
   return (

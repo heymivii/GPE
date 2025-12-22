@@ -10,7 +10,6 @@ export default function LandingPage() {
   const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
 
-  // Data for popular destinations with images
   const popularDestinations = [
     {
       countryName: 'Canada',

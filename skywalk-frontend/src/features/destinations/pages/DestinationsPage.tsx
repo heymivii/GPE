@@ -6,15 +6,11 @@ import { Search, MapPin, SlidersHorizontal } from 'lucide-react';
 import { PageHeader } from '../../../components/PageHeader';
 import { PageSearch } from '../../../components/PageSearch';
 
-/**
- * Main destinations page displaying popular countries among Skywalk members
- */
 export function DestinationsPage() {
   const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('popularity');
 
-  // Filter and sort logic
   const filteredDestinations = mockDestinations
     .filter(dest => dest.name.toLowerCase().includes(searchTerm.toLowerCase()))
     .sort((a, b) => {

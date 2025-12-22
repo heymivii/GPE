@@ -29,11 +29,9 @@ export default function SearchPage() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const hasInitialized = useRef(false)
 
-  // Limit to 10 results for non-authenticated users
   const displayedResults = !isAuthenticated ? results.slice(0, 10) : results;
   const hasMoreResults = !isAuthenticated && results.length > 10;
 
-  // Lire les paramètres URL au chargement (une seule fois)
   useEffect(() => {
     if (hasInitialized.current) return;
     
@@ -47,14 +45,12 @@ export default function SearchPage() {
     if (category) urlFilters.category = category;
     if (query) urlFilters.query = query;
     
-    // Si des paramètres URL sont présents, les appliquer
     if (Object.keys(urlFilters).length > 0) {
       updateFilters(urlFilters);
       hasInitialized.current = true;
       return;
     }
     
-    // Sinon, vérifier les données d'onboarding
     const onboardingData = localStorage.getItem('skywalk-onboarding-data')
     if (onboardingData) {
       const data = JSON.parse(onboardingData)
@@ -81,7 +77,6 @@ export default function SearchPage() {
       }
     }
     
-    // Effectuer la recherche initiale une seule fois
     search()
     hasInitialized.current = true;
   }, [searchParams, updateFilters, search])

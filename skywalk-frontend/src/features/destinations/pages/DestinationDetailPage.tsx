@@ -14,9 +14,6 @@ import {
 import { useAuth } from '../../../hooks/useAuth';
 import AuthPromptCard from '../../../components/AuthPromptCard';
 
-/**
- * Detailed page for a specific destination country
- */
 export function DestinationDetailPage() {
   const { countrySlug } = useParams<{ countrySlug: string }>();
   const { isAuthenticated } = useAuth();

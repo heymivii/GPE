@@ -91,7 +91,6 @@ export function useCountryData(countryId?: number | null) {
     
     if (!rawCountry) return null;
     
-    // Apply translations if available
     const translation = getCountryTranslation(rawCountry.code, i18n.language);
     if (translation && rawCountry.expatProjectTemplate) {
       return {
@@ -137,7 +136,6 @@ export function useCountryDataByCode(countryCode?: string) {
     
     if (!rawCountry) return null;
     
-    // Apply translations if available
     const translation = getCountryTranslation(rawCountry.code, i18n.language);
     if (translation && rawCountry.expatProjectTemplate) {
       return {

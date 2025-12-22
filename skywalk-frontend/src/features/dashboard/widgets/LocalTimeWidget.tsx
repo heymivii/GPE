@@ -9,7 +9,6 @@ interface LocalTimeWidgetProps {
   onHide?: () => void;
 }
 
-// Mapping des pays vers leurs fuseaux horaires
 const TIMEZONE_MAP: Record<string, string> = {
   'FR': 'Europe/Paris',
   'CA': 'America/Toronto',
@@ -43,7 +42,6 @@ export default function LocalTimeWidget({
       const now = new Date();
       setLocalTime(now);
       
-      // Calculer l'heure dans le pays de destination
       const destTime = new Date(now.toLocaleString('en-US', { timeZone: timezone }));
       setDestinationTime(destTime);
     };

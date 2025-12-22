@@ -14,7 +14,6 @@ export default function CountryComparison() {
 
   const { data: countries } = useCountriesWithData()
 
-  // Limit to 3 countries for non-authenticated users, 5 for authenticated
   const maxCountries = isAuthenticated ? 3 : 2;
 
   const handleCountryToggle = (countryId: number) => {

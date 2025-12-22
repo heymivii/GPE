@@ -54,14 +54,12 @@ export default function PersonalizedDashboard() {
     widgetOrder || defaultLayout
   )
   
-  // Sync with preferences
   useEffect(() => {
     if (widgetOrder) {
       setDashboardLayout(widgetOrder)
     }
   }, [widgetOrder])
   
-  // Setup sensors for drag and drop
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -69,7 +67,6 @@ export default function PersonalizedDashboard() {
     })
   )
 
-  // 🔄 Initialiser avec le dernier projet créé (le plus récent)
   useEffect(() => {
     if (projects && projects.length > 0 && selectedProjectId === null) {
       const mostRecentProject = projects[projects.length - 1]
@@ -88,10 +85,8 @@ export default function PersonalizedDashboard() {
     { id: 'currency-converter', name: t('dashboard.personalized.widgets.available.currencyConverter.name'), icon: '💱', description: t('dashboard.personalized.widgets.available.currencyConverter.description') },
   ]
 
-  // ✅ Ne pas utiliser de fallback, attendre que selectedProjectId soit initialisé
   const activeProject = projects?.find(p => p.idProject === selectedProjectId)
   
-  // 🔍 Debug: Afficher le projet actif
   useEffect(() => {
     if (activeProject) {
       console.log('📊 Active project:', activeProject)
@@ -104,7 +99,6 @@ export default function PersonalizedDashboard() {
   const countryData = useCountryData(activeProject?.idDestinationCountry)
   const originCountryData = useCountryData(activeProject?.idOriginCountry)
   
-  // 🔍 Debug: Afficher countryData reçu
   useEffect(() => {
     console.log('🌍 countryData received:', countryData)
     console.log('   - Country ID asked:', activeProject?.idDestinationCountry)
@@ -172,7 +166,6 @@ export default function PersonalizedDashboard() {
     widgetId => !hiddenWidgets.includes(widgetId)
   )
   
-  // Handler for drag end
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
     
@@ -187,7 +180,6 @@ export default function PersonalizedDashboard() {
     }
   }
   
-  // Sortable Widget Wrapper
   const SortableWidget = ({ id, children }: { id: string; children: React.ReactNode }) => {
     const {
       attributes,
@@ -327,7 +319,6 @@ export default function PersonalizedDashboard() {
                   className="px-3 py-2 border border-gray-300 rounded-lg bg-white text-sm font-medium hover:border-gray-400 transition-colors"
                 >
                   {projects.map((project) => {
-                    // Trouver le nom du pays
                     const countryNames: Record<number, string> = {
                       1: 'France', 2: 'Canada', 3: 'Suisse', 4: 'Allemagne', 
                       5: 'Espagne', 6: 'Italie', 7: 'Portugal', 8: 'Belgique',

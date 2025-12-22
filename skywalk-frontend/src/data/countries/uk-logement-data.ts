@@ -1,12 +1,3 @@
-/**
- * DONNÉES COMPLÈTES LOGEMENT - ROYAUME-UNI
- * 
- * Sources officielles utilisées:
- * - Rightmove, Zoopla pour les prix moyens
- * - Gov.uk pour les réglementations
- * - Tenant Fees Act 2019
- * - Dernière mise à jour: 2 décembre 2025
- */
 
 export const ukLogementData = {
   country: "United Kingdom",

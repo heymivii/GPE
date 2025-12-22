@@ -7,10 +7,6 @@ interface DashboardPreferences {
 
 const STORAGE_KEY = 'skywalk-dashboard-preferences';
 
-/**
- * Hook pour gérer les préférences du dashboard (localStorage pour l'instant)
- * TODO: Migrer vers la BDD pour la synchronisation multi-appareils
- */
 export function useDashboardPreferences() {
   const [preferences, setPreferences] = useState<DashboardPreferences>(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -25,7 +21,6 @@ export function useDashboardPreferences() {
     return { hiddenWidgets: [] };
   });
 
-  // Sauvegarder automatiquement dans localStorage à chaque changement
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(preferences));
   }, [preferences]);

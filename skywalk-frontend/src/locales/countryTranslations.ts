@@ -1,4 +1,3 @@
-// Translation files for country-specific content
 import franceFr from './countries/france.fr.json';
 import franceEn from './countries/france.en.json';
 import ukFr from './countries/uk.fr.json';
@@ -34,7 +33,6 @@ export const countryTranslations: Record<string, Record<string, CountryTranslati
     fr: switzerlandFr as CountryTranslations,
     en: switzerlandEn as CountryTranslations,
   },
-  // Les autres pays seront ajoutés progressivement
 };
 
 export function getCountryTranslation(

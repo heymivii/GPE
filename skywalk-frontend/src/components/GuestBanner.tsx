@@ -3,10 +3,6 @@ import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-/**
- * Banner displayed to non-authenticated users to encourage sign-up
- * Shows benefits of creating an account
- */
 export default function GuestBanner() {
   const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(true);

@@ -29,7 +29,6 @@ apiClient.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
     
-    // Ne pas rediriger automatiquement sur les requêtes de profil ou de refresh
     const isAuthCheck = originalRequest.url?.includes('/auth/profile') || 
                         originalRequest.url?.includes('/auth/refresh');
     

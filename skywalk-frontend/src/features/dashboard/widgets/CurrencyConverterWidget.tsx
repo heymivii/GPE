@@ -31,12 +31,10 @@ const CurrencyConverterWidget: React.FC<CurrencyConverterWidgetProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [lastUpdate, setLastUpdate] = useState<string | null>(null);
   
-  // Cache for exchange rates
   const rateCache = useRef<Record<string, { rate: number; timestamp: number }>>({});
 
   const API_KEY = import.meta.env.VITE_EXCHANGERATE_API_KEY;
 
-  // Fetch exchange rate only when currencies change
   useEffect(() => {
     if (!API_KEY) {
       setError("API key not configured");
@@ -48,7 +46,6 @@ const CurrencyConverterWidget: React.FC<CurrencyConverterWidgetProps> = ({
       const now = Date.now();
       const cached = rateCache.current[cacheKey];
       
-      // Use cache if less than 1 hour old
       if (cached && now - cached.timestamp < 3600000) {
         setExchangeRate(cached.rate);
         const numAmount = parseFloat(amount) || 0;
@@ -73,7 +70,6 @@ const CurrencyConverterWidget: React.FC<CurrencyConverterWidgetProps> = ({
         if (data.result === "success") {
           const rate = data.conversion_rate;
           
-          // Cache the rate
           rateCache.current[cacheKey] = { rate, timestamp: now };
           
           setExchangeRate(rate);
@@ -92,10 +88,8 @@ const CurrencyConverterWidget: React.FC<CurrencyConverterWidgetProps> = ({
     };
 
     fetchExchangeRate();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fromCurrency, toCurrency, API_KEY, t]);
   
-  // Update result when amount changes (no API call)
   useEffect(() => {
     if (exchangeRate !== null) {
       const numAmount = parseFloat(amount) || 0;
@@ -105,10 +99,8 @@ const CurrencyConverterWidget: React.FC<CurrencyConverterWidgetProps> = ({
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    // Allow only numbers and decimal point
     if (value === "" || /^\d*\.?\d*$/.test(value)) {
       setAmount(value);
-      // Result will be updated by useEffect
     }
   };
 
