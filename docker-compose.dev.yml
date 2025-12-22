@@ -1,0 +1,62 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: skywalk-postgres-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: skywalk_db
+      POSTGRES_USER: ${DB_USERNAME:-skywalk_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-skywalk_password}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+    networks:
+      - skywalk-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: skywalk-backend-dev
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: ${DB_USERNAME:-skywalk_user}
+      DB_PASS: ${DB_PASSWORD:-skywalk_password}
+      DB_NAME: skywalk_db
+      JWT_SECRET: ${JWT_SECRET:-dev-secret-key}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-dev-refresh-secret}
+      FRONTEND_URL: http://localhost:5173
+      ADZUNA_APP_ID: ${ADZUNA_APP_ID}
+      ADZUNA_APP_KEY: ${ADZUNA_APP_KEY}
+      OPENWEATHER_API_KEY: ${OPENWEATHER_API_KEY}
+      EXCHANGERATE_API_KEY: ${EXCHANGERATE_API_KEY}
+      MAIL_HOST: ${MAIL_HOST:-smtp.ethereal.email}
+      MAIL_PORT: ${MAIL_PORT:-587}
+      MAIL_USER: ${MAIL_USER}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      MAIL_FROM: ${MAIL_FROM:-noreply@skywalk.com}
+    volumes:
+      - ./backend/src:/app/src
+      - ./backend/package.json:/app/package.json
+      - backend_node_modules:/app/node_modules
+    depends_on:
+      - db
+    networks:
+      - skywalk-network
+    command: npm run start:dev
+
+networks:
+  skywalk-network:
+    driver: bridge
+
+volumes:
+  postgres_data_dev:
+    driver: local
+  backend_node_modules:
+    driver: local
