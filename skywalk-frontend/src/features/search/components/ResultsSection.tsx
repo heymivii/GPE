@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Star, MapPin, Clock, ExternalLink, Heart, Share2, Calendar, Euro } from 'lucide-react'
 import type { SearchResult } from '../types'
+import JobCard from './JobCard'
 
 interface ResultsSectionProps {
   results: SearchResult[]
@@ -260,7 +261,11 @@ export default function ResultsSection({ results, isLoading, viewMode, onLoadMor
         : 'space-y-4'
       }>
         {results.map((result) => (
-          <ResultCard key={result.id} result={result} viewMode={viewMode} />
+          result.category === 'emploi' && result.provider === 'Adzuna' ? (
+            <JobCard key={result.id} job={result} viewMode={viewMode} />
+          ) : (
+            <ResultCard key={result.id} result={result} viewMode={viewMode} />
+          )
         ))}
       </div>
 

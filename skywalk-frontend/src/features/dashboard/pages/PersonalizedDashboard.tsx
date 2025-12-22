@@ -1,6 +1,23 @@
 import { useState, useEffect } from 'react'
-import { Settings, Plus, LayoutGrid, X, Check, User, CheckSquare, Wallet, Lightbulb } from 'lucide-react'
+import { Settings, Plus, LayoutGrid, X, Check, User, CheckSquare, Wallet, Lightbulb, GripVertical } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core'
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  useSortable,
+} from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 import { useProjects } from '../../projects/hooks/useProjectMutations'
 import { useCountryData } from '../../../hooks/useCountryData'
 import { useAuth } from '../../../hooks/useAuth'
@@ -11,24 +28,46 @@ import ChecklistWidget from '../widgets/ChecklistWidget'
 import BudgetTrackerWidget from '../widgets/BudgetTrackerWidget'
 import LocalTimeWidget from '../widgets/LocalTimeWidget'
 import WeatherWidget from '../widgets/WeatherWidget'
+import CurrencyConverterWidget from '../widgets/CurrencyConverterWidget'
 import { useTranslation } from 'react-i18next'
 
 export default function PersonalizedDashboard() {
   const { t } = useTranslation()
   const { data: projects, isLoading } = useProjects()
   const { user } = useAuth()
-  const { hiddenWidgets, toggleWidget } = useDashboardPreferences()
+  const { hiddenWidgets, toggleWidget, widgetOrder, updateWidgetOrder } = useDashboardPreferences()
   const [selectedProjectId, setSelectedProjectId] = useState<number | null>(null)
   const [editMode, setEditMode] = useState(false)
   const [showAddWidget, setShowAddWidget] = useState(false)
-  const [dashboardLayout] = useState<string[]>([
+  
+  const defaultLayout = [
     'profile-summary',
     'local-time',
     'weather',
     'checklist', 
     'budget-tracker',
-    'recommendations'
-  ])
+    'recommendations',
+    'currency-converter'
+  ]
+  
+  const [dashboardLayout, setDashboardLayout] = useState<string[]>(
+    widgetOrder || defaultLayout
+  )
+  
+  // Sync with preferences
+  useEffect(() => {
+    if (widgetOrder) {
+      setDashboardLayout(widgetOrder)
+    }
+  }, [widgetOrder])
+  
+  // Setup sensors for drag and drop
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  )
 
   // 🔄 Initialiser avec le dernier projet créé (le plus récent)
   useEffect(() => {
@@ -46,6 +85,7 @@ export default function PersonalizedDashboard() {
     { id: 'checklist', name: t('dashboard.personalized.widgets.available.checklist.name'), icon: '✅', description: t('dashboard.personalized.widgets.available.checklist.description') },
     { id: 'budget-tracker', name: t('dashboard.personalized.widgets.available.budgetTracker.name'), icon: '💰', description: t('dashboard.personalized.widgets.available.budgetTracker.description') },
     { id: 'recommendations', name: t('dashboard.personalized.widgets.available.recommendations.name'), icon: '💡', description: t('dashboard.personalized.widgets.available.recommendations.description') },
+    { id: 'currency-converter', name: t('dashboard.personalized.widgets.available.currencyConverter.name'), icon: '💱', description: t('dashboard.personalized.widgets.available.currencyConverter.description') },
   ]
 
   // ✅ Ne pas utiliser de fallback, attendre que selectedProjectId soit initialisé
@@ -131,6 +171,62 @@ export default function PersonalizedDashboard() {
   const visibleWidgets = dashboardLayout.filter(
     widgetId => !hiddenWidgets.includes(widgetId)
   )
+  
+  // Handler for drag end
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event
+    
+    if (over && active.id !== over.id) {
+      setDashboardLayout((items) => {
+        const oldIndex = items.indexOf(active.id as string)
+        const newIndex = items.indexOf(over.id as string)
+        const newOrder = arrayMove(items, oldIndex, newIndex)
+        updateWidgetOrder(newOrder)
+        return newOrder
+      })
+    }
+  }
+  
+  // Sortable Widget Wrapper
+  const SortableWidget = ({ id, children }: { id: string; children: React.ReactNode }) => {
+    const {
+      attributes,
+      listeners,
+      setNodeRef,
+      transform,
+      transition,
+      isDragging,
+    } = useSortable({ id })
+    
+    const style = {
+      transform: CSS.Transform.toString(transform),
+      transition,
+      opacity: isDragging ? 0.5 : 1,
+      cursor: editMode ? 'grab' : 'default',
+    }
+    
+    return (
+      <div 
+        ref={setNodeRef} 
+        style={style} 
+        className={`relative h-full ${editMode ? 'hover:ring-2 hover:ring-purple-300 rounded-xl transition-all' : ''}`}
+      >
+        {editMode && (
+          <div
+            {...attributes}
+            {...listeners}
+            className="absolute -left-2 top-1/2 -translate-y-1/2 z-10 cursor-grab active:cursor-grabbing bg-purple-500 rounded-lg p-2 shadow-lg hover:shadow-xl hover:bg-purple-600 transition-all"
+            title="Glisser pour réorganiser"
+          >
+            <GripVertical className="w-4 h-4 text-white" />
+          </div>
+        )}
+        <div className={`h-full ${editMode ? 'pl-4' : ''}`}>
+          {children}
+        </div>
+      </div>
+    )
+  }
 
   const renderWidget = (widgetId: string) => {
     const commonProps = {
@@ -194,6 +290,14 @@ export default function PersonalizedDashboard() {
             housingBudget={activeProject?.housingBudget?.toString() || '0'}
             countryData={countryData}
             {...commonProps}
+          />
+        )
+      
+      case 'currency-converter':
+        return (
+          <CurrencyConverterWidget
+            key={widgetId}
+            onHide={() => toggleWidgetVisibility(widgetId)}
           />
         )
       
@@ -284,14 +388,6 @@ export default function PersonalizedDashboard() {
       </div>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {editMode && (
-          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <p className="text-sm text-blue-800">
-              <strong>{t('dashboard.personalized.editModeActive')}</strong> - {t('dashboard.personalized.editModeDescription')}
-            </p>
-          </div>
-        )}
-
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transition-shadow">
             <div className="flex items-center justify-between mb-4">
@@ -394,19 +490,49 @@ export default function PersonalizedDashboard() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr">
-          {visibleWidgets.map(renderWidget)}
-          
-          {editMode && (
-            <button
-              onClick={() => setShowAddWidget(true)}
-              className="border-2 border-dashed border-gray-300 rounded-xl p-6 flex flex-col items-center justify-center text-gray-500 hover:border-gray-400 hover:text-gray-600 cursor-pointer transition-colors"
-            >
-              <Plus className="w-8 h-8 mb-2" />
-              <span className="text-sm font-medium">{t('dashboard.personalized.widgets.addWidget')}</span>
-            </button>
-          )}
-        </div>
+        {/* Edit Mode Notification */}
+        {editMode && (
+          <div className="mb-6 bg-purple-50 border border-purple-200 rounded-lg p-4 flex items-start space-x-3">
+            <GripVertical className="w-5 h-5 text-purple-600 mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="text-sm font-medium text-purple-900">
+                {t('dashboard.personalized.editModeActive')}
+              </p>
+              <p className="text-sm text-purple-700 mt-1">
+                {t('dashboard.personalized.editModeDescription')}
+              </p>
+            </div>
+          </div>
+        )}
+
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext
+            items={visibleWidgets}
+            strategy={verticalListSortingStrategy}
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {visibleWidgets.map((widgetId) => (
+                <SortableWidget key={widgetId} id={widgetId}>
+                  {renderWidget(widgetId)}
+                </SortableWidget>
+              ))}
+              
+              {editMode && (
+                <button
+                  onClick={() => setShowAddWidget(true)}
+                  className="border-2 border-dashed border-gray-300 rounded-xl p-6 flex flex-col items-center justify-center text-gray-500 hover:border-gray-400 hover:text-gray-600 cursor-pointer transition-colors"
+                >
+                  <Plus className="w-8 h-8 mb-2" />
+                  <span className="text-sm font-medium">{t('dashboard.personalized.widgets.addWidget')}</span>
+                </button>
+              )}
+            </div>
+          </SortableContext>
+        </DndContext>
 
         {hiddenWidgets.length > 0 && editMode && (
           <div className="mt-8">

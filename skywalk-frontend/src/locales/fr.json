@@ -692,10 +692,10 @@
       "projectTo": "Votre projet d'expatriation vers {{country}}",
       "editProject": "Modifier le projet",
       "modifyWidgets": "Modifier les widgets",
-      "finish": "Terminer",
+      "finish": "Terminé",
       "settings": "Paramètres du profil",
       "editModeActive": "Mode édition activé",
-      "editModeDescription": "Cliquez sur le menu (⋯) de chaque widget pour le modifier ou le masquer",
+      "editModeDescription": "Glissez-déposez les widgets pour les réorganiser. Cliquez sur \"Terminé\" pour sauvegarder.",
       "stats": {
         "projectStatus": {
           "label": "Statut du projet",
@@ -756,6 +756,10 @@
           "recommendations": {
             "name": "Recommandations",
             "description": "Conseils personnalisés"
+          },
+          "currencyConverter": {
+            "name": "Convertisseur de devises",
+            "description": "Convertir entre différentes devises"
           }
         },
         "menu": {
@@ -836,6 +840,18 @@
           },
           "learnMore": "En savoir plus",
           "seeAll": "Voir toutes les recommandations"
+        },
+        "currencyConverter": {
+          "title": "Convertisseur",
+          "from": "De",
+          "to": "Vers",
+          "amount": "Montant",
+          "result": "Résultat",
+          "rate": "Taux de change",
+          "lastUpdate": "Dernière mise à jour",
+          "loading": "Chargement des taux...",
+          "error": "Impossible de charger les taux de change",
+          "swap": "Inverser les devises"
         }
       },
       "projectSelector": "Projet #{{id}} - {{country}}"

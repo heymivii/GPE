@@ -11,6 +11,7 @@ import * as bcrypt from 'bcrypt';
 import { User } from '../user/entities/user.entity';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { MailService } from './mail.service';
 
 @Injectable()
 export class AuthService {
@@ -18,6 +19,7 @@ export class AuthService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly jwtService: JwtService,
+    private readonly mailService: MailService,
   ) {}
 
   /**
@@ -134,7 +136,11 @@ export class AuthService {
     const user = await this.userRepository.findOne({ where: { email } });
 
     if (!user) {
-      return { message: 'Si cet email existe, un lien de réinitialisation a été envoyé' };
+      // Return success message even if user doesn't exist (security best practice)
+      return {
+        message:
+          'Si cet email existe, un lien de réinitialisation a été envoyé',
+      };
     }
 
     const resetToken = this.jwtService.sign(
@@ -142,9 +148,12 @@ export class AuthService {
       { expiresIn: '1h' },
     );
 
-    console.log(`Reset token for ${email}: ${resetToken}`);
+    // Send the email with the reset link
+    await this.mailService.sendPasswordResetEmail(email, resetToken);
 
-    return { message: 'Si cet email existe, un lien de réinitialisation a été envoyé' };
+    return {
+      message: 'Si cet email existe, un lien de réinitialisation a été envoyé',
+    };
   }
 
   /**

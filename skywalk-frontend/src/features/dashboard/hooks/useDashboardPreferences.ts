@@ -62,13 +62,22 @@ export function useDashboardPreferences() {
     return preferences.hiddenWidgets.includes(widgetId);
   };
 
+  const updateWidgetOrder = (newOrder: string[]) => {
+    setPreferences(prev => ({
+      ...prev,
+      layout: newOrder
+    }));
+  };
+
   return {
     preferences,
     hiddenWidgets: preferences.hiddenWidgets,
+    widgetOrder: preferences.layout,
     hideWidget,
     showWidget,
     toggleWidget,
     resetPreferences,
-    isWidgetHidden
+    isWidgetHidden,
+    updateWidgetOrder
   };
 }
