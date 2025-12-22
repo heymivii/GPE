@@ -49,7 +49,6 @@ export default function Dropdown() {
     
     const params = new URLSearchParams();
     
-    // Ajouter tous les paramètres de recherche
     if (formData.destination) {
       params.append('country', formData.destination);
     }

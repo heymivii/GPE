@@ -11,6 +11,7 @@ import * as bcrypt from 'bcrypt';
 import { User } from '../user/entities/user.entity';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { MailService } from './mail.service';
 
 @Injectable()
 export class AuthService {
@@ -18,11 +19,9 @@ export class AuthService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly jwtService: JwtService,
+    private readonly mailService: MailService,
   ) {}
 
-  /**
-   * Inscription d'un nouvel utilisateur
-   */
   async register(registerDto: RegisterDto) {
     const existingUser = await this.userRepository.findOne({
       where: { email: registerDto.email },
@@ -60,9 +59,6 @@ export class AuthService {
     };
   }
 
-  /**
-   * Connexion d'un utilisateur
-   */
   async login(loginDto: LoginDto) {
     const user = await this.userRepository.findOne({
       where: { email: loginDto.email },
@@ -90,9 +86,6 @@ export class AuthService {
     };
   }
 
-  /**
-   * Récupérer le profil de l'utilisateur
-   */
   async getProfile(userId: number) {
     const user = await this.userRepository.findOne({
       where: { idUser: userId },
@@ -105,9 +98,6 @@ export class AuthService {
     return this.sanitizeUser(user);
   }
 
-  /**
-   * Rafraîchir le token JWT
-   */
   async refreshToken(refreshToken: string) {
     try {
       const payload = this.jwtService.verify(refreshToken);
@@ -127,14 +117,14 @@ export class AuthService {
     }
   }
 
-  /**
-   * Mot de passe oublié
-   */
   async forgotPassword(email: string) {
     const user = await this.userRepository.findOne({ where: { email } });
 
     if (!user) {
-      return { message: 'Si cet email existe, un lien de réinitialisation a été envoyé' };
+      return {
+        message:
+          'Si cet email existe, un lien de réinitialisation a été envoyé',
+      };
     }
 
     const resetToken = this.jwtService.sign(
@@ -142,14 +132,13 @@ export class AuthService {
       { expiresIn: '1h' },
     );
 
-    console.log(`Reset token for ${email}: ${resetToken}`);
+    await this.mailService.sendPasswordResetEmail(email, resetToken);
 
-    return { message: 'Si cet email existe, un lien de réinitialisation a été envoyé' };
+    return {
+      message: 'Si cet email existe, un lien de réinitialisation a été envoyé',
+    };
   }
 
-  /**
-   * Réinitialiser le mot de passe
-   */
   async resetPassword(token: string, newPassword: string) {
     try {
       const payload = this.jwtService.verify(token);
@@ -177,9 +166,6 @@ export class AuthService {
     }
   }
 
-  /**
-   * Générer un token JWT
-   */
   private generateToken(user: User): string {
     const payload = {
       sub: user.idUser,
@@ -190,10 +176,8 @@ export class AuthService {
     return this.jwtService.sign(payload);
   }
 
-  /**
-   * Supprimer les données sensibles de l'utilisateur
-   */
   private sanitizeUser(user: User) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { passwordHash, ...sanitized } = user;
     return sanitized;
   }

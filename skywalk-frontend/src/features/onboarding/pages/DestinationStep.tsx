@@ -40,7 +40,6 @@ export default function DestinationStep({ data, onNext, onBack }: DestinationSte
     }))
     .sort((a, b) => a.label.localeCompare(b.label))
 
-  // 🔄 Synchroniser avec les données du projet en mode édition
   useEffect(() => {
     if (data) {
       console.log('📝 DestinationStep - Syncing data:', data)
@@ -96,7 +95,6 @@ export default function DestinationStep({ data, onNext, onBack }: DestinationSte
     const newFormData = { ...formData, [field]: value }
     setFormData(newFormData)
     
-    // Vérification immédiate si les pays sont identiques
     if (field === 'toCountry' && value && newFormData.fromCountry && value === newFormData.fromCountry) {
       setErrors(prev => ({ ...prev, toCountry: 'Le pays de destination doit être différent du pays de départ' }))
     } else if (field === 'fromCountry' && value && newFormData.toCountry && value === newFormData.toCountry) {

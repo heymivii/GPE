@@ -1,13 +1,3 @@
-/**
- * DONNÉES SANTÉ PAR PAYS
- * 
- * TODO: Compléter avec les vraies données pour chaque pays
- * Sources recommandées :
- * - WHO (Organisation Mondiale de la Santé) : https://www.who.int/
- * - Sites gouvernementaux de santé publique
- * - Compagnies d'assurance internationales
- * - Ambassades et consulats
- */
 
 export interface HealthSystemInfo {
   type: 'public' | 'private' | 'mixed'; // Type de système
@@ -36,12 +26,6 @@ export interface HealthBudgetEstimate {
   emergency: number; // Urgences potentielles annuelles
 }
 
-// TODO: Ajouter les données réelles pour chaque pays
-// Sources France:
-// - Ameli.fr: https://www.ameli.fr/assure/remboursements/rembourse/tableau-recapitulatif-taux-remboursement
-// - Info.gouv.fr: https://www.info.gouv.fr/actualite/sante-consultation-a-30-euros-chez-le-medecin-generaliste
-// - Magnolia.fr: https://www.magnolia.fr/mutuelle-sante/prix
-// - DREES: https://drees.solidarites-sante.gouv.fr/
 export const healthSystemByCountry: Record<string, HealthSystemInfo> = {
   france: {
     type: 'mixed',
@@ -97,10 +81,8 @@ export const healthSystemByCountry: Record<string, HealthSystemInfo> = {
     emergencyFree: false, // Franchise + quote-part s'appliquent
     prescriptionSubsidized: true, // Après franchise
   },
-  // TODO: Ajouter les autres pays
 };
 
-// TODO: Compléter avec les vaccins obligatoires/recommandés par pays
 export const vaccinationsByCountry: Record<string, VaccinationRequirement[]> = {
   france: [
     { name: 'DTP (Diphtérie, Tétanos, Polio)', required: false, recommended: true, cost: 30 },
@@ -112,13 +94,8 @@ export const vaccinationsByCountry: Record<string, VaccinationRequirement[]> = {
     { name: 'Hépatite B', required: false, recommended: true, cost: 45 },
     { name: 'Grippe (annuel)', required: false, recommended: true, cost: 0 },
   ],
-  // TODO: Ajouter les autres pays et leurs exigences spécifiques
 };
 
-// Budget santé par profil (valeurs moyennes annuelles en €)
-// Sources France: Mutuelle moyenne 55€/mois + reste à charge selon profil
-// Source: https://www.magnolia.fr/mutuelle-sante/prix-moyen-mutuelle + ameli.fr
-// Suisse: Primes LAMal obligatoires TRÈS ÉLEVÉES (source: FOPH 2026 + conversion CHF→EUR)
 export const healthBudgetByProfile: Record<string, HealthBudgetEstimate> = {
   young_healthy: {
     insurance: 450, // 55€/mois mutuelle France (formule intermédiaire)
@@ -154,8 +131,6 @@ export const healthBudgetByProfile: Record<string, HealthBudgetEstimate> = {
   },
 };
 
-// Budgets santé Suisse (⚠️ BEAUCOUP PLUS ÉLEVÉS que reste de l'Europe)
-// Source: switzerland-mapping.ts (budgets CHF convertis en EUR)
 export const healthBudgetByProfileSwitzerland: Record<string, HealthBudgetEstimate> = {
   young_healthy: {
     insurance: 4725, // 4500 CHF × 1.05 (LAMal obligatoire + franchise)
@@ -191,7 +166,6 @@ export const healthBudgetByProfileSwitzerland: Record<string, HealthBudgetEstima
   },
 };
 
-// Documents médicaux nécessaires (générique)
 export const medicalDocumentsChecklist = [
   "Dossier médical complet traduit",
   "Carnet de vaccination à jour",

@@ -1,18 +1,8 @@
-/**
- * MAPPING DES DONNÉES UK VERS FORMAT OUTILS
- * 
- * Ce fichier convertit les données détaillées de uk-data.ts
- * vers le format simplifié utilisé par les outils React
- */
 
 import { ukData } from './uk-data';
 
-// Taux de conversion GBP -> EUR (à mettre à jour régulièrement)
 const GBP_TO_EUR = 1.16;
 
-/**
- * Convertit les données UK en format transport-data.ts
- */
 export const ukTransportSimplified = {
   'royaume-uni': {
     fuelPricePerLiter: ukData.transport.fuel.averagePetrolPricePerLitre * GBP_TO_EUR, // 1.58 EUR
@@ -22,9 +12,6 @@ export const ukTransportSimplified = {
   }
 };
 
-/**
- * Convertit les données UK en format health-data.ts
- */
 export const ukHealthSimplified = {
   'royaume-uni': {
     type: 'public' as const,
@@ -37,9 +24,6 @@ export const ukHealthSimplified = {
   }
 };
 
-/**
- * Convertit les budgets santé UK (GBP) en EUR pour les outils
- */
 export const ukHealthBudgetsEUR = {
   young_healthy: {
     insurance: Math.round(ukData.health.annualHealthBudgetEstimates.profiles[0].insurancePerYear * GBP_TO_EUR), // 580 EUR
@@ -79,9 +63,6 @@ export const ukHealthBudgetsEUR = {
   }
 };
 
-/**
- * Notes importantes UK
- */
 export const ukNotes = {
   transport: {
     drivingOnLeft: "⚠️ Conduite à gauche au Royaume-Uni",

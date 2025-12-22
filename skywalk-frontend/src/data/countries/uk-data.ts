@@ -1,11 +1,3 @@
-/**
- * DONNÉES COMPLÈTES POUR LE ROYAUME-UNI
- * 
- * Sources officielles utilisées:
- * - Transport: GlobalPetrolPrices, Transport for London, GOV.UK, DVLA
- * - Santé: NHS England, GOV.UK, The King's Fund, Nimblefins
- * - Dernière mise à jour: 2 décembre 2025
- */
 
 export const ukData = {
   country: "Royaume-Uni",

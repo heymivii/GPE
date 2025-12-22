@@ -42,14 +42,12 @@ export default function OnboardingFlow() {
   const originCountryData = useCountryData(user?.idOriginCountry)
   const [showAuthGate, setShowAuthGate] = useState(false)
   const [searchParams, setSearchParams] = useSearchParams()
-  // We calculate this inside the effect to be sure, but keep a ref for the initial render check
   const saveAttemptedRef = useRef(false)
   
   const { mutateAsync: createProject, isPending: isCreatingProject } = useCreateProject()
   const { mutateAsync: updateProject, isPending: isUpdatingProject } = useUpdateProject()
   const { data: projects } = useProjects(editMode)
   
-  // 🔒 Enforce authentication before starting onboarding
   useEffect(() => {
     if (!isAuthLoading && !isAuthenticated) {
       navigate('/auth/register?redirect=/onboarding');
@@ -117,7 +115,6 @@ export default function OnboardingFlow() {
             : new Date().getFullYear().toString()
         },
         profile: {
-          // 👤 Pre-fill profile data from user, not hardcoded values
           age: user.age?.toString() || '25',
           status: user.status || 'single',
           travelParty: existingProject.travelType || 'alone',
@@ -145,23 +142,17 @@ export default function OnboardingFlow() {
     }
   }, [existingProject, editMode, countries, setAllData, user])
 
-  // 👤 Pre-fill data from user profile for new projects
   useEffect(() => {
     if (!editMode && isAuthenticated && user && countries.length > 0 && !profileLoadedRef.current) {
-      // Check if we already have data to avoid overwriting user manual input if they navigated back and forth
-      // But here we use a ref to ensure it runs only once per mount/session
       
       console.log('👤 Pre-filling onboarding with user profile:', user);
       
       const originCountry = countries.find(c => c.idCountry === user.idOriginCountry);
       
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const profileData: any = {};
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const destinationData: any = {};
       let hasUpdates = false;
 
-      // Profile data
       if (user.age) {
         profileData.age = user.age.toString();
         hasUpdates = true;
@@ -183,7 +174,6 @@ export default function OnboardingFlow() {
         hasUpdates = true;
       }
 
-      // Destination data (Origin country)
       if (originCountry) {
         destinationData.fromCountry = originCountry.isoCode;
         hasUpdates = true;
@@ -194,7 +184,6 @@ export default function OnboardingFlow() {
           profile: {
             ...(data.profile || {}),
             ...profileData,
-            // Ensure required fields have defaults if missing
             travelParty: data.profile?.travelParty || 'alone',
             age: profileData.age || data.profile?.age || '',
             status: profileData.status || data.profile?.status || '',
@@ -236,7 +225,6 @@ export default function OnboardingFlow() {
 
       console.log('Submitting onboarding data:', data)
   
-      // Update user profile with new fields
       if (data.profile) {
         try {
           await userApi.updateProfile({
@@ -246,12 +234,9 @@ export default function OnboardingFlow() {
             motherTongue: data.profile.motherTongue,
             spokenLanguages: data.profile.spokenLanguages,
           });
-          // Refresh user context to reflect changes
           await refreshUser();
         } catch (error) {
           console.error('Error updating profile:', error);
-          // Continue with project creation even if profile update fails? 
-          // Maybe show a warning but let them proceed.
         }
       }
 
@@ -282,12 +267,9 @@ export default function OnboardingFlow() {
         'more_3_years': 48
       };
       
-      // Note: targetCity is currently a string name, but backend expects an ID.
-      // We skip sending it for now to avoid validation errors until we implement city search.
       const projectData: UpdateExpatriationProjectDto = {
         idDestinationCountry: destinationCountryId,
         idOriginCountry: originCountryId,
-        // idDestinationCity: data.destination?.targetCity ? parseInt(data.destination.targetCity) : undefined,
         languageLevel: data.profile?.languageLevel,
         travelType: data.profile?.travelParty as 'alone' | 'couple' | 'family' | 'friends' | 'other',
         mainObjective: (objectiveMapping[data.objective?.goal || ''] || 'other') as 'work' | 'study' | 'retirement' | 'adventure' | 'family_reunion' | 'other',
@@ -305,12 +287,10 @@ export default function OnboardingFlow() {
       if (editMode && id) {
         console.log('Updating project with data:', projectData);
         
-        // 🔍 Vérifier si le pays de destination a changé
         const countryChanged = existingProject && 
           existingProject.idDestinationCountry !== destinationCountryId;
         
         if (countryChanged) {
-          // ⚠️ Avertir l'utilisateur que la checklist sera réinitialisée
           const confirmed = window.confirm(
             '⚠️ Attention : Vous changez de pays de destination.\n\n' +
             'Votre checklist actuelle sera réinitialisée car les démarches sont spécifiques à chaque pays.\n\n' +
@@ -322,7 +302,6 @@ export default function OnboardingFlow() {
             return;
           }
           
-          // Réinitialiser checklistProgress
           projectData.checklistProgress = {};
           toast('Votre checklist a été réinitialisée pour le nouveau pays', { 
             icon: '⚠️',
@@ -341,7 +320,6 @@ export default function OnboardingFlow() {
         navigate(`/projects/${id}`);
       } else {
         console.log('Creating project with data:', projectData);
-        // For creation, cast to CreateExpatriationProjectDto (idDestinationCountry is guaranteed to be set)
         const newProject = await createProject(projectData as CreateExpatriationProjectDto);
         console.log('Project created:', newProject);
         
@@ -357,9 +335,7 @@ export default function OnboardingFlow() {
       
     } catch (error) {
       console.error('Error completing onboarding:', error)
-      // Afficher les détails de l'erreur backend
       if (error && typeof error === 'object' && 'response' in error) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const axiosError = error as any;
         const errorMessage = axiosError.response?.data?.message || axiosError.message;
         const errorDetails = Array.isArray(errorMessage) ? errorMessage.join(', ') : errorMessage;
@@ -373,13 +349,11 @@ export default function OnboardingFlow() {
     }
   }, [isAuthenticated, data, countries, editMode, id, existingProject, updateProject, createProject, navigate, clearDraft, refreshUser])
 
-  // 🔄 Auto-save after auth redirect
   useEffect(() => {
     const paramShouldSave = searchParams.get('save') === 'true';
     const localShouldSave = localStorage.getItem('skywalk-should-save') === 'true';
     const shouldSave = paramShouldSave || localShouldSave;
 
-    // Debug logs to understand state
     console.log('🔄 Auto-save Effect Debug:', {
       shouldSave,
       paramShouldSave,
@@ -392,32 +366,26 @@ export default function OnboardingFlow() {
     });
 
     const tryAutoSave = async () => {
-      // Wait for auth to finish loading
       if (isAuthLoading) {
         console.log('⏳ Waiting for auth to load...');
         return;
       }
 
-      // Wait for data to be loaded from localStorage
       if (Object.keys(data).length === 0) {
         console.log('⏳ Waiting for data to load...');
         return;
       }
 
-      // If we should save but are not authenticated, try to refresh user
       if (shouldSave && !isAuthenticated && !saveAttemptedRef.current) {
          console.log('🔄 Should save but not authenticated. Waiting and attempting refresh...');
          
-         // Small delay to ensure cookie is set/propagated
          await new Promise(resolve => setTimeout(resolve, 1000));
          
          try {
            await refreshUser();
-           // The effect will re-run when isAuthenticated changes
            return;
          } catch (e) {
            console.error('❌ Refresh failed', e);
-           // If refresh fails, we can't save. Show auth gate.
            setShowAuthGate(true);
            return;
          }
@@ -433,10 +401,8 @@ export default function OnboardingFlow() {
         toast.loading('Création de votre projet en cours...', { id: 'auto-save' });
         saveAttemptedRef.current = true;
         
-        // Clean up
         localStorage.removeItem('skywalk-should-save');
         
-        // Remove query param first to prevent loops
         setSearchParams(prev => {
           const newParams = new URLSearchParams(prev);
           newParams.delete('save');
@@ -452,7 +418,6 @@ export default function OnboardingFlow() {
   }, [isAuthenticated, isAuthLoading, countries, data, handleComplete, setSearchParams, refreshUser, searchParams]);
 
   const renderCurrentStep = () => {
-    // 🔍 Debug: Afficher les données actuelles
     console.log('🎯 Rendering step', currentStep, 'with data:', data);
     
     if (showAuthGate) {

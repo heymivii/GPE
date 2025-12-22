@@ -47,7 +47,6 @@ export default function NavBar() {
         
         <div className="hidden md:flex gap-6 items-center">
           {!isAuthenticated ? (
-            // Non connecté : afficher tous les liens directement
             <>
               <Link to="/" className="text-gray-700 hover:text-black">{t('nav.home')}</Link>
               <Link to="/destinations" className="text-gray-700 hover:text-black">{t('nav.destinations')}</Link>
@@ -57,7 +56,6 @@ export default function NavBar() {
               <Link to="/forum" className="text-gray-700 hover:text-black">{t('nav.forum')}</Link>
             </>
           ) : (
-            // Connecté : afficher les liens personnalisés avec dropdown Explorer
             <>
               <Link to="/dashboard" className="text-gray-700 hover:text-black">{t('nav.dashboard')}</Link>
               <Link to="/projects" className="text-gray-700 hover:text-black">{t('nav.projects')}</Link>

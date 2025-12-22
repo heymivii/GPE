@@ -11,7 +11,6 @@ export interface ServiceConfig {
   title: string;
   subtitle: string;
   description: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   icon: any;
   color: string;
   bgColor: string;
@@ -29,7 +28,6 @@ export interface ServiceConfig {
   }[];
 }
 
-// Fonction pour obtenir les services traduits
 export const getServicesConfig = (t: TFunction): Record<string, ServiceConfig> => ({
   emploi: {
     id: 'emploi',

@@ -39,7 +39,7 @@ export default function LoginForm() {
           className="mt-1 w-full px-4 py-4 rounded-lg  placeholder-black text-black"
           style={{ backgroundColor: "rgba(217, 217, 217, 0.4)" }}
           value={email}
-          placeholder="Nom d'utilisateur"
+          placeholder="Email"
           onChange={(e) => setEmail(e.target.value)}
           required
           disabled={isLoading}
@@ -59,19 +59,22 @@ export default function LoginForm() {
         />
       </div>
       
-      <div className="flex justify-between">
-        <div className=" flex gap-2 items-center">
+      <div className="flex justify-between items-center">
+        <label htmlFor="remember-me" className="flex gap-2 items-center cursor-pointer">
           <input
             type="checkbox"
-            className=""
-            id="scales"
+            className="w-4 h-4 cursor-pointer"
+            id="remember-me"
           />
-          <label htmlFor="scales">Se souvenir de moi</label>
-        </div>
+          <span className="text-sm text-gray-700">Se souvenir de moi</span>
+        </label>
 
-        <div className=" flex gap-2 items-center">
-          <Link to="/auth/pwdForgot">Mot de passe oublié ?</Link>
-        </div>
+        <Link 
+          to="/auth/pwdForgot" 
+          className="text-sm text-[#5EA3C0] hover:text-[#4a8ca0] transition-colors"
+        >
+          Mot de passe oublié ?
+        </Link>
       </div>
 
       <button

@@ -1,4 +1,3 @@
-// Contenu spécifique par pays pour chaque catégorie de service
 
 export interface CountrySpecificContent {
   emploi?: {
@@ -47,7 +46,6 @@ export interface CountrySpecificContent {
 }
 
 export const countryContent: Record<string, CountrySpecificContent> = {
-  // CANADA
   canada: {
     emploi: {
       stats: [
@@ -168,7 +166,6 @@ export const countryContent: Record<string, CountrySpecificContent> = {
     },
   },
 
-  // FRANCE
   france: {
     emploi: {
       stats: [
@@ -269,7 +266,6 @@ export const countryContent: Record<string, CountrySpecificContent> = {
     },
   },
 
-  // ALLEMAGNE
   allemagne: {
     emploi: {
       stats: [
@@ -375,7 +371,6 @@ export const countryContent: Record<string, CountrySpecificContent> = {
     },
   },
 
-  // ESPAGNE
   espagne: {
     emploi: {
       sites: ['InfoJobs.net', 'Indeed.es', 'LinkedIn', 'Tecnoempleo'],
@@ -394,7 +389,6 @@ export const countryContent: Record<string, CountrySpecificContent> = {
     },
   },
 
-  // ROYAUME-UNI
   'royaume-uni': {
     emploi: {
       specificGuides: [

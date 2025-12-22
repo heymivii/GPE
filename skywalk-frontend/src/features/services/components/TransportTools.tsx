@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { CheckCircle2 } from 'lucide-react';
 import { transportPricesByCountry } from '../../../data/transport-data';
 
-// ==================== OUTILS TRANSPORT ====================
 
 export function TransportCostTool({ countryName }: { countryName?: string }) {
   const { t } = useTranslation();
@@ -11,15 +10,12 @@ export function TransportCostTool({ countryName }: { countryName?: string }) {
   const [distance, setDistance] = useState('');
   const [fuelConsumption, setFuelConsumption] = useState('7'); // L/100km
 
-  // Récupérer les données du pays sélectionné
-  // countryName est en fait le slug (ex: 'royaume-uni', 'france')
   const countryKey = countryName || 'france';
   const countryData = transportPricesByCountry[countryKey] || transportPricesByCountry['france'];
   
   const fuelPrice = countryData.fuelPricePerLiter;
   const publicTransportCost = countryData.publicTransportMonthly;
   
-  // Formater le nom du pays pour l'affichage
   const displayName = countryName 
     ? countryName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('-')
     : undefined;
@@ -132,7 +128,6 @@ export function TransportCostTool({ countryName }: { countryName?: string }) {
 export function DriverLicenseTool({ countryName }: { countryName?: string }) {
   const [originCountry, setOriginCountry] = useState('');
 
-  // TODO: Utiliser driverLicenseRules depuis transport-data.ts
   const canExchange = originCountry !== '';
   
   return (

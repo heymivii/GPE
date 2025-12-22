@@ -3,20 +3,17 @@ import { useTranslation } from 'react-i18next';
 import { CheckCircle2 } from 'lucide-react';
 import { healthSystemByCountry, healthBudgetByProfile, healthBudgetByProfileSwitzerland } from '../../../data/health-data';
 
-// ==================== OUTILS SANTÉ ====================
 
 export function HealthCoverageTool({ countryName }: { countryName?: string }) {
   const { t } = useTranslation();
   const [profile, setProfile] = useState<'employee' | 'self-employed' | 'student'>('employee');
 
-  // Récupérer les données du pays sélectionné (countryName est le slug)
   const countryKey = countryName || 'france';
   const countryData = healthSystemByCountry[countryKey] || healthSystemByCountry['france'];
   
   const publicCost = countryData.publicCostMonthly || 0;
   const privateCost = countryData.privateCostMonthly || 50;
   
-  // Formater le nom du pays pour l'affichage
   const displayName = countryName 
     ? countryName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('-')
     : undefined;
@@ -166,7 +163,6 @@ export function MedicalChecklistTool({ countryName }: { countryName?: string }) 
 export function HealthBudgetTool({ countryName }: { countryName?: string }) {
   const [profile, setProfile] = useState<'young' | 'adult' | 'senior'>('adult');
 
-  // Utiliser les vraies données depuis health-data.ts
   const profileMap = {
     young: 'young_healthy',
     adult: 'adult_average',
@@ -175,17 +171,14 @@ export function HealthBudgetTool({ countryName }: { countryName?: string }) {
   
   const budgetKey = profileMap[profile];
   
-  // Utiliser les budgets spécifiques à la Suisse si le pays est 'suisse'
   const countryKey = countryName || 'france';
   const budget = countryKey === 'suisse' 
     ? healthBudgetByProfileSwitzerland[budgetKey] 
     : healthBudgetByProfile[budgetKey];
   
-  // Calculer le total
   const total = budget.insurance + budget.consultations + budget.medications + 
                 budget.dental + budget.optical + budget.emergency;
   
-  // Formater le nom du pays pour l'affichage
   const displayName = countryName 
     ? countryName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('-')
     : undefined;

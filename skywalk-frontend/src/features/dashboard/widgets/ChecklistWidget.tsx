@@ -36,7 +36,6 @@ export default function ChecklistWidget({
   const [checklist, setChecklist] = useState<ChecklistItem[]>([]);
   const { progress, updateStep, isLoading } = useChecklistProgress(projectId);
 
-  // 🔄 Fusionner countries-data.json avec la progression sauvegardée en BDD
   useEffect(() => {
     if (!countryData?.expatProjectTemplate) {
       return;
@@ -61,7 +60,6 @@ export default function ChecklistWidget({
     setChecklist(steps);
   }, [countryData, progress]);
 
-  // ✅ Toggle une étape principale (coche/décoche toutes les sous-étapes)
   const toggleItem = async (id: string) => {
     const item = checklist.find((i) => i.id === id);
     if (!item) return;
@@ -69,7 +67,6 @@ export default function ChecklistWidget({
     const newCompletedStatus = !item.completed;
     const previousState = [...checklist];
 
-    // Mise à jour optimiste locale immédiate
     setChecklist((prev) =>
       prev.map((listItem) =>
         listItem.id === id
@@ -86,9 +83,7 @@ export default function ChecklistWidget({
     );
 
     try {
-      // Si l'étape a des sous-étapes, on les met toutes à jour en BDD
       if (item.substeps && item.substeps.length > 0) {
-        // Mettre à jour la dernière sous-étape seulement, le backend s'occupera du reste
         const lastSubstep = item.substeps[item.substeps.length - 1];
         await updateStep({
           stepId: id,
@@ -96,7 +91,6 @@ export default function ChecklistWidget({
           completed: newCompletedStatus,
         });
         
-        // Mettre à jour les autres sous-étapes
         for (let i = 0; i < item.substeps.length - 1; i++) {
           await updateStep({
             stepId: id,
@@ -105,7 +99,6 @@ export default function ChecklistWidget({
           });
         }
       } else {
-        // Pas de sous-étapes, juste l'étape principale
         await updateStep({
           stepId: id,
           completed: newCompletedStatus,
@@ -113,12 +106,10 @@ export default function ChecklistWidget({
       }
     } catch (error) {
       console.error('Erreur lors de la mise à jour de l\'étape:', error);
-      // Rollback avec l'état précédent
       setChecklist(previousState);
     }
   };
 
-  // ✅ Toggle une sous-étape
   const toggleSubstep = async (
     itemId: string,
     substepId: string,
@@ -133,7 +124,6 @@ export default function ChecklistWidget({
     const newCompletedStatus = !substep.completed;
     const previousState = [...checklist];
 
-    // Mise à jour optimiste locale AVANT l'appel API
     setChecklist((prev) =>
       prev.map((item) => {
         if (item.id === itemId && item.substeps) {
@@ -163,7 +153,6 @@ export default function ChecklistWidget({
       });
     } catch (error) {
       console.error('Erreur lors de la mise à jour de la sous-étape:', error);
-      // Rollback avec l'état précédent en cas d'erreur
       setChecklist(previousState);
     }
   };
@@ -177,15 +166,12 @@ export default function ChecklistWidget({
     );
   };
 
-  // ✅ Calcul du pourcentage en tenant compte des sous-étapes
   const { totalSteps, completedSteps } = checklist.reduce(
     (acc, item) => {
       if (item.substeps && item.substeps.length > 0) {
-        // Si l'item a des sous-étapes, on compte les sous-étapes
         acc.totalSteps += item.substeps.length;
         acc.completedSteps += item.substeps.filter((sub) => sub.completed).length;
       } else {
-        // Sinon on compte l'étape principale
         acc.totalSteps += 1;
         acc.completedSteps += item.completed ? 1 : 0;
       }

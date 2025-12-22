@@ -19,12 +19,6 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  /**
-   * Register a new user
-   * @param registerDto User registration data
-   * @param res Express response object
-   * @returns User data and success message
-   */
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   async register(
@@ -47,12 +41,6 @@ export class AuthController {
     };
   }
 
-  /**
-   * Authenticate user
-   * @param loginDto User credentials
-   * @param res Express response object
-   * @returns User data and success message
-   */
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(
@@ -75,27 +63,16 @@ export class AuthController {
     };
   }
 
-  /**
-   * Get authenticated user profile
-   * @param req Request object with authenticated user
-   * @returns User profile data
-   */
   @Get('profile')
   @UseGuards(JwtAuthGuard)
   async getProfile(@Request() req) {
     return this.authService.getProfile(req.user.userId);
   }
 
-  /**
-   * Logout user
-   * @param res Express response object
-   * @returns Success message
-   */
   @Post('logout')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   async logout(@Response({ passthrough: true }) res: ExpressResponse) {
-    // Suppression complète du cookie
     res.clearCookie('access_token', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -106,34 +83,18 @@ export class AuthController {
     return { message: 'Déconnexion réussie' };
   }
 
-  /**
-   * Refresh JWT token
-   * @param refreshToken Refresh token
-   * @returns New access token
-   */
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
   async refresh(@Body('refreshToken') refreshToken: string) {
     return this.authService.refreshToken(refreshToken);
   }
 
-  /**
-   * Request password reset
-   * @param email User email
-   * @returns Success message
-   */
   @Post('forgot-password')
   @HttpCode(HttpStatus.OK)
   async forgotPassword(@Body('email') email: string) {
     return this.authService.forgotPassword(email);
   }
 
-  /**
-   * Reset password with token
-   * @param token Reset token
-   * @param newPassword New password
-   * @returns Success message
-   */
   @Post('reset-password')
   @HttpCode(HttpStatus.OK)
   async resetPassword(

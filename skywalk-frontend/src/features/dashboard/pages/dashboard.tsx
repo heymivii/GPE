@@ -19,8 +19,6 @@ export default function DashboardPage() {
     }
   }, [projects, isLoading, navigate])
 
-  // Afficher le loading pendant la vérification des projets
-  // pour éviter le flash du contenu avant la redirection
   if (isLoading || (projects && projects.length > 0)) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">

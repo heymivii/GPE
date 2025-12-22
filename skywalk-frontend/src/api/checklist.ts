@@ -20,9 +20,6 @@ export interface UpdateChecklistDto {
 }
 
 export const checklistApi = {
-  /**
-   * Get checklist progress for a project
-   */
   getProgress: async (projectId: number): Promise<ChecklistProgress> => {
     const response = await api.get<ChecklistProgress>(
       `/expatriation-project/${projectId}/checklist`,
@@ -30,9 +27,6 @@ export const checklistApi = {
     return response.data;
   },
 
-  /**
-   * Update checklist progress (toggle a step)
-   */
   updateProgress: async (
     projectId: number,
     dto: UpdateChecklistDto,

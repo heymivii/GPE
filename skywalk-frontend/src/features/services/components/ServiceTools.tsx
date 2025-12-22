@@ -316,4 +316,3 @@ function RentCalculatorTool({ countryName }: { countryName?: string }) {
   );
 }
 
-// RentalApplicationTool removed as we only keep one tool per service

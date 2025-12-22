@@ -1,13 +1,3 @@
-/**
- * DONNÉES COMPLÈTES EMPLOI - FRANCE
- * 
- * Sources officielles utilisées:
- * - INSEE (Institut National de la Statistique et des Études Économiques)
- * - Pôle Emploi
- * - Service-public.fr
- * - APEC (Association Pour l'Emploi des Cadres)
- * - Dernière mise à jour: 2 décembre 2025
- */
 
 export const franceEmploiData = {
   country: "France",

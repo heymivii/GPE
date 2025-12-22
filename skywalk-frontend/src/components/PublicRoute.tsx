@@ -1,10 +1,6 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
-/**
- * PublicRoute : Bloque l'accès aux pages auth (login, register) si déjà connecté
- * Redirige vers /dashboard si l'utilisateur est déjà authentifié
- */
 export default function PublicRoute() {
   const { isAuthenticated, isLoading } = useAuth();
 
@@ -16,11 +12,9 @@ export default function PublicRoute() {
     );
   }
 
-  // Si connecté, redirige vers le dashboard
   if (isAuthenticated) {
     return <Navigate to="/dashboard" replace />;
   }
 
-  // Sinon, affiche la page demandée (login, register, etc.)
   return <Outlet />;
 }

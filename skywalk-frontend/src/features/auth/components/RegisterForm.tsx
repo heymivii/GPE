@@ -1,8 +1,27 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "../../../hooks/useAuth";
 import { countryApi } from "../../../api/country";
+
+const calculatePasswordStrength = (password: string) => {
+  let strength = 0;
+  const checks = {
+    length: password.length >= 8,
+    uppercase: /[A-Z]/.test(password),
+    lowercase: /[a-z]/.test(password),
+    number: /[0-9]/.test(password),
+    special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+  };
+  
+  if (checks.length) strength += 20;
+  if (checks.uppercase) strength += 20;
+  if (checks.lowercase) strength += 20;
+  if (checks.number) strength += 20;
+  if (checks.special) strength += 20;
+  
+  return { strength, checks };
+};
 
 export default function RegisterForm() {
   const { register } = useAuth();
@@ -21,11 +40,29 @@ export default function RegisterForm() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  // Récupérer la liste des pays
   const { data: countries = [] } = useQuery({
     queryKey: ['countries'],
     queryFn: countryApi.getAll,
   });
+  
+  const passwordStrength = useMemo(() => {
+    if (!password) return { strength: 0, checks: { length: false, uppercase: false, lowercase: false, number: false, special: false } };
+    return calculatePasswordStrength(password);
+  }, [password]);
+  
+  const getStrengthColor = () => {
+    if (passwordStrength.strength <= 40) return "bg-red-500";
+    if (passwordStrength.strength <= 60) return "bg-orange-500";
+    if (passwordStrength.strength <= 80) return "bg-yellow-500";
+    return "bg-green-500";
+  };
+  
+  const getStrengthText = () => {
+    if (passwordStrength.strength <= 40) return "Faible";
+    if (passwordStrength.strength <= 60) return "Moyen";
+    if (passwordStrength.strength <= 80) return "Bon";
+    return "Fort";
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -162,6 +199,29 @@ export default function RegisterForm() {
           required
           disabled={isLoading}
         />
+        
+        {password && (
+          <div className="mt-2">
+            <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div 
+                className={`h-full transition-all duration-300 ${getStrengthColor()}`}
+                style={{ width: `${passwordStrength.strength}%` }}
+              />
+            </div>
+            <div className="flex justify-between items-center mt-1">
+              <p className="text-xs text-gray-600">
+                Force : <span className="font-medium">{getStrengthText()}</span>
+              </p>
+              <div className="flex gap-1 text-xs">
+                <span className={passwordStrength.checks.length ? "text-green-600" : "text-gray-400"}>8+</span>
+                <span className={passwordStrength.checks.uppercase ? "text-green-600" : "text-gray-400"}>A</span>
+                <span className={passwordStrength.checks.lowercase ? "text-green-600" : "text-gray-400"}>a</span>
+                <span className={passwordStrength.checks.number ? "text-green-600" : "text-gray-400"}>0</span>
+                <span className={passwordStrength.checks.special ? "text-green-600" : "text-gray-400"}>!</span>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       <div>
@@ -177,16 +237,25 @@ export default function RegisterForm() {
         />
       </div>
       
-      <div className="flex gap-2 items-center">
+      <label htmlFor="terms" className="flex gap-2 items-start cursor-pointer">
         <input
           type="checkbox"
-          className=""
+          className="mt-1 w-4 h-4 cursor-pointer flex-shrink-0"
           id="terms"
           required
           disabled={isLoading}
         />
-        <label htmlFor="terms">Accepter les conditions d'utilisation</label>
-      </div>
+        <span className="text-sm text-gray-700">
+          J'accepte les{" "}
+          <Link to="/legal/terms" className="text-[#5EA3C0] hover:underline" target="_blank">
+            conditions d'utilisation
+          </Link>{" "}
+          et la{" "}
+          <Link to="/legal/privacy" className="text-[#5EA3C0] hover:underline" target="_blank">
+            politique de confidentialité
+          </Link>
+        </span>
+      </label>
 
       <button
         type="submit"

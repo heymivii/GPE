@@ -8,11 +8,9 @@ interface LogementStatsProps {
 export default function LogementStats({ countryName }: LogementStatsProps) {
   const countryKey = countryName || 'france';
   
-  // Données officielles depuis logement-data.ts
   const data = logementPricesByCountry[countryKey] || logementPricesByCountry['france'];
   const cities = cityRentPrices[countryKey] || [];
   
-  // Formater le nom du pays
   const displayName = countryName 
     ? countryName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('-')
     : 'France';

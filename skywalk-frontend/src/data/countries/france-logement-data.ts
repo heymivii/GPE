@@ -1,12 +1,3 @@
-/**
- * DONNÉES COMPLÈTES LOGEMENT - FRANCE
- * 
- * Sources officielles utilisées:
- * - SeLoger, PAP, Leboncoin pour les prix moyens
- * - Service-public.fr pour les réglementations
- * - CLAMEUR pour l'encadrement des loyers à Paris
- * - Dernière mise à jour: 2 décembre 2025
- */
 
 export const franceLogementData = {
   country: "France",

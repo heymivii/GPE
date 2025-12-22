@@ -1,20 +1,8 @@
-/**
- * MAPPING SUISSE (CHF → EUR)
- * 
- * Convertit les données suisses en CHF vers EUR pour compatibilité avec les outils.
- * Taux de conversion: 1 CHF = 1.05 EUR (approximatif, décembre 2025)
- * 
- * ⚠️ IMPORTANT: La Suisse a des coûts de santé TRÈS ÉLEVÉS comparé aux autres pays européens
- */
 
 import { switzerlandData } from './switzerland-data';
 
-// Taux de conversion CHF → EUR (approximatif)
 export const CHF_TO_EUR = 1.05;
 
-/**
- * TRANSPORT SIMPLIFIÉ (pour transport-data.ts)
- */
 export const switzerlandTransportSimplified = {
   fuelPricePerLiter: +(switzerlandData.transport.fuel.averagePetrolPricePerLitre * CHF_TO_EUR).toFixed(2), // 1.69 CHF × 1.05 = 1.77 EUR
   publicTransportMonthly: +(switzerlandData.transport.publicTransport.monthlyPassPrice * CHF_TO_EUR).toFixed(2), // 100 CHF × 1.05 = 105 EUR
@@ -22,9 +10,6 @@ export const switzerlandTransportSimplified = {
   vehicleInsuranceYearly: +(switzerlandData.transport.carInsurance.averageAnnualPremium * CHF_TO_EUR).toFixed(0) // 700 CHF × 1.05 = 735 EUR
 };
 
-/**
- * SANTÉ SIMPLIFIÉE (pour health-data.ts)
- */
 export const switzerlandHealthSimplified = {
   type: 'mixed' as const,
   hasUniversalCoverage: true,
@@ -35,9 +20,6 @@ export const switzerlandHealthSimplified = {
   note: "⚠️ Assurance maladie OBLIGATOIRE en Suisse. Primes parmi les plus élevées d'Europe. publicCostMonthly = prime moyenne LAMal obligatoire."
 };
 
-/**
- * BUDGETS SANTÉ EN EUR (pour health-data.ts)
- */
 export const switzerlandHealthBudgetsEUR = {
   young_healthy: {
     insurance: +(switzerlandData.health.annualHealthBudgetEstimates.profiles[0].insurancePerYear * CHF_TO_EUR).toFixed(0), // 4500 CHF × 1.05 = 4725 EUR
@@ -73,9 +55,6 @@ export const switzerlandHealthBudgetsEUR = {
   }
 };
 
-/**
- * NOTES IMPORTANTES SUISSE
- */
 export const switzerlandNotes = {
   healthInsurance: "⚠️ ASSURANCE MALADIE OBLIGATOIRE (LAMal) pour TOUS les résidents suisses. Prime moyenne nationale ~413 EUR/mois (393 CHF). Affiliation dans les 3 mois après installation.",
   highCosts: "💰 La Suisse a les coûts de santé les plus élevés d'Europe. Budget santé annuel moyen adulte : 6300-7700 EUR/an (vs 1460 EUR en France).",

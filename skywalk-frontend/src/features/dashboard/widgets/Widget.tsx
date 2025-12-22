@@ -57,7 +57,7 @@ export default function Widget({
   return (
     <div className={`
       bg-white rounded-xl shadow-sm border border-gray-100
-      transition-shadow duration-200 p-6
+      transition-shadow duration-200 p-6 h-full flex flex-col
       ${getSizeClasses()}
       ${className}
     `}>
@@ -128,7 +128,7 @@ export default function Widget({
         )}
       </div>
 
-      <div>
+      <div className="flex-grow flex flex-col">
         {children}
       </div>
 

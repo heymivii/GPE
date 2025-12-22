@@ -1,7 +1,6 @@
 import type { Destination } from './types';
 import countriesData from '../../data/countries-data.json';
 
-// Marketing descriptions for specific countries to maintain high quality content
 const MARKETING_DESCRIPTIONS: Record<string, string> = {
   'Canada': 'Le Canada offre de nombreuses opportunités pour les expatriés, avec ses programmes d\'immigration attractifs et sa qualité de vie élevée.',
   'France': 'La France attire de nombreux expatriés avec sa culture riche, son système de santé de qualité et ses opportunités professionnelles variées.',
@@ -17,7 +16,6 @@ const MARKETING_DESCRIPTIONS: Record<string, string> = {
   'Pays-Bas': 'Les Pays-Bas offrent un excellent équilibre vie professionnelle/personnelle et un marché du travail international.',
 };
 
-// Helper to generate a description if no marketing description exists
 const getDescription = (country: any) => {
   if (MARKETING_DESCRIPTIONS[country.name]) {
     return MARKETING_DESCRIPTIONS[country.name];
@@ -27,11 +25,9 @@ const getDescription = (country: any) => {
   return `Découvrez ${country.name}, une destination idéale pour ${bestFor}. Profitez d'une qualité de vie notée ${country.lifestyle?.safetyRating || 'N/A'}/10.`;
 };
 
-// Helper to get highlights from country data
 const getHighlights = (country: any) => {
   const highlights = [];
   
-  // Add specific highlights based on data availability
   if (country.recommendations?.bestFor && country.recommendations.bestFor.length > 0) {
     highlights.push(`Idéal pour: ${country.recommendations.bestFor[0]}`);
   }
@@ -48,7 +44,6 @@ const getHighlights = (country: any) => {
     highlights.push(`Équilibre vie-pro: ${country.lifestyle.workLifeBalance}`);
   }
   
-  // Fallback if not enough highlights
   if (highlights.length < 3 && country.languages) {
     highlights.push(`Langues: ${country.languages.join(', ')}`);
   }
@@ -56,10 +51,6 @@ const getHighlights = (country: any) => {
   return highlights.slice(0, 4);
 };
 
-/**
- * Destinations data derived from the centralized countries-data.json file
- * This ensures consistency across the application
- */
 export const mockDestinations: Destination[] = countriesData.countries.map((country: any) => ({
   id: country.id.toString(),
   name: country.name,
@@ -68,8 +59,6 @@ export const mockDestinations: Destination[] = countriesData.countries.map((coun
   continent: country.continent,
   description: getDescription(country),
   stats: {
-    // Generating realistic looking stats based on country size/popularity
-    // In a real app, these would come from the backend
     memberCount: country.expatCommunity?.size === 'Grande' ? 2000 + Math.floor(Math.random() * 1000) : 500 + Math.floor(Math.random() * 500),
     jobOffersCount: (country.jobMarket?.keyJobSites?.length || 2) * 25 + Math.floor(Math.random() * 50),
     forumTopicsCount: (country.expatCommunity?.forums?.length || 2) * 60 + Math.floor(Math.random() * 100),
@@ -78,16 +67,10 @@ export const mockDestinations: Destination[] = countriesData.countries.map((coun
   highlights: getHighlights(country),
 }));
 
-/**
- * Get a destination by its slug
- */
 export function getDestinationBySlug(slug: string): Destination | undefined {
   return mockDestinations.find((dest) => dest.slug === slug);
 }
 
-/**
- * Get top destinations sorted by member count
- */
 export function getTopDestinations(limit: number = 6): Destination[] {
   return [...mockDestinations]
     .sort((a, b) => b.stats.memberCount - a.stats.memberCount)

@@ -1,9 +1,3 @@
-/**
- * DONNÉES LOGEMENT SIMPLIFIÉES (pour les outils React)
- * 
- * Ce fichier contient les données essentielles pour alimenter les composants LogementStats et outils interactifs.
- * Pour les données détaillées avec sources, voir countries/france-logement-data.ts, etc.
- */
 
 export interface LogementPrices {
   avgRentStudio: number; // Loyer moyen studio en €/mois
@@ -22,7 +16,6 @@ export interface CityRentPrices {
   t3: number;
 }
 
-// Données logement par pays (moyennes grandes villes)
 export const logementPricesByCountry: Record<string, LogementPrices> = {
   france: {
     avgRentStudio: 750, // Moyenne nationale hors Paris
@@ -53,7 +46,6 @@ export const logementPricesByCountry: Record<string, LogementPrices> = {
   },
 };
 
-// Prix par ville principale (pour affichage détaillé)
 export const cityRentPrices: Record<string, CityRentPrices[]> = {
   france: [
     { name: 'Paris', studio: 1100, t2: 1600, t3: 2300 },
@@ -81,7 +73,6 @@ export const cityRentPrices: Record<string, CityRentPrices[]> = {
   ],
 };
 
-// Documents requis pour dossier locatif
 export const rentalDocumentsChecklist: Record<string, string[]> = {
   france: [
     'Carte d\'identité ou passeport',
@@ -114,7 +105,6 @@ export const rentalDocumentsChecklist: Record<string, string[]> = {
   ],
 };
 
-// Plateformes de recherche par pays
 export const housingPlatforms: Record<string, Array<{ name: string; url: string; type: string }>> = {
   france: [
     { name: 'SeLoger', url: 'https://www.seloger.com', type: 'Agences + Particuliers' },
@@ -139,7 +129,6 @@ export const housingPlatforms: Record<string, Array<{ name: string; url: string;
   ],
 };
 
-// Notes importantes par pays
 export const housingNotes: Record<string, string[]> = {
   france: [
     'Encadrement des loyers à Paris, Lyon, Lille : vérifier le loyer de référence',

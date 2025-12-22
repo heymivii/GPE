@@ -72,7 +72,6 @@ export class UserService {
   async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
     const user = await this.findOne(id);
 
-    // Mettre à jour fullName si firstName ou lastName changent
     if (updateUserDto.firstName || updateUserDto.lastName) {
       const firstName = updateUserDto.firstName || user.firstName || '';
       const lastName = updateUserDto.lastName || user.lastName || '';

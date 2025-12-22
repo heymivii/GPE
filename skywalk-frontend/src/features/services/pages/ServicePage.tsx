@@ -20,10 +20,8 @@ export default function ServicePage() {
   const { category } = useParams<{ category: string }>();
   const [isToolsExpanded, setIsToolsExpanded] = useState(false);
 
-  // Récupérer le service d'abord
   const service = category ? getServiceBySlug(category, t) : null;
 
-  // Appeler le hook avant les early returns
   const {
     content,
     selectedCountry,
@@ -35,7 +33,6 @@ export default function ServicePage() {
     category: category || '' 
   });
 
-  // Early returns après les hooks
   if (!category) {
     return <Navigate to="/" replace />;
   }

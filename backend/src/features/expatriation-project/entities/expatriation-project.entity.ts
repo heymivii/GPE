@@ -10,7 +10,6 @@ import {
 } from 'typeorm';
 import { ProcedureTracking } from '../../procedure-tracking/entities/procedure-tracking.entity';
 
-// Interface pour typer la progression de la checklist
 export interface ChecklistProgress {
   [stepId: string]: {
     completed: boolean;

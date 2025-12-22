@@ -1,11 +1,25 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { JobOfferService } from './job-offer.service';
 import { CreateJobOfferDto } from './dto/create-job-offer.dto';
 import { UpdateJobOfferDto } from './dto/update-job-offer.dto';
+import { SearchJobDto } from './dto/search-job.dto';
+import { AdzunaService } from './adzuna.service';
 
 @Controller('job-offer')
 export class JobOfferController {
-  constructor(private readonly jobOfferService: JobOfferService) {}
+  constructor(
+    private readonly jobOfferService: JobOfferService,
+    private readonly adzunaService: AdzunaService,
+  ) {}
 
   @Post()
   create(@Body() createJobOfferDto: CreateJobOfferDto) {
@@ -15,6 +29,11 @@ export class JobOfferController {
   @Get()
   findAll() {
     return this.jobOfferService.findAll();
+  }
+
+  @Get('search')
+  async searchJobs(@Query() searchDto: SearchJobDto) {
+    return this.adzunaService.searchJobs(searchDto);
   }
 
   @Get(':id')

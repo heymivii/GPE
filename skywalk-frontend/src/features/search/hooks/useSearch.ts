@@ -1,5 +1,8 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import type { SearchFilters, SearchResult, SearchState } from '../types'
+import { searchJobs } from '../../../api/jobOffers'
+import type { AdzunaJobDto } from '../types/job'
+import { enhanceSearchKeyword } from '../utils/keywordTranslation'
 
 const mockResults: SearchResult[] = [
   {
@@ -200,8 +203,8 @@ const mockResults: SearchResult[] = [
 
 const defaultFilters: SearchFilters = {
   query: '',
-  category: '',
-  country: '',
+  category: 'emploi',
+  country: 'France',
   city: '',
   priceRange: [0, 10000],
   dateRange: ['', ''],
@@ -209,17 +212,53 @@ const defaultFilters: SearchFilters = {
   sortOrder: 'desc'
 }
 
+const countryToAdzunaCode: Record<string, string> = {
+  'France': 'fr',
+  'Canada': 'ca',
+  'Suisse': 'ch',
+  'Allemagne': 'de',
+  'États-Unis': 'us',
+  'Royaume-Uni': 'gb'
+}
+
+function convertAdzunaJobToSearchResult(job: AdzunaJobDto): SearchResult {
+  return {
+    id: job.id,
+    title: job.title,
+    description: job.description,
+    category: 'emploi',
+    country: job.location.country,
+    city: job.location.city || 'Non spécifié',
+    price: job.salary?.min,
+    currency: job.salary?.currency,
+    date: job.created_at,
+    image: job.company_logo || 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=500',
+    link: job.redirect_url,
+    tags: [
+      job.company,
+      ...(job.contract_type ? [job.contract_type] : []),
+      ...(job.remote ? ['Remote'] : []),
+      ...(job.category ? [job.category] : [])
+    ].filter(Boolean),
+    rating: undefined,
+    provider: 'Adzuna',
+    urgency: 'moyenne' as const
+  };
+}
+
 export default function useSearch() {
   const [state, setState] = useState<SearchState>({
     filters: defaultFilters,
-    results: mockResults, // Afficher les résultats par défaut au chargement
+    results: [],
     isLoading: false,
-    totalResults: mockResults.length,
+    totalResults: 0,
     currentPage: 1,
     hasMore: true,
     recentSearches: [],
     savedFilters: []
   })
+
+  const isLoadingMoreRef = useRef(false)
 
   useEffect(() => {
     const recentSearches = JSON.parse(localStorage.getItem('skywalk-recent-searches') || '[]')
@@ -241,42 +280,93 @@ export default function useSearch() {
   }, [])
 
   const search = useCallback(async () => {
-    setState(prev => ({ ...prev, isLoading: true }))
-
-    await new Promise(resolve => setTimeout(resolve, 800))
+    setState(prev => ({ 
+      ...prev, 
+      isLoading: true,
+      currentPage: 1,
+      results: [],
+      hasMore: true
+    }))
 
     try {
-      let filteredResults = mockResults
-
       const { query, category, country, city, priceRange } = state.filters
+      let filteredResults: SearchResult[] = [];
 
-      if (query) {
-        filteredResults = filteredResults.filter(result =>
-          result.title.toLowerCase().includes(query.toLowerCase()) ||
-          result.description.toLowerCase().includes(query.toLowerCase()) ||
-          result.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase()))
-        )
-      }
+      if (category === 'emploi') {
+        try {
+          const adzunaCountryCode = country ? countryToAdzunaCode[country] : undefined;
+          const enhancedKeyword = enhanceSearchKeyword(query || '', country);
+          
+          console.log('🔍 Search params:', {
+            original: query,
+            enhanced: enhancedKeyword,
+            country: country,
+            countryCode: adzunaCountryCode,
+          });
+          
+          const jobSearchParams = {
+            country: adzunaCountryCode || undefined,
+            city: city || undefined,
+            keyword: enhancedKeyword || undefined,
+            page: 1,
+            resultsPerPage: 20,
+            sortBy: state.filters.sortBy as 'relevance' | 'date' | 'salary' || 'relevance'
+          };
 
-      if (category) {
-        filteredResults = filteredResults.filter(result => result.category === category)
-      }
+          const adzunaResponse = await searchJobs(jobSearchParams);
+          filteredResults = adzunaResponse.results.map(convertAdzunaJobToSearchResult);
 
-      if (country) {
-        filteredResults = filteredResults.filter(result => result.country === country)
-      }
+          setState(prev => ({
+            ...prev,
+            results: filteredResults,
+            totalResults: adzunaResponse.total,
+            isLoading: false,
+            currentPage: 1,
+            hasMore: adzunaResponse.totalPages > 1
+          }));
 
-      if (city) {
-        filteredResults = filteredResults.filter(result =>
-          result.city.toLowerCase().includes(city.toLowerCase())
-        )
-      }
+          if (query.trim()) {
+            const recentSearches = JSON.parse(localStorage.getItem('skywalk-recent-searches') || '[]');
+            const updatedSearches = [query, ...recentSearches.filter((item: string) => item !== query)].slice(0, 10);
+            localStorage.setItem('skywalk-recent-searches', JSON.stringify(updatedSearches));
+          }
 
-      if (priceRange[0] > 0 || priceRange[1] < 10000) {
-        filteredResults = filteredResults.filter(result => {
-          if (!result.price) return priceRange[0] === 0
-          return result.price >= priceRange[0] && result.price <= priceRange[1]
-        })
+          return;
+        } catch (error) {
+          console.error('Erreur lors de la recherche Adzuna:', error);
+          filteredResults = mockResults.filter(result => result.category === 'emploi');
+        }
+      } else {
+        filteredResults = mockResults;
+
+        if (query) {
+          filteredResults = filteredResults.filter(result =>
+            result.title.toLowerCase().includes(query.toLowerCase()) ||
+            result.description.toLowerCase().includes(query.toLowerCase()) ||
+            result.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase()))
+          )
+        }
+
+        if (category) {
+          filteredResults = filteredResults.filter(result => result.category === category)
+        }
+
+        if (country) {
+          filteredResults = filteredResults.filter(result => result.country === country)
+        }
+
+        if (city) {
+          filteredResults = filteredResults.filter(result =>
+            result.city.toLowerCase().includes(city.toLowerCase())
+          )
+        }
+
+        if (priceRange[0] > 0 || priceRange[1] < 10000) {
+          filteredResults = filteredResults.filter(result => {
+            if (!result.price) return priceRange[0] === 0
+            return result.price >= priceRange[0] && result.price <= priceRange[1]
+          })
+        }
       }
 
       const { sortBy, sortOrder } = state.filters
@@ -294,12 +384,13 @@ export default function useSearch() {
             comparison = (a.rating || 0) - (b.rating || 0)
             break
           case 'relevance':
-          default:
+          default: {
             const scoreA = (a.title.toLowerCase().includes(query.toLowerCase()) ? 2 : 0) +
                           (a.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase())) ? 1 : 0)
             const scoreB = (b.title.toLowerCase().includes(query.toLowerCase()) ? 2 : 0) +
                           (b.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase())) ? 1 : 0)
             comparison = scoreB - scoreA
+          }
         }
 
         return sortOrder === 'desc' ? -comparison : comparison
@@ -331,13 +422,63 @@ export default function useSearch() {
   }, [state.filters])
 
   const loadMore = useCallback(async () => {
-    console.log('Charger plus de résultats...')
-  }, [])
+    if (isLoadingMoreRef.current || !state.hasMore || state.isLoading) {
+      return;
+    }
+
+    isLoadingMoreRef.current = true;
+
+    try {
+      const { query, category, country, city } = state.filters;
+
+      if (category !== 'emploi') {
+        return;
+      }
+
+      const nextPage = state.currentPage + 1;
+      const adzunaCountryCode = country ? countryToAdzunaCode[country] : undefined;
+      const enhancedKeyword = enhanceSearchKeyword(query || '', country);
+
+      const jobSearchParams = {
+        country: adzunaCountryCode || undefined,
+        city: city || undefined,
+        keyword: enhancedKeyword || undefined,
+        page: nextPage,
+        resultsPerPage: 20,
+        sortBy: state.filters.sortBy as 'relevance' | 'date' | 'salary' || 'relevance'
+      };
+
+      const adzunaResponse = await searchJobs(jobSearchParams);
+      const newResults = adzunaResponse.results.map(convertAdzunaJobToSearchResult);
+
+      setState(prev => ({
+        ...prev,
+        results: [...prev.results, ...newResults],
+        currentPage: nextPage,
+        hasMore: nextPage < adzunaResponse.totalPages
+      }));
+
+    } catch (error) {
+      console.error('Erreur lors du chargement de plus de résultats:', error);
+    } finally {
+      isLoadingMoreRef.current = false;
+    }
+  }, [state.filters, state.currentPage, state.hasMore, state.isLoading])
+
+  const isFirstRenderRef = useRef(true)
+  useEffect(() => {
+    if (isFirstRenderRef.current) {
+      isFirstRenderRef.current = false
+      return
+    }
+    
+    search()
+  }, [state.filters.category, state.filters.country, state.filters.city, state.filters.query, search])
 
   const saveFilters = useCallback((name: string) => {
     const savedFilters = JSON.parse(localStorage.getItem('skywalk-saved-filters') || '[]')
     const newFilter = { name, filters: state.filters, date: new Date().toISOString() }
-    const updatedFilters = [newFilter, ...savedFilters.filter((item: any) => item.name !== name)].slice(0, 5)
+    const updatedFilters = [newFilter, ...savedFilters.filter((item: { name: string }) => item.name !== name)].slice(0, 5)
     localStorage.setItem('skywalk-saved-filters', JSON.stringify(updatedFilters))
     
     setState(prev => ({

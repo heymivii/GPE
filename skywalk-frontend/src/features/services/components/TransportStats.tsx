@@ -8,15 +8,12 @@ interface TransportStatsProps {
 export default function TransportStats({ countryName }: TransportStatsProps) {
   const countryKey = countryName || 'france';
   
-  // Récupérer les données du pays
   const countryData = transportPricesByCountry[countryKey] || transportPricesByCountry['france'];
   
-  // Formater le nom du pays
   const displayName = countryName 
     ? countryName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('-')
     : 'France';
   
-  // Calculer un budget mensuel moyen voiture (100km/semaine)
   const avgMonthlyCarBudget = Math.round(
     (100 * 4.33 * countryData.fuelPricePerLiter * 7) / 100 + // Essence (7L/100km)
     (countryData.vehicleInsuranceYearly || 0) / 12 + // Assurance

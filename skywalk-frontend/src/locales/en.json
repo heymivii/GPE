@@ -692,10 +692,10 @@
       "projectTo": "Your expatriation project to {{country}}",
       "editProject": "Edit project",
       "modifyWidgets": "Modify widgets",
-      "finish": "Finish",
+      "finish": "Done",
       "settings": "Profile settings",
       "editModeActive": "Edit mode active",
-      "editModeDescription": "Click on the menu (⋯) of each widget to edit or hide it",
+      "editModeDescription": "Drag and drop widgets to reorganize them. Click \"Done\" to save.",
       "stats": {
         "projectStatus": {
           "label": "Project status",
@@ -756,6 +756,10 @@
           "recommendations": {
             "name": "Recommendations",
             "description": "Personalized advice"
+          },
+          "currencyConverter": {
+            "name": "Currency converter",
+            "description": "Convert between different currencies"
           }
         },
         "menu": {
@@ -836,6 +840,18 @@
           },
           "learnMore": "Learn more",
           "seeAll": "See all recommendations"
+        },
+        "currencyConverter": {
+          "title": "Currency Converter",
+          "from": "From",
+          "to": "To",
+          "amount": "Amount",
+          "result": "Result",
+          "rate": "Exchange rate",
+          "lastUpdate": "Last updated",
+          "loading": "Loading rates...",
+          "error": "Unable to load exchange rates",
+          "swap": "Swap currencies"
         }
       },
       "projectSelector": "Project #{{id}} - {{country}}"

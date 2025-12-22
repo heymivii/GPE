@@ -7,9 +7,6 @@ import type {
   UpdateExpatriationProjectDto,
 } from '../../../types/expatriation-project';
 
-/**
- * Hook to fetch all projects for the authenticated user
- */
 export function useProjects(enabled: boolean = true) {
   return useQuery({
     queryKey: ['expatriation-projects'],
@@ -18,9 +15,6 @@ export function useProjects(enabled: boolean = true) {
   });
 }
 
-/**
- * Hook to fetch a single project by ID
- */
 export function useProject(projectId: number) {
   return useQuery({
     queryKey: ['expatriation-project', projectId],
@@ -29,9 +23,6 @@ export function useProject(projectId: number) {
   });
 }
 
-/**
- * Hook to get project count
- */
 export function useProjectCount() {
   return useQuery({
     queryKey: ['expatriation-projects-count'],
@@ -39,9 +30,6 @@ export function useProjectCount() {
   });
 }
 
-/**
- * Hook to create a new project
- */
 export function useCreateProject() {
   const queryClient = useQueryClient();
 
@@ -62,9 +50,6 @@ export function useCreateProject() {
   });
 }
 
-/**
- * Hook to update an existing project
- */
 export function useUpdateProject() {
   const queryClient = useQueryClient();
 
@@ -94,9 +79,6 @@ export function useUpdateProject() {
   });
 }
 
-/**
- * Hook to delete a project
- */
 export function useDeleteProject() {
   const queryClient = useQueryClient();
 

@@ -8,15 +8,12 @@ interface EmploiStatsProps {
 export default function EmploiStats({ countryName }: EmploiStatsProps) {
   const countryKey = countryName || 'france';
   
-  // Données officielles depuis emploi-data.ts
   const data = emploiDataByCountry[countryKey] || emploiDataByCountry['france'];
   
-  // Formater le nom du pays
   const displayName = countryName 
     ? countryName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('-')
     : 'France';
   
-  // Couleur selon taux de chômage
   const getUnemploymentColor = () => {
     if (data.unemploymentRate < 3) return { bg: 'bg-green-50', text: 'text-green-700', border: 'border-green-200' };
     if (data.unemploymentRate < 5) return { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200' };

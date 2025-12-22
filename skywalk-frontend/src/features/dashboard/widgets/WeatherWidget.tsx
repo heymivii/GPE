@@ -48,11 +48,8 @@ export default function WeatherWidget({
         feelsLike: Math.round(data.main.feels_like),
       } as WeatherData;
     },
-    // ⏰ Données fraîches pendant 10 minutes
     staleTime: 10 * 60 * 1000,
-    // 🔄 Re-fetch automatiquement toutes les 30 minutes
     refetchInterval: 30 * 60 * 1000,
-    // ✅ Re-fetch quand la fenêtre reprend le focus
     refetchOnWindowFocus: true,
   });
 

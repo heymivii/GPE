@@ -5,14 +5,9 @@ export class CompleteSchemaRebuild1762802000000 implements MigrationInterface {
     name = 'CompleteSchemaRebuild1762802000000'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        // ============================================
-        // DROP ALL EXISTING TABLES
-        // ============================================
         
-        // Disable foreign key checks temporarily
         await queryRunner.query(`SET session_replication_role = 'replica'`);
         
-        // Drop all existing tables in reverse order of dependencies
         await queryRunner.query(`DROP TABLE IF EXISTS "notification" CASCADE`);
         await queryRunner.query(`DROP TABLE IF EXISTS "forum_message" CASCADE`);
         await queryRunner.query(`DROP TABLE IF EXISTS "forum_topic" CASCADE`);
@@ -34,17 +29,11 @@ export class CompleteSchemaRebuild1762802000000 implements MigrationInterface {
         await queryRunner.query(`DROP TABLE IF EXISTS "country" CASCADE`);
         await queryRunner.query(`DROP TABLE IF EXISTS "continent" CASCADE`);
         
-        // Drop existing functions
         await queryRunner.query(`DROP FUNCTION IF EXISTS update_updated_at_column() CASCADE`);
         
-        // Re-enable foreign key checks
         await queryRunner.query(`SET session_replication_role = 'origin'`);
 
-        // ============================================
-        // CREATE NEW TABLES - GEOGRAPHIC
-        // ============================================
         
-        // Table: continent
         await queryRunner.query(`
             CREATE TABLE "continent" (
                 "id_continent" SERIAL NOT NULL,
@@ -56,7 +45,6 @@ export class CompleteSchemaRebuild1762802000000 implements MigrationInterface {
             )
         `);
 
-        // Table: country
         await queryRunner.query(`
             CREATE TABLE "country" (
                 "id_country" SERIAL NOT NULL,
@@ -85,7 +73,6 @@ export class CompleteSchemaRebuild1762802000000 implements MigrationInterface {
             ON DELETE RESTRICT ON UPDATE NO ACTION
         `);
 
-        // Table: city
         await queryRunner.query(`
             CREATE TABLE "city" (
                 "id_city" SERIAL NOT NULL,
@@ -110,11 +97,7 @@ export class CompleteSchemaRebuild1762802000000 implements MigrationInterface {
             ON DELETE CASCADE ON UPDATE NO ACTION
         `);
 
-        // ============================================
-        // CREATE NEW TABLES - USER AND PROJECT
-        // ============================================
         
-        // Table: app_user
         await queryRunner.query(`
             CREATE TABLE "app_user" (
                 "id_user" SERIAL NOT NULL,
@@ -148,7 +131,6 @@ export class CompleteSchemaRebuild1762802000000 implements MigrationInterface {
             ON DELETE SET NULL ON UPDATE NO ACTION
         `);
 
-        // Table: expatriation_project
         await queryRunner.query(`
             CREATE TABLE "expatriation_project" (
                 "id_project" SERIAL NOT NULL,
@@ -203,11 +185,7 @@ export class CompleteSchemaRebuild1762802000000 implements MigrationInterface {
             ON DELETE SET NULL ON UPDATE NO ACTION
         `);
 
-        // ============================================
-        // CREATE NEW TABLES - RESOURCES
-        // ============================================
         
-        // Table: guide
         await queryRunner.query(`
             CREATE TABLE "guide" (
                 "id_guide" SERIAL NOT NULL,
@@ -243,7 +221,6 @@ export class CompleteSchemaRebuild1762802000000 implements MigrationInterface {
             ON DELETE SET NULL ON UPDATE NO ACTION
         `);
 
-        // Table: checklist
         await queryRunner.query(`
             CREATE TABLE "checklist" (
                 "id_checklist" SERIAL NOT NULL,
@@ -266,7 +243,6 @@ export class CompleteSchemaRebuild1762802000000 implements MigrationInterface {
             ON DELETE CASCADE ON UPDATE NO ACTION
         `);
 
-        // Table: resource
         await queryRunner.query(`
             CREATE TABLE "resource" (
                 "id_resource" SERIAL NOT NULL,
@@ -291,11 +267,7 @@ export class CompleteSchemaRebuild1762802000000 implements MigrationInterface {
             ON DELETE CASCADE ON UPDATE NO ACTION
         `);
 
-        // ============================================
-        // CREATE NEW TABLES - ADMINISTRATIVE PROCESS
-        // ============================================
         
-        // Table: administrative_process
         await queryRunner.query(`
             CREATE TABLE "administrative_process" (
                 "id_process" SERIAL NOT NULL,
@@ -321,7 +293,6 @@ export class CompleteSchemaRebuild1762802000000 implements MigrationInterface {
             ON DELETE CASCADE ON UPDATE NO ACTION
         `);
 
-        // Table: process_tracking
         await queryRunner.query(`
             CREATE TABLE "process_tracking" (
                 "id_tracking" SERIAL NOT NULL,
@@ -367,11 +338,7 @@ export class CompleteSchemaRebuild1762802000000 implements MigrationInterface {
             ON DELETE CASCADE ON UPDATE NO ACTION
         `);
 
-        // ============================================
-        // CREATE NEW TABLES - COST AND EMPLOYMENT
-        // ============================================
         
-        // Table: cost_of_living
         await queryRunner.query(`
             CREATE TABLE "cost_of_living" (
                 "id_cost" SERIAL NOT NULL,
@@ -394,7 +361,6 @@ export class CompleteSchemaRebuild1762802000000 implements MigrationInterface {
             ON DELETE CASCADE ON UPDATE NO ACTION
         `);
 
-        // Table: business_sector
         await queryRunner.query(`
             CREATE TABLE "business_sector" (
                 "id_sector" SERIAL NOT NULL,
@@ -406,7 +372,6 @@ export class CompleteSchemaRebuild1762802000000 implements MigrationInterface {
             )
         `);
 
-        // Table: job_offer
         await queryRunner.query(`
             CREATE TABLE "job_offer" (
                 "id_offer" SERIAL NOT NULL,
@@ -442,11 +407,7 @@ export class CompleteSchemaRebuild1762802000000 implements MigrationInterface {
             ON DELETE SET NULL ON UPDATE NO ACTION
         `);
 
-        // ============================================
-        // CREATE NEW TABLES - EXPERIENCE AND COMPARISON
-        // ============================================
         
-        // Table: experience
         await queryRunner.query(`
             CREATE TABLE "experience" (
                 "id_experience" SERIAL NOT NULL,
@@ -482,7 +443,6 @@ export class CompleteSchemaRebuild1762802000000 implements MigrationInterface {
             ON DELETE CASCADE ON UPDATE NO ACTION
         `);
 
-        // Table: city_comparison
         await queryRunner.query(`
             CREATE TABLE "city_comparison" (
                 "id_comparison" SERIAL NOT NULL,
@@ -512,11 +472,7 @@ export class CompleteSchemaRebuild1762802000000 implements MigrationInterface {
             ON DELETE CASCADE ON UPDATE NO ACTION
         `);
 
-        // ============================================
-        // CREATE NEW TABLES - FORUM
-        // ============================================
         
-        // Table: forum_topic
         await queryRunner.query(`
             CREATE TABLE "forum_topic" (
                 "id_topic" SERIAL NOT NULL,
@@ -555,7 +511,6 @@ export class CompleteSchemaRebuild1762802000000 implements MigrationInterface {
             ON DELETE SET NULL ON UPDATE NO ACTION
         `);
 
-        // Table: forum_message
         await queryRunner.query(`
             CREATE TABLE "forum_message" (
                 "id_message" SERIAL NOT NULL,
@@ -588,11 +543,7 @@ export class CompleteSchemaRebuild1762802000000 implements MigrationInterface {
             ON DELETE CASCADE ON UPDATE NO ACTION
         `);
 
-        // ============================================
-        // CREATE NEW TABLES - NOTIFICATION
-        // ============================================
         
-        // Table: notification
         await queryRunner.query(`
             CREATE TABLE "notification" (
                 "id_notification" SERIAL NOT NULL,
@@ -618,9 +569,6 @@ export class CompleteSchemaRebuild1762802000000 implements MigrationInterface {
             ON DELETE CASCADE ON UPDATE NO ACTION
         `);
 
-        // ============================================
-        // CREATE TRIGGER FUNCTION FOR UPDATED_AT
-        // ============================================
         
         await queryRunner.query(`
             CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -632,7 +580,6 @@ export class CompleteSchemaRebuild1762802000000 implements MigrationInterface {
             $$ LANGUAGE plpgsql
         `);
 
-        // Apply triggers to tables with updated_at
         await queryRunner.query(`
             CREATE TRIGGER update_app_user_updated_at 
             BEFORE UPDATE ON "app_user"
@@ -689,7 +636,6 @@ export class CompleteSchemaRebuild1762802000000 implements MigrationInterface {
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        // Drop all tables in reverse order
         await queryRunner.query(`DROP TABLE IF EXISTS "notification" CASCADE`);
         await queryRunner.query(`DROP TABLE IF EXISTS "forum_message" CASCADE`);
         await queryRunner.query(`DROP TABLE IF EXISTS "forum_topic" CASCADE`);
@@ -709,7 +655,6 @@ export class CompleteSchemaRebuild1762802000000 implements MigrationInterface {
         await queryRunner.query(`DROP TABLE IF EXISTS "country" CASCADE`);
         await queryRunner.query(`DROP TABLE IF EXISTS "continent" CASCADE`);
         
-        // Drop function
         await queryRunner.query(`DROP FUNCTION IF EXISTS update_updated_at_column() CASCADE`);
     }
 }

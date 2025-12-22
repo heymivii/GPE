@@ -7,10 +7,6 @@ interface DestinationCardProps {
   destination: Destination;
 }
 
-/**
- * Card component displaying a destination with its statistics
- * Redesigned for a spacious, modern, and soft look.
- */
 export function DestinationCard({ destination }: DestinationCardProps) {
   const { t } = useTranslation();
   

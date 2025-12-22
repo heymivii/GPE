@@ -29,8 +29,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const userData = await authApi.getProfile();
         setUser(userData);
       } catch (error) {
-        // Si l'erreur est 401, l'utilisateur n'est pas authentifié (normal)
-        // On ne fait rien, setUser reste null
         console.log('Utilisateur non authentifié ou token expiré');
       } finally {
         setIsLoading(false);
@@ -72,7 +70,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } catch (error) {
       console.error('Erreur lors de la déconnexion:', error);
     } finally {
-      // Suppression de toutes les données locales
       localStorage.removeItem('access_token');
       localStorage.removeItem('skywalk-onboarding-completed');
       localStorage.removeItem('skywalk-onboarding-draft');
