@@ -16,18 +16,14 @@ interface CacheEntry {
 export class AdzunaService {
   private readonly logger = new Logger(AdzunaService.name);
   private readonly cache = new Map<string, CacheEntry>();
-  private readonly CACHE_TTL = 60 * 60 * 1000; // 1 heure en millisecondes
+  private readonly CACHE_TTL = 60 * 60 * 1000;
   private readonly APP_ID = process.env.ADZUNA_APP_ID;
   private readonly APP_KEY = process.env.ADZUNA_APP_KEY;
   private readonly BASE_URL = 'https://api.adzuna.com/v1/api/jobs';
 
-  /**
-   * Rechercher des offres d'emploi via l'API Adzuna
-   */
   async searchJobs(
     searchDto: SearchJobDto,
   ): Promise<AdzunaSearchResponseDto> {
-    // Vérifier les credentials
     if (!this.APP_ID || !this.APP_KEY) {
       throw new HttpException(
         'Adzuna API credentials not configured',
@@ -35,10 +31,7 @@ export class AdzunaService {
       );
     }
 
-    // Générer la clé de cache
     const cacheKey = this.generateCacheKey(searchDto);
-
-    // Vérifier le cache
     const cachedData = this.getFromCache(cacheKey);
     if (cachedData) {
       this.logger.log(`📦 Cache HIT for: ${cacheKey}`);
@@ -48,27 +41,21 @@ export class AdzunaService {
     this.logger.log(`🌐 Cache MISS - Calling Adzuna API for: ${cacheKey}`);
 
     try {
-      // Construire l'URL de l'API
       const url = this.buildApiUrl(searchDto);
       this.logger.log(`🔗 Adzuna API URL: ${url}`);
 
-      // Appeler l'API Adzuna avec axios
       const response = await axios.get(url, {
         headers: {
           Accept: 'application/json',
         },
-        timeout: 10000, // 10 secondes
+        timeout: 10000,
         httpsAgent: new https.Agent({
-          rejectUnauthorized: false, // Pour éviter les erreurs de certificat SSL
+          rejectUnauthorized: false,
         }),
       });
 
       const data = response.data;
-
-      // Normaliser les données
       const normalizedData = this.normalizeResponse(data, searchDto);
-
-      // Mettre en cache
       this.setCache(cacheKey, normalizedData);
 
       this.logger.log(
@@ -96,9 +83,6 @@ export class AdzunaService {
     }
   }
 
-  /**
-   * Construire l'URL de l'API Adzuna
-   */
   private buildApiUrl(searchDto: SearchJobDto): string {
     const {
       country = 'fr',
@@ -111,48 +95,36 @@ export class AdzunaService {
       sortBy = 'relevance',
     } = searchDto;
 
-    // URL de base avec pays
     let url = `${this.BASE_URL}/${country}/search/${page}?app_id=${this.APP_ID}&app_key=${this.APP_KEY}`;
-
-    // Nombre de résultats par page (max 50)
     url += `&results_per_page=${Math.min(resultsPerPage, 50)}`;
-
-    // Mot-clé de recherche
+    
     if (keyword) {
       url += `&what=${encodeURIComponent(keyword)}`;
     }
-
-    // Localisation (ville)
+    
     if (city) {
       url += `&where=${encodeURIComponent(city)}`;
     }
-
-    // Catégorie
+    
     if (category) {
       url += `&category=${encodeURIComponent(category)}`;
     }
-
-    // Salaire minimum
+    
     if (salaryMin) {
       url += `&salary_min=${salaryMin}`;
     }
-
-    // Tri
+    
     if (sortBy === 'date') {
       url += `&sort_by=date`;
     } else if (sortBy === 'salary') {
       url += `&sort_by=salary`;
     }
-
-    // Filtres supplémentaires
-    url += `&full_time=1`; // Favoriser les postes à temps plein
+    
+    url += `&full_time=1`;
 
     return url;
   }
 
-  /**
-   * Normaliser la réponse de l'API Adzuna
-   */
   private normalizeResponse(
     data: any,
     searchDto: SearchJobDto,
@@ -171,7 +143,7 @@ export class AdzunaService {
         ? {
             min: job.salary_min,
             max: job.salary_max,
-            currency: 'EUR', // À adapter selon le pays
+            currency: 'EUR',
           }
         : undefined,
       contract_type: job.contract_type || job.contract_time,
@@ -197,9 +169,6 @@ export class AdzunaService {
     };
   }
 
-  /**
-   * Détecter si l'offre est en télétravail
-   */
   private detectRemote(title: string, description: string): boolean {
     const remoteKeywords = [
       'remote',
@@ -215,16 +184,10 @@ export class AdzunaService {
     return remoteKeywords.some((keyword) => text.includes(keyword));
   }
 
-  /**
-   * Générer une clé de cache unique
-   */
   private generateCacheKey(searchDto: SearchJobDto): string {
     return JSON.stringify(searchDto);
   }
 
-  /**
-   * Récupérer du cache
-   */
   private getFromCache(key: string): AdzunaSearchResponseDto | null {
     const entry = this.cache.get(key);
 
@@ -232,7 +195,6 @@ export class AdzunaService {
       return null;
     }
 
-    // Vérifier si le cache est encore valide
     const now = Date.now();
     if (now - entry.timestamp > this.CACHE_TTL) {
       this.cache.delete(key);
@@ -243,9 +205,6 @@ export class AdzunaService {
     return entry.data;
   }
 
-  /**
-   * Mettre en cache
-   */
   private setCache(key: string, data: AdzunaSearchResponseDto): void {
     this.cache.set(key, {
       data,
@@ -254,9 +213,6 @@ export class AdzunaService {
     this.logger.log(`💾 Cached data for: ${key}`);
   }
 
-  /**
-   * Nettoyer le cache (optionnel, pour éviter la fuite mémoire)
-   */
   clearExpiredCache(): void {
     const now = Date.now();
     let deletedCount = 0;

@@ -24,9 +24,6 @@ export class ExpatriationProjectController {
     private readonly projectService: ExpatriationProjectService,
   ) {}
 
-  /**
-   * Create a new expatriation project
-   */
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async create(
@@ -36,34 +33,22 @@ export class ExpatriationProjectController {
     return await this.projectService.create(req.user.userId, createDto);
   }
 
-  /**
-   * Get all projects for the authenticated user
-   */
   @Get()
   async findAll(@Request() req) {
     return await this.projectService.findAllByUser(req.user.userId);
   }
 
-  /**
-   * Get project count for the authenticated user
-   */
   @Get('count')
   async getCount(@Request() req) {
     const count = await this.projectService.countByUser(req.user.userId);
     return { count };
   }
 
-  /**
-   * Get a specific project by ID
-   */
   @Get(':id')
   async findOne(@Request() req, @Param('id') id: string) {
     return await this.projectService.findOne(+id, req.user.userId);
   }
 
-  /**
-   * Update a project
-   */
   @Patch(':id')
   async update(
     @Request() req,
@@ -77,19 +62,12 @@ export class ExpatriationProjectController {
     );
   }
 
-  /**
-   * Delete a project
-   */
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Request() req, @Param('id') id: string) {
     await this.projectService.remove(+id, req.user.userId);
   }
 
-  /**
-   * Update checklist progress for a project
-   * POST /expatriation-project/:id/checklist
-   */
   @Post(':id/checklist')
   async updateChecklistProgress(
     @Request() req,
@@ -103,10 +81,6 @@ export class ExpatriationProjectController {
     );
   }
 
-  /**
-   * Get checklist progress for a project
-   * GET /expatriation-project/:id/checklist
-   */
   @Get(':id/checklist')
   async getChecklistProgress(@Request() req, @Param('id') id: string) {
     return await this.projectService.getChecklistProgress(+id, req.user.userId);

@@ -13,7 +13,6 @@ export class MailService {
   }
 
   private async initializeTransporter() {
-    // Use Ethereal Email for development (fake SMTP service)
     if (process.env.NODE_ENV !== 'production') {
       const testAccount = await nodemailer.createTestAccount();
       this.transporter = nodemailer.createTransport({
@@ -30,7 +29,6 @@ export class MailService {
       this.logger.log(`   User: ${testAccount.user}`);
       this.logger.log(`   Pass: ${testAccount.pass}`);
     } else {
-      // Production SMTP configuration
       this.transporter = nodemailer.createTransport({
         host: process.env.SMTP_HOST || 'smtp.gmail.com',
         port: parseInt(process.env.SMTP_PORT || '587'),
@@ -44,7 +42,7 @@ export class MailService {
   }
 
   async sendPasswordResetEmail(to: string, resetToken: string) {
-    await this.transporterReady; // Wait for transporter to be initialized
+    await this.transporterReady;
 
     const resetLink = `${process.env.FRONTEND_URL}/auth/reset-password?token=${resetToken}`;
 
@@ -59,9 +57,10 @@ export class MailService {
       const info = await this.transporter.sendMail(mailOptions);
       this.logger.log(`✅ Password reset email sent to ${to}`);
 
-      // In development, log the preview URL
       if (process.env.NODE_ENV !== 'production') {
-        this.logger.log(`📧 Preview email: ${nodemailer.getTestMessageUrl(info)}`);
+        this.logger.log(
+          `📧 Preview email: ${nodemailer.getTestMessageUrl(info)}`,
+        );
       }
 
       return true;
@@ -75,7 +74,7 @@ export class MailService {
   }
 
   async sendWelcomeEmail(to: string, fullName: string) {
-    await this.transporterReady; // Wait for transporter to be initialized
+    await this.transporterReady;
 
     const mailOptions = {
       from: `"SkyWalk" <${process.env.SMTP_FROM || 'noreply@skywalk.com'}>`,
@@ -88,9 +87,10 @@ export class MailService {
       const info = await this.transporter.sendMail(mailOptions);
       this.logger.log(`✅ Welcome email sent to ${to}`);
 
-      // In development, log the preview URL
       if (process.env.NODE_ENV !== 'production') {
-        this.logger.log(`📧 Preview email: ${nodemailer.getTestMessageUrl(info)}`);
+        this.logger.log(
+          `📧 Preview email: ${nodemailer.getTestMessageUrl(info)}`,
+        );
       }
 
       return true;

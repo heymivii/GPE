@@ -308,7 +308,7 @@ export default function useSearch() {
             country: adzunaCountryCode || undefined,
             city: city || undefined,
             keyword: enhancedKeyword || undefined,
-            page: 1, // Always start at page 1 for new search
+            page: 1,
             resultsPerPage: 20,
             sortBy: state.filters.sortBy as 'relevance' | 'date' | 'salary' || 'relevance'
           };
@@ -384,12 +384,13 @@ export default function useSearch() {
             comparison = (a.rating || 0) - (b.rating || 0)
             break
           case 'relevance':
-          default:
+          default: {
             const scoreA = (a.title.toLowerCase().includes(query.toLowerCase()) ? 2 : 0) +
                           (a.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase())) ? 1 : 0)
             const scoreB = (b.title.toLowerCase().includes(query.toLowerCase()) ? 2 : 0) +
                           (b.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase())) ? 1 : 0)
             comparison = scoreB - scoreA
+          }
         }
 
         return sortOrder === 'desc' ? -comparison : comparison
@@ -477,7 +478,7 @@ export default function useSearch() {
   const saveFilters = useCallback((name: string) => {
     const savedFilters = JSON.parse(localStorage.getItem('skywalk-saved-filters') || '[]')
     const newFilter = { name, filters: state.filters, date: new Date().toISOString() }
-    const updatedFilters = [newFilter, ...savedFilters.filter((item: any) => item.name !== name)].slice(0, 5)
+    const updatedFilters = [newFilter, ...savedFilters.filter((item: { name: string }) => item.name !== name)].slice(0, 5)
     localStorage.setItem('skywalk-saved-filters', JSON.stringify(updatedFilters))
     
     setState(prev => ({
