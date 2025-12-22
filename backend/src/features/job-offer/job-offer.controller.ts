@@ -31,11 +31,6 @@ export class JobOfferController {
     return this.jobOfferService.findAll();
   }
 
-  /**
-   * Rechercher des offres d'emploi via Adzuna
-   * GET /job-offer/search?country=fr&city=Paris&keyword=developer&page=1
-   * IMPORTANT: Must be BEFORE @Get(':id') to avoid route conflicts
-   */
   @Get('search')
   async searchJobs(@Query() searchDto: SearchJobDto) {
     return this.adzunaService.searchJobs(searchDto);

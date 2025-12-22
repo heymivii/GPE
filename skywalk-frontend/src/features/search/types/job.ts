@@ -1,4 +1,3 @@
-// Types for Adzuna API responses
 export interface AdzunaJobDto {
   id: string;
   title: string;
@@ -30,7 +29,6 @@ export interface AdzunaSearchResponse {
   totalPages: number;
 }
 
-// Parameters for job search
 export interface JobSearchParams {
   country?: string;
   city?: string;

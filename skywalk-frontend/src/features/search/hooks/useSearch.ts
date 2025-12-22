@@ -212,7 +212,6 @@ const defaultFilters: SearchFilters = {
   sortOrder: 'desc'
 }
 
-// Mapping des noms de pays vers les codes Adzuna (en minuscules)
 const countryToAdzunaCode: Record<string, string> = {
   'France': 'fr',
   'Canada': 'ca',
@@ -222,7 +221,6 @@ const countryToAdzunaCode: Record<string, string> = {
   'Royaume-Uni': 'gb'
 }
 
-// Convert Adzuna job to SearchResult format
 function convertAdzunaJobToSearchResult(job: AdzunaJobDto): SearchResult {
   return {
     id: job.id,
@@ -251,7 +249,7 @@ function convertAdzunaJobToSearchResult(job: AdzunaJobDto): SearchResult {
 export default function useSearch() {
   const [state, setState] = useState<SearchState>({
     filters: defaultFilters,
-    results: [], // Commence vide pour forcer la première recherche
+    results: [],
     isLoading: false,
     totalResults: 0,
     currentPage: 1,
@@ -260,7 +258,6 @@ export default function useSearch() {
     savedFilters: []
   })
 
-  // Ref pour éviter les appels API multiples simultanés
   const isLoadingMoreRef = useRef(false)
 
   useEffect(() => {
@@ -283,12 +280,11 @@ export default function useSearch() {
   }, [])
 
   const search = useCallback(async () => {
-    // Reset to page 1 and clear results when starting a new search
     setState(prev => ({ 
       ...prev, 
       isLoading: true,
       currentPage: 1,
-      results: [], // Clear previous results
+      results: [],
       hasMore: true
     }))
 
@@ -296,13 +292,9 @@ export default function useSearch() {
       const { query, category, country, city, priceRange } = state.filters
       let filteredResults: SearchResult[] = [];
 
-      // If category is 'emploi', use Adzuna API
       if (category === 'emploi') {
         try {
-          // Convert country name to Adzuna code (lowercase)
           const adzunaCountryCode = country ? countryToAdzunaCode[country] : undefined;
-          
-          // Enhance keyword with translations based on target country
           const enhancedKeyword = enhanceSearchKeyword(query || '', country);
           
           console.log('🔍 Search params:', {
@@ -333,7 +325,6 @@ export default function useSearch() {
             hasMore: adzunaResponse.totalPages > 1
           }));
 
-          // Save recent search
           if (query.trim()) {
             const recentSearches = JSON.parse(localStorage.getItem('skywalk-recent-searches') || '[]');
             const updatedSearches = [query, ...recentSearches.filter((item: string) => item !== query)].slice(0, 10);
@@ -343,11 +334,9 @@ export default function useSearch() {
           return;
         } catch (error) {
           console.error('Erreur lors de la recherche Adzuna:', error);
-          // Fall back to mock data on error
           filteredResults = mockResults.filter(result => result.category === 'emploi');
         }
       } else {
-        // Use mock data for other categories
         filteredResults = mockResults;
 
         if (query) {
@@ -431,9 +420,7 @@ export default function useSearch() {
     }
   }, [state.filters])
 
-  // Load more results for infinite scroll (only for Adzuna API)
   const loadMore = useCallback(async () => {
-    // Prevent multiple simultaneous calls
     if (isLoadingMoreRef.current || !state.hasMore || state.isLoading) {
       return;
     }
@@ -443,17 +430,12 @@ export default function useSearch() {
     try {
       const { query, category, country, city } = state.filters;
 
-      // Only works for 'emploi' category with Adzuna API
       if (category !== 'emploi') {
         return;
       }
 
       const nextPage = state.currentPage + 1;
-
-      // Convert country name to Adzuna code
       const adzunaCountryCode = country ? countryToAdzunaCode[country] : undefined;
-
-      // Enhance keyword with translations based on target country
       const enhancedKeyword = enhanceSearchKeyword(query || '', country);
 
       const jobSearchParams = {
@@ -470,7 +452,7 @@ export default function useSearch() {
 
       setState(prev => ({
         ...prev,
-        results: [...prev.results, ...newResults], // Append new results
+        results: [...prev.results, ...newResults],
         currentPage: nextPage,
         hasMore: nextPage < adzunaResponse.totalPages
       }));
@@ -482,16 +464,13 @@ export default function useSearch() {
     }
   }, [state.filters, state.currentPage, state.hasMore, state.isLoading])
 
-  // Auto-trigger search when filters change (except initial mount)
   const isFirstRenderRef = useRef(true)
   useEffect(() => {
-    // Skip the initial render
     if (isFirstRenderRef.current) {
       isFirstRenderRef.current = false
       return
     }
     
-    // Trigger search automatically when filters change
     search()
   }, [state.filters.category, state.filters.country, state.filters.city, state.filters.query, search])
 
