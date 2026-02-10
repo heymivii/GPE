@@ -1,5 +1,6 @@
 import { ChevronDown } from 'lucide-react'
 import { forwardRef } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface SelectOption {
   value: string
@@ -21,13 +22,16 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(({
   options,
   value,
   onChange,
-  placeholder = "Sélectionner...",
+  placeholder,
   disabled = false,
   className = "",
   id,
   'aria-describedby': ariaDescribedBy,
   ...props
 }, ref) => {
+  const { t } = useTranslation()
+  const displayPlaceholder = placeholder ?? t('common.select')
+
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     onChange?.(e.target.value)
   }
@@ -52,7 +56,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(({
         {...props}
       >
         <option value="" disabled>
-          {placeholder}
+          {displayPlaceholder}
         </option>
         {options.map((option) => (
           <option key={option.value} value={option.value}>

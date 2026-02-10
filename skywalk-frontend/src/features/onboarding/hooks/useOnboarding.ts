@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { Step } from '../components/Stepper'
 
 interface OnboardingData {
@@ -33,6 +34,7 @@ interface OnboardingData {
 const STORAGE_KEY = 'skywalk-onboarding-draft'
 
 export default function useOnboarding(skipLocalStorage = false) {
+  const { t } = useTranslation()
   const [currentStep, setCurrentStep] = useState(1)
   const [data, setData] = useState<Partial<OnboardingData>>({})
 
@@ -98,12 +100,12 @@ export default function useOnboarding(skipLocalStorage = false) {
 
   const getSteps = (): Step[] => {
     return [
-      { id: 1, label: 'Destination', state: getStepState(1) },
-      { id: 2, label: 'Profil', state: getStepState(2) },
-      { id: 3, label: 'Objectif', state: getStepState(3) },
-      { id: 4, label: 'Préparation', state: getStepState(4) },
-      { id: 5, label: 'Besoins', state: getStepState(5) },
-      { id: 6, label: 'Résumé', state: getStepState(6) }
+      { id: 1, label: t('onboarding.steps.destination'), state: getStepState(1) },
+      { id: 2, label: t('onboarding.steps.profile'), state: getStepState(2) },
+      { id: 3, label: t('onboarding.steps.objective'), state: getStepState(3) },
+      { id: 4, label: t('onboarding.steps.preparation'), state: getStepState(4) },
+      { id: 5, label: t('onboarding.steps.needs'), state: getStepState(5) },
+      { id: 6, label: t('onboarding.steps.summary'), state: getStepState(6) }
     ]
   }
 

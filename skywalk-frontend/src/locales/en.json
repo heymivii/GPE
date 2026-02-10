@@ -9,15 +9,41 @@
     "dashboard": "Dashboard",
     "projects": "My Projects",
     "explore": "Explore",
+    "myProject": "My Project",
     "login": "Login",
+    "register": "Sign Up",
     "logout": "Logout",
     "profile": "My Profile",
     "myDashboard": "My Dashboard"
   },
+  "countries": {
+    "france": "France",
+    "canada": "Canada",
+    "switzerland": "Switzerland",
+    "germany": "Germany",
+    "spain": "Spain",
+    "italy": "Italy",
+    "portugal": "Portugal",
+    "belgium": "Belgium",
+    "netherlands": "Netherlands",
+    "luxembourg": "Luxembourg",
+    "unitedKingdom": "United Kingdom",
+    "ireland": "Ireland",
+    "unitedStates": "United States",
+    "australia": "Australia",
+    "japan": "Japan"
+  },
   "common": {
     "loading": "Loading...",
     "error": "An error occurred",
+    "loadingError": "Error loading data",
+    "destination": "Destination",
     "comingSoon": "Coming soon",
+    "noOptions": "No options available",
+    "edit": "Edit",
+    "select": "Select...",
+    "reduce": "Collapse",
+    "expand": "Expand",
     "guestBanner": {
       "exploreFreely": "Explore freely!",
       "signupMessage": "Create a free account for a personalized experience with recommendations tailored to your expatriation project.",
@@ -26,10 +52,17 @@
     }
   },
   "services": {
+    "guides": {
+      "sectionTitle": "Step-by-step guides",
+      "tipsTitle": "Practical tips",
+      "faqTitle": "Frequently asked questions",
+      "keyFigures": "Key figures"
+    },
     "indexPage": {
       "title": "Our Tools & Services",
       "description": "Discover our interactive tools to facilitate your expatriation. Calculators, checklists and personalized assistants for every step of your project.",
-      "learnMore": "Learn more"
+      "learnMore": "Learn more",
+      "comingSoon": "Coming soon"
     },
     "servicePage": {
       "notFound": {
@@ -366,7 +399,271 @@
           "Inquire about business creation aids",
           "Join incubators or coworking spaces"
         ]
+      },
+      "visa": {
+        "title": "Visa & Immigration",
+        "subtitle": "Immigration procedures",
+        "description": "Comprehensive guides on visas, residence permits and immigration procedures for each destination country."
+      },
+      "banque": {
+        "title": "Banking & Finance",
+        "subtitle": "Financial management abroad",
+        "description": "Open a bank account, transfer your funds and manage your finances in your new country."
+      },
+      "demarches-admin": {
+        "title": "Administrative Procedures",
+        "subtitle": "Formalities and official documents",
+        "description": "Assistance with all your administrative procedures: civil status, permits, registrations and declarations."
       }
+    },
+    "stats": {
+      "common": {
+        "loading": "Loading {{service}} data for {{city}}…",
+        "errorLoad": "Unable to load {{service}} data for {{city}}.",
+        "retryLater": "Please try again later.",
+        "source": "Source:",
+        "sourceNumbeo": "Numbeo data for",
+        "pricesConverted": "Prices converted to {{symbol}} ({{from}} → {{to}}).",
+        "pricesIndicative": "Prices are indicative and vary by area and period.",
+        "pricesIndicativeNeighborhood": "Prices are indicative and vary by neighborhood.",
+        "lastUpdated": "Updated:",
+        "perMonth": "/month",
+        "perYear": "/year",
+        "perLiter": "/L",
+        "monthly": "Monthly",
+        "min": "min",
+        "max": "max"
+      },
+      "transport": {
+        "title": "Transport — {{city}}",
+        "gasolinePrice": "Gasoline price",
+        "transportPass": "Transport pass",
+        "singleTicket": "Single ticket",
+        "monthlyFuelBudget": "Monthly fuel budget",
+        "fuelEstimate": "100 km/week, 7L/100km",
+        "publicTransport": "Public transport",
+        "singleTicketLabel": "One-way ticket",
+        "monthlyPassLabel": "Monthly pass",
+        "taxi": "Taxi",
+        "taxiStart": "Initial fare",
+        "taxiPerKm": "Price per km",
+        "taxiWaiting": "Waiting (1h)",
+        "personalVehicle": "Personal vehicle",
+        "gasoline1L": "Gasoline (1 liter)",
+        "newCar": "New car (VW Golf)",
+        "monthlyComparison": "Monthly comparison",
+        "publicTransportEmoji": "🚇 Public transport",
+        "carEmoji": "🚗 Car (fuel only)",
+        "publicCheaper": "Public transport is ~{{pct}}% cheaper than driving (fuel only).",
+        "carCheaper": "Driving (fuel only) is ~{{pct}}% cheaper than public transport."
+      },
+      "health": {
+        "title": "Health — {{city}}",
+        "system": "System",
+        "viaTaxes": "Via taxes",
+        "primeLAMal": "LAMal premium",
+        "healthInsurance": "Health insurance",
+        "publicContribution": "Public contribution",
+        "reimbursement": "Reimbursement",
+        "averageCoverage": "Average coverage",
+        "totalHealthCost": "Total health cost",
+        "ofAverageSalary": "{{pct}}% of average salary",
+        "insuranceCosts": "Insurance costs",
+        "totalInsurance": "Total insurance",
+        "totalAnnual": "Annual total",
+        "economicContext": "Economic context",
+        "averageNetSalary": "Average net salary",
+        "averageMonthlyBudget": "Average monthly budget",
+        "preschool": "Daycare / preschool",
+        "healthSalaryRatio": "Health / salary ratio",
+        "sourceExtra": "Numbeo data for {{city}} + official health system information.",
+        "insuranceCostsNote": "Insurance costs are national averages and vary by profile.",
+        "lamalBase": "LAMal premium (basic)",
+        "privateInsurance": "Private insurance",
+        "nhiInsurance": "NHI Insurance",
+        "socialSecurity": "Social security contribution",
+        "optionalComplementary": "Complementary (optional)",
+        "complementaryMutual": "Complementary mutual"
+      },
+      "logement": {
+        "title": "Housing — {{city}}",
+        "center": "Center",
+        "suburb": "Suburb",
+        "rent1bedroom": "1-bedroom rent",
+        "rent3bedrooms": "3-bedroom rent",
+        "utilities": "Utilities (85m²)",
+        "utilitiesDesc": "elec, water, heating",
+        "centerCity": "city center / month",
+        "monthlyRents": "Monthly rents",
+        "rent1BCenter": "1 bedroom — city center",
+        "rent1BOutside": "1 bedroom — outside center",
+        "rent3BCenter": "3 bedrooms — city center",
+        "rent3BOutside": "3 bedrooms — outside center",
+        "buyAndUtilities": "Buying & Utilities",
+        "pricePerSqmCenter": "Price/m² — city center",
+        "pricePerSqmOutside": "Price/m² — outside center",
+        "utilitiesLabel": "Utilities (85m²)",
+        "internet": "Internet",
+        "salaryContext": "Salary context",
+        "avgNetSalary": "Average net salary in {{city}}:",
+        "rentPercentOfSalary": "1-bedroom center rent represents about {{pct}}% of average salary."
+      },
+      "emploi": {
+        "title": "Job market — {{city}}",
+        "realTimeData": "Real-time data",
+        "availableOffers": "Available offers",
+        "viaAdzuna": "Via Adzuna API",
+        "unavailableCountry": "Not available for this country",
+        "averageSalary": "Average salary",
+        "netPerMonth": "Net per month",
+        "unemploymentRate": "Unemployment rate",
+        "estimate2025": "2025 estimate",
+        "legalHours": "Legal hours",
+        "paidLeave": "{{count}} paid leave days",
+        "recentOffers": "Recent job offers",
+        "totalOffers": "{{count}} offers in total",
+        "today": "Today",
+        "yesterday": "Yesterday",
+        "daysAgo": "{{count}} days ago",
+        "weeksAgo": "{{count}} weeks ago",
+        "monthsAgo": "{{count}} months ago",
+        "remote": "Remote",
+        "inDemandSectors": "Most in-demand sectors",
+        "avgSalaryLabel": "Avg salary:",
+        "contractTypes": "Contract types",
+        "searchPlatforms": "Search platforms",
+        "workPermit": "Work permit",
+        "goodToKnow": "Good to know"
+      }
+    },
+    "serviceResults": {
+      "searchIn": "Search in \"{{title}}\"",
+      "exploreResults": "Explore results",
+      "useSearchEngine": "Use our search engine to find resources, offers and information specific to {{title}}.",
+      "goToSearch": "Go to search",
+      "viewRecent": "View most recent",
+      "viewPopular": "View most popular"
+    },
+    "countrySelector": {
+      "destination": "Destination",
+      "general": "General",
+      "generalInfo": "General information"
+    },
+    "healthTools": {
+      "averageCosts": "Average costs for {{city}}. Vary by profile, age, and coverage chosen.",
+      "monthlyInsurance": "Monthly insurance",
+      "annualInsurance": "Annual insurance",
+      "consultations": "Consultations, care, pharmacy",
+      "totalEstimated": "Total estimated",
+      "annualBudget": "Annual health budget — {{city}}",
+      "estimateExpenses": "Estimate your health expenses",
+      "yourProfile": "Your profile",
+      "young": "18-30 years (good health)",
+      "adult": "30-60 years (average health)",
+      "senior": "60+ years",
+      "swissWarning": "⚠️ Switzerland: LAMal health insurance is MANDATORY. Premiums among the highest in Europe.",
+      "usaWarning": "⚠️ USA: No universal coverage. Uninsured care is extremely expensive.",
+      "budgetEstimateNote": "Budget estimated without pre-existing conditions — {{city}}."
+    },
+    "transportTools": {
+      "driverLicense": "Driver's license",
+      "checkProcedures": "Check the necessary procedures",
+      "originCountry": "Country of origin of your license",
+      "selectCountry": "Select a country",
+      "france": "France",
+      "canada": "Canada",
+      "usa": "United States",
+      "uk": "United Kingdom",
+      "exchangePossible": "Exchange possible",
+      "exchangeDesc": "You can exchange your {{country}} license without retaking exams.",
+      "processingTime": "Processing time",
+      "processingTimeValue": "4-6 weeks",
+      "temporaryValidity": "Temporary validity",
+      "temporaryValidityValue": "12 months",
+      "internationalLicense": "International license",
+      "accepted": "✓ Accepted",
+      "todoNote": "Complete with real exchange rules per country in transport-data.ts",
+      "vehiclePurchase": "Vehicle purchase",
+      "purchaseDocuments": "Documents required for purchase",
+      "preparation": "Preparation",
+      "validId": "Valid ID",
+      "proofOfAddress": "Proof of address",
+      "validLicense": "Valid driver's license",
+      "carInsurance": "Proof of car insurance",
+      "registration": "Registration certificate",
+      "technicalInspection": "Technical inspection (if used)"
+    },
+    "destinationDetail": {
+      "backToDestinations": "Back to destinations",
+      "citiesAvailable": "{{count}} cities available",
+      "about": "About",
+      "defaultDescription": "Discover {{country}}, a top destination for expatriates. Enjoy an exceptional quality of life and numerous professional opportunities.",
+      "whyChoose": "Why choose {{country}}?",
+      "highlights": {
+        "qualityOfLife": "High quality of life",
+        "careerOpportunities": "Career opportunities",
+        "culturalRichness": "Cultural richness",
+        "healthcareSystem": "High-performance healthcare system"
+      },
+      "mainCities": "Main cities",
+      "noCities": "No cities listed at this time.",
+      "discoverCity": "Discover life in {{city}}...",
+      "viewCity": "View city",
+      "professionalOpportunities": "Professional opportunities",
+      "totalOffers": "{{count}} total offers",
+      "noOffers": "No offers found at this time.",
+      "searchOffers": "Search offers",
+      "communityDiscussion": "Community discussion",
+      "subjects": "{{count}} subjects",
+      "pinned": "Pinned",
+      "question": "Question",
+      "testimony": "Testimony",
+      "advice": "Advice",
+      "discussion": "Discussion",
+      "anonymous": "Anonymous",
+      "views": "{{count}} views",
+      "replies": "{{count}} replies",
+      "noTopics": "No discussion topics for {{country}} at this time.",
+      "accessForum": "Go to forum",
+      "guidesAndResources": "Guides and resources",
+      "guidesDescription": "Check our {{count}} guides for your settlement in {{country}}.",
+      "viewResources": "View resources",
+      "statistics": "Statistics",
+      "members": "Members",
+      "jobOffers": "Job offers",
+      "forumTopics": "Forum topics",
+      "migrationStats": {
+        "title": "Migration & Immigration",
+        "foreignPop": "Resident foreign population",
+        "inflows": "Annual inflows",
+        "outflows": "Annual outflows",
+        "asylum": "Asylum seekers",
+        "nationality": "Nationality acquisitions",
+        "source": "Source: OECD – International Migration Database"
+      },
+      "readyToGo": "Ready to go?",
+      "startProject": "Start your expatriation project in {{country}} today.",
+      "findJob": "Find a job",
+      "discussOnForum": "Discuss on the forum",
+      "createProjectTitle": "Create your expatriation project",
+      "createProjectDesc": "Join {{memberCount}} expatriates in {{country}} and access personalized content.",
+      "createFreeAccount": "Create my free account",
+      "benefits": {
+        "personalizedTracking": "Personalized project tracking",
+        "exclusiveJobs": "Access to exclusive job offers",
+        "communityConnection": "Connect with local community",
+        "detailedGuides": "Detailed guides and resources"
+      },
+      "createProject": "Create my expatriation project",
+      "viewAllOffers": "View all offers ({{count}})",
+      "viewAllTopics": "View all topics ({{count}})",
+      "overview": "Overview",
+      "cities": "Cities",
+      "costOfLiving": "Cost of living",
+      "opportunities": "Opportunities",
+      "forum": "Forum",
+      "community": "Community",
+      "resources": "Resources"
     },
     "tools": {
       "title": "Toolkit",
@@ -439,7 +736,9 @@
         "perYear": "/ year",
         "recommendedBudget": "Recommended budget",
         "maxPerMonth": "per month maximum",
-        "info": "This calculation is based on a 33% effort rate."
+        "info": "This calculation is based on a 33% effort rate.",
+        "converted": "Converted from {{from}} → {{to}}",
+        "countryWarning": "In {{country}}, landlords may require additional guarantees."
       },
       "medicalChecklist": {
         "title": "Medical Records",
@@ -468,6 +767,13 @@
         "housing": "Housing",
         "studies": "Studies",
         "health": "Health",
+        "other": "Other"
+      },
+      "positions": {
+        "developer": "Developer",
+        "designer": "Designer",
+        "manager": "Manager",
+        "sales": "Sales",
         "other": "Other"
       }
     },
@@ -501,14 +807,14 @@
       "title": "Popular Destinations",
       "subtitle": "Discover the most popular countries in our community",
       "viewAll": "View all destinations",
-      "canada": {
-        "description": "A welcoming country with excellent immigration opportunities and a dynamic job market."
+      "japon": {
+        "description": "Between tradition and innovation, Japan offers an exceptional quality of life and a dynamic tech job market."
       },
-      "france": {
-        "description": "France attracts many expats with its rich culture, quality healthcare system, and varied professional opportunities."
+      "etats-unis": {
+        "description": "The land of all opportunities. High salaries, startup ecosystem, and unmatched cultural diversity."
       },
-      "portugal": {
-        "description": "Mediterranean climate, affordable cost of living, and a dynamic French community await you."
+      "suisse": {
+        "description": "Discover professional opportunities in an exceptional alpine setting. Attractive salaries and incomparable quality of life."
       }
     }
   },
@@ -622,12 +928,109 @@
       "publish": "Publish topic",
       "publishing": "Publishing..."
     },
-    "comingSoon": "Feature coming soon!"
+    "comingSoon": "Feature coming soon!",
+    "postDetail": {
+      "loading": "Loading topic...",
+      "notFound": "Topic not found",
+      "notFoundDesc": "The requested topic does not exist",
+      "backToForum": "Back to forum",
+      "by": "By {{name}}",
+      "edit": "Edit",
+      "author": "Author",
+      "repliesCount_one": "{{count}} Reply",
+      "repliesCount_other": "{{count}} Replies",
+      "noReplies": "No replies yet",
+      "beFirst": "Be the first to reply!",
+      "mustBeLoggedIn": "You must be logged in to reply",
+      "contentRequired": "Content is required",
+      "contentEmpty": "Content cannot be empty",
+      "userIdError": "User ID error",
+      "publishError": "Error while publishing",
+      "editError": "Error while editing",
+      "confirmDelete": "Are you sure you want to delete this message?",
+      "deleteError": "Error while deleting",
+      "deleteSuccess": "Message deleted successfully",
+      "replySuccess": "Reply published successfully!",
+      "editSuccess": "Message edited successfully!",
+      "saving": "Saving...",
+      "save": "Save",
+      "cancel": "Cancel",
+      "yourReply": "Your reply",
+      "writePlaceholder": "Write your reply...",
+      "publishing": "Publishing...",
+      "publishReply": "Publish reply",
+      "joinConversation": "Join the conversation",
+      "joinDesc": "Log in to share your experience, ask questions and exchange with the expatriate community.",
+      "createAccount": "Create an account",
+      "login": "Log in",
+      "report": "Report",
+      "reportMessage": "Report this message",
+      "reportTopic": "Report this topic",
+      "reportTitle": "Report content",
+      "reportReason": "Reason for report",
+      "reportDetails": "Details (optional)",
+      "reportDetailsPlaceholder": "Describe the issue in more detail...",
+      "reportSubmit": "Submit report",
+      "reportSubmitting": "Submitting...",
+      "reportSuccess": "Report submitted. Thank you for your help!",
+      "reportError": "Error while reporting",
+      "reportAlreadySubmitted": "You have already reported this content",
+      "reportReasons": {
+        "spam": "Spam",
+        "harassment": "Harassment",
+        "hate_speech": "Hate speech",
+        "inappropriate": "Inappropriate content",
+        "misinformation": "Misinformation",
+        "other": "Other"
+      },
+      "moderation": {
+        "lockTopic": "Lock topic",
+        "unlockTopic": "Unlock topic",
+        "pinTopic": "Pin topic",
+        "unpinTopic": "Unpin topic",
+        "deleteTopic": "Delete topic (moderator)",
+        "deleteMessage": "Delete (moderator)",
+        "locked": "🔒 This topic is locked. No new replies are allowed.",
+        "pinned": "📌 Pinned",
+        "confirmDeleteTopic": "Are you sure you want to delete this topic and all its messages?",
+        "confirmDeleteMessage": "Are you sure you want to delete this message as a moderator?",
+        "topicDeleted": "Topic deleted",
+        "messageDeleted": "Message deleted by moderator"
+      }
+    },
+    "editTopic": {
+      "loading": "Loading topic...",
+      "error": "Error",
+      "topicNotFound": "Topic not found",
+      "backToForum": "Back to forum",
+      "loginRequired": "Login required",
+      "login": "Log in",
+      "accessDenied": "Access denied",
+      "notAuthorized": "You are not authorized to edit this topic",
+      "backToTopic": "Back to topic",
+      "title": "Edit topic",
+      "subtitle": "Update the title, content or category",
+      "titleLabel": "Title",
+      "contentLabel": "Description / Content",
+      "contentOptional": "(optional)",
+      "contentHelp": "This will modify the initial content of your topic",
+      "contentPlaceholder": "Describe your question or share more details...",
+      "categoryLabel": "Category",
+      "required": "*",
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "saveChanges": "Save changes",
+      "mustBeLoggedIn": "You must be logged in",
+      "titleRequired": "Title is required",
+      "updateError": "Error while updating"
+    }
   },
   "comparison": {
     "title": "Comparison Tool",
     "description": "Analyze differences in cost of living and opportunities between your favorite destinations.",
     "selection": "Selection:",
+    "tableHeader": "Comparison",
+    "currencyLabel": "Display currency:",
     "limitReached": {
       "title": "Limit Reached (Guest Mode)",
       "message": "You are comparing {{count}} countries.",
@@ -642,29 +1045,59 @@
       "suffix": "above to see the comparison table."
     },
     "sections": {
+      "overview": "Overview",
       "general": "General Information",
       "costOfLiving": "Cost of Living",
-      "immigration": "Immigration Procedures",
+      "qualityOfLife": "Quality of Life",
+      "climate": "Climate",
+      "taxation": "Taxation",
+      "immigration": "Immigration & Migration",
       "idealFor": "Ideal For"
+    },
+    "radar": {
+      "salary": "Salary",
+      "safety": "Safety",
+      "healthcare": "Healthcare",
+      "affordability": "Affordability",
+      "workLife": "Work/Life"
     },
     "fields": {
       "continent": "Continent",
       "capital": "Capital",
       "languages": "Spoken Language(s)",
       "currency": "Currency",
+      "destination": "Destination",
       "averageSalary": "Average Monthly Salary",
       "rentOneRoom": "1-bedroom rent (center)",
       "rentThreeRooms": "3-bedroom rent (center)",
       "restaurantMeal": "Restaurant meal",
       "groceries": "Weekly groceries",
+      "utilities": "Utilities (85m²)",
+      "transport": "Monthly transport",
+      "safety": "Safety",
+      "healthcareQuality": "Healthcare quality",
+      "healthcareSystem": "Healthcare system",
+      "workLifeBalance": "Work-life balance",
+      "cuisine": "Cuisine",
+      "climateType": "Climate type",
+      "tempSummer": "Summer temp.",
+      "tempWinter": "Winter temp.",
+      "incomeTax": "Income tax",
+      "vat": "VAT / Sales tax",
       "steps": "Number of steps",
       "stepsValue": "{{count}} steps",
       "difficulty": "Difficulty",
       "languageRequired": "Required language",
       "recommendedProfiles": "Recommended profiles",
       "notSpecified": "Not specified",
-      "notSpecifiedFeminine": "Not specified"
+      "notSpecifiedFeminine": "Not specified",
+      "stocksForeignPop": "Resident foreign population",
+      "inflowsForeignPop": "Foreign population inflows",
+      "outflowsForeignPop": "Foreign population outflows",
+      "asylumSeekers": "Asylum seekers",
+      "nationalityAcquisitions": "Nationality acquisitions"
     },
+    "oecdSource": "Source: OECD – International Migration Database",
     "premiumAccess": {
       "title": "Access Full Analysis",
       "description": "Detailed immigration data and personalized recommendations are reserved for our members. Join Skywalk to make the best decision.",
@@ -681,6 +1114,7 @@
     "bestOption": "Best option"
   },
   "dashboard": {
+    "dragToReorder": "Drag to reorder",
     "personalized": {
       "loading": "Loading your personalized dashboard...",
       "noProjects": {
@@ -690,6 +1124,8 @@
       },
       "greeting": "Hello ! 👋",
       "projectTo": "Your expatriation project to {{country}}",
+      "defaultUser": "User",
+      "defaultDestination": "Destination",
       "editProject": "Edit project",
       "modifyWidgets": "Modify widgets",
       "finish": "Done",
@@ -718,6 +1154,10 @@
           "label": "Stay duration",
           "estimated": "Estimated",
           "months": "{{count}} months",
+          "less6months": "Less than 6 months",
+          "6to12months": "6 to 12 months",
+          "1to3years": "1 to 3 years",
+          "more3years": "More than 3 years",
           "undefined": "Not defined"
         }
       },
@@ -760,11 +1200,19 @@
           "currencyConverter": {
             "name": "Currency converter",
             "description": "Convert between different currencies"
+          },
+          "jobOpportunities": {
+            "name": "Job opportunities",
+            "description": "Sectors, salaries and expat programs"
           }
         },
         "menu": {
           "edit": "Edit",
           "expand": "Expand",
+          "resize": "Size",
+          "sizeSmall": "Small",
+          "sizeMedium": "Medium",
+          "sizeLarge": "Large",
           "hide": "Hide this widget"
         },
         "profileSummary": {
@@ -803,7 +1251,10 @@
           "noData": {
             "title": "Market data not available for this country.",
             "message": "Market data not available for this country."
-          }
+          },
+          "avgSalary": "Average local salary",
+          "sourceLive": "Live data — {{city}}",
+          "sourceStatic": "Estimated data"
         },
         "localTime": {
           "title": "Local time",
@@ -839,7 +1290,10 @@
             "visaDesc": "The difficulty of obtaining a visa is {{difficulty}}"
           },
           "learnMore": "Learn more",
-          "seeAll": "See all recommendations"
+          "seeAll": "See all recommendations",
+          "members": "Members",
+          "jobs": "Job offers",
+          "forumTopics": "Forum topics"
         },
         "currencyConverter": {
           "title": "Currency Converter",
@@ -852,9 +1306,1320 @@
           "loading": "Loading rates...",
           "error": "Unable to load exchange rates",
           "swap": "Swap currencies"
+        },
+        "jobOpportunities": {
+          "title": "Job Opportunities {{country}}",
+          "profile": "Profile: {{age}} years old, {{status}}",
+          "sectors": "Top sectors",
+          "avgSalary": "Average salary",
+          "month": "month",
+          "unemployment": "Unemployment rate: {{rate}}",
+          "programsTitle": "Programs & schemes",
+          "jobSites": "Job sites",
+          "noData": "No job data available for this country",
+          "offersAvailable": "offers",
+          "recentOffers": "Recent offers (Adzuna)",
+          "programs": {
+            "jet": "Teach English/French in Japan",
+            "ccifj": "Franco-Japanese Chamber of Commerce",
+            "expressEntry": "Federal economic immigration to Canada",
+            "pvtCanada": "Working Holiday Programme (18-35 years)",
+            "whvAustralia": "Working Holiday Visa (18-35 years)",
+            "skilledAustralia": "Skilled migration to Australia",
+            "makeItGermany": "Official portal for working in Germany",
+            "blueCard": "EU Blue Card for skilled workers",
+            "skilledWorkerUK": "Skilled Worker Visa (sponsor required)",
+            "youthMobilityUK": "Youth Mobility Scheme (18-30 years)",
+            "h1b": "Work visa for specialty occupations",
+            "j1": "Cultural and professional exchange program",
+            "permisSwiss": "Residence and work permit in Switzerland"
+          }
         }
       },
       "projectSelector": "Project #{{id}} - {{country}}"
+    }
+  },
+  "auth": {
+    "login": {
+      "success": "Login successful!",
+      "error": "Login error",
+      "email": "Email",
+      "password": "Password",
+      "rememberMe": "Remember me",
+      "forgotPassword": "Forgot password?",
+      "submitting": "Logging in...",
+      "submit": "Log in",
+      "noAccount": "Don't have an account yet?",
+      "register": "Sign up"
+    },
+    "register": {
+      "error": "Registration error",
+      "passwordMismatch": "Passwords do not match",
+      "nameRequired": "Please enter your first and last name",
+      "displayName": "Your display name will be:",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "email": "Email",
+      "age": "Age",
+      "originCountry": "Country of origin",
+      "password": "Password",
+      "confirmPassword": "Confirm password",
+      "strength": "Strength:",
+      "weak": "Weak",
+      "medium": "Medium",
+      "good": "Good",
+      "strong": "Strong",
+      "terms": "I accept the",
+      "termsOfUse": "terms of use",
+      "and": "and the",
+      "privacyPolicy": "privacy policy",
+      "submitting": "Signing up...",
+      "submit": "Join the SkyWalk adventure",
+      "hasAccount": "Already have an account?",
+      "login": "Log in"
+    },
+    "forgotPassword": {
+      "emailSent": "Email sent! Check your inbox.",
+      "emailError": "Error sending email",
+      "title": "Forgot password?",
+      "description": "Enter your email and we'll send you a link to reset your password.",
+      "emailSentTitle": "Email sent!",
+      "emailSentDesc": "A reset link has been sent to <strong>{{email}}</strong>.<br/>Click the link to create a new password.",
+      "notReceived": "Didn't receive the email? Check your spam or",
+      "retry": "try again",
+      "backToLogin": "Back to login",
+      "emailPlaceholder": "Your email",
+      "submitting": "Sending...",
+      "submit": "Send reset link"
+    },
+    "resetPassword": {
+      "success": "Password reset successfully!",
+      "error": "Error during reset",
+      "tokenMissing": "Reset token missing",
+      "passwordMismatch": "Passwords do not match",
+      "passwordWeak": "Your password is too weak. Use at least 8 characters with uppercase, lowercase and numbers.",
+      "invalidLink": "Invalid link",
+      "invalidLinkDesc": "The reset link is missing or invalid.",
+      "requestNewLink": "Request a new link",
+      "title": "New password",
+      "description": "Choose a strong password to secure your account.",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm password",
+      "strength": "Strength:",
+      "weak": "Weak",
+      "medium": "Medium",
+      "good": "Good",
+      "strong": "Strong",
+      "submitting": "Resetting...",
+      "submit": "Reset password",
+      "backToLogin": "Back to login"
+    },
+    "passwordForgot": {
+      "success": "A reset email has been sent to your address",
+      "error": "Error sending email",
+      "emailPlaceholder": "Your email",
+      "submitting": "Sending...",
+      "submit": "Receive my link"
+    }
+  },
+  "searchPage": {
+    "notSpecified": "Not specified",
+    "title": "Advanced Search",
+    "description": "Find jobs, housing and services tailored to your expatriation project.",
+    "placeholder": "Search jobs, housing, transport...",
+    "filters": "Filters",
+    "searchResults": "Search Results",
+    "popularDestinations": "Popular Destinations & Services",
+    "resultCount_one": "{{count}} result {{context}}",
+    "resultCount_other": "{{count}} results {{context}}",
+    "found": "found",
+    "founds": "found",
+    "available": "available",
+    "availables": "available",
+    "sortBy": "Sort by:",
+    "relevance": "Relevance",
+    "mostRecent": "Most recent",
+    "oldest": "Oldest",
+    "priceAsc": "Price ascending",
+    "priceDesc": "Price descending",
+    "bestRated": "Best rated",
+    "discoverDestinations": "Discover our popular destinations",
+    "discoverDestinationsDesc": "Here you see a selection of opportunities and services in the most popular destinations. Use the search bar and filters to refine your results.",
+    "popularSearches": "Popular searches:",
+    "france": "France",
+    "unitedKingdom": "United Kingdom",
+    "switzerland": "Switzerland",
+    "canada": "Canada",
+    "jobs": "Jobs",
+    "housing": "Housing",
+    "transport": "Transport",
+    "discoverMore": "Discover {{count}}+ more results",
+    "createAccountDesc": "Create a free account to access all results, save your searches and receive personalised alerts.",
+    "createFreeAccount": "Create free account",
+    "login": "Log in",
+    "noResults": "No results found",
+    "noResultsDesc": "Try adjusting your search criteria or filters.",
+    "resetFilters": "Reset filters",
+    "loading": "Loading...",
+    "loadMore": "Load more results",
+    "loadingResults": "Loading results...",
+    "scrollForMore": "Scroll to load more results",
+    "viewDetails": "View details",
+    "view": "View",
+    "by": "By {{provider}}",
+    "suggestions": "Suggestions",
+    "recentSearches": "Recent searches",
+    "popularSearchesList": "Popular searches",
+    "filter": {
+      "title": "Filters",
+      "clearAll": "Clear all",
+      "category": "Category",
+      "country": "Country",
+      "contractType": "Contract type",
+      "budget": "Budget",
+      "period": "Period",
+      "city": "City:",
+      "cityPlaceholder": "Enter a city...",
+      "allPrices": "All prices",
+      "allDates": "All dates",
+      "start": "Start",
+      "end": "End",
+      "today": "Today",
+      "thisWeek": "This week",
+      "thisMonth": "This month",
+      "categories": {
+        "emploi": "Jobs",
+        "logement": "Housing",
+        "transport": "Transport",
+        "administration": "Administration",
+        "sante": "Healthcare"
+      },
+      "contracts": {
+        "permanent": "Permanent",
+        "contract": "Fixed-term / Contract",
+        "full_time": "Full time",
+        "part_time": "Part time"
+      }
+    },
+    "job": {
+      "salaryNotSpecified": "Salary not specified",
+      "perYear": "/yr",
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "daysAgo": "{{count}} days ago",
+      "weeksAgo": "{{count}} weeks ago",
+      "monthsAgo": "{{count}} months ago",
+      "company": "Company",
+      "viewOffer": "View offer"
+    },
+    "recentSearchItems": {
+      "devToronto": "Developer jobs Toronto",
+      "housingParis": "Housing Paris centre",
+      "transportBerlin": "Public transport Berlin",
+      "healthCanada": "Health insurance Canada"
+    },
+    "popularSearchItems": {
+      "itJobs": "IT jobs",
+      "apartment": "2-bedroom apartment",
+      "workVisa": "Work visa",
+      "bankAccount": "Bank account",
+      "driverLicense": "Driver's license"
+    },
+    "urgency": {
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    }
+  },
+  "onboarding": {
+    "steps": {
+      "destination": "Destination",
+      "profile": "Profile",
+      "objective": "Objective",
+      "preparation": "Preparation",
+      "needs": "Needs",
+      "summary": "Summary"
+    },
+    "editTitle": "Edit my project",
+    "profilePrefilled": "Your profile information has been pre-filled!",
+    "invalidDestination": "Invalid destination country",
+    "countryChangeWarning": "⚠️ Warning: You are changing your destination country.\n\nYour current checklist will be reset because procedures are specific to each country.\n\nDo you want to continue?",
+    "modificationCancelled": "Modification cancelled",
+    "checklistReset": "Your checklist has been reset for the new country",
+    "projectUpdated": "Project updated successfully!",
+    "projectCreated": "Project created successfully!",
+    "creatingProject": "Creating your project...",
+    "errorPrefix": "Error",
+    "genericError": "An error occurred while creating the project",
+    "destination": {
+      "title": "Your destination",
+      "subtitle": "Tell us where you're coming from and where you'd like to settle",
+      "fromCountry": "Departure country",
+      "toCountry": "Destination country",
+      "targetCity": "Target city (optional)",
+      "targetCityHelper": "If you already have a city in mind",
+      "targetCityPlaceholder": "E.g. Zurich, Toronto, Lisbon...",
+      "departureYear": "Expected departure year",
+      "fromCountryPlaceholder": "Select your departure country",
+      "toCountryPlaceholder": "Select your destination country",
+      "errors": {
+        "fromCountryRequired": "Departure country is required",
+        "toCountryRequired": "Destination country is required",
+        "sameCountry": "Destination country must be different from departure country",
+        "departureYearRequired": "Departure year is required",
+        "departureYearRange": "Year must be between {{min}} and {{max}}"
+      }
+    },
+    "profile": {
+      "title": "Your personal profile",
+      "subtitle": "Help us get to know you better to personalize our advice",
+      "age": "Age",
+      "agePlaceholder": "E.g. 25",
+      "motherTongue": "Mother tongue",
+      "motherTonguePlaceholder": "Select your mother tongue",
+      "spokenLanguages": "Other spoken languages (optional)",
+      "status": "Current status",
+      "statusPlaceholder": "Select your status",
+      "travelParty": "You're traveling...",
+      "languageLevel": "Language level of destination country",
+      "languageLevelHelper": "Indicate your proficiency level in the main language spoken in the country you wish to expatriate to. (According to the Common European Framework of Reference - CEFR)",
+      "languageLevelPlaceholder": "Select your level",
+      "errors": {
+        "ageRequired": "Age is required",
+        "ageRange": "Age must be between 16 and 90",
+        "motherTongueRequired": "Mother tongue is required",
+        "statusRequired": "Current status is required",
+        "travelPartyRequired": "Please indicate who you're traveling with",
+        "languageLevelRequired": "Language level is required"
+      }
+    },
+    "objective": {
+      "title": "Purpose of your move",
+      "subtitle": "Specify the main reason for your expatriation and its duration",
+      "goal": "Main objective",
+      "stayDuration": "Expected stay duration",
+      "stayDurationPlaceholder": "Select duration",
+      "errors": {
+        "goalRequired": "Main objective is required",
+        "stayDurationRequired": "Expected stay duration is required"
+      }
+    },
+    "preparation": {
+      "title": "Preparation & resources",
+      "subtitle": "Where are you in your preparations and what is your budget?",
+      "stepsDone": "Steps already completed",
+      "stepsDoneHelper": "Select all steps you have already taken",
+      "housingBudget": "Monthly housing budget",
+      "housingBudgetHelper": "Maximum amount you wish to spend on housing per month",
+      "housingBudgetPlaceholder": "E.g. 800",
+      "errors": {
+        "housingBudgetRequired": "Housing budget is required",
+        "housingBudgetMin": "Budget must be greater than or equal to 0 {{currency}}"
+      }
+    },
+    "needs": {
+      "title": "Your specific needs",
+      "subtitle": "Help us identify your priorities to personalize our support",
+      "priorities": "Priority topics",
+      "prioritiesHelper": "Select at least one topic that concerns you the most",
+      "personalizedSupport": "Personalized support",
+      "personalizedSupportHelper": "Would you like to receive individual support from an advisor?",
+      "errors": {
+        "prioritiesRequired": "Please select at least one priority topic",
+        "supportRequired": "Please indicate if you would like personalized support"
+      }
+    },
+    "summary": {
+      "title": "Profile summary",
+      "subtitle": "Review your information before validating your expatriation profile",
+      "destinationCard": "Destination",
+      "profileCard": "Personal profile",
+      "objectiveCard": "Purpose of move",
+      "preparationCard": "Preparation & resources",
+      "needsCard": "Specific needs",
+      "fromCountry": "Departure country",
+      "toCountry": "Destination country",
+      "targetCity": "Target city",
+      "departureYear": "Departure year",
+      "notSpecified": "Not specified",
+      "age": "Age",
+      "ageYears": "{{age}} years old",
+      "status": "Status",
+      "travel": "Travel",
+      "languageLevel": "Language level",
+      "mainGoal": "Main objective",
+      "expectedDuration": "Expected duration",
+      "stepsDone": "Steps completed",
+      "none": "None",
+      "housingBudget": "Housing budget",
+      "housingBudgetValue": "{{budget}} € / month",
+      "prioritiesLabel": "Priorities",
+      "personalizedSupport": "Personalized support",
+      "yes": "Yes",
+      "no": "No",
+      "readyTitle": "Ready to start your adventure?",
+      "readyDesc": "By validating your profile, you'll access personalized recommendations and can start planning your expatriation with our tools.",
+      "creatingLabel": "Creating project...",
+      "submitLabel": "Validate and create my project"
+    },
+    "authGate": {
+      "title": "Save your project to continue",
+      "subtitle": "You're almost there! Create a free account to access your personalized expatriation plan and save your preferences.",
+      "benefitsTitle": "What you get:",
+      "benefit1": "Save your project and access it anytime",
+      "benefit2": "Get personalized recommendations",
+      "benefit3": "Compare up to 5 countries in detail",
+      "benefit4": "Join a community of expatriates",
+      "createAccount": "Create my free account",
+      "hasAccount": "I already have an account",
+      "goBack": "Go back to previous step"
+    },
+    "nav": {
+      "next": "Next",
+      "back": "Back",
+      "goToDashboard": "Go to my dashboard"
+    },
+    "layout": {
+      "dashboard": "Dashboard",
+      "expatProject": "Expatriation project",
+      "myProfile": "My profile"
+    },
+    "constants": {
+      "languageLevels": {
+        "A1": "A1 - Beginner",
+        "A2": "A2 - Elementary",
+        "B1": "B1 - Intermediate",
+        "B2": "B2 - Upper intermediate",
+        "C1": "C1 - Advanced",
+        "C2": "C2 - Mastery"
+      },
+      "status": {
+        "student": "Student",
+        "employee": "Employee",
+        "self_employed": "Self-employed",
+        "unemployed": "Job seeker",
+        "retired": "Retired",
+        "single": "Single",
+        "other": "Other"
+      },
+      "travelParty": {
+        "alone": "Alone",
+        "couple": "As a couple",
+        "family": "With family",
+        "friends": "With friends"
+      },
+      "goal": {
+        "studies": "Studies",
+        "work": "Work",
+        "discovery": "Discovery",
+        "family": "Family",
+        "internship": "Internship",
+        "other": "Other"
+      },
+      "goals": {
+        "studies": "Studies",
+        "work": "Work",
+        "discovery": "Discovery",
+        "family": "Family",
+        "internship": "Internship",
+        "other": "Other"
+      },
+      "stayDuration": {
+        "less_6_months": "Less than 6 months",
+        "6_12_months": "6 to 12 months",
+        "1_3_years": "1 to 3 years",
+        "more_3_years": "More than 3 years"
+      },
+      "stepsDone": {
+        "school_registration": "School registration",
+        "housing_search": "Housing search",
+        "job_search": "Job search",
+        "visa_application": "Visa application",
+        "other": "Other",
+        "none": "No steps taken"
+      },
+      "priorities": {
+        "housing": "Housing",
+        "employment": "Employment",
+        "transport": "Transport",
+        "admin_help": "Administrative help",
+        "health": "Health",
+        "social_integration": "Social integration"
+      },
+      "steps": {
+        "destination": "Destination",
+        "profile": "Profile",
+        "objective": "Objective",
+        "preparation": "Preparation",
+        "needs": "Needs",
+        "summary": "Summary"
+      }
+    }
+  },
+  "projectsPage": {
+    "pageTitle": "My Projects",
+    "pageDesc": "Manage your expatriation projects, track your progress and access your personalized tools.",
+    "errorTitle": "An error occurred",
+    "errorDesc": "Unable to load your projects at this time.",
+    "retry": "Retry",
+    "newProject": "New project",
+    "noProjects": "No projects",
+    "noProjectsDesc": "Start by creating your first expatriation project.",
+    "createProject": "Create a project",
+    "projectId": "Project #{{id}}",
+    "countryFallback": "Country #{{id}}",
+    "edit": "Edit",
+    "delete": "Delete",
+    "viewDetails": "View details",
+    "goToDashboard": "Go to dashboard",
+    "deleteTitle": "Delete this project?",
+    "deleteDesc": "This action is irreversible. All data associated with this project will be lost.",
+    "cancel": "Cancel",
+    "createSuccess": "Project created successfully!",
+    "createError": "Error creating the project",
+    "updateSuccess": "Project updated successfully!",
+    "updateError": "Error updating the project",
+    "deleteSuccess": "Project deleted successfully!",
+    "deleteError": "Error deleting the project"
+  },
+  "welcome": {
+    "badge": "Welcome to Skywalk",
+    "title": "Prepare your expatriation",
+    "titleHighlight": "with peace of mind",
+    "description": "To best support you, we need to know about your project. A complete profile allows us to offer you tailored recommendations.",
+    "profileIncomplete": "Incomplete profile",
+    "profileIncompleteDesc": "Complete your profile to unlock all personalized features.",
+    "startAdventure": "Start my adventure",
+    "whyComplete": "Why complete your profile?",
+    "targetedRecs": "Targeted recommendations",
+    "targetedRecsDesc": "Advice tailored to your destination and situation.",
+    "personalizedChecklists": "Personalized checklists",
+    "personalizedChecklistsDesc": "Don't miss any important administrative step.",
+    "timeSaving": "Precious time saving",
+    "timeSavingDesc": "Access directly the information that concerns you."
+  },
+  "authPages": {
+    "loginTitle": "Welcome back!",
+    "registerTitle": "Create your account",
+    "forgotPasswordTitle": "Forgot your password?",
+    "forgotPasswordSubtitle": "Enter your email to receive a reset link",
+    "tagline": "Simplify every step of your expatriation"
+  },
+  "destinationsPage": {
+    "loadingCountries": "Loading countries...",
+    "error": "Error",
+    "loadError": "Unable to load destinations. Please try again later.",
+    "retry": "Retry",
+    "card": {
+      "defaultDestination": "Destination",
+      "defaultDescription": "Discover life in {{country}}, a vibrant destination offering many opportunities.",
+      "projects": "projects",
+      "jobs": "jobs",
+      "topics": "topics",
+      "resources": "resources"
+    }
+  },
+  "footer": {
+    "description": "Your expatriation companion for a new life abroad. Guides, tools, and community to make your project a success.",
+    "services": "Services",
+    "findJob": "Find a job",
+    "findHousing": "Find housing",
+    "getAround": "Getting around",
+    "healthWellbeing": "Health & wellbeing",
+    "adminProcedures": "Administrative procedures",
+    "allServices": "All services",
+    "resources": "Resources",
+    "destinations": "Destinations",
+    "communityForum": "Community forum",
+    "practicalGuides": "Practical guides",
+    "testimonials": "Testimonials",
+    "countryComparator": "Country comparator",
+    "blog": "Blog",
+    "contact": "Contact",
+    "about": "About",
+    "legalNotice": "Legal notice",
+    "privacy": "Privacy",
+    "terms": "Terms of use",
+    "allRightsReserved": "All rights reserved.",
+    "serviceOnline": "Service online"
+  },
+  "profilePage": {
+    "user": "User",
+    "edit": "Edit",
+    "personalTitle": "Personal",
+    "personalSubtitle": "Your identity information",
+    "fullName": "Full name",
+    "age": "Age",
+    "ageValue": "{{age}} years old",
+    "motherTongue": "Mother tongue",
+    "spokenLanguages": "Spoken languages",
+    "noLanguages": "No languages added",
+    "notProvided": "Not provided",
+    "locationTitle": "Location",
+    "locationSubtitle": "Preferences and origins",
+    "originCountry": "Country of origin",
+    "targetLanguageLevel": "Language level (target country)",
+    "currentStatus": "Current status",
+    "statusSelfEmployed": "Self-employed",
+    "statusEmployed": "Employee",
+    "statusStudent": "Student",
+    "statusRetired": "Retired",
+    "editPersonal": "Personal information",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "selectStatus": "Select",
+    "statusStudentOption": "Student",
+    "statusEmployeeOption": "Employee",
+    "statusSelfEmployedOption": "Self-employed",
+    "statusUnemployedOption": "Job seeker",
+    "statusRetiredOption": "Retired",
+    "statusOtherOption": "Other",
+    "selectMotherTongue": "Select your mother tongue",
+    "otherLanguages": "Other spoken languages",
+    "editPreferences": "Preferences & Security",
+    "selectLanguageLevel": "Select",
+    "languageLevelA1": "A1 - Beginner",
+    "languageLevelA2": "A2 - Elementary",
+    "languageLevelB1": "B1 - Intermediate",
+    "languageLevelB2": "B2 - Upper intermediate",
+    "languageLevelC1": "C1 - Advanced",
+    "languageLevelC2": "C2 - Mastery",
+    "languageLevelNative": "Native",
+    "selectCountry": "Select a country",
+    "newPassword": "New password",
+    "keepPassword": "Leave blank to keep current",
+    "passwordHint": "Minimum 6 characters. Leave blank if you don't want to change it.",
+    "cancel": "Cancel",
+    "saving": "Saving...",
+    "save": "Save changes",
+    "updateError": "Error updating profile. Please try again.",
+    "updateSuccess": "Profile updated successfully",
+    "updateErrorToast": "Error updating profile",
+    "deleteSuccess": "Account deleted successfully",
+    "deleteErrorToast": "Error deleting account",
+    "loadingError": "Error loading profile",
+    "dangerZone": "Danger zone",
+    "dangerDesc": "Deleting your account is irreversible. All your personal data, preferences, and history will be permanently erased from our servers.",
+    "deleteAccount": "Delete my account",
+    "deleteConfirm": "Are you sure you want to delete your account?",
+    "deleting": "Deleting...",
+    "confirm": "Confirm"
+  },
+  "projectDetail": {
+    "projects": "Projects",
+    "project": "Project",
+    "loading": "Loading...",
+    "notFound": "Project not found",
+    "notFoundDesc": "The requested project does not exist or you don't have access to it.",
+    "backToProjects": "Back to projects",
+    "createdOn": "Created on",
+    "edit": "Edit",
+    "delete": "Delete",
+    "destination": "Destination",
+    "country": "Country",
+    "cityId": "City (ID)",
+    "generalInfo": "General information",
+    "objective": "Objective",
+    "notDefined": "Not defined",
+    "travelType": "Travel type",
+    "departureDate": "Departure date",
+    "notDefinedFem": "Not defined",
+    "expectedDuration": "Expected duration",
+    "months": "{{count}} months",
+    "less6months": "Less than 6 months",
+    "6to12months": "6 to 12 months",
+    "1to3years": "1 to 3 years",
+    "more3years": "More than 3 years",
+    "priorities": "Priorities",
+    "projectStatus": "Project status",
+    "housingBudget": "Housing Budget",
+    "perMonth": "estimated per month",
+    "support": "Support",
+    "supportDesc": "You requested personalized support for this project. An advisor will contact you soon.",
+    "deleteTitle": "Delete project?",
+    "deleteDesc": "Are you sure you want to delete this project? This action is irreversible and all associated data will be lost.",
+    "cancel": "Cancel",
+    "deleteForever": "Delete permanently",
+    "statusPlanning": "Planning",
+    "statusActive": "Active",
+    "statusCompleted": "Completed",
+    "statusCancelled": "Cancelled",
+    "statusOnHold": "On hold",
+    "objectiveWork": "Work",
+    "objectiveStudy": "Study",
+    "objectiveRetirement": "Retirement",
+    "objectiveAdventure": "Adventure",
+    "objectiveFamilyReunion": "Family reunion",
+    "objectiveOther": "Other",
+    "travelAlone": "Alone",
+    "travelCouple": "As a couple",
+    "travelFamily": "With family",
+    "travelFriends": "With friends",
+    "travelOther": "Other"
+  },
+  "categoryGrid": {
+    "title": "Explore our services",
+    "subtitle": "Everything you need for a successful expatriation",
+    "emploi": {
+      "title": "Employment",
+      "subtitle": "FIND A JOB",
+      "description": "Explore professional opportunities in your destination country and get advice for your job search.",
+      "cta": "See job offers"
+    },
+    "logement": {
+      "title": "Housing",
+      "subtitle": "EXPLORE HOUSING",
+      "description": "Find the ideal housing based on your budget and preferences in your new city.",
+      "cta": "Explore housing"
+    },
+    "transport": {
+      "title": "Transport",
+      "subtitle": "GET AROUND EASILY",
+      "description": "Discover the available means of transportation and plan your travels in your new country.",
+      "cta": "See transport info"
+    },
+    "sante": {
+      "title": "Health",
+      "subtitle": "HEALTHCARE SYSTEM",
+      "description": "Learn about the local healthcare system, insurance and necessary medical procedures.",
+      "cta": "Learn more about health"
+    },
+    "demarches": {
+      "title": "Administrative help",
+      "subtitle": "PROCEDURES & PAPERWORK",
+      "description": "Simplify your administrative procedures with our guides and advice for your official documents.",
+      "cta": "See procedures"
+    }
+  },
+  "costOfLivingTab": {
+    "categories": {
+      "salary": "Salary",
+      "housing": "Housing",
+      "restaurants": "Restaurants",
+      "food": "Groceries",
+      "transportation": "Transportation",
+      "utilities": "Utilities & Internet",
+      "clothing": "Clothing",
+      "childcare": "Childcare",
+      "sports": "Sports & Leisure"
+    },
+    "market": {
+      "milk1L": "Milk (1L)",
+      "bread500g": "Bread (500g)",
+      "eggs12": "Eggs (x12)",
+      "rice1kg": "Rice (1kg)",
+      "cheese1kg": "Cheese (1kg)",
+      "chicken1kg": "Chicken (1kg)",
+      "beef1kg": "Beef (1kg)",
+      "apple1kg": "Apples (1kg)",
+      "banana1kg": "Bananas (1kg)",
+      "orange1kg": "Oranges (1kg)",
+      "tomato1kg": "Tomatoes (1kg)",
+      "potato1kg": "Potatoes (1kg)",
+      "onion1kg": "Onions (1kg)",
+      "lettuce": "Lettuce",
+      "water15L": "Water (1.5L)",
+      "wine": "Bottle of wine",
+      "domesticBeer": "Domestic beer (0.5L)",
+      "importedBeer": "Imported beer (0.33L)",
+      "cigarettes": "Cigarettes (20)"
+    },
+    "salary": {
+      "averageMonthlySalary": "Average monthly net salary",
+      "mortgageRate": "Mortgage rate (%)",
+      "monthlyBudget": "Estimated monthly budget",
+      "perMonth": "/mo",
+      "min": "Min:",
+      "max": "Max:"
+    },
+    "housing": {
+      "rental": "Rental",
+      "oneBedCityCenter": "1 bedroom – City center",
+      "oneBedOutside": "1 bedroom – Outside center",
+      "threeBedCityCenter": "3 bedrooms – City center",
+      "threeBedOutside": "3 bedrooms – Outside center",
+      "buy": "Purchase (price/sqm)",
+      "cityCenter": "City center",
+      "outsideCenter": "Outside center"
+    },
+    "restaurants": {
+      "inexpensiveMeal": "Inexpensive meal",
+      "midRange": "Mid-range restaurant (2 people)",
+      "mcMeal": "McMeal / Fast-food combo",
+      "cappuccino": "Cappuccino",
+      "cocaCola": "Coca-Cola (0.33L)",
+      "domesticBeer": "Domestic beer (0.5L)",
+      "importedBeer": "Imported beer (0.33L)"
+    },
+    "foodNoData": "Data not available",
+    "transportation": {
+      "publicTransport": "Public transport",
+      "monthlyPass": "Monthly pass",
+      "oneWayTicket": "One-way ticket",
+      "taxi": "Taxi",
+      "taxiStart": "Initial fare",
+      "perKm": "Per km",
+      "waitingHour": "Waiting (1h)",
+      "personal": "Personal vehicle",
+      "gasoline": "Gasoline (1L)",
+      "newCar": "New car (VW Golf or equiv.)"
+    },
+    "utilities": {
+      "basic85m2": "Monthly utilities (85m²)",
+      "internet": "Internet (60 Mbps+)",
+      "mobileMinute": "Mobile minute (prepaid)"
+    },
+    "clothing": {
+      "jeans": "Jeans (Levi's or similar)",
+      "summerDress": "Summer dress (Zara or similar)",
+      "leatherShoes": "Leather shoes",
+      "runningShoes": "Running shoes (Nike, Adidas…)"
+    },
+    "childcare": {
+      "preschool": "Preschool / Kindergarten (monthly)",
+      "primarySchool": "Private primary school (yearly)"
+    },
+    "sports": {
+      "gym": "Gym membership",
+      "cinema": "Movie ticket",
+      "tennis": "Tennis court (1h)"
+    },
+    "empty": {
+      "title": "Data unavailable",
+      "description": "Cost of living data is not yet available for this country."
+    },
+    "nationalSummary": "National summary",
+    "avgRent": "Average rent (1 bedroom, city center):",
+    "citiesReferenced_one": "{{count}} city referenced",
+    "citiesReferenced_other": "{{count}} cities referenced",
+    "capital": "Capital"
+  },
+  "globalSearch": {
+    "trigger": "Search…",
+    "placeholder": "Search destinations, services, guides…",
+    "quickActions": "Quick actions",
+    "noResults": "No results for \"{{query}}\"",
+    "error": "Search error. Please try again.",
+    "quick": {
+      "destinations": "Explore destinations",
+      "services": "View all services",
+      "forum": "Go to forum",
+      "comparison": "Compare countries"
+    },
+    "categories": {
+      "country": "Countries",
+      "city": "Cities",
+      "guide": "Guides",
+      "checklist": "Checklists",
+      "resource": "Resources",
+      "forum": "Forum",
+      "procedure": "Procedures",
+      "service": "Services",
+      "faq": "Frequently asked questions"
+    },
+    "footer": {
+      "navigate": "navigate",
+      "open": "open",
+      "close": "close"
+    },
+    "faq": {
+      "visa": {
+        "question": "How to obtain a work visa?",
+        "answer": "Requirements vary by country. Check the procedures section of your destination for specific details."
+      },
+      "bankAccount": {
+        "question": "How to open a bank account abroad?",
+        "answer": "Most countries require proof of address and a residence permit. Some online banks simplify the process."
+      },
+      "costOfLiving": {
+        "question": "What is the cost of living in a country?",
+        "answer": "Use our cost of living comparison tool to compare prices between cities and countries."
+      },
+      "housing": {
+        "question": "How to find housing abroad?",
+        "answer": "Use our housing service to discover local platforms, average prices and tips by country."
+      },
+      "healthcare": {
+        "question": "How does the healthcare system work?",
+        "answer": "Each country has its own system. Check our health section for details on insurance and care."
+      },
+      "jobSearch": {
+        "question": "How to find a job abroad?",
+        "answer": "Discover growing sectors, job platforms and country-specific CV tips."
+      },
+      "language": {
+        "question": "What language level is required?",
+        "answer": "The required level depends on the country and sector. Check the employment notes for your destination."
+      },
+      "transport": {
+        "question": "How to get around in a new country?",
+        "answer": "Discover transport networks, subscriptions and driving rules in our transport section."
+      }
+    }
+  },
+  "currencies": {
+    "EUR": "Euro",
+    "USD": "US Dollar",
+    "GBP": "British Pound",
+    "CHF": "Swiss Franc",
+    "JPY": "Japanese Yen",
+    "CAD": "Canadian Dollar"
+  },
+  "popularDestinations": {
+    "title": "Popular Destinations",
+    "subtitle": "The most popular countries among our expat community",
+    "viewAll": "View all destinations",
+    "japan": {
+      "name": "Japan",
+      "description": "Between tradition and innovation, Japan offers an exceptional quality of life and a dynamic tech job market."
+    },
+    "usa": {
+      "name": "United States",
+      "description": "The land of all opportunities. High salaries, startup ecosystem and unmatched cultural diversity."
+    },
+    "switzerland": {
+      "name": "Switzerland",
+      "description": "Discover professional opportunities in an exceptional Alpine setting. Attractive salaries and incomparable quality of life."
+    }
+  },
+  "onboardingFooter": {
+    "legalNotice": "Legal Notice",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "copyright": "© 2025 SkyWalk. All rights reserved."
+  },
+  "recommendations": {
+    "urgent": "Urgent",
+    "important": "Important",
+    "todo": "To do",
+    "categoryProfile": "Profile",
+    "categoryLanguage": "Language",
+    "categoryVisa": "Visa"
+  },
+  "defaultUser": {
+    "name": "SkyWalk User"
+  },
+  "healthMeta": {
+    "france": {
+      "systemType": "Mixed",
+      "systemLabel": "Social security + supplementary",
+      "alertTitle": "French Social Security",
+      "alertText": "Social Security covers 70% of medical costs. A supplementary health plan (~€70/month) covers the remaining costs. Long-term conditions (ALD) are fully covered at 100%."
+    },
+    "usa": {
+      "systemType": "Private",
+      "systemLabel": "Private insurance (employer-based)",
+      "alertTitle": "American system — high costs",
+      "alertText": "No universal coverage. Health insurance is usually tied to employer. Marketplace (ACA): ~$450/month on average. Uninsured care is extremely expensive. Visit healthcare.gov."
+    },
+    "japan": {
+      "systemType": "Public",
+      "systemLabel": "National Health Insurance (NHI)",
+      "alertTitle": "National Health Insurance (国民健康保険)",
+      "alertText": "Health insurance is mandatory in Japan. Residents pay ~30% of care (70% reimbursed). NHI costs about ¥25,000/month. Dental and optical care partially covered."
+    },
+    "switzerland": {
+      "systemType": "Mixed",
+      "systemLabel": "Mandatory LAMal + supplementary",
+      "alertTitle": "Swiss system — mandatory LAMal",
+      "alertText": "Basic health insurance (LAMal) is MANDATORY for all residents. Among the highest premiums in Europe (~393 CHF/month). Dental and optical care NOT covered by LAMal."
+    }
+  },
+  "onboardingLegacy": {
+    "languageLevels": {
+      "A1": "A1 - Beginner",
+      "A2": "A2 - Elementary",
+      "B1": "B1 - Intermediate",
+      "B2": "B2 - Upper Intermediate",
+      "C1": "C1 - Advanced",
+      "C2": "C2 - Mastery"
+    },
+    "status": {
+      "student": "Student",
+      "employee": "Employee",
+      "self_employed": "Self-employed",
+      "unemployed": "Job seeker",
+      "retired": "Retired",
+      "other": "Other"
+    },
+    "travelParty": {
+      "alone": "Alone",
+      "couple": "As a couple",
+      "family": "With family",
+      "friends": "With friends"
+    },
+    "goals": {
+      "studies": "Studies",
+      "work": "Work",
+      "discovery": "Discovery",
+      "family": "Family",
+      "internship": "Internship",
+      "other": "Other"
+    },
+    "stayDuration": {
+      "less_6_months": "Less than 6 months",
+      "6_12_months": "6 to 12 months",
+      "1_3_years": "1 to 3 years",
+      "more_3_years": "More than 3 years"
+    },
+    "stepsDone": {
+      "school_registration": "School registration",
+      "housing_search": "Housing search",
+      "job_search": "Job search",
+      "visa_application": "Visa application",
+      "other": "Other",
+      "none": "No steps taken"
+    },
+    "priorities": {
+      "housing": "Housing",
+      "employment": "Employment",
+      "transport": "Transport",
+      "admin_help": "Administrative help",
+      "health": "Health",
+      "social_integration": "Social integration"
+    },
+    "steps": {
+      "destination": "Destination",
+      "profile": "Profile",
+      "objective": "Objective",
+      "preparation": "Preparation",
+      "needs": "Needs",
+      "summary": "Summary"
+    }
+  },
+  "emploiData": {
+    "demand": {
+      "veryHigh": "Very high",
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    },
+    "sectors": {
+      "france": { "techDev": "Tech & Development", "health": "Healthcare", "logistics": "Logistics & Transport", "construction": "Construction", "hospitality": "Hospitality & Catering" },
+      "uk": { "techEng": "Tech & Engineering", "finance": "Finance & Banking", "healthcare": "Healthcare (NHS)", "marketing": "Marketing & Communications", "construction": "Construction" },
+      "ch": { "finance": "Finance & Insurance", "it": "IT & Cybersecurity", "health": "Healthcare (doctors, nurses)", "pharma": "Pharmaceuticals", "watchmaking": "Watchmaking" },
+      "us": { "techSoftware": "Tech & Software", "healthMedical": "Health & Medical", "finance": "Finance", "dataScience": "Data Science & AI", "engineering": "Engineering" },
+      "ca": { "techIt": "Tech & IT", "health": "Healthcare", "construction": "Construction & Trades", "finance": "Finance", "naturalRes": "Natural Resources" },
+      "de": { "autoEng": "Automotive Engineering", "itSoftware": "IT & Software", "healthCare": "Healthcare & Nursing", "industry": "Industry & Manufacturing", "logistics": "Logistics" },
+      "au": { "mining": "Mining & Resources", "techIt": "Tech & IT", "healthcare": "Healthcare", "construction": "Construction", "agriculture": "Agriculture" },
+      "jp": { "itEng": "IT & Engineering", "automotive": "Automotive", "finance": "Finance", "teaching": "Teaching (English)", "tourism": "Tourism & Hospitality" }
+    },
+    "contracts": {
+      "france": { "cdi": "CDI (Permanent Contract)", "cdd": "CDD (Fixed-term Contract)", "interim": "Temporary Work (Interim)", "freelance": "Freelance / Self-employed", "alternance": "Apprenticeship / Work-study" },
+      "uk": { "permanent": "Permanent contract", "fixedTerm": "Fixed-term contract", "temporary": "Temporary contract", "zeroHours": "Zero-hours contract (Flexible hours)", "selfEmployed": "Self-employed / Contractor" },
+      "ch": { "cdi": "CDI (Unlimited contract)", "cdd": "CDD (Fixed-term)", "trial": "Extended trial contract", "freelance": "Freelance (self-employed)", "temporary": "Temporary (via agency)" },
+      "us": { "atWill": "At-will employment (termination by either party)", "fullTime": "Full-time (permanent equivalent)", "partTime": "Part-time", "contractor": "Independent contractor (freelance)", "internship": "Internship (paid or unpaid)" },
+      "ca": { "permanentFull": "Permanent full-time", "permanentPart": "Permanent part-time", "fixedTerm": "Fixed-term contract", "casual": "Casual / Temporary", "selfEmployed": "Self-employed / Contractor" },
+      "de": { "unbefristet": "Unbefristeter Vertrag (Permanent)", "befristet": "Befristeter Vertrag (Fixed-term)", "minijob": "Minijob (≤€520/month, reduced charges)", "werkvertrag": "Werkvertrag (Service contract)", "freiberufler": "Freiberufler (Self-employed)" },
+      "au": { "permanent": "Permanent (full-time / part-time)", "fixedTerm": "Fixed-term contract", "casual": "Casual (flexible hours, +25% loading)", "contractor": "Contractor / ABN (self-employed)", "workingHoliday": "Working Holiday (visa 417/462)" },
+      "jp": { "seishain": "Seishain (正社員) — Permanent", "keiyaku": "Keiyaku-shain (契約社員) — Fixed-term", "haken": "Haken-shain (派遣社員) — Temporary", "partTime": "Part-time (パート / アルバイト)", "freelance": "Freelance (フリーランス)" }
+    },
+    "platformTypes": {
+      "publicService": "Public service", "generalist": "Generalist", "executives": "Executives", "techStartups": "Tech & Startups",
+      "proNetwork": "Professional network", "marketLeader": "Market leader", "publicSector": "Public sector",
+      "comprehensive": "Comprehensive", "government": "Government", "leaderRomandie": "Leader Romandie",
+      "aggregator": "Aggregator", "nationalLeader": "National leader", "specializedRecruitment": "Specialized recruitment",
+      "reviewsJobs": "Reviews + Jobs", "matchingAI": "AI Matching", "federalGov": "Federal government",
+      "canadaOnly": "Canada only", "recruitment": "Recruitment", "leaderGermany": "Leader Germany",
+      "proNetworkDACH": "Professional network DACH", "international": "International",
+      "leaderAustralia": "Leader Australia", "foreignersJapan": "Foreigners in Japan", "bilingualIntl": "Bilingual/International"
+    },
+    "permits": {
+      "france": {
+        "0": "EU citizens: no work permit required",
+        "1": "Non-EU: work authorization MANDATORY (DIRECCTE)",
+        "2": "Talent Passport: qualified profiles (master's degree + salary ≥ €53,836/yr)",
+        "3": "Long-stay work visa: contract + validated authorization",
+        "4": "WHV (Working Holiday Visa): 18-30 years, partner countries, 1-2 years"
+      },
+      "uk": {
+        "0": "EU citizens post-Brexit: Skilled Worker visa required",
+        "1": "Skilled Worker visa: minimum salary £38,700/yr (£29,000 for some roles)",
+        "2": "Health and Care Worker visa: NHS and care sector",
+        "3": "Graduate visa: 2 years for UK graduates",
+        "4": "Youth Mobility Scheme: 18-30 years, partner countries, 2 years"
+      },
+      "ch": {
+        "0": "Permit L (short stay): contracts < 1 year",
+        "1": "Permit B (annual residence): contracts > 1 year",
+        "2": "Permit C (permanent residence): after 5-10 years",
+        "3": "Permit G (cross-border): weekly return home",
+        "4": "Documents: Contract, Passport, Criminal record, Full CV"
+      },
+      "us": {
+        "0": "H-1B: skilled workers (annual lottery, 65K + 20K master's)",
+        "1": "L-1: intra-company transfer",
+        "2": "O-1: extraordinary ability (arts, sciences, business)",
+        "3": "Green Card: permanent residence (employer or family sponsorship)",
+        "4": "OPT/CPT: internships for international students (F-1 visa)"
+      },
+      "ca": {
+        "0": "Express Entry program: skilled immigration (CRS points)",
+        "1": "LMIA: employer authorization + closed work permit",
+        "2": "WHV (Working Holiday Visa): 18-35 years, 1-2 years",
+        "3": "Open work permit: accompanying spouse",
+        "4": "Provincial Nominee Program (PNP): provincial nomination"
+      },
+      "de": {
+        "0": "EU citizens: free movement, no permit needed",
+        "1": "EU Blue Card: recognized degree + salary ≥ €45,300/yr (or €41,042 for shortage occupations)",
+        "2": "Job seeker residence permit: 6 months to search (recognized degree required)",
+        "3": "Artist/freelance visa: self-employed (section §21 AufenthG)",
+        "4": "Aufenthaltserlaubnis: residence permit tied to employer"
+      },
+      "au": {
+        "0": "Skilled Worker visa (subclass 482): employer sponsorship, 2-4 years",
+        "1": "Skilled Independent visa (subclass 189): points-based, permanent residence",
+        "2": "Working Holiday visa (subclass 417/462): 18-30/35 years, 1 year",
+        "3": "Employer Nomination Scheme (subclass 186): permanent residence",
+        "4": "Skills Assessment mandatory by sector-specific body"
+      },
+      "jp": {
+        "0": "Categorical work visa: engineer, humanities, business management",
+        "1": "Highly Skilled Professional visa: points system (70+ points)",
+        "2": "Specified Skilled Worker (特定技能): 14 shortage sectors",
+        "3": "Working Holiday: 18-30 years, partner countries, 1 year",
+        "4": "Employer sponsorship MANDATORY for all work visas"
+      }
+    },
+    "notes": {
+      "france": {
+        "0": "French essential (B2 minimum) except some tech startups",
+        "1": "CV + cover letter mandatory, professional photo recommended",
+        "2": "Trial period: 2-4 months negotiable, free termination without compensation",
+        "3": "Unemployment: 57% of salary for 18-24 months if sufficient contributions",
+        "4": "35h legal workweek with possibility of overtime bonuses (+25% then +50%)"
+      },
+      "uk": {
+        "0": "Professional English essential (C1 level recommended)",
+        "1": "Anglo-Saxon CV: max 2 pages, no photo, no date of birth",
+        "2": "Right to Work check mandatory: passport + visa/BRP/settled status",
+        "3": "Notice period: 1 week to 3 months depending on contract and seniority",
+        "4": "Universal Credit: unemployment/housing aid based on income and situation"
+      },
+      "ch": {
+        "0": "Language by region: German (Zurich, Bern), French (Geneva, Lausanne), Italian (Ticino)",
+        "1": "Very high salaries BUT very high cost of living (rent, health, transport)",
+        "2": "Swiss CV: photo mandatory, detailed degrees, verified references",
+        "3": "Work permit required BEFORE applying (except EU/EFTA)",
+        "4": "Trial period: 1-3 months, termination possible with short notice"
+      },
+      "us": {
+        "0": "Professional English essential (no federal official language)",
+        "1": "Resume (not CV): 1 page max, no photo, results-oriented with numbers",
+        "2": "At-will employment: termination possible without cause in most states",
+        "3": "Health coverage often tied to employer (no universal system)",
+        "4": "Intense networking culture: LinkedIn, meetups, industry events"
+      },
+      "ca": {
+        "0": "Officially bilingual: English everywhere, French in Quebec (OQLF requires French at work)",
+        "1": "Canadian CV: 2 pages max, no photo, no age, achievement-oriented",
+        "2": "Highly structured immigration: Express Entry + PNP = main pathways",
+        "3": "Employment Insurance (EI): federal unemployment if sufficient contributions",
+        "4": "Credential recognition sometimes necessary (WES, IQAS)"
+      },
+      "de": {
+        "0": "German essential for most positions (B2-C1), English accepted in tech/startups",
+        "1": "German CV (Lebenslauf): professional photo, reverse chronological, very detailed",
+        "2": "Strong diploma culture: Anabin / KMK recognition often required",
+        "3": "High social contributions (~40% of gross) but comprehensive coverage",
+        "4": "Standard trial period: 6 months (Probezeit)"
+      },
+      "au": {
+        "0": "Professional English required (IELTS 6+ for visas)",
+        "1": "Australian CV: 2-3 pages, no photo, with referees (2 references min)",
+        "2": "Relaxed but professional culture, flexible hours common",
+        "3": "Superannuation (retirement): employer pays 11.5% on top of salary",
+        "4": "Fair Work Act: worker rights strongly protected, high minimum wage"
+      },
+      "jp": {
+        "0": "Japanese often required (JLPT N2-N1), English accepted in tech/international finance",
+        "1": "Rirekisho (履歴書): standard Japanese CV format, photo mandatory, sometimes handwritten",
+        "2": "Intense work culture: frequent overtime, teamwork paramount",
+        "3": "Seniority system (年功序列): progression tied to tenure, evolving",
+        "4": "Shūkatsu (就活): standardized recruitment season for new graduates"
+      }
+    }
+  },
+  "countryContent": {
+    "france": {
+      "emploi": {
+        "stats": {
+          "offers": "Job offers in France",
+          "avgSalary": "Average salary",
+          "unemployment": "Unemployment rate"
+        },
+        "guides": {
+          "0": {
+            "title": "Working in France (EU vs Non-EU)",
+            "steps": {
+              "0": "EU/EEA citizens: no work permit required",
+              "1": "Non-EU: work visa required (employer-sponsored)",
+              "2": "Registration with Pôle Emploi possible for job search assistance",
+              "3": "High social contributions (social security, retirement) but good protection"
+            }
+          }
+        },
+        "tips": {
+          "0": "French CV is usually 1 page, with photo",
+          "1": "Cover letter is very important",
+          "2": "Interviews are formal, formal address (vouvoiement) is the norm"
+        }
+      },
+      "logement": {
+        "stats": {
+          "rentParis": "Average rent Paris",
+          "rentLyon": "Average rent Lyon",
+          "deposit": "Security deposit"
+        },
+        "guides": {
+          "0": {
+            "title": "Renting in France",
+            "steps": {
+              "0": "Websites: SeLoger, Leboncoin, PAP (Private to Private)",
+              "1": "Complete file required: last 3 pay slips, tax notice, ID",
+              "2": "Guarantor often required (Garantme, Visale for youth/precarious)",
+              "3": "Detailed inventory on entry and exit"
+            }
+          }
+        },
+        "tips": {
+          "0": "Competition is fierce in major cities",
+          "1": "APL (Housing Allowance) available under certain conditions",
+          "2": "Home insurance is mandatory"
+        }
+      },
+      "transport": {
+        "guides": {
+          "0": {
+            "title": "Driver's license in France",
+            "steps": {
+              "0": "EU license: valid in France without any steps",
+              "1": "Non-EU license: exchange possible under bilateral agreements",
+              "2": "Otherwise: French driving test required (theory + practical)"
+            }
+          }
+        },
+        "tips": {
+          "0": "Pass Navigo (Paris): €75/month all zones",
+          "1": "TGV for long-distance travel (book in advance)",
+          "2": "Vélib' and car-sharing services available"
+        }
+      },
+      "sante": {
+        "guides": {
+          "0": {
+            "title": "French Social Security",
+            "steps": {
+              "0": "Automatic registration upon first employment",
+              "1": "Carte Vitale sent within 3-6 weeks",
+              "2": "Reimbursement: 70% consultations, 80% hospitalizations",
+              "3": "Supplementary insurance recommended (often through employer)"
+            }
+          }
+        },
+        "tips": {
+          "0": "Designated GP mandatory for better reimbursement",
+          "1": "Emergency: 15 (SAMU), public hospitals free with Carte Vitale",
+          "2": "24/7 pharmacies available in major cities"
+        }
+      },
+      "demarches": {
+        "guides": {
+          "0": {
+            "title": "Settling in France",
+            "steps": {
+              "0": "Residence permit if non-EU (prefecture)",
+              "1": "Open a bank account (RIB essential)",
+              "2": "Annual tax declaration (withholding tax)",
+              "3": "Consular registration if expatriate"
+            }
+          }
+        },
+        "documents": {
+          "0": "Passport/ID card",
+          "1": "Proof of address",
+          "2": "Birth certificate",
+          "3": "Visa (if non-EU)"
+        }
+      }
+    },
+    "usa": {
+      "emploi": {
+        "stats": {
+          "offers": "Job offers in USA",
+          "avgSalary": "Average salary",
+          "unemployment": "Unemployment rate"
+        },
+        "guides": {
+          "0": {
+            "title": "Working in the United States",
+            "steps": {
+              "0": "Visa required (H1B, L1, E2, etc.) - essential before starting",
+              "1": "Company sponsorship is often necessary",
+              "2": "Networking crucial to access the hidden job market"
+            }
+          }
+        },
+        "tips": {
+          "0": "American CV is different (no photo, limited personal info)",
+          "1": "Be direct and results-oriented"
+        }
+      },
+      "logement": {
+        "stats": {
+          "rentNYC": "Average rent NYC",
+          "rentLA": "Average rent LA"
+        }
+      }
+    },
+    "japan": {
+      "emploi": {
+        "stats": {
+          "offers": "Job offers in Japan",
+          "avgSalary": "Average salary"
+        },
+        "guides": {
+          "0": {
+            "title": "Working in Japan",
+            "steps": {
+              "0": "Work visa mandatory",
+              "1": "Japanese level JLPT N2/N1 often required",
+              "2": "Respecting corporate culture is very important"
+            }
+          }
+        }
+      },
+      "logement": {
+        "stats": {
+          "rentTokyo": "Average rent Tokyo",
+          "keyMoney": "Key Money"
+        }
+      }
+    },
+    "switzerland": {
+      "emploi": {
+        "stats": {
+          "offers": "Job offers in Switzerland",
+          "avgSalary": "Average salary"
+        },
+        "guides": {
+          "0": {
+            "title": "Working in Switzerland",
+            "steps": {
+              "0": "Work permit (L, B, C) depending on nationality and contract",
+              "1": "Very competitive market, high qualifications required",
+              "2": "Among the highest salaries in the world"
+            }
+          }
+        }
+      },
+      "logement": {
+        "stats": {
+          "rentZurich": "Average rent Zurich",
+          "rentGeneva": "Average rent Geneva"
+        }
+      }
     }
   }
 }

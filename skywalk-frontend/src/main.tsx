@@ -13,11 +13,18 @@ import {
 
 const queryClient = new QueryClient();
 
+import { CostOfLivingProvider } from './contexts/CostOfLivingContext';
+import { CurrencyProvider } from './contexts/CurrencyContext';
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <AuthProvider>
       <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
+        <CurrencyProvider>
+          <CostOfLivingProvider>
+            <RouterProvider router={router} />
+          </CostOfLivingProvider>
+        </CurrencyProvider>
       </QueryClientProvider>
     </AuthProvider>
   </React.StrictMode>

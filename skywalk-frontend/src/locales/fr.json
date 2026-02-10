@@ -9,15 +9,41 @@
     "dashboard": "Tableau de bord",
     "projects": "Mes Projets",
     "explore": "Explorer",
+    "myProject": "Mon Projet",
     "login": "Connexion",
+    "register": "Inscription",
     "logout": "Déconnexion",
     "profile": "Mon profil",
     "myDashboard": "Mon tableau de bord"
   },
+  "countries": {
+    "france": "France",
+    "canada": "Canada",
+    "switzerland": "Suisse",
+    "germany": "Allemagne",
+    "spain": "Espagne",
+    "italy": "Italie",
+    "portugal": "Portugal",
+    "belgium": "Belgique",
+    "netherlands": "Pays-Bas",
+    "luxembourg": "Luxembourg",
+    "unitedKingdom": "Royaume-Uni",
+    "ireland": "Irlande",
+    "unitedStates": "États-Unis",
+    "australia": "Australie",
+    "japan": "Japon"
+  },
   "common": {
     "loading": "Chargement...",
     "error": "Une erreur est survenue",
+    "loadingError": "Erreur lors du chargement des données",
+    "destination": "Destination",
     "comingSoon": "Bientôt disponible",
+    "noOptions": "Aucune option disponible",
+    "edit": "Éditer",
+    "select": "Sélectionner...",
+    "reduce": "Réduire",
+    "expand": "Agrandir",
     "guestBanner": {
       "exploreFreely": "Explorez librement !",
       "signupMessage": "Créez un compte gratuit pour une expérience personnalisée avec des recommandations adaptées à votre projet d'expatriation.",
@@ -26,10 +52,17 @@
     }
   },
   "services": {
+    "guides": {
+      "sectionTitle": "Guides étape par étape",
+      "tipsTitle": "Conseils pratiques",
+      "faqTitle": "Questions fréquentes",
+      "keyFigures": "Chiffres clés"
+    },
     "indexPage": {
       "title": "Nos Outils & Services",
       "description": "Découvrez nos outils interactifs pour faciliter votre expatriation. Calculateurs, checklists et assistants personnalisés pour chaque étape de votre projet.",
-      "learnMore": "En savoir plus"
+      "learnMore": "En savoir plus",
+      "comingSoon": "À venir"
     },
     "servicePage": {
       "notFound": {
@@ -366,7 +399,271 @@
           "Renseignez-vous sur les aides à la création d'entreprise",
           "Rejoignez des incubateurs ou espaces de coworking"
         ]
+      },
+      "visa": {
+        "title": "Visa & Immigration",
+        "subtitle": "Démarches d'immigration",
+        "description": "Guides complets sur les visas, permis de séjour et démarches d'immigration pour chaque pays de destination."
+      },
+      "banque": {
+        "title": "Banque & Finance",
+        "subtitle": "Gestion financière à l'étranger",
+        "description": "Ouvrez un compte bancaire, transférez vos fonds et gérez vos finances dans votre nouveau pays."
+      },
+      "demarches-admin": {
+        "title": "Procédures administratives",
+        "subtitle": "Formalités et papiers officiels",
+        "description": "Accompagnement pour toutes vos démarches administratives : état civil, permis, inscriptions et déclarations."
       }
+    },
+    "stats": {
+      "common": {
+        "loading": "Chargement des données {{service}} pour {{city}}…",
+        "errorLoad": "Impossible de charger les données {{service}} pour {{city}}.",
+        "retryLater": "Veuillez réessayer plus tard.",
+        "source": "Source :",
+        "sourceNumbeo": "Données Numbeo pour",
+        "pricesConverted": "Prix convertis en {{symbol}} ({{from}} → {{to}}).",
+        "pricesIndicative": "Les prix sont indicatifs et varient selon la zone et la période.",
+        "pricesIndicativeNeighborhood": "Les prix sont indicatifs et varient selon le quartier.",
+        "lastUpdated": "MàJ :",
+        "perMonth": "/mois",
+        "perYear": "/an",
+        "perLiter": "/L",
+        "monthly": "Mensuel",
+        "min": "min",
+        "max": "max"
+      },
+      "transport": {
+        "title": "Transport — {{city}}",
+        "gasolinePrice": "Prix essence",
+        "transportPass": "Pass transport",
+        "singleTicket": "Ticket simple",
+        "monthlyFuelBudget": "Budget essence/mois",
+        "fuelEstimate": "100 km/sem, 7L/100km",
+        "publicTransport": "Transports en commun",
+        "singleTicketLabel": "Ticket aller simple",
+        "monthlyPassLabel": "Pass mensuel",
+        "taxi": "Taxi",
+        "taxiStart": "Prise en charge",
+        "taxiPerKm": "Prix au km",
+        "taxiWaiting": "Attente (1h)",
+        "personalVehicle": "Véhicule personnel",
+        "gasoline1L": "Essence (1 litre)",
+        "newCar": "Voiture neuve (VW Golf)",
+        "monthlyComparison": "Comparaison mensuelle",
+        "publicTransportEmoji": "🚇 Transports en commun",
+        "carEmoji": "🚗 Voiture (essence seule)",
+        "publicCheaper": "Les transports en commun sont ~{{pct}}% moins chers que la voiture (essence seule).",
+        "carCheaper": "La voiture (essence seule) est ~{{pct}}% moins chère que les transports en commun."
+      },
+      "health": {
+        "title": "Santé — {{city}}",
+        "system": "Système",
+        "viaTaxes": "Via impôts",
+        "primeLAMal": "Prime LAMal",
+        "healthInsurance": "Assurance santé",
+        "publicContribution": "Cotisation publique",
+        "reimbursement": "Remboursement",
+        "averageCoverage": "Prise en charge moyenne",
+        "totalHealthCost": "Coût total santé",
+        "ofAverageSalary": "{{pct}}% du salaire moyen",
+        "insuranceCosts": "Coûts d'assurance",
+        "totalInsurance": "Total assurance",
+        "totalAnnual": "Total annuel",
+        "economicContext": "Contexte économique",
+        "averageNetSalary": "Salaire moyen net",
+        "averageMonthlyBudget": "Budget mensuel moyen",
+        "preschool": "Crèche / maternelle",
+        "healthSalaryRatio": "Part santé / salaire",
+        "sourceExtra": "Données Numbeo pour {{city}} + informations systèmes de santé officielles.",
+        "insuranceCostsNote": "Les coûts d'assurance sont des moyennes nationales et varient selon le profil.",
+        "lamalBase": "Prime LAMal (base)",
+        "privateInsurance": "Assurance privée",
+        "nhiInsurance": "Assurance NHI",
+        "socialSecurity": "Cotisation Sécurité sociale",
+        "optionalComplementary": "Complémentaire (optionnelle)",
+        "complementaryMutual": "Mutuelle complémentaire"
+      },
+      "logement": {
+        "title": "Logement — {{city}}",
+        "center": "Centre",
+        "suburb": "Périphérie",
+        "rent1bedroom": "Loyer 1 chambre",
+        "rent3bedrooms": "Loyer 3 chambres",
+        "utilities": "Charges (85m²)",
+        "utilitiesDesc": "élec, eau, chauffage",
+        "centerCity": "centre-ville / mois",
+        "monthlyRents": "Loyers mensuels",
+        "rent1BCenter": "1 chambre — centre-ville",
+        "rent1BOutside": "1 chambre — hors centre",
+        "rent3BCenter": "3 chambres — centre-ville",
+        "rent3BOutside": "3 chambres — hors centre",
+        "buyAndUtilities": "Achat & Charges",
+        "pricePerSqmCenter": "Prix/m² — centre-ville",
+        "pricePerSqmOutside": "Prix/m² — hors centre",
+        "utilitiesLabel": "Charges (85m²)",
+        "internet": "Internet",
+        "salaryContext": "Contexte salarial",
+        "avgNetSalary": "Salaire moyen net à {{city}} :",
+        "rentPercentOfSalary": "Le loyer 1 chambre centre représente environ {{pct}}% du salaire moyen."
+      },
+      "emploi": {
+        "title": "Marché de l'emploi — {{city}}",
+        "realTimeData": "Données en temps réel",
+        "availableOffers": "Offres disponibles",
+        "viaAdzuna": "Via Adzuna API",
+        "unavailableCountry": "Non disponible pour ce pays",
+        "averageSalary": "Salaire moyen",
+        "netPerMonth": "Net par mois",
+        "unemploymentRate": "Taux de chômage",
+        "estimate2025": "Estimation 2025",
+        "legalHours": "Heures légales",
+        "paidLeave": "{{count}} jours congés payés",
+        "recentOffers": "Offres d'emploi récentes",
+        "totalOffers": "{{count}} offres au total",
+        "today": "Aujourd'hui",
+        "yesterday": "Hier",
+        "daysAgo": "Il y a {{count}} jours",
+        "weeksAgo": "Il y a {{count}} sem.",
+        "monthsAgo": "Il y a {{count}} mois",
+        "remote": "Remote",
+        "inDemandSectors": "Secteurs les plus demandés",
+        "avgSalaryLabel": "Salaire moy. :",
+        "contractTypes": "Types de contrats",
+        "searchPlatforms": "Plateformes de recherche",
+        "workPermit": "Permis de travail",
+        "goodToKnow": "À savoir"
+      }
+    },
+    "serviceResults": {
+      "searchIn": "Rechercher dans \"{{title}}\"",
+      "exploreResults": "Explorez les résultats",
+      "useSearchEngine": "Utilisez notre moteur de recherche pour trouver des ressources, offres et informations spécifiques à {{title}}.",
+      "goToSearch": "Accéder à la recherche",
+      "viewRecent": "Voir les plus récents",
+      "viewPopular": "Voir les plus populaires"
+    },
+    "countrySelector": {
+      "destination": "Destination",
+      "general": "Général",
+      "generalInfo": "Informations générales"
+    },
+    "healthTools": {
+      "averageCosts": "Coûts moyens pour {{city}}. Varient selon le profil, l'âge et la couverture choisie.",
+      "monthlyInsurance": "Assurance mensuelle",
+      "annualInsurance": "Assurance annuelle",
+      "consultations": "Consultations, soins, pharmacie",
+      "totalEstimated": "Total estimé",
+      "annualBudget": "Budget santé annuel — {{city}}",
+      "estimateExpenses": "Estimez vos dépenses santé",
+      "yourProfile": "Votre profil",
+      "young": "18-30 ans (bonne santé)",
+      "adult": "30-60 ans (santé moyenne)",
+      "senior": "60+ ans",
+      "swissWarning": "⚠️ Suisse: Assurance maladie LAMal OBLIGATOIRE. Primes parmi les plus élevées d'Europe.",
+      "usaWarning": "⚠️ USA: Pas de couverture universelle. Les soins sans assurance sont extrêmement coûteux.",
+      "budgetEstimateNote": "Budget estimé sans conditions préexistantes — {{city}}."
+    },
+    "transportTools": {
+      "driverLicense": "Permis de conduire",
+      "checkProcedures": "Vérifiez les démarches nécessaires",
+      "originCountry": "Pays d'origine de votre permis",
+      "selectCountry": "Sélectionnez un pays",
+      "france": "France",
+      "canada": "Canada",
+      "usa": "États-Unis",
+      "uk": "Royaume-Uni",
+      "exchangePossible": "Échange possible",
+      "exchangeDesc": "Vous pouvez échanger votre permis {{country}} sans repasser les examens.",
+      "processingTime": "Délai de traitement",
+      "processingTimeValue": "4-6 semaines",
+      "temporaryValidity": "Validité temporaire",
+      "temporaryValidityValue": "12 mois",
+      "internationalLicense": "Permis international",
+      "accepted": "✓ Accepté",
+      "todoNote": "Compléter avec les vraies règles d'échange par pays dans transport-data.ts",
+      "vehiclePurchase": "Achat de véhicule",
+      "purchaseDocuments": "Documents nécessaires pour l'achat",
+      "preparation": "Préparation",
+      "validId": "Pièce d'identité valide",
+      "proofOfAddress": "Justificatif de domicile",
+      "validLicense": "Permis de conduire valide",
+      "carInsurance": "Preuve d'assurance automobile",
+      "registration": "Certificat d'immatriculation",
+      "technicalInspection": "Contrôle technique (si occasion)"
+    },
+    "destinationDetail": {
+      "backToDestinations": "Retour aux destinations",
+      "citiesAvailable": "{{count}} villes disponibles",
+      "about": "À propos",
+      "defaultDescription": "Découvrez {{country}}, une destination de choix pour les expatriés. Profitez d'une qualité de vie exceptionnelle et de nombreuses opportunités professionnelles.",
+      "whyChoose": "Pourquoi choisir {{country}} ?",
+      "highlights": {
+        "qualityOfLife": "Qualité de vie élevée",
+        "careerOpportunities": "Opportunités de carrière",
+        "culturalRichness": "Richesse culturelle",
+        "healthcareSystem": "Système de santé performant"
+      },
+      "mainCities": "Villes principales",
+      "noCities": "Aucune ville répertoriée pour le moment.",
+      "discoverCity": "Découvrez la vie à {{city}}...",
+      "viewCity": "Voir la ville",
+      "professionalOpportunities": "Opportunités professionnelles",
+      "totalOffers": "{{count}} offres au total",
+      "noOffers": "Aucune offre trouvée pour le moment.",
+      "searchOffers": "Rechercher des offres",
+      "communityDiscussion": "Discussion communautaire",
+      "subjects": "{{count}} sujets",
+      "pinned": "Épinglé",
+      "question": "Question",
+      "testimony": "Témoignage",
+      "advice": "Conseil",
+      "discussion": "Discussion",
+      "anonymous": "Anonyme",
+      "views": "{{count}} vues",
+      "replies": "{{count}} réponses",
+      "noTopics": "Aucun sujet de discussion pour {{country}} pour le moment.",
+      "accessForum": "Accéder au forum",
+      "guidesAndResources": "Guides et ressources",
+      "guidesDescription": "Consultez nos {{count}} guides pour votre installation en {{country}}.",
+      "viewResources": "Voir les ressources",
+      "statistics": "Statistiques",
+      "members": "Membres",
+      "jobOffers": "Offres d'emploi",
+      "forumTopics": "Sujets forum",
+      "migrationStats": {
+        "title": "Migration & Immigration",
+        "foreignPop": "Population étrangère résidente",
+        "inflows": "Entrées annuelles",
+        "outflows": "Sorties annuelles",
+        "asylum": "Demandeurs d'asile",
+        "nationality": "Acquisitions de nationalité",
+        "source": "Source : OCDE – Base de données sur les migrations internationales"
+      },
+      "readyToGo": "Prêt à partir ?",
+      "startProject": "Commencez votre projet d'expatriation en {{country}} dès aujourd'hui.",
+      "findJob": "Trouver un emploi",
+      "discussOnForum": "Discuter sur le forum",
+      "createProjectTitle": "Créez votre projet d'expatriation",
+      "createProjectDesc": "Rejoignez {{memberCount}} expatriés en {{country}} et accédez à du contenu personnalisé.",
+      "createFreeAccount": "Créer mon compte gratuitement",
+      "benefits": {
+        "personalizedTracking": "Suivi personnalisé de votre projet",
+        "exclusiveJobs": "Accès aux offres d'emploi exclusives",
+        "communityConnection": "Connexion avec la communauté locale",
+        "detailedGuides": "Guides et ressources détaillées"
+      },
+      "createProject": "Créer mon projet d'expatriation",
+      "viewAllOffers": "Voir toutes les offres ({{count}})",
+      "viewAllTopics": "Voir tous les sujets ({{count}})",
+      "overview": "Vue d'ensemble",
+      "cities": "Villes",
+      "costOfLiving": "Coût de la vie",
+      "opportunities": "Opportunités",
+      "forum": "Forum",
+      "community": "Communauté",
+      "resources": "Ressources"
     },
     "tools": {
       "title": "Boîte à outils",
@@ -439,7 +736,9 @@
         "perYear": "/ an",
         "recommendedBudget": "Budget recommandé",
         "maxPerMonth": "par mois maximum",
-        "info": "Ce calcul se base sur un taux d'effort de 33%."
+        "info": "Ce calcul se base sur un taux d'effort de 33%.",
+        "converted": "Converti de {{from}} → {{to}}",
+        "countryWarning": "En {{country}}, les propriétaires peuvent exiger des garanties supplémentaires."
       },
       "medicalChecklist": {
         "title": "Dossier médical",
@@ -468,6 +767,13 @@
         "housing": "Logement",
         "studies": "Études",
         "health": "Santé",
+        "other": "Autre"
+      },
+      "positions": {
+        "developer": "Développeur",
+        "designer": "Designer",
+        "manager": "Manager",
+        "sales": "Commercial",
         "other": "Autre"
       }
     },
@@ -501,14 +807,14 @@
       "title": "Destinations populaires",
       "subtitle": "Découvrez les pays les plus prisés par notre communauté",
       "viewAll": "Voir toutes les destinations",
-      "canada": {
-        "description": "Un pays d'accueil chaleureux avec d'excellentes opportunités d'immigration et un marché du travail dynamique."
+      "japon": {
+        "description": "Entre tradition et innovation, le Japon offre une qualité de vie exceptionnelle et un marché du travail dynamique dans la tech."
       },
-      "france": {
-        "description": "La France attire de nombreux expatriés avec sa culture riche, son système de santé de qualité et ses opportunités professionnelles variées."
+      "etats-unis": {
+        "description": "Le pays de toutes les opportunités. Salaires élevés, écosystème startup et diversité culturelle incomparable."
       },
-      "portugal": {
-        "description": "Climat méditerranéen, coût de la vie abordable et communauté française dynamique vous attendent."
+      "suisse": {
+        "description": "Découvrez les opportunités professionnelles dans un cadre alpin exceptionnel. Salaires attractifs et qualité de vie incomparable."
       }
     }
   },
@@ -622,12 +928,109 @@
       "publish": "Publier le topic",
       "publishing": "Publication..."
     },
-    "comingSoon": "Fonctionnalité à venir !"
+    "comingSoon": "Fonctionnalité à venir !",
+    "postDetail": {
+      "loading": "Chargement du topic...",
+      "notFound": "Topic introuvable",
+      "notFoundDesc": "Le topic demandé n'existe pas",
+      "backToForum": "Retour au forum",
+      "by": "Par {{name}}",
+      "edit": "Modifier",
+      "author": "Auteur",
+      "repliesCount_one": "{{count}} Réponse",
+      "repliesCount_other": "{{count}} Réponses",
+      "noReplies": "Aucune réponse pour le moment",
+      "beFirst": "Soyez le premier à répondre !",
+      "mustBeLoggedIn": "Vous devez être connecté pour répondre",
+      "contentRequired": "Le contenu est requis",
+      "contentEmpty": "Le contenu ne peut pas être vide",
+      "userIdError": "Erreur ID utilisateur",
+      "publishError": "Erreur lors de la publication",
+      "editError": "Erreur lors de la modification",
+      "confirmDelete": "Êtes-vous sûr de vouloir supprimer ce message ?",
+      "deleteError": "Erreur lors de la suppression",
+      "deleteSuccess": "Message supprimé avec succès",
+      "replySuccess": "Réponse publiée avec succès !",
+      "editSuccess": "Message modifié avec succès !",
+      "saving": "Enregistrement...",
+      "save": "Enregistrer",
+      "cancel": "Annuler",
+      "yourReply": "Votre réponse",
+      "writePlaceholder": "Écrivez votre réponse...",
+      "publishing": "Publication...",
+      "publishReply": "Publier la réponse",
+      "joinConversation": "Rejoignez la conversation",
+      "joinDesc": "Connectez-vous pour partager votre expérience, poser vos questions et échanger avec la communauté d'expatriés.",
+      "createAccount": "Créer un compte",
+      "login": "Se connecter",
+      "report": "Signaler",
+      "reportMessage": "Signaler ce message",
+      "reportTopic": "Signaler ce topic",
+      "reportTitle": "Signaler un contenu",
+      "reportReason": "Raison du signalement",
+      "reportDetails": "Détails (optionnel)",
+      "reportDetailsPlaceholder": "Décrivez le problème plus en détail...",
+      "reportSubmit": "Envoyer le signalement",
+      "reportSubmitting": "Envoi...",
+      "reportSuccess": "Signalement envoyé. Merci pour votre aide !",
+      "reportError": "Erreur lors du signalement",
+      "reportAlreadySubmitted": "Vous avez déjà signalé ce contenu",
+      "reportReasons": {
+        "spam": "Spam",
+        "harassment": "Harcèlement",
+        "hate_speech": "Discours haineux",
+        "inappropriate": "Contenu inapproprié",
+        "misinformation": "Désinformation",
+        "other": "Autre"
+      },
+      "moderation": {
+        "lockTopic": "Verrouiller le topic",
+        "unlockTopic": "Déverrouiller le topic",
+        "pinTopic": "Épingler le topic",
+        "unpinTopic": "Désépingler le topic",
+        "deleteTopic": "Supprimer le topic (modérateur)",
+        "deleteMessage": "Supprimer (modérateur)",
+        "locked": "🔒 Ce topic est verrouillé. Aucune nouvelle réponse n'est autorisée.",
+        "pinned": "📌 Épinglé",
+        "confirmDeleteTopic": "Êtes-vous sûr de vouloir supprimer ce topic et tous ses messages ?",
+        "confirmDeleteMessage": "Êtes-vous sûr de vouloir supprimer ce message en tant que modérateur ?",
+        "topicDeleted": "Topic supprimé",
+        "messageDeleted": "Message supprimé par un modérateur"
+      }
+    },
+    "editTopic": {
+      "loading": "Chargement du topic...",
+      "error": "Erreur",
+      "topicNotFound": "Topic non trouvé",
+      "backToForum": "Retour au forum",
+      "loginRequired": "Connexion requise",
+      "login": "Se connecter",
+      "accessDenied": "Accès refusé",
+      "notAuthorized": "Vous n'êtes pas autorisé à modifier ce topic",
+      "backToTopic": "Retour au topic",
+      "title": "Modifier le topic",
+      "subtitle": "Mettez à jour le titre, le contenu ou la catégorie",
+      "titleLabel": "Titre",
+      "contentLabel": "Description / Contenu",
+      "contentOptional": "(optionnel)",
+      "contentHelp": "Ceci modifiera le contenu initial de votre topic",
+      "contentPlaceholder": "Décrivez votre question ou partagez plus de détails...",
+      "categoryLabel": "Catégorie",
+      "required": "*",
+      "cancel": "Annuler",
+      "saving": "Enregistrement...",
+      "saveChanges": "Enregistrer les modifications",
+      "mustBeLoggedIn": "Vous devez être connecté",
+      "titleRequired": "Le titre est requis",
+      "updateError": "Erreur lors de la mise à jour"
+    }
   },
   "comparison": {
     "title": "Comparateur",
     "description": "Analysez les différences de coût de vie et d'opportunités entre vos destinations favorites.",
     "selection": "Sélection :",
+    "tableHeader": "Comparatif",
+    "currencyLabel": "Devise d'affichage :",
     "limitReached": {
       "title": "Limite atteinte (Mode Invité)",
       "message": "Vous comparez {{count}} pays.",
@@ -642,29 +1045,59 @@
       "suffix": "ci-dessus pour voir apparaître le tableau comparatif."
     },
     "sections": {
+      "overview": "Vue d'ensemble",
       "general": "Informations générales",
       "costOfLiving": "Coût de la vie",
-      "immigration": "Procédures d'immigration",
+      "qualityOfLife": "Qualité de vie",
+      "climate": "Climat",
+      "taxation": "Fiscalité",
+      "immigration": "Immigration & Migration",
       "idealFor": "Idéal pour"
+    },
+    "radar": {
+      "salary": "Salaire",
+      "safety": "Sécurité",
+      "healthcare": "Santé",
+      "affordability": "Accessibilité",
+      "workLife": "Vie pro/perso"
     },
     "fields": {
       "continent": "Continent",
       "capital": "Capitale",
       "languages": "Langue(s) parlée(s)",
       "currency": "Devise",
+      "destination": "Destination",
       "averageSalary": "Salaire moyen mensuel",
       "rentOneRoom": "Loyer 1 chambre (centre)",
       "rentThreeRooms": "Loyer 3 chambres (centre)",
       "restaurantMeal": "Repas au restaurant",
       "groceries": "Courses hebdomadaires",
+      "utilities": "Charges (85m²)",
+      "transport": "Transport mensuel",
+      "safety": "Sécurité",
+      "healthcareQuality": "Qualité des soins",
+      "healthcareSystem": "Système de santé",
+      "workLifeBalance": "Équilibre vie pro/perso",
+      "cuisine": "Gastronomie",
+      "climateType": "Type de climat",
+      "tempSummer": "Temp. été",
+      "tempWinter": "Temp. hiver",
+      "incomeTax": "Impôt sur le revenu",
+      "vat": "TVA",
       "steps": "Nombre d'étapes",
       "stepsValue": "{{count}} étapes",
       "difficulty": "Difficulté",
       "languageRequired": "Langue requise",
       "recommendedProfiles": "Profils recommandés",
       "notSpecified": "Non renseigné",
-      "notSpecifiedFeminine": "Non renseignée"
+      "notSpecifiedFeminine": "Non renseignée",
+      "stocksForeignPop": "Population étrangère résidente",
+      "inflowsForeignPop": "Entrées de population étrangère",
+      "outflowsForeignPop": "Sorties de population étrangère",
+      "asylumSeekers": "Demandeurs d'asile",
+      "nationalityAcquisitions": "Acquisitions de nationalité"
     },
+    "oecdSource": "Source : OCDE – Base de données sur les migrations internationales",
     "premiumAccess": {
       "title": "Accédez à l'analyse complète",
       "description": "Les données détaillées sur l'immigration et les recommandations personnalisées sont réservées à nos membres. Rejoignez Skywalk pour prendre la meilleure décision.",
@@ -681,6 +1114,7 @@
     "bestOption": "Meilleure option"
   },
   "dashboard": {
+    "dragToReorder": "Glisser pour réorganiser",
     "personalized": {
       "loading": "Chargement de votre dashboard personnalisé...",
       "noProjects": {
@@ -690,6 +1124,8 @@
       },
       "greeting": "Bonjour ! 👋",
       "projectTo": "Votre projet d'expatriation vers {{country}}",
+      "defaultUser": "Utilisateur",
+      "defaultDestination": "Destination",
       "editProject": "Modifier le projet",
       "modifyWidgets": "Modifier les widgets",
       "finish": "Terminé",
@@ -718,6 +1154,10 @@
           "label": "Durée du séjour",
           "estimated": "Estimé",
           "months": "{{count}} mois",
+          "less6months": "Moins de 6 mois",
+          "6to12months": "6 à 12 mois",
+          "1to3years": "1 à 3 ans",
+          "more3years": "Plus de 3 ans",
           "undefined": "Non défini"
         }
       },
@@ -760,11 +1200,19 @@
           "currencyConverter": {
             "name": "Convertisseur de devises",
             "description": "Convertir entre différentes devises"
+          },
+          "jobOpportunities": {
+            "name": "Opportunités emploi",
+            "description": "Secteurs, salaires et programmes d'expatriation"
           }
         },
         "menu": {
           "edit": "Modifier",
           "expand": "Agrandir",
+          "resize": "Taille",
+          "sizeSmall": "Petit",
+          "sizeMedium": "Moyen",
+          "sizeLarge": "Grand",
           "hide": "Masquer ce widget"
         },
         "profileSummary": {
@@ -803,7 +1251,10 @@
           "noData": {
             "title": "Données de marché non disponibles pour ce pays.",
             "message": "Données de marché non disponibles pour ce pays."
-          }
+          },
+          "avgSalary": "Salaire moyen local",
+          "sourceLive": "Données en temps réel — {{city}}",
+          "sourceStatic": "Données estimatives"
         },
         "localTime": {
           "title": "Heure locale",
@@ -839,7 +1290,10 @@
             "visaDesc": "La difficulté d'obtention du visa est {{difficulty}}"
           },
           "learnMore": "En savoir plus",
-          "seeAll": "Voir toutes les recommandations"
+          "seeAll": "Voir toutes les recommandations",
+          "members": "Membres",
+          "jobs": "Offres emploi",
+          "forumTopics": "Sujets forum"
         },
         "currencyConverter": {
           "title": "Convertisseur",
@@ -852,9 +1306,1320 @@
           "loading": "Chargement des taux...",
           "error": "Impossible de charger les taux de change",
           "swap": "Inverser les devises"
+        },
+        "jobOpportunities": {
+          "title": "Opportunités emploi {{country}}",
+          "profile": "Profil : {{age}} ans, {{status}}",
+          "sectors": "Secteurs porteurs",
+          "avgSalary": "Salaire moyen",
+          "month": "mois",
+          "unemployment": "Taux de chômage : {{rate}}",
+          "programsTitle": "Programmes & dispositifs",
+          "jobSites": "Sites d'emploi",
+          "noData": "Aucune donnée emploi disponible pour ce pays",
+          "offersAvailable": "offres",
+          "recentOffers": "Offres récentes (Adzuna)",
+          "programs": {
+            "jet": "Enseigner l'anglais/français au Japon",
+            "ccifj": "Chambre de commerce franco-japonaise",
+            "expressEntry": "Immigration économique fédérale canadienne",
+            "pvtCanada": "Programme Vacances-Travail (18-35 ans)",
+            "whvAustralia": "Visa Vacances-Travail (18-35 ans)",
+            "skilledAustralia": "Migration qualifiée vers l'Australie",
+            "makeItGermany": "Portail officiel pour travailler en Allemagne",
+            "blueCard": "Carte bleue européenne pour travailleurs qualifiés",
+            "skilledWorkerUK": "Visa de travailleur qualifié (sponsor requis)",
+            "youthMobilityUK": "Programme mobilité jeunesse (18-30 ans)",
+            "h1b": "Visa de travail pour métiers spécialisés",
+            "j1": "Programme d'échange culturel et professionnel",
+            "permisSwiss": "Permis de séjour et travail en Suisse"
+          }
         }
       },
       "projectSelector": "Projet #{{id}} - {{country}}"
+    }
+  },
+  "auth": {
+    "login": {
+      "success": "Connexion réussie !",
+      "error": "Erreur de connexion",
+      "email": "Email",
+      "password": "Mot de passe",
+      "rememberMe": "Se souvenir de moi",
+      "forgotPassword": "Mot de passe oublié ?",
+      "submitting": "Connexion...",
+      "submit": "Se connecter",
+      "noAccount": "Vous n'avez pas encore de compte ?",
+      "register": "Inscrivez-vous"
+    },
+    "register": {
+      "error": "Erreur lors de l'inscription",
+      "passwordMismatch": "Les mots de passe ne correspondent pas",
+      "nameRequired": "Veuillez renseigner votre prénom et nom",
+      "displayName": "Votre nom d'affichage sera :",
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "email": "Email",
+      "age": "Âge",
+      "originCountry": "Pays d'origine",
+      "password": "Mot de passe",
+      "confirmPassword": "Confirmation du mot de passe",
+      "strength": "Force :",
+      "weak": "Faible",
+      "medium": "Moyen",
+      "good": "Bon",
+      "strong": "Fort",
+      "terms": "J'accepte les",
+      "termsOfUse": "conditions d'utilisation",
+      "and": "et la",
+      "privacyPolicy": "politique de confidentialité",
+      "submitting": "Inscription...",
+      "submit": "Rejoindre l'aventure SkyWalk",
+      "hasAccount": "Vous avez déjà un compte ?",
+      "login": "Connectez-vous"
+    },
+    "forgotPassword": {
+      "emailSent": "Email envoyé ! Vérifiez votre boîte de réception.",
+      "emailError": "Erreur lors de l'envoi de l'email",
+      "title": "Mot de passe oublié ?",
+      "description": "Entrez votre email et nous vous enverrons un lien pour réinitialiser votre mot de passe.",
+      "emailSentTitle": "Email envoyé !",
+      "emailSentDesc": "Un lien de réinitialisation a été envoyé à <strong>{{email}}</strong>.<br/>Cliquez sur le lien pour créer un nouveau mot de passe.",
+      "notReceived": "Vous n'avez pas reçu l'email ? Vérifiez vos spams ou",
+      "retry": "réessayez",
+      "backToLogin": "Retour à la connexion",
+      "emailPlaceholder": "Votre email",
+      "submitting": "Envoi en cours...",
+      "submit": "Envoyer le lien de réinitialisation"
+    },
+    "resetPassword": {
+      "success": "Mot de passe réinitialisé avec succès !",
+      "error": "Erreur lors de la réinitialisation",
+      "tokenMissing": "Token de réinitialisation manquant",
+      "passwordMismatch": "Les mots de passe ne correspondent pas",
+      "passwordWeak": "Votre mot de passe est trop faible. Utilisez au moins 8 caractères avec majuscules, minuscules et chiffres.",
+      "invalidLink": "Lien invalide",
+      "invalidLinkDesc": "Le lien de réinitialisation est manquant ou invalide.",
+      "requestNewLink": "Demander un nouveau lien",
+      "title": "Nouveau mot de passe",
+      "description": "Choisissez un mot de passe fort pour sécuriser votre compte.",
+      "newPassword": "Nouveau mot de passe",
+      "confirmPassword": "Confirmer le mot de passe",
+      "strength": "Force :",
+      "weak": "Faible",
+      "medium": "Moyen",
+      "good": "Bon",
+      "strong": "Fort",
+      "submitting": "Réinitialisation...",
+      "submit": "Réinitialiser le mot de passe",
+      "backToLogin": "Retour à la connexion"
+    },
+    "passwordForgot": {
+      "success": "Un email de réinitialisation a été envoyé à votre adresse",
+      "error": "Erreur lors de l'envoi de l'email",
+      "emailPlaceholder": "Votre email",
+      "submitting": "Envoi...",
+      "submit": "Recevoir mon lien"
+    }
+  },
+  "searchPage": {
+    "notSpecified": "Non spécifié",
+    "title": "Recherche Avancée",
+    "description": "Trouvez des emplois, logements et services adaptés à votre projet d'expatriation.",
+    "placeholder": "Rechercher emplois, logements, transports...",
+    "filters": "Filtres",
+    "searchResults": "Résultats de recherche",
+    "popularDestinations": "Destinations & Services Populaires",
+    "resultCount_one": "{{count}} résultat {{context}}",
+    "resultCount_other": "{{count}} résultats {{context}}",
+    "found": "trouvé",
+    "founds": "trouvés",
+    "available": "disponible",
+    "availables": "disponibles",
+    "sortBy": "Trier par:",
+    "relevance": "Pertinence",
+    "mostRecent": "Plus récent",
+    "oldest": "Plus ancien",
+    "priceAsc": "Prix croissant",
+    "priceDesc": "Prix décroissant",
+    "bestRated": "Mieux noté",
+    "discoverDestinations": "Découvrez nos destinations populaires",
+    "discoverDestinationsDesc": "Vous voyez ici une sélection d'opportunités et de services dans les destinations les plus prisées. Utilisez la barre de recherche et les filtres pour affiner vos résultats.",
+    "popularSearches": "Recherches populaires :",
+    "france": "France",
+    "unitedKingdom": "Royaume-Uni",
+    "switzerland": "Suisse",
+    "canada": "Canada",
+    "jobs": "Emploi",
+    "housing": "Logement",
+    "transport": "Transport",
+    "discoverMore": "Découvrez {{count}}+ résultats supplémentaires",
+    "createAccountDesc": "Créez un compte gratuit pour accéder à tous les résultats, sauvegarder vos recherches et recevoir des alertes personnalisées.",
+    "createFreeAccount": "Créer un compte gratuit",
+    "login": "Se connecter",
+    "noResults": "Aucun résultat trouvé",
+    "noResultsDesc": "Essayez de modifier vos critères de recherche ou vos filtres.",
+    "resetFilters": "Réinitialiser les filtres",
+    "loading": "Chargement...",
+    "loadMore": "Voir plus de résultats",
+    "loadingResults": "Chargement des résultats...",
+    "scrollForMore": "Faites défiler pour charger plus de résultats",
+    "viewDetails": "Voir détails",
+    "view": "Voir",
+    "by": "Par {{provider}}",
+    "suggestions": "Suggestions",
+    "recentSearches": "Recherches récentes",
+    "popularSearchesList": "Recherches populaires",
+    "filter": {
+      "title": "Filtres",
+      "clearAll": "Tout effacer",
+      "category": "Catégorie",
+      "country": "Pays",
+      "contractType": "Type de contrat",
+      "budget": "Budget",
+      "period": "Période",
+      "city": "Ville:",
+      "cityPlaceholder": "Entrez une ville...",
+      "allPrices": "Tous les prix",
+      "allDates": "Toutes les dates",
+      "start": "Début",
+      "end": "Fin",
+      "today": "Aujourd'hui",
+      "thisWeek": "Cette semaine",
+      "thisMonth": "Ce mois",
+      "categories": {
+        "emploi": "Emploi",
+        "logement": "Logement",
+        "transport": "Transport",
+        "administration": "Administration",
+        "sante": "Santé"
+      },
+      "contracts": {
+        "permanent": "CDI / Permanent",
+        "contract": "CDD / Mission",
+        "full_time": "Temps plein",
+        "part_time": "Temps partiel"
+      }
+    },
+    "job": {
+      "salaryNotSpecified": "Salaire non spécifié",
+      "perYear": "/an",
+      "today": "Aujourd'hui",
+      "yesterday": "Hier",
+      "daysAgo": "Il y a {{count}} jours",
+      "weeksAgo": "Il y a {{count}} semaines",
+      "monthsAgo": "Il y a {{count}} mois",
+      "company": "Entreprise",
+      "viewOffer": "Voir l'offre"
+    },
+    "recentSearchItems": {
+      "devToronto": "Emploi développeur Toronto",
+      "housingParis": "Logement Paris centre",
+      "transportBerlin": "Transport public Berlin",
+      "healthCanada": "Assurance santé Canada"
+    },
+    "popularSearchItems": {
+      "itJobs": "Emploi informatique",
+      "apartment": "Appartement 2 pièces",
+      "workVisa": "Visa de travail",
+      "bankAccount": "Compte bancaire",
+      "driverLicense": "Permis de conduire"
+    },
+    "urgency": {
+      "high": "Haute",
+      "medium": "Moyenne",
+      "low": "Faible"
+    }
+  },
+  "onboarding": {
+    "steps": {
+      "destination": "Destination",
+      "profile": "Profil",
+      "objective": "Objectif",
+      "preparation": "Préparation",
+      "needs": "Besoins",
+      "summary": "Résumé"
+    },
+    "editTitle": "Modifier mon projet",
+    "profilePrefilled": "Vos informations de profil ont été pré-remplies !",
+    "invalidDestination": "Pays de destination invalide",
+    "countryChangeWarning": "⚠️ Attention : Vous changez de pays de destination.\n\nVotre checklist actuelle sera réinitialisée car les démarches sont spécifiques à chaque pays.\n\nVoulez-vous continuer ?",
+    "modificationCancelled": "Modification annulée",
+    "checklistReset": "Votre checklist a été réinitialisée pour le nouveau pays",
+    "projectUpdated": "Projet mis à jour avec succès !",
+    "projectCreated": "Projet créé avec succès !",
+    "creatingProject": "Création de votre projet en cours...",
+    "errorPrefix": "Erreur",
+    "genericError": "Une erreur est survenue lors de la création du projet",
+    "destination": {
+      "title": "Votre destination",
+      "subtitle": "Dites-nous d'où vous partez et où vous souhaitez vous installer",
+      "fromCountry": "Pays de départ",
+      "toCountry": "Pays de destination",
+      "targetCity": "Ville cible (optionnel)",
+      "targetCityHelper": "Si vous avez déjà une ville en tête",
+      "targetCityPlaceholder": "Ex: Zurich, Toronto, Lisbonne...",
+      "departureYear": "Année de départ prévue",
+      "fromCountryPlaceholder": "Sélectionnez votre pays de départ",
+      "toCountryPlaceholder": "Sélectionnez votre pays de destination",
+      "errors": {
+        "fromCountryRequired": "Le pays de départ est requis",
+        "toCountryRequired": "Le pays de destination est requis",
+        "sameCountry": "Le pays de destination doit être différent du pays de départ",
+        "departureYearRequired": "L'année de départ est requise",
+        "departureYearRange": "L'année doit être entre {{min}} et {{max}}"
+      }
+    },
+    "profile": {
+      "title": "Votre profil personnel",
+      "subtitle": "Aidez-nous à mieux vous connaître pour personnaliser nos conseils",
+      "age": "Âge",
+      "agePlaceholder": "Ex: 25",
+      "motherTongue": "Langue maternelle",
+      "motherTonguePlaceholder": "Sélectionnez votre langue maternelle",
+      "spokenLanguages": "Autres langues parlées (optionnel)",
+      "status": "Statut actuel",
+      "statusPlaceholder": "Sélectionnez votre statut",
+      "travelParty": "Vous voyagez...",
+      "languageLevel": "Niveau de langue du pays de destination",
+      "languageLevelHelper": "Indiquez votre niveau de maîtrise de la langue principale parlée dans le pays où vous souhaitez vous expatrier. (Selon le Cadre européen commun de référence - CECRL)",
+      "languageLevelPlaceholder": "Sélectionnez votre niveau",
+      "errors": {
+        "ageRequired": "L'âge est requis",
+        "ageRange": "L'âge doit être entre 16 et 90 ans",
+        "motherTongueRequired": "La langue maternelle est requise",
+        "statusRequired": "Le statut actuel est requis",
+        "travelPartyRequired": "Veuillez indiquer avec qui vous voyagez",
+        "languageLevelRequired": "Le niveau de langue est requis"
+      }
+    },
+    "objective": {
+      "title": "Objectif de votre départ",
+      "subtitle": "Précisez la raison principale de votre expatriation et sa durée",
+      "goal": "Objectif principal",
+      "stayDuration": "Durée prévue du séjour",
+      "stayDurationPlaceholder": "Sélectionnez la durée",
+      "errors": {
+        "goalRequired": "L'objectif principal est requis",
+        "stayDurationRequired": "La durée prévue du séjour est requise"
+      }
+    },
+    "preparation": {
+      "title": "Préparation & moyens",
+      "subtitle": "Où en êtes-vous dans vos préparatifs et quel est votre budget ?",
+      "stepsDone": "Démarches déjà effectuées",
+      "stepsDoneHelper": "Sélectionnez toutes les démarches que vous avez déjà entreprises",
+      "housingBudget": "Budget mensuel pour le logement",
+      "housingBudgetHelper": "Montant maximum que vous souhaitez consacrer au logement par mois",
+      "housingBudgetPlaceholder": "Ex: 800",
+      "errors": {
+        "housingBudgetRequired": "Le budget logement est requis",
+        "housingBudgetMin": "Le budget doit être supérieur ou égal à 0 {{currency}}"
+      }
+    },
+    "needs": {
+      "title": "Vos besoins spécifiques",
+      "subtitle": "Aidez-nous à identifier vos priorités pour personnaliser notre accompagnement",
+      "priorities": "Thématiques prioritaires",
+      "prioritiesHelper": "Sélectionnez au moins une thématique qui vous préoccupe le plus",
+      "personalizedSupport": "Accompagnement personnalisé",
+      "personalizedSupportHelper": "Souhaitez-vous bénéficier d'un accompagnement individuel avec un conseiller ?",
+      "errors": {
+        "prioritiesRequired": "Veuillez sélectionner au moins une thématique prioritaire",
+        "supportRequired": "Veuillez indiquer si vous souhaitez un accompagnement personnalisé"
+      }
+    },
+    "summary": {
+      "title": "Récapitulatif de votre profil",
+      "subtitle": "Vérifiez vos informations avant de valider votre profil d'expatriation",
+      "destinationCard": "Destination",
+      "profileCard": "Profil personnel",
+      "objectiveCard": "Objectif du départ",
+      "preparationCard": "Préparation & moyens",
+      "needsCard": "Besoins spécifiques",
+      "fromCountry": "Pays de départ",
+      "toCountry": "Pays de destination",
+      "targetCity": "Ville cible",
+      "departureYear": "Année de départ",
+      "notSpecified": "Non précisée",
+      "age": "Âge",
+      "ageYears": "{{age}} ans",
+      "status": "Statut",
+      "travel": "Voyage",
+      "languageLevel": "Niveau de langue",
+      "mainGoal": "Objectif principal",
+      "expectedDuration": "Durée prévue",
+      "stepsDone": "Démarches effectuées",
+      "none": "Aucune",
+      "housingBudget": "Budget logement",
+      "housingBudgetValue": "{{budget}} € / mois",
+      "prioritiesLabel": "Priorités",
+      "personalizedSupport": "Accompagnement personnalisé",
+      "yes": "Oui",
+      "no": "Non",
+      "readyTitle": "Prêt à commencer votre aventure ?",
+      "readyDesc": "En validant votre profil, vous accéderez à des recommandations personnalisées et pourrez commencer à planifier votre expatriation avec nos outils.",
+      "creatingLabel": "Création du projet en cours...",
+      "submitLabel": "Valider et créer mon projet"
+    },
+    "authGate": {
+      "title": "Sauvegardez votre projet pour continuer",
+      "subtitle": "Vous y êtes presque ! Créez un compte gratuit pour accéder à votre plan d'expatriation personnalisé et sauvegarder vos préférences.",
+      "benefitsTitle": "Ce que vous obtenez :",
+      "benefit1": "Sauvegardez votre projet et retrouvez-le à tout moment",
+      "benefit2": "Accédez à des recommandations personnalisées",
+      "benefit3": "Comparez jusqu'à 5 pays en détail",
+      "benefit4": "Rejoignez une communauté d'expatriés",
+      "createAccount": "Créer mon compte gratuit",
+      "hasAccount": "J'ai déjà un compte",
+      "goBack": "Retourner à l'étape précédente"
+    },
+    "nav": {
+      "next": "Suivant",
+      "back": "Retour",
+      "goToDashboard": "Accéder à mon dashboard"
+    },
+    "layout": {
+      "dashboard": "Tableau de bord",
+      "expatProject": "Projet d'expatriation",
+      "myProfile": "Mon profil"
+    },
+    "constants": {
+      "languageLevels": {
+        "A1": "A1 - Débutant",
+        "A2": "A2 - Élémentaire",
+        "B1": "B1 - Intermédiaire",
+        "B2": "B2 - Intermédiaire avancé",
+        "C1": "C1 - Avancé",
+        "C2": "C2 - Maîtrise"
+      },
+      "status": {
+        "student": "Étudiant",
+        "employee": "Salarié",
+        "self_employed": "Indépendant",
+        "unemployed": "Demandeur d'emploi",
+        "retired": "Retraité",
+        "single": "Célibataire",
+        "other": "Autre"
+      },
+      "travelParty": {
+        "alone": "Seul",
+        "couple": "En couple",
+        "family": "En famille",
+        "friends": "Avec des amis"
+      },
+      "goal": {
+        "studies": "Études",
+        "work": "Travail",
+        "discovery": "Découverte",
+        "family": "Famille",
+        "internship": "Stage",
+        "other": "Autre"
+      },
+      "goals": {
+        "studies": "Études",
+        "work": "Travail",
+        "discovery": "Découverte",
+        "family": "Famille",
+        "internship": "Stage",
+        "other": "Autre"
+      },
+      "stayDuration": {
+        "less_6_months": "Moins de 6 mois",
+        "6_12_months": "6 à 12 mois",
+        "1_3_years": "1 à 3 ans",
+        "more_3_years": "Plus de 3 ans"
+      },
+      "stepsDone": {
+        "school_registration": "Inscription école",
+        "housing_search": "Recherche logement",
+        "job_search": "Recherche emploi",
+        "visa_application": "Demande visa",
+        "other": "Autre",
+        "none": "Aucune démarche"
+      },
+      "priorities": {
+        "housing": "Logement",
+        "employment": "Emploi",
+        "transport": "Transport",
+        "admin_help": "Aides administratives",
+        "health": "Santé",
+        "social_integration": "Intégration sociale"
+      },
+      "steps": {
+        "destination": "Destination",
+        "profile": "Profil",
+        "objective": "Objectif",
+        "preparation": "Préparation",
+        "needs": "Besoins",
+        "summary": "Résumé"
+      }
+    }
+  },
+  "projectsPage": {
+    "pageTitle": "Mes Projets",
+    "pageDesc": "Gérez vos projets d'expatriation, suivez votre avancement et accédez à vos outils personnalisés.",
+    "errorTitle": "Une erreur est survenue",
+    "errorDesc": "Impossible de charger vos projets pour le moment.",
+    "retry": "Réessayer",
+    "newProject": "Nouveau projet",
+    "noProjects": "Aucun projet",
+    "noProjectsDesc": "Commencez par créer votre premier projet d'expatriation.",
+    "createProject": "Créer un projet",
+    "projectId": "Projet #{{id}}",
+    "countryFallback": "Pays #{{id}}",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "viewDetails": "Voir les détails",
+    "goToDashboard": "Accéder au tableau de bord",
+    "deleteTitle": "Supprimer le projet ?",
+    "deleteDesc": "Cette action est irréversible. Toutes les données associées à ce projet seront perdues.",
+    "cancel": "Annuler",
+    "createSuccess": "Projet créé avec succès !",
+    "createError": "Erreur lors de la création du projet",
+    "updateSuccess": "Projet mis à jour avec succès !",
+    "updateError": "Erreur lors de la mise à jour",
+    "deleteSuccess": "Projet supprimé avec succès !",
+    "deleteError": "Erreur lors de la suppression"
+  },
+  "welcome": {
+    "badge": "Bienvenue sur Skywalk",
+    "title": "Préparez votre expatriation",
+    "titleHighlight": "en toute sérénité",
+    "description": "Pour vous accompagner au mieux, nous avons besoin de connaître votre projet. Un profil complet nous permet de vous proposer des recommandations sur mesure.",
+    "profileIncomplete": "Profil incomplet",
+    "profileIncompleteDesc": "Complétez votre profil pour débloquer toutes les fonctionnalités personnalisées.",
+    "startAdventure": "Lancer mon aventure",
+    "whyComplete": "Pourquoi compléter votre profil ?",
+    "targetedRecs": "Recommandations ciblées",
+    "targetedRecsDesc": "Des conseils adaptés à votre destination et votre situation.",
+    "personalizedChecklists": "Checklists personnalisées",
+    "personalizedChecklistsDesc": "Ne manquez aucune étape administrative importante.",
+    "timeSaving": "Gain de temps précieux",
+    "timeSavingDesc": "Accédez directement aux informations qui vous concernent."
+  },
+  "authPages": {
+    "loginTitle": "Bon retour parmi nous !",
+    "registerTitle": "Créer votre compte",
+    "forgotPasswordTitle": "Mot de passe oublié ?",
+    "forgotPasswordSubtitle": "Renseignez votre e-mail pour recevoir un lien de réinitialisation",
+    "tagline": "Simplifier chaque étape de votre expatriation"
+  },
+  "destinationsPage": {
+    "loadingCountries": "Chargement des pays...",
+    "error": "Erreur",
+    "loadError": "Impossible de charger les destinations. Veuillez réessayer plus tard.",
+    "retry": "Réessayer",
+    "card": {
+      "defaultDestination": "Destination",
+      "defaultDescription": "Découvrez la vie en {{country}}, une destination vibrante offrant de nombreuses opportunités.",
+      "projects": "projets",
+      "jobs": "emplois",
+      "topics": "sujets",
+      "resources": "ressources"
+    }
+  },
+  "footer": {
+    "description": "Votre compagnon d'expatriation pour une nouvelle vie à l'étranger. Guides, outils et communauté pour réussir votre projet.",
+    "services": "Services",
+    "findJob": "Trouver un emploi",
+    "findHousing": "Trouver un logement",
+    "getAround": "Se déplacer",
+    "healthWellbeing": "Santé et bien-être",
+    "adminProcedures": "Démarches administratives",
+    "allServices": "Tous les services",
+    "resources": "Ressources",
+    "destinations": "Destinations",
+    "communityForum": "Forum communauté",
+    "practicalGuides": "Guides pratiques",
+    "testimonials": "Témoignages",
+    "countryComparator": "Comparateur pays",
+    "blog": "Blog",
+    "contact": "Contact",
+    "about": "À propos",
+    "legalNotice": "Mentions légales",
+    "privacy": "Confidentialité",
+    "terms": "CGU",
+    "allRightsReserved": "Tous droits réservés.",
+    "serviceOnline": "Service en ligne"
+  },
+  "profilePage": {
+    "user": "Utilisateur",
+    "edit": "Modifier",
+    "personalTitle": "Personnel",
+    "personalSubtitle": "Vos informations d'identité",
+    "fullName": "Nom complet",
+    "age": "Âge",
+    "ageValue": "{{age}} ans",
+    "motherTongue": "Langue maternelle",
+    "spokenLanguages": "Langues parlées",
+    "noLanguages": "Aucune langue ajoutée",
+    "notProvided": "Non renseigné",
+    "locationTitle": "Localisation",
+    "locationSubtitle": "Préférences et origines",
+    "originCountry": "Pays d'origine",
+    "targetLanguageLevel": "Niveau de langue (pays cible)",
+    "currentStatus": "Statut actuel",
+    "statusSelfEmployed": "Indépendant",
+    "statusEmployed": "Salarié",
+    "statusStudent": "Étudiant",
+    "statusRetired": "Retraité",
+    "editPersonal": "Informations personnelles",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "selectStatus": "Sélectionner",
+    "statusStudentOption": "Étudiant",
+    "statusEmployeeOption": "Salarié",
+    "statusSelfEmployedOption": "Indépendant",
+    "statusUnemployedOption": "Demandeur d'emploi",
+    "statusRetiredOption": "Retraité",
+    "statusOtherOption": "Autre",
+    "selectMotherTongue": "Sélectionnez votre langue maternelle",
+    "otherLanguages": "Autres langues parlées",
+    "editPreferences": "Préférences & Sécurité",
+    "selectLanguageLevel": "Sélectionner",
+    "languageLevelA1": "A1 - Débutant",
+    "languageLevelA2": "A2 - Élémentaire",
+    "languageLevelB1": "B1 - Intermédiaire",
+    "languageLevelB2": "B2 - Intermédiaire avancé",
+    "languageLevelC1": "C1 - Avancé",
+    "languageLevelC2": "C2 - Maîtrise",
+    "languageLevelNative": "Langue maternelle",
+    "selectCountry": "Sélectionner un pays",
+    "newPassword": "Nouveau mot de passe",
+    "keepPassword": "Laisser vide pour conserver",
+    "passwordHint": "Minimum 6 caractères. Laissez vide si vous ne souhaitez pas le changer.",
+    "cancel": "Annuler",
+    "saving": "Enregistrement...",
+    "save": "Enregistrer les modifications",
+    "updateError": "Erreur lors de la mise à jour du profil. Veuillez réessayer.",
+    "updateSuccess": "Profil mis à jour avec succès",
+    "updateErrorToast": "Erreur lors de la mise à jour du profil",
+    "deleteSuccess": "Compte supprimé avec succès",
+    "deleteErrorToast": "Erreur lors de la suppression du compte",
+    "loadingError": "Erreur lors du chargement du profil",
+    "dangerZone": "Zone de danger",
+    "dangerDesc": "La suppression de votre compte est irréversible. Toutes vos données personnelles, préférences et historiques seront définitivement effacés de nos serveurs.",
+    "deleteAccount": "Supprimer mon compte",
+    "deleteConfirm": "Êtes-vous vraiment sûr de vouloir supprimer votre compte ?",
+    "deleting": "Suppression...",
+    "confirm": "Confirmer"
+  },
+  "projectDetail": {
+    "projects": "Projets",
+    "project": "Projet",
+    "loading": "Chargement...",
+    "notFound": "Projet introuvable",
+    "notFoundDesc": "Le projet demandé n'existe pas ou vous n'y avez pas accès.",
+    "backToProjects": "Retour aux projets",
+    "createdOn": "Créé le",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "destination": "Destination",
+    "country": "Pays",
+    "cityId": "Ville (ID)",
+    "generalInfo": "Informations générales",
+    "objective": "Objectif",
+    "notDefined": "Non défini",
+    "travelType": "Type de voyage",
+    "departureDate": "Date de départ",
+    "notDefinedFem": "Non définie",
+    "expectedDuration": "Durée prévue",
+    "months": "{{count}} mois",
+    "less6months": "Moins de 6 mois",
+    "6to12months": "6 à 12 mois",
+    "1to3years": "1 à 3 ans",
+    "more3years": "Plus de 3 ans",
+    "priorities": "Priorités",
+    "projectStatus": "État du projet",
+    "housingBudget": "Budget Logement",
+    "perMonth": "par mois estimé",
+    "support": "Accompagnement",
+    "supportDesc": "Vous avez demandé un accompagnement personnalisé pour ce projet. Un conseiller prendra contact avec vous prochainement.",
+    "deleteTitle": "Supprimer le projet ?",
+    "deleteDesc": "Êtes-vous sûr de vouloir supprimer ce projet ? Cette action est irréversible et toutes les données associées seront perdues.",
+    "cancel": "Annuler",
+    "deleteForever": "Supprimer définitivement",
+    "statusPlanning": "En planification",
+    "statusActive": "Actif",
+    "statusCompleted": "Terminé",
+    "statusCancelled": "Annulé",
+    "statusOnHold": "En pause",
+    "objectiveWork": "Travailler",
+    "objectiveStudy": "Étudier",
+    "objectiveRetirement": "Retraite",
+    "objectiveAdventure": "Aventure",
+    "objectiveFamilyReunion": "Regroupement familial",
+    "objectiveOther": "Autre",
+    "travelAlone": "Seul",
+    "travelCouple": "En couple",
+    "travelFamily": "En famille",
+    "travelFriends": "Entre amis",
+    "travelOther": "Autre"
+  },
+  "categoryGrid": {
+    "title": "Explorez nos services",
+    "subtitle": "Tout ce dont vous avez besoin pour réussir votre expatriation",
+    "emploi": {
+      "title": "Emploi",
+      "subtitle": "TROUVER UN EMPLOI",
+      "description": "Explorez les opportunités professionnelles dans votre pays de destination et obtenez des conseils pour votre recherche d'emploi.",
+      "cta": "Voir les offres d'emploi"
+    },
+    "logement": {
+      "title": "Logement",
+      "subtitle": "EXPLORER LES LOGEMENTS",
+      "description": "Trouvez le logement idéal selon votre budget et vos préférences dans votre nouvelle ville.",
+      "cta": "Explorer les logements"
+    },
+    "transport": {
+      "title": "Transport",
+      "subtitle": "SE DÉPLACER FACILEMENT",
+      "description": "Découvrez les moyens de transport disponibles et planifiez vos déplacements dans votre nouveau pays.",
+      "cta": "Voir les infos transport"
+    },
+    "sante": {
+      "title": "Santé",
+      "subtitle": "SYSTÈME DE SANTÉ",
+      "description": "Informez-vous sur le système de santé local, les assurances et les démarches médicales nécessaires.",
+      "cta": "En savoir plus sur la santé"
+    },
+    "demarches": {
+      "title": "Aides administratives",
+      "subtitle": "DÉMARCHES ET PAPIERS",
+      "description": "Simplifiez vos démarches administratives avec nos guides et conseils pour vos documents officiels.",
+      "cta": "Voir les démarches"
+    }
+  },
+  "costOfLivingTab": {
+    "categories": {
+      "salary": "Salaire",
+      "housing": "Logement",
+      "restaurants": "Restaurants",
+      "food": "Supermarché",
+      "transportation": "Transport",
+      "utilities": "Charges & Internet",
+      "clothing": "Vêtements",
+      "childcare": "Garde d'enfants",
+      "sports": "Sports & Loisirs"
+    },
+    "market": {
+      "milk1L": "Lait (1L)",
+      "bread500g": "Pain (500g)",
+      "eggs12": "Œufs (x12)",
+      "rice1kg": "Riz (1kg)",
+      "cheese1kg": "Fromage (1kg)",
+      "chicken1kg": "Poulet (1kg)",
+      "beef1kg": "Bœuf (1kg)",
+      "apple1kg": "Pommes (1kg)",
+      "banana1kg": "Bananes (1kg)",
+      "orange1kg": "Oranges (1kg)",
+      "tomato1kg": "Tomates (1kg)",
+      "potato1kg": "Pommes de terre (1kg)",
+      "onion1kg": "Oignons (1kg)",
+      "lettuce": "Laitue",
+      "water15L": "Eau (1.5L)",
+      "wine": "Bouteille de vin",
+      "domesticBeer": "Bière locale (0.5L)",
+      "importedBeer": "Bière importée (0.33L)",
+      "cigarettes": "Cigarettes (20)"
+    },
+    "salary": {
+      "averageMonthlySalary": "Salaire net mensuel moyen",
+      "mortgageRate": "Taux hypothécaire (%)",
+      "monthlyBudget": "Budget mensuel estimé",
+      "perMonth": "/mois",
+      "min": "Min:",
+      "max": "Max:"
+    },
+    "housing": {
+      "rental": "Location",
+      "oneBedCityCenter": "1 chambre – Centre-ville",
+      "oneBedOutside": "1 chambre – Hors centre",
+      "threeBedCityCenter": "3 chambres – Centre-ville",
+      "threeBedOutside": "3 chambres – Hors centre",
+      "buy": "Achat (prix/m²)",
+      "cityCenter": "Centre-ville",
+      "outsideCenter": "Hors centre"
+    },
+    "restaurants": {
+      "inexpensiveMeal": "Repas bon marché",
+      "midRange": "Restaurant mid-range (2 pers.)",
+      "mcMeal": "McMeal / Menu fast-food",
+      "cappuccino": "Cappuccino",
+      "cocaCola": "Coca-Cola (0.33L)",
+      "domesticBeer": "Bière locale (0.5L)",
+      "importedBeer": "Bière importée (0.33L)"
+    },
+    "foodNoData": "Données non disponibles",
+    "transportation": {
+      "publicTransport": "Transport en commun",
+      "monthlyPass": "Abonnement mensuel",
+      "oneWayTicket": "Ticket unitaire",
+      "taxi": "Taxi",
+      "taxiStart": "Prise en charge",
+      "perKm": "Par km",
+      "waitingHour": "Attente (1h)",
+      "personal": "Véhicule personnel",
+      "gasoline": "Essence (1L)",
+      "newCar": "Voiture neuve (VW Golf ou équiv.)"
+    },
+    "utilities": {
+      "basic85m2": "Charges mensuelles (85m²)",
+      "internet": "Internet (60 Mbps+)",
+      "mobileMinute": "Minute mobile (prépayé)"
+    },
+    "clothing": {
+      "jeans": "Jean (Levis ou similaire)",
+      "summerDress": "Robe d'été (Zara ou similaire)",
+      "leatherShoes": "Chaussures en cuir",
+      "runningShoes": "Chaussures de sport (Nike, Adidas…)"
+    },
+    "childcare": {
+      "preschool": "Crèche / Maternelle (mensuel)",
+      "primarySchool": "École privée primaire (annuel)"
+    },
+    "sports": {
+      "gym": "Abonnement salle de sport",
+      "cinema": "Place de cinéma",
+      "tennis": "Court de tennis (1h)"
+    },
+    "empty": {
+      "title": "Données indisponibles",
+      "description": "Les données de coût de la vie ne sont pas encore disponibles pour ce pays."
+    },
+    "nationalSummary": "Résumé national",
+    "avgRent": "Loyer moyen (1 chambre, centre-ville) :",
+    "citiesReferenced_one": "{{count}} ville référencée",
+    "citiesReferenced_other": "{{count}} villes référencées",
+    "capital": "Capitale"
+  },
+  "globalSearch": {
+    "trigger": "Rechercher…",
+    "placeholder": "Rechercher des destinations, services, guides…",
+    "quickActions": "Accès rapide",
+    "noResults": "Aucun résultat pour « {{query}} »",
+    "error": "Erreur lors de la recherche. Réessayez.",
+    "quick": {
+      "destinations": "Explorer les destinations",
+      "services": "Voir tous les services",
+      "forum": "Accéder au forum",
+      "comparison": "Comparer des pays"
+    },
+    "categories": {
+      "country": "Pays",
+      "city": "Villes",
+      "guide": "Guides",
+      "checklist": "Checklists",
+      "resource": "Ressources",
+      "forum": "Forum",
+      "procedure": "Démarches",
+      "service": "Services",
+      "faq": "Questions fréquentes"
+    },
+    "footer": {
+      "navigate": "naviguer",
+      "open": "ouvrir",
+      "close": "fermer"
+    },
+    "faq": {
+      "visa": {
+        "question": "Comment obtenir un visa de travail ?",
+        "answer": "Les exigences varient selon le pays. Consultez la section démarches de votre destination pour les détails spécifiques."
+      },
+      "bankAccount": {
+        "question": "Comment ouvrir un compte bancaire à l'étranger ?",
+        "answer": "La plupart des pays exigent un justificatif de domicile et un titre de séjour. Certaines banques en ligne facilitent le processus."
+      },
+      "costOfLiving": {
+        "question": "Quel est le coût de la vie dans un pays ?",
+        "answer": "Consultez notre outil de comparaison du coût de la vie pour comparer les prix entre villes et pays."
+      },
+      "housing": {
+        "question": "Comment trouver un logement à l'étranger ?",
+        "answer": "Utilisez notre service logement pour découvrir les plateformes locales, les prix moyens et les conseils par pays."
+      },
+      "healthcare": {
+        "question": "Comment fonctionne le système de santé ?",
+        "answer": "Chaque pays a son propre système. Consultez notre section santé pour les détails sur l'assurance et les soins."
+      },
+      "jobSearch": {
+        "question": "Comment trouver un emploi à l'étranger ?",
+        "answer": "Découvrez les secteurs porteurs, les plateformes d'emploi et les conseils CV adaptés à chaque pays."
+      },
+      "language": {
+        "question": "Quel niveau de langue est nécessaire ?",
+        "answer": "Le niveau requis dépend du pays et du secteur. Consultez les notes emploi de votre destination."
+      },
+      "transport": {
+        "question": "Comment se déplacer dans un nouveau pays ?",
+        "answer": "Découvrez les réseaux de transport, les abonnements et les règles de conduite dans notre section transport."
+      }
+    }
+  },
+  "currencies": {
+    "EUR": "Euro",
+    "USD": "Dollar US",
+    "GBP": "Livre sterling",
+    "CHF": "Franc suisse",
+    "JPY": "Yen japonais",
+    "CAD": "Dollar canadien"
+  },
+  "popularDestinations": {
+    "title": "Destinations populaires",
+    "subtitle": "Les pays les plus prisés par notre communauté d'expatriés",
+    "viewAll": "Voir toutes les destinations",
+    "japan": {
+      "name": "Japon",
+      "description": "Entre tradition et innovation, le Japon offre une qualité de vie exceptionnelle et un marché du travail dynamique dans la tech."
+    },
+    "usa": {
+      "name": "États-Unis",
+      "description": "Le pays de toutes les opportunités. Salaires élevés, écosystème startup et diversité culturelle incomparable."
+    },
+    "switzerland": {
+      "name": "Suisse",
+      "description": "Découvrez les opportunités professionnelles dans un cadre alpin exceptionnel. Salaires attractifs et qualité de vie incomparable."
+    }
+  },
+  "onboardingFooter": {
+    "legalNotice": "Mentions légales",
+    "privacy": "Confidentialité",
+    "terms": "CGU",
+    "copyright": "© 2025 SkyWalk. Tous droits réservés."
+  },
+  "recommendations": {
+    "urgent": "Urgent",
+    "important": "Important",
+    "todo": "À faire",
+    "categoryProfile": "Profil",
+    "categoryLanguage": "Langue",
+    "categoryVisa": "Visa"
+  },
+  "defaultUser": {
+    "name": "Utilisateur SkyWalk"
+  },
+  "healthMeta": {
+    "france": {
+      "systemType": "Mixte",
+      "systemLabel": "Sécurité sociale + mutuelle",
+      "alertTitle": "Sécurité sociale française",
+      "alertText": "La Sécurité sociale rembourse 70% des soins médicaux. Une mutuelle complémentaire (~70 €/mois) couvre le reste à charge. Les affections de longue durée (ALD) sont prises en charge à 100%."
+    },
+    "usa": {
+      "systemType": "Privé",
+      "systemLabel": "Assurance privée (employer-based)",
+      "alertTitle": "Système américain — coûts élevés",
+      "alertText": "Pas de couverture universelle. L'assurance santé est généralement liée à l'employeur. Marketplace (ACA) : ~$450/mois en moyenne. Les soins sans assurance sont extrêmement coûteux. Consultez healthcare.gov."
+    },
+    "japan": {
+      "systemType": "Public",
+      "systemLabel": "Assurance santé nationale (NHI)",
+      "alertTitle": "Assurance santé nationale (国民健康保険)",
+      "alertText": "L'assurance santé est obligatoire au Japon. Les résidents paient ~30% des soins (70% remboursés). Le NHI coûte environ ¥25,000/mois. Soins dentaires et optiques partiellement couverts."
+    },
+    "switzerland": {
+      "systemType": "Mixte",
+      "systemLabel": "LAMal obligatoire + complémentaires",
+      "alertTitle": "Système suisse — LAMal obligatoire",
+      "alertText": "L'assurance maladie de base (LAMal) est OBLIGATOIRE pour tous les résidents. Primes parmi les plus élevées d'Europe (~393 CHF/mois). Soins dentaires et optiques NON couverts par la LAMal."
+    }
+  },
+  "onboardingLegacy": {
+    "languageLevels": {
+      "A1": "A1 - Débutant",
+      "A2": "A2 - Élémentaire",
+      "B1": "B1 - Intermédiaire",
+      "B2": "B2 - Intermédiaire avancé",
+      "C1": "C1 - Avancé",
+      "C2": "C2 - Maîtrise"
+    },
+    "status": {
+      "student": "Étudiant",
+      "employee": "Salarié",
+      "self_employed": "Indépendant",
+      "unemployed": "Demandeur d'emploi",
+      "retired": "Retraité",
+      "other": "Autre"
+    },
+    "travelParty": {
+      "alone": "Seul",
+      "couple": "En couple",
+      "family": "En famille",
+      "friends": "Avec des amis"
+    },
+    "goals": {
+      "studies": "Études",
+      "work": "Travail",
+      "discovery": "Découverte",
+      "family": "Famille",
+      "internship": "Stage",
+      "other": "Autre"
+    },
+    "stayDuration": {
+      "less_6_months": "Moins de 6 mois",
+      "6_12_months": "6 à 12 mois",
+      "1_3_years": "1 à 3 ans",
+      "more_3_years": "Plus de 3 ans"
+    },
+    "stepsDone": {
+      "school_registration": "Inscription école",
+      "housing_search": "Recherche logement",
+      "job_search": "Recherche emploi",
+      "visa_application": "Demande visa",
+      "other": "Autre",
+      "none": "Aucune démarche"
+    },
+    "priorities": {
+      "housing": "Logement",
+      "employment": "Emploi",
+      "transport": "Transport",
+      "admin_help": "Aides administratives",
+      "health": "Santé",
+      "social_integration": "Intégration sociale"
+    },
+    "steps": {
+      "destination": "Destination",
+      "profile": "Profil",
+      "objective": "Objectif",
+      "preparation": "Préparation",
+      "needs": "Besoins",
+      "summary": "Résumé"
+    }
+  },
+  "emploiData": {
+    "demand": {
+      "veryHigh": "Très élevée",
+      "high": "Élevée",
+      "medium": "Moyenne",
+      "low": "Faible"
+    },
+    "sectors": {
+      "france": { "techDev": "Tech & Développement", "health": "Santé", "logistics": "Logistique & Transport", "construction": "BTP", "hospitality": "Hôtellerie-Restauration" },
+      "uk": { "techEng": "Tech & Ingénierie", "finance": "Finance & Banque", "healthcare": "Healthcare (NHS)", "marketing": "Marketing & Com", "construction": "Construction" },
+      "ch": { "finance": "Finance & assurance", "it": "Informatique & cybersécurité", "health": "Santé (médecins, infirmiers)", "pharma": "Pharmaceutique", "watchmaking": "Horlogerie" },
+      "us": { "techSoftware": "Tech & Software", "healthMedical": "Santé & Medical", "finance": "Finance", "dataScience": "Data Science & IA", "engineering": "Ingénierie" },
+      "ca": { "techIt": "Tech & IT", "health": "Santé", "construction": "Construction & Trades", "finance": "Finance", "naturalRes": "Ressources naturelles" },
+      "de": { "autoEng": "Ingénierie automobile", "itSoftware": "IT & Software", "healthCare": "Santé & soins", "industry": "Industrie & Manufacturing", "logistics": "Logistique" },
+      "au": { "mining": "Mining & Ressources", "techIt": "Tech & IT", "healthcare": "Healthcare", "construction": "Construction", "agriculture": "Agriculture" },
+      "jp": { "itEng": "IT & Ingénierie", "automotive": "Automobile", "finance": "Finance", "teaching": "Enseignement (anglais)", "tourism": "Tourisme & Hôtellerie" }
+    },
+    "contracts": {
+      "france": { "cdi": "CDI (Contrat à Durée Indéterminée)", "cdd": "CDD (Contrat à Durée Déterminée)", "interim": "Intérim (Travail temporaire)", "freelance": "Freelance / Auto-entrepreneur", "alternance": "Alternance (Apprentissage / Professionnalisation)" },
+      "uk": { "permanent": "Permanent contract (équivalent CDI)", "fixedTerm": "Fixed-term contract (équivalent CDD)", "temporary": "Temporary contract (Intérim)", "zeroHours": "Zero-hours contract (Heures flexibles)", "selfEmployed": "Self-employed / Contractor" },
+      "ch": { "cdi": "CDI (contrat illimité)", "cdd": "CDD", "trial": "Contrat d'essai longue durée", "freelance": "Freelance (indépendant)", "temporary": "Temporaire (via agence)" },
+      "us": { "atWill": "At-will employment (résiliation libre par les deux parties)", "fullTime": "Full-time (équivalent CDI)", "partTime": "Part-time", "contractor": "Independent contractor (freelance)", "internship": "Internship (stage rémunéré ou non)" },
+      "ca": { "permanentFull": "Permanent full-time (CDI)", "permanentPart": "Permanent part-time", "fixedTerm": "Fixed-term contract (CDD)", "casual": "Casual / Temporary", "selfEmployed": "Self-employed / Contractor" },
+      "de": { "unbefristet": "Unbefristeter Vertrag (CDI)", "befristet": "Befristeter Vertrag (CDD)", "minijob": "Minijob (≤520€/mois, charges réduites)", "werkvertrag": "Werkvertrag (contrat d'ouvrage)", "freiberufler": "Freiberufler (indépendant)" },
+      "au": { "permanent": "Permanent (full-time / part-time)", "fixedTerm": "Fixed-term contract", "casual": "Casual (heures flexibles, +25% loading)", "contractor": "Contractor / ABN (auto-entrepreneur)", "workingHoliday": "Working Holiday (visa 417/462)" },
+      "jp": { "seishain": "Seishain (正社員) — CDI permanent", "keiyaku": "Keiyaku-shain (契約社員) — CDD", "haken": "Haken-shain (派遣社員) — Intérim", "partTime": "Part-time (パート / アルバイト)", "freelance": "Freelance (フリーランス)" }
+    },
+    "platformTypes": {
+      "publicService": "Service public", "generalist": "Généraliste", "executives": "Cadres", "techStartups": "Tech & Startups",
+      "proNetwork": "Réseau professionnel", "marketLeader": "Leader du marché", "publicSector": "Secteur public",
+      "comprehensive": "Complet", "government": "Gouvernement", "leaderRomandie": "Leader Romandie",
+      "aggregator": "Agrégateur", "nationalLeader": "Leader national", "specializedRecruitment": "Recrutement spécialisé",
+      "reviewsJobs": "Avis + Emplois", "matchingAI": "Matching IA", "federalGov": "Gouvernement fédéral",
+      "canadaOnly": "Canada uniquement", "recruitment": "Recrutement", "leaderGermany": "Leader Allemagne",
+      "proNetworkDACH": "Réseau professionnel DACH", "international": "International",
+      "leaderAustralia": "Leader Australie", "foreignersJapan": "Étrangers au Japon", "bilingualIntl": "Bilingue/International"
+    },
+    "permits": {
+      "france": {
+        "0": "Citoyens UE : pas de permis de travail nécessaire",
+        "1": "Hors UE : autorisation de travail OBLIGATOIRE (DIRECCTE)",
+        "2": "Passeport Talent : profils qualifiés (diplôme master + salaire ≥ 53 836€/an)",
+        "3": "Visa long séjour travail : contrat + autorisation validée",
+        "4": "PVT (Vacances-Travail) : 18-30 ans, pays partenaires, 1-2 ans"
+      },
+      "uk": {
+        "0": "Citoyens UE post-Brexit : Skilled Worker visa requis",
+        "1": "Skilled Worker visa : salaire minimum £38 700/an (£29 000 pour certains métiers)",
+        "2": "Health and Care Worker visa : NHS et care sector",
+        "3": "Graduate visa : 2 ans pour diplômés UK",
+        "4": "Youth Mobility Scheme : 18-30 ans, pays partenaires, 2 ans"
+      },
+      "ch": {
+        "0": "Permis L (court séjour) : contrats < 1 an",
+        "1": "Permis B (résidence annuelle) : contrats > 1 an",
+        "2": "Permis C (résidence permanente) : après 5-10 ans",
+        "3": "Permis G (frontalier) : retour hebdo au domicile",
+        "4": "Documents : Contrat, Passeport, Casier judiciaire, CV complet"
+      },
+      "us": {
+        "0": "H-1B : travailleurs qualifiés (loterie annuelle, 65K + 20K master)",
+        "1": "L-1 : transfert intra-entreprise",
+        "2": "O-1 : capacités extraordinaires (arts, sciences, business)",
+        "3": "Green Card : résidence permanente (sponsoring employeur ou famille)",
+        "4": "OPT/CPT : stages pour étudiants internationaux (visa F-1)"
+      },
+      "ca": {
+        "0": "Programme Entrée Express : immigration qualifiée (points CRS)",
+        "1": "LMIA : autorisation employeur + permis de travail fermé",
+        "2": "PVT (Permis Vacances-Travail) : 18-35 ans, 1-2 ans",
+        "3": "Permis de travail ouvert : conjoint accompagnateur",
+        "4": "Provincial Nominee Program (PNP) : nomination provinciale"
+      },
+      "de": {
+        "0": "Citoyens UE : libre circulation, pas de permis nécessaire",
+        "1": "Blue Card UE : diplôme reconnu + salaire ≥ 45 300€/an (ou 41 042€ métiers en tension)",
+        "2": "Carte de séjour recherche d'emploi : 6 mois pour chercher (diplôme reconnu requis)",
+        "3": "Visa d'artiste/freelance : auto-entrepreneurs (section §21 AufenthG)",
+        "4": "Aufenthaltserlaubnis : permis de séjour lié à l'employeur"
+      },
+      "au": {
+        "0": "Skilled Worker visa (subclass 482) : sponsoring employeur, 2-4 ans",
+        "1": "Skilled Independent visa (subclass 189) : points-based, résidence permanente",
+        "2": "Working Holiday visa (subclass 417/462) : 18-30/35 ans, 1 an",
+        "3": "Employer Nomination Scheme (subclass 186) : résidence permanente",
+        "4": "Skills Assessment obligatoire par organisme sectoriel"
+      },
+      "jp": {
+        "0": "Visa de travail catégoriel : ingénieur, humanités, business management",
+        "1": "Highly Skilled Professional visa : système à points (70+ points)",
+        "2": "Specified Skilled Worker (特定技能) : 14 secteurs en tension",
+        "3": "Working Holiday : 18-30 ans, pays partenaires, 1 an",
+        "4": "Sponsoring employeur OBLIGATOIRE pour tous les visas de travail"
+      }
+    },
+    "notes": {
+      "france": {
+        "0": "Français indispensable (niveau B2 minimum) sauf certaines startups tech",
+        "1": "CV + lettre de motivation obligatoires, photo professionnelle recommandée",
+        "2": "Période d'essai : 2-4 mois négociable, rupture libre sans indemnités",
+        "3": "Chômage : 57% du salaire pendant 18-24 mois si cotisations suffisantes",
+        "4": "35h légales avec possibilité heures supplémentaires majorées (+25% puis +50%)"
+      },
+      "uk": {
+        "0": "Anglais professionnel indispensable (niveau C1 recommandé)",
+        "1": "CV anglo-saxon : max 2 pages, pas de photo, pas de date de naissance",
+        "2": "Right to Work check obligatoire : passeport + visa/BRP/settled status",
+        "3": "Notice period : 1 semaine à 3 mois selon contrat et ancienneté",
+        "4": "Universal Credit : aide au chômage/logement selon revenus et situation"
+      },
+      "ch": {
+        "0": "Langue selon région : allemand (Zurich, Bern), français (Genève, Lausanne), italien (Tessin)",
+        "1": "Salaires très élevés MAIS coût de la vie très élevé (loyer, santé, transports)",
+        "2": "CV suisse : photo obligatoire, diplômes détaillés, références vérifiées",
+        "3": "Permis de travail requis AVANT de postuler (sauf UE/AELE)",
+        "4": "Période d'essai : 1-3 mois, résiliation possible avec préavis court"
+      },
+      "us": {
+        "0": "Anglais professionnel indispensable (aucune langue officielle fédérale)",
+        "1": "Résumé (pas CV) : 1 page max, pas de photo, orienté résultats chiffrés",
+        "2": "At-will employment : licenciement possible sans motif dans la plupart des États",
+        "3": "Couverture santé souvent liée à l'employeur (pas de système universel)",
+        "4": "Culture du networking intense : LinkedIn, meetups, événements sectoriels"
+      },
+      "ca": {
+        "0": "Bilingue officiel : anglais partout, français au Québec (OQLF oblige français au travail)",
+        "1": "CV canadien : 2 pages max, pas de photo, pas d'âge, orienté accomplissements",
+        "2": "Immigration très structurée : Entrée Express + PNP = voies principales",
+        "3": "Assurance-emploi (EI) : chômage fédéral si cotisations suffisantes",
+        "4": "Reconnaissance des diplômes parfois nécessaire (WES, IQAS)"
+      },
+      "de": {
+        "0": "Allemand indispensable pour la majorité des postes (B2-C1), anglais accepté en tech/startups",
+        "1": "CV allemand (Lebenslauf) : photo professionnelle, chronologique inversé, très détaillé",
+        "2": "Forte culture du diplôme : reconnaissance Anabin / KMK souvent requise",
+        "3": "Cotisations sociales élevées (~40% du brut) mais couverture complète",
+        "4": "Période d'essai standard : 6 mois (Probezeit)"
+      },
+      "au": {
+        "0": "Anglais professionnel requis (IELTS 6+ pour visas)",
+        "1": "CV australien : 2-3 pages, pas de photo, avec referees (2 références min)",
+        "2": "Culture décontractée mais professionnelle, horaires flexibles courants",
+        "3": "Superannuation (retraite) : employeur paie 11.5% en plus du salaire",
+        "4": "Fair Work Act : droits des travailleurs très protégés, salaire minimum élevé"
+      },
+      "jp": {
+        "0": "Japonais souvent requis (JLPT N2-N1), anglais accepté en tech/finance internationale",
+        "1": "Rirekisho (履歴書) : CV format standard japonais, photo obligatoire, manuscrit parfois",
+        "2": "Culture du travail intense : heures supplémentaires fréquentes, esprit d'équipe primordial",
+        "3": "Seniority system (年功序列) : progression liée à l'ancienneté, en évolution",
+        "4": "Shūkatsu (就活) : saison de recrutement standardisée pour les jeunes diplômés"
+      }
+    }
+  },
+  "countryContent": {
+    "france": {
+      "emploi": {
+        "stats": {
+          "offers": "Offres en France",
+          "avgSalary": "Salaire moyen",
+          "unemployment": "Taux de chômage"
+        },
+        "guides": {
+          "0": {
+            "title": "Travailler en France (UE vs Hors UE)",
+            "steps": {
+              "0": "Citoyens UE/EEE : pas de permis de travail nécessaire",
+              "1": "Hors UE : visa de travail requis (sponsorisé par l'employeur)",
+              "2": "Inscription à Pôle Emploi possible pour aide à la recherche",
+              "3": "Cotisations sociales élevées (sécu, retraite) mais bonne protection"
+            }
+          }
+        },
+        "tips": {
+          "0": "Le CV français fait généralement 1 page, avec photo",
+          "1": "La lettre de motivation est très importante",
+          "2": "Les entretiens sont formels, vouvoiement de rigueur"
+        }
+      },
+      "logement": {
+        "stats": {
+          "rentParis": "Loyer moyen Paris",
+          "rentLyon": "Loyer moyen Lyon",
+          "deposit": "Dépôt de garantie"
+        },
+        "guides": {
+          "0": {
+            "title": "Location en France",
+            "steps": {
+              "0": "Sites : SeLoger, Leboncoin, PAP (Particulier à Particulier)",
+              "1": "Dossier complet requis : 3 dernières fiches de paie, avis d'imposition, pièce d'identité",
+              "2": "Garant souvent exigé (Garantme, Visale pour jeunes/précaires)",
+              "3": "État des lieux détaillé à l'entrée et sortie"
+            }
+          }
+        },
+        "tips": {
+          "0": "La concurrence est forte dans les grandes villes",
+          "1": "APL (Aide Personnalisée au Logement) disponible sous conditions",
+          "2": "Assurance habitation obligatoire"
+        }
+      },
+      "transport": {
+        "guides": {
+          "0": {
+            "title": "Permis de conduire en France",
+            "steps": {
+              "0": "Permis UE : valide en France sans démarche",
+              "1": "Permis hors UE : échange possible selon accords bilatéraux",
+              "2": "Sinon : passage du permis français obligatoire (code + conduite)"
+            }
+          }
+        },
+        "tips": {
+          "0": "Pass Navigo (Paris) : 75€/mois toutes zones",
+          "1": "TGV pour trajets longue distance (réserver à l'avance)",
+          "2": "Vélib' et autopartage disponibles"
+        }
+      },
+      "sante": {
+        "guides": {
+          "0": {
+            "title": "Sécurité sociale française",
+            "steps": {
+              "0": "Inscription automatique dès premier emploi",
+              "1": "Carte Vitale envoyée sous 3-6 semaines",
+              "2": "Remboursement : 70% consultations, 80% hospitalisations",
+              "3": "Mutuelle complémentaire recommandée (souvent via employeur)"
+            }
+          }
+        },
+        "tips": {
+          "0": "Médecin traitant obligatoire pour meilleur remboursement",
+          "1": "Urgences : 15 (SAMU), hôpitaux publics gratuits avec Carte Vitale",
+          "2": "Pharmacies ouvertes 24h/24 dans grandes villes"
+        }
+      },
+      "demarches": {
+        "guides": {
+          "0": {
+            "title": "Installation en France",
+            "steps": {
+              "0": "Titre de séjour si hors UE (préfecture)",
+              "1": "Ouverture compte bancaire (RIB indispensable)",
+              "2": "Déclaration d'impôts annuelle (prélèvement à la source)",
+              "3": "Inscription consulaire si expatrié"
+            }
+          }
+        },
+        "documents": {
+          "0": "Passeport/CNI",
+          "1": "Justificatif de domicile",
+          "2": "Acte de naissance",
+          "3": "Visa (si hors UE)"
+        }
+      }
+    },
+    "usa": {
+      "emploi": {
+        "stats": {
+          "offers": "Offres aux USA",
+          "avgSalary": "Salaire moyen",
+          "unemployment": "Taux de chômage"
+        },
+        "guides": {
+          "0": {
+            "title": "Travailler aux États-Unis",
+            "steps": {
+              "0": "Visa requis (H1B, L1, E2, etc.) - indispensable avant de commencer",
+              "1": "Le sponsoring par une entreprise est souvent nécessaire",
+              "2": "Réseautage crucial pour accéder au marché caché"
+            }
+          }
+        },
+        "tips": {
+          "0": "Le CV américain est différent (pas de photo, infos persos limitées)",
+          "1": "Soyez direct et orienté résultats"
+        }
+      },
+      "logement": {
+        "stats": {
+          "rentNYC": "Loyer moyen NYC",
+          "rentLA": "Loyer moyen LA"
+        }
+      }
+    },
+    "japan": {
+      "emploi": {
+        "stats": {
+          "offers": "Offres au Japon",
+          "avgSalary": "Salaire moyen"
+        },
+        "guides": {
+          "0": {
+            "title": "Travailler au Japon",
+            "steps": {
+              "0": "Visa de travail obligatoire",
+              "1": "Niveau de japonais JLPT N2/N1 souvent demandé",
+              "2": "Respect de la culture d'entreprise très important"
+            }
+          }
+        }
+      },
+      "logement": {
+        "stats": {
+          "rentTokyo": "Loyer moyen Tokyo",
+          "keyMoney": "Key Money"
+        }
+      }
+    },
+    "switzerland": {
+      "emploi": {
+        "stats": {
+          "offers": "Offres en Suisse",
+          "avgSalary": "Salaire moyen"
+        },
+        "guides": {
+          "0": {
+            "title": "Travailler en Suisse",
+            "steps": {
+              "0": "Permis de travail (L, B, C) selon nationalité et contrat",
+              "1": "Marché très compétitif, qualifications élevées demandées",
+              "2": "Salaires parmi les plus élevés au monde"
+            }
+          }
+        }
+      },
+      "logement": {
+        "stats": {
+          "rentZurich": "Loyer moyen Zurich",
+          "rentGeneva": "Loyer moyen Genève"
+        }
+      }
     }
   }
 }

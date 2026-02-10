@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import FormField from '../ui/FormField'
 import Select from '../ui/Select'
 import ToggleGroup from '../ui/ToggleGroup'
 import WizardNav from '../components/WizardNav'
-import { GOAL_OPTIONS, STAY_DURATION_OPTIONS } from '../data/constants'
+import { GOAL_IDS, STAY_DURATION_IDS } from '../data/constants'
 
 interface ObjectiveStepData {
   goal: string
@@ -17,6 +18,7 @@ interface ObjectiveStepProps {
 }
 
 export default function ObjectiveStep({ data, onNext, onBack }: ObjectiveStepProps) {
+  const { t } = useTranslation()
   const [formData, setFormData] = useState<ObjectiveStepData>({
     goal: data?.goal || '',
     stayDuration: data?.stayDuration || ''
@@ -24,15 +26,18 @@ export default function ObjectiveStep({ data, onNext, onBack }: ObjectiveStepPro
 
   const [errors, setErrors] = useState<Partial<ObjectiveStepData>>({})
 
+  const goalOptions = useMemo(() => GOAL_IDS.map(id => ({ value: id, label: t(`onboarding.constants.goals.${id}`) })), [t])
+  const stayDurationOptions = useMemo(() => STAY_DURATION_IDS.map(id => ({ value: id, label: t(`onboarding.constants.stayDuration.${id}`) })), [t])
+
   const validateForm = (): boolean => {
     const newErrors: Partial<ObjectiveStepData> = {}
 
     if (!formData.goal) {
-      newErrors.goal = 'L\'objectif principal est requis'
+      newErrors.goal = t('onboarding.objective.errors.goalRequired')
     }
 
     if (!formData.stayDuration) {
-      newErrors.stayDuration = 'La durée prévue du séjour est requise'
+      newErrors.stayDuration = t('onboarding.objective.errors.stayDurationRequired')
     }
 
     setErrors(newErrors)
@@ -58,22 +63,22 @@ export default function ObjectiveStep({ data, onNext, onBack }: ObjectiveStepPro
     <div className="space-y-6">
       <div className="text-center mb-8">
         <h1 className="text-2xl font-bold text-gray-900 mb-2">
-          Objectif de votre départ
+          {t('onboarding.objective.title')}
         </h1>
         <p className="text-gray-600">
-          Précisez la raison principale de votre expatriation et sa durée
+          {t('onboarding.objective.subtitle')}
         </p>
       </div>
 
       <div className="space-y-6">
         <FormField
-          label="Objectif principal"
+          label={t('onboarding.objective.goal')}
           required
           error={errors.goal}
           id="goal"
         >
           <ToggleGroup
-            options={GOAL_OPTIONS}
+            options={goalOptions}
             value={formData.goal}
             onChange={handleFieldChange('goal')}
             aria-describedby={errors.goal ? 'goal-error' : undefined}
@@ -81,17 +86,17 @@ export default function ObjectiveStep({ data, onNext, onBack }: ObjectiveStepPro
         </FormField>
 
         <FormField
-          label="Durée prévue du séjour"
+          label={t('onboarding.objective.stayDuration')}
           required
           error={errors.stayDuration}
           id="stayDuration"
         >
           <Select
             id="stayDuration"
-            options={STAY_DURATION_OPTIONS}
+            options={stayDurationOptions}
             value={formData.stayDuration}
             onChange={handleFieldChange('stayDuration')}
-            placeholder="Sélectionnez la durée"
+            placeholder={t('onboarding.objective.stayDurationPlaceholder')}
             aria-describedby={errors.stayDuration ? 'stayDuration-error' : undefined}
           />
         </FormField>
