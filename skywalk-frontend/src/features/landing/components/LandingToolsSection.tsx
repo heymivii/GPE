@@ -28,7 +28,6 @@ export default function LandingToolsSection() {
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8 items-start">
-          {/* Sidebar / Tabs */}
           <div className="w-full lg:w-64 flex-shrink-0 space-y-2">
             {categories.map((cat) => (
               <button
@@ -46,10 +45,8 @@ export default function LandingToolsSection() {
             ))}
           </div>
 
-          {/* Tool Display */}
           <div className="flex-1 w-full bg-gray-50 rounded-3xl p-2 border border-gray-100 shadow-sm min-h-[500px] relative">
              <div className="h-full bg-white rounded-2xl overflow-hidden relative">
-                {/* Blur Overlay */}
                 <div className="absolute inset-0 z-10 bg-white/60 backdrop-blur-[2px] flex flex-col items-center justify-center text-center p-6">
                   <div className="bg-white p-4 rounded-full shadow-xl mb-4">
                     <Lock className="w-8 h-8 text-[#5EA3C0]" />
@@ -68,7 +65,6 @@ export default function LandingToolsSection() {
                   </Link>
                 </div>
 
-                {/* Tool Content (Non-interactive) */}
                 <div className="pointer-events-none select-none filter blur-[1px]">
                   <ServiceTools 
                     category={activeCategory} 

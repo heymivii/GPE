@@ -8,10 +8,8 @@ export default function Footer() {
 
   return (
     <footer className="bg-gray-900 text-gray-300 mt-auto">
-      {/* Main Footer Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* Company Info */}
           <div className="space-y-4">
             <h3 className="text-xl font-bold text-white">SkyWalk</h3>
             <p className="text-sm leading-relaxed">
@@ -66,7 +64,6 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Services */}
           <div>
             <h3 className="text-white font-semibold text-lg mb-4">{t('footer.services')}</h3>
             <ul className="space-y-2 text-sm">
@@ -103,7 +100,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Ressources */}
           <div>
             <h3 className="text-white font-semibold text-lg mb-4">{t('footer.resources')}</h3>
             <ul className="space-y-2 text-sm">
@@ -140,7 +136,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Contact & Legal */}
           <div>
             <h3 className="text-white font-semibold text-lg mb-4">{t('footer.contact')}</h3>
             <ul className="space-y-3 text-sm">
@@ -179,7 +174,6 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Bottom Bar */}
       <div className="border-t border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">

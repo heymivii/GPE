@@ -88,7 +88,6 @@ export default function NavBar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
 
-          {/* Left: Logo + Desktop links */}
           <div className="flex items-center gap-8">
             <Link 
               to={isAuthenticated ? '/dashboard' : '/'} 
@@ -112,7 +111,6 @@ export default function NavBar() {
                   <Link to="/projects" className={linkClass('/projects')}>{t('nav.projects')}</Link>
                   <Link to="/onboarding" className={linkClass('/onboarding')}>{t('nav.myProject')}</Link>
 
-                  {/* Explore dropdown */}
                   <div className="relative" ref={exploreRef}>
                     <button 
                       className={`flex items-center gap-1 text-sm font-medium transition-colors ${
@@ -154,9 +152,7 @@ export default function NavBar() {
             </div>
           </div>
 
-          {/* Right: Search + Lang + Auth + Mobile hamburger */}
           <div className="flex items-center gap-3">
-            {/* Global Search Trigger */}
             <button
               onClick={() => setSearchOpen(true)}
               className="flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 bg-gray-50 hover:bg-gray-100 text-gray-500 text-sm transition-colors"
@@ -168,7 +164,6 @@ export default function NavBar() {
               </kbd>
             </button>
 
-            {/* Language selector */}
             <div className="relative hidden sm:block" ref={langRef}>
               <button
                 className="flex items-center gap-1.5 px-2.5 py-2 border border-gray-200 rounded-lg bg-white hover:bg-gray-50 text-gray-600 text-sm"
@@ -197,7 +192,6 @@ export default function NavBar() {
               )}
             </div>
             
-            {/* Auth buttons / User menu — Desktop */}
             {isAuthenticated && user ? (
               <div className="relative hidden sm:block" ref={userMenuRef}>
                 <button
@@ -259,7 +253,6 @@ export default function NavBar() {
               </div>
             )}
 
-            {/* Mobile hamburger */}
             <button
               className="lg:hidden p-2 rounded-lg hover:bg-gray-100 text-gray-600"
               onClick={() => setMobileOpen(!mobileOpen)}
@@ -271,7 +264,6 @@ export default function NavBar() {
         </div>
       </div>
 
-      {/* ─── Mobile drawer ─── */}
       {mobileOpen && (
         <div className="lg:hidden border-t border-gray-200 bg-white">
           <div className="px-4 py-4 space-y-1">
@@ -296,7 +288,6 @@ export default function NavBar() {
               </>
             )}
 
-            {/* Language in mobile */}
             <div className="pt-3 border-t border-gray-100 flex gap-2">
               {languages.map((lang) => (
                 <button
@@ -314,7 +305,6 @@ export default function NavBar() {
               ))}
             </div>
 
-            {/* Auth in mobile */}
             <div className="pt-3 border-t border-gray-100">
               {isAuthenticated && user ? (
                 <div className="space-y-1">

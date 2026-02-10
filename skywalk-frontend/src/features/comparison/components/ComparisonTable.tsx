@@ -46,7 +46,6 @@ function RadarChart({ data, countryNames, colors }: {
   return (
     <div className="flex flex-col items-center">
       <svg viewBox="0 0 300 300" className="w-full max-w-xs">
-        {/* Grid rings */}
         {gridLevels.map(level => (
           <polygon
             key={level}
@@ -59,12 +58,10 @@ function RadarChart({ data, countryNames, colors }: {
             strokeWidth={level === 1 ? 1.5 : 0.8}
           />
         ))}
-        {/* Axis lines */}
         {Array.from({ length: n }, (_, i) => {
           const p = point(i, R)
           return <line key={i} x1={cx} y1={cy} x2={p.x} y2={p.y} stroke="#e5e7eb" strokeWidth={0.8} />
         })}
-        {/* Data polygons */}
         {countryNames.map((_, ci) => {
           const pts = data.map((d, i) => {
             const r = (d.values[ci] / 100) * R
@@ -82,7 +79,6 @@ function RadarChart({ data, countryNames, colors }: {
             />
           )
         })}
-        {/* Data dots */}
         {countryNames.map((_, ci) =>
           data.map((d, i) => {
             const r = (d.values[ci] / 100) * R
@@ -90,7 +86,6 @@ function RadarChart({ data, countryNames, colors }: {
             return <circle key={`${ci}-${i}`} cx={p.x} cy={p.y} r={3} fill={colors[ci]} />
           })
         )}
-        {/* Labels */}
         {data.map((d, i) => {
           const p = point(i, R + 22)
           return (
@@ -108,7 +103,6 @@ function RadarChart({ data, countryNames, colors }: {
         })}
       </svg>
 
-      {/* Legend */}
       <div className="flex gap-4 mt-2 flex-wrap justify-center">
         {countryNames.map((name, i) => (
           <div key={i} className="flex items-center gap-1.5">
@@ -232,7 +226,6 @@ export default function ComparisonTable({ countries, isAuthenticated = true }: C
 
   return (
     <div className="space-y-8">
-      {/* ── Sticky header ── */}
       <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-xl border-b border-gray-200/80 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] py-6 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 transition-all">
         <div className="grid grid-cols-[200px_1fr] gap-8 max-w-7xl mx-auto items-end">
           <div className="pb-2 text-xs font-bold text-gray-400 uppercase tracking-widest">
@@ -272,7 +265,6 @@ export default function ComparisonTable({ countries, isAuthenticated = true }: C
         </div>
       </div>
 
-      {/* ── Currency Selector ── */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-2 text-sm font-medium text-gray-500">
           <ArrowRightLeft className="w-4 h-4" />
@@ -295,7 +287,6 @@ export default function ComparisonTable({ countries, isAuthenticated = true }: C
         </div>
       </div>
 
-      {/* ── Radar Overview ── */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
         <div className="flex items-center gap-3 mb-6">
           <div className="p-2 bg-white rounded-lg text-[#5EA3C0] shadow-sm border border-gray-100">
@@ -310,7 +301,6 @@ export default function ComparisonTable({ countries, isAuthenticated = true }: C
         />
       </div>
 
-      {/* ── General ── */}
       <ComparisonSection
         title={t('comparison.sections.general')}
         icon={<Globe className="w-5 h-5" />}
@@ -337,7 +327,6 @@ export default function ComparisonTable({ countries, isAuthenticated = true }: C
         />
       </ComparisonSection>
 
-      {/* ── Cost of Living ── */}
       <ComparisonSection
         title={t('comparison.sections.costOfLiving')}
         icon={<DollarSign className="w-5 h-5" />}
@@ -414,7 +403,6 @@ export default function ComparisonTable({ countries, isAuthenticated = true }: C
         />
       </ComparisonSection>
 
-      {/* ── Quality of Life ── */}
       <ComparisonSection
         title={t('comparison.sections.qualityOfLife')}
         icon={<Heart className="w-5 h-5" />}
@@ -444,7 +432,6 @@ export default function ComparisonTable({ countries, isAuthenticated = true }: C
         />
       </ComparisonSection>
 
-      {/* ── Climate ── */}
       <ComparisonSection
         title={t('comparison.sections.climate')}
         icon={<Thermometer className="w-5 h-5" />}
@@ -469,7 +456,6 @@ export default function ComparisonTable({ countries, isAuthenticated = true }: C
         />
       </ComparisonSection>
 
-      {/* ── Taxation ── */}
       <ComparisonSection
         title={t('comparison.sections.taxation')}
         icon={<Receipt className="w-5 h-5" />}
@@ -486,15 +472,12 @@ export default function ComparisonTable({ countries, isAuthenticated = true }: C
         />
       </ComparisonSection>
 
-      {/* ── Premium sections ── */}
       {isAuthenticated ? (
         <>
-          {/* ── Immigration (OECD real data + static) ── */}
           <ComparisonSection
             title={t('comparison.sections.immigration')}
             icon={<MapPin className="w-5 h-5" />}
           >
-            {/* Real OECD migration statistics */}
             <ComparisonRowWithBar
               label={t('comparison.fields.stocksForeignPop')}
               values={countries.map(c => {
@@ -574,7 +557,6 @@ export default function ComparisonTable({ countries, isAuthenticated = true }: C
               colors={RADAR_COLORS}
             />
 
-            {/* Static procedure data */}
             <ComparisonRow
               label={t('comparison.fields.steps')}
               values={countries.map(c => {
@@ -598,7 +580,6 @@ export default function ComparisonTable({ countries, isAuthenticated = true }: C
               colClass={colClass}
             />
 
-            {/* OECD source attribution */}
             <div className="px-8 py-3 bg-gray-50/50 border-t border-gray-100">
               <p className="text-xs text-gray-400 flex items-center gap-1.5">
                 <Users className="w-3.5 h-3.5" />

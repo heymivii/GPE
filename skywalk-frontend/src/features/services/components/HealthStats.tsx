@@ -179,9 +179,7 @@ export default function HealthStats({ countryName }: HealthStatsProps) {
         </div>
       </div>
 
-      {/* Headline cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-        {/* System type */}
         <div className="bg-white rounded-xl p-5 border border-gray-200 hover:border-blue-200 transition-all hover:shadow-sm">
           <div className="flex items-center justify-between mb-3">
             <Shield className="w-5 h-5 text-blue-600" />
@@ -191,7 +189,6 @@ export default function HealthStats({ countryName }: HealthStatsProps) {
           <p className="text-xs text-gray-500 mt-1">{t(meta.systemLabelKey)}</p>
         </div>
 
-        {/* Insurance monthly */}
         <div className="bg-white rounded-xl p-5 border border-gray-200 hover:border-emerald-200 transition-all hover:shadow-sm">
           <div className="flex items-center justify-between mb-3">
             <Heart className="w-5 h-5 text-emerald-600" />
@@ -205,7 +202,6 @@ export default function HealthStats({ countryName }: HealthStatsProps) {
           <HeadlinePrice value={insuranceMonthly} suffix={t('services.stats.common.perMonth')} />
         </div>
 
-        {/* Coverage rate */}
         <div className="bg-white rounded-xl p-5 border border-gray-200 hover:border-purple-200 transition-all hover:shadow-sm">
           <div className="flex items-center justify-between mb-3">
             <Stethoscope className="w-5 h-5 text-purple-600" />
@@ -215,7 +211,6 @@ export default function HealthStats({ countryName }: HealthStatsProps) {
           <p className="text-xs text-gray-500 mt-1">{t('services.stats.health.averageCoverage')}</p>
         </div>
 
-        {/* Total health cost */}
         <div className={`rounded-xl p-5 border transition-all hover:shadow-sm ${
           totalHealthMonthly > 400 ? 'bg-red-50 border-red-200' :
           totalHealthMonthly > 150 ? 'bg-orange-50 border-orange-200' :
@@ -236,9 +231,7 @@ export default function HealthStats({ countryName }: HealthStatsProps) {
         </div>
       </div>
 
-      {/* Cost details */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        {/* Health insurance breakdown */}
         <div className="bg-white rounded-xl p-6 border border-gray-200">
           <div className="flex items-center gap-2 mb-4">
             <DollarSign className="w-5 h-5 text-emerald-600" />
@@ -278,7 +271,6 @@ export default function HealthStats({ countryName }: HealthStatsProps) {
           />
         </div>
 
-        {/* Context: cost of living */}
         <div className="bg-white rounded-xl p-6 border border-gray-200">
           <div className="flex items-center gap-2 mb-4">
             <TrendingUp className="w-5 h-5 text-blue-600" />
@@ -318,7 +310,6 @@ export default function HealthStats({ countryName }: HealthStatsProps) {
         </div>
       </div>
 
-      {/* Country-specific alert */}
       <div className={`mb-8 ${meta.alertBg} ${meta.alertBorder} border rounded-xl p-6`}>
         <div className="flex items-start space-x-3">
           <span className="text-xl flex-shrink-0">{meta.alertIcon}</span>
@@ -333,7 +324,6 @@ export default function HealthStats({ countryName }: HealthStatsProps) {
         </div>
       </div>
 
-      {/* Source note */}
       <div className="bg-gray-50 border border-gray-200 rounded-xl p-5">
         <p className="text-sm text-gray-600 leading-relaxed">
           <strong>{t('services.stats.common.source')}</strong> {t('services.stats.health.sourceExtra', { city: cityName })}

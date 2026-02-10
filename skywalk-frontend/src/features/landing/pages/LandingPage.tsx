@@ -36,11 +36,9 @@ export default function LandingPage() {
 
   return (
     <>
-      {/* Hero / CTA */}
       <section className="min-h-[90vh] flex items-center justify-center bg-gradient-to-b from-white to-gray-100 px-8">
         <div className="w-full max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-12">
           
-          {/* Left side - Text content */}
           <div className="flex-1 w-full lg:w-1/2">
             <div className="flex flex-col gap-5">
               <p className="font-outfit font-bold text-4xl md:text-6xl lg:text-7xl">{t('landing.hero.title')}</p>
@@ -79,7 +77,6 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* Right side - Search form */}
           <div className="flex-1 w-full lg:w-1/2">
             <Dropdown />
           </div>
@@ -87,10 +84,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Tools Section */}
       <LandingToolsSection />
 
-      {/* Destinations — moved to bottom of the landing page */}
       <section className="mt-16 px-8 w-full max-w-7xl mx-auto pb-16">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
           <div>
@@ -107,7 +102,6 @@ export default function LandingPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Large card on the left */}
           <Link 
             to={`/destinations/${popularDestinations[0].isoCode}`}
             className="lg:row-span-2 h-full min-h-[400px] block"
@@ -122,7 +116,6 @@ export default function LandingPage() {
             />
           </Link>
 
-          {/* Two smaller cards on the right */}
           <div className="space-y-6">
             <Link 
               to={`/destinations/${popularDestinations[1].isoCode}`}

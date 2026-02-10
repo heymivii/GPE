@@ -46,7 +46,6 @@ export default function JobCard({ job, viewMode }: JobCardProps) {
   if (viewMode === 'list') {
     return (
       <div className="bg-white rounded-lg border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all p-4 sm:p-6">
-        {/* Job Info */}
         <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1 min-w-0">
@@ -72,7 +71,6 @@ export default function JobCard({ job, viewMode }: JobCardProps) {
               {job.description}
             </p>
 
-            {/* Tags and Location */}
             <div className="flex flex-wrap items-center gap-2 mb-3">
               <span className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-md">
                 <MapPin className="w-3 h-3" />
@@ -88,7 +86,6 @@ export default function JobCard({ job, viewMode }: JobCardProps) {
               ))}
             </div>
 
-            {/* Actions */}
             <div className="flex gap-2">
               <a
                 href={job.link}
@@ -108,35 +105,29 @@ export default function JobCard({ job, viewMode }: JobCardProps) {
   return (
     <div className="bg-white rounded-lg border border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all overflow-hidden group">
       <div className="p-4 pt-5">
-        {/* Job Title */}
         <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 min-h-[3.5rem]">
           {job.title}
         </h3>
 
-        {/* Company */}
         <p className="text-sm text-gray-600 mb-3 flex items-center gap-1">
           <Building2 className="w-4 h-4 flex-shrink-0" />
           <span className="truncate">{job.tags[0] || t('searchPage.job.company')}</span>
         </p>
 
-        {/* Location */}
         <div className="flex items-center gap-1 text-sm text-gray-600 mb-3">
           <MapPin className="w-4 h-4 flex-shrink-0" />
           <span className="truncate">{job.city}, {job.country}</span>
         </div>
 
-        {/* Salary */}
         <div className="flex items-center gap-1 text-lg font-bold text-blue-600 mb-3">
           <DollarSign className="w-5 h-5" />
           {formatSalary(job.price, job.currency)}
         </div>
 
-        {/* Description */}
         <p className="text-sm text-gray-700 mb-4 line-clamp-3 min-h-[3.75rem]">
           {job.description}
         </p>
 
-        {/* Tags */}
         <div className="flex flex-wrap gap-2 mb-4 min-h-[2rem]">
           {job.tags.slice(1, 3).map((tag, index) => (
             <span
@@ -148,7 +139,6 @@ export default function JobCard({ job, viewMode }: JobCardProps) {
           ))}
         </div>
 
-        {/* Footer */}
         <div className="flex items-center justify-between pt-4 border-t border-gray-100">
           <div className="flex items-center gap-1 text-xs text-gray-500">
             <Calendar className="w-3 h-3" />

@@ -13,7 +13,6 @@ export default function ServiceHeader({ service }: ServiceHeaderProps) {
   return (
     <div className="relative overflow-hidden bg-white border-b border-gray-100">
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        {/* Breadcrumb */}
         <nav className="flex items-center space-x-2 text-sm font-medium text-gray-500 mb-8">
           <Link to="/" className="hover:text-gray-900 transition-colors">
             Accueil
@@ -26,7 +25,6 @@ export default function ServiceHeader({ service }: ServiceHeaderProps) {
           <span className="text-gray-900">{service.title}</span>
         </nav>
 
-        {/* Header Content */}
         <div className="flex flex-col md:flex-row items-start md:items-center gap-8">
           <div
             className={`flex-shrink-0 w-20 h-20 rounded-2xl bg-gray-50 flex items-center justify-center border border-gray-100`}

@@ -20,7 +20,6 @@ export default function AuthLayout() {
 
       <div className="flex items-center justify-center p-8 bg-white">
         <div className="w-full max-w-md">
-          {/* Logo mobile - visible uniquement sur mobile */}
           <Link to="/" className="md:hidden flex justify-center mb-8">
             <span className="text-2xl font-bold font-aclonica text-gray-900">SkyWalk</span>
           </Link>

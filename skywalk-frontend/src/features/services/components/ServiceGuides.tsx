@@ -27,7 +27,6 @@ export default function ServiceGuides({ guides, tips, faq }: ServiceGuidesProps)
 
   return (
     <section className="space-y-16">
-      {/* Guides */}
       <div>
         <h2 className="text-xl font-semibold text-gray-900 mb-6">
           {t('services.guides.sectionTitle')}
@@ -90,7 +89,6 @@ export default function ServiceGuides({ guides, tips, faq }: ServiceGuidesProps)
         </div>
       </div>
 
-      {/* Tips */}
       {tips && tips.length > 0 && (
         <div>
           <h2 className="text-xl font-semibold text-gray-900 mb-6">
@@ -111,7 +109,6 @@ export default function ServiceGuides({ guides, tips, faq }: ServiceGuidesProps)
         </div>
       )}
 
-      {/* FAQ */}
       {faq && faq.length > 0 && (
         <div>
           <h2 className="text-xl font-semibold text-gray-900 mb-6">

@@ -177,7 +177,6 @@ export default function ProfilePage() {
     <div className="min-h-screen bg-gray-50/50 py-12 px-4 sm:px-6 lg:px-8 font-sans">
       <div className="max-w-4xl mx-auto space-y-8">
         
-        {/* Header Card */}
         <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-r from-blue-50 to-indigo-50 opacity-60"></div>
           
@@ -230,11 +229,9 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Main Content Card */}
         <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 sm:p-10">
           {!isEditing ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
-              {/* Personal Info Section */}
               <section className="space-y-8">
                 <div className="flex items-center gap-4 pb-4 border-b border-gray-100">
                   <div className="p-3 bg-blue-50 rounded-xl text-blue-600">
@@ -272,7 +269,6 @@ export default function ProfilePage() {
                 </div>
               </section>
 
-              {/* Preferences Section */}
               <section className="space-y-8">
                 <div className="flex items-center gap-4 pb-4 border-b border-gray-100">
                   <div className="p-3 bg-emerald-50 rounded-xl text-emerald-600">
@@ -300,7 +296,6 @@ export default function ProfilePage() {
           ) : (
             <form onSubmit={handleSubmit} className="space-y-10">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                {/* Edit Personal Info */}
                 <div className="space-y-6">
                   <div className="flex items-center gap-3 mb-6">
                     <div className="h-8 w-1 bg-blue-500 rounded-full"></div>
@@ -374,7 +369,6 @@ export default function ProfilePage() {
                   </div>
                 </div>
 
-                {/* Edit Preferences */}
                 <div className="space-y-6">
                   <div className="flex items-center gap-3 mb-6">
                     <div className="h-8 w-1 bg-emerald-500 rounded-full"></div>
@@ -455,7 +449,6 @@ export default function ProfilePage() {
           )}
         </div>
 
-        {/* Danger Zone */}
         <div className="bg-red-50/30 rounded-3xl border border-red-100/50 p-8 overflow-hidden relative">
           <div className="absolute top-0 right-0 p-8 opacity-5">
             <Trash2 className="w-32 h-32 text-red-600" />

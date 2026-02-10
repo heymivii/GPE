@@ -116,7 +116,6 @@ export default function LogementStats({ countryName }: LogementStatsProps) {
           {t('services.stats.logement.title', { city: mapping.displayName })}
         </h2>
         <div className="flex items-center gap-2 flex-wrap justify-end">
-          {/* Currency selector */}
           <CurrencySelector />
           {!same && (
             <div className="flex items-center space-x-1.5 px-3 py-1.5 bg-amber-50 rounded-full">
@@ -133,7 +132,6 @@ export default function LogementStats({ countryName }: LogementStatsProps) {
         </div>
       </div>
 
-      {/* Headline cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
         <div className="bg-white rounded-xl p-5 border border-gray-200 hover:border-blue-200 transition-all hover:shadow-sm">
           <div className="flex items-center justify-between mb-3">
@@ -174,7 +172,6 @@ export default function LogementStats({ countryName }: LogementStatsProps) {
         </div>
       </div>
 
-      {/* Detailed rent table */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <div className="bg-white rounded-xl p-6 border border-gray-200">
           <div className="flex items-center gap-2 mb-4">
@@ -199,7 +196,6 @@ export default function LogementStats({ countryName }: LogementStatsProps) {
         </div>
       </div>
 
-      {/* Salary context */}
       {salary.averageMonthly.avg > 0 && (
         <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-6">
           <div className="flex items-start space-x-3">
@@ -223,7 +219,6 @@ export default function LogementStats({ countryName }: LogementStatsProps) {
         </div>
       )}
 
-      {/* Source note */}
       <div className="bg-gray-50 border border-gray-200 rounded-xl p-5">
         <p className="text-sm text-gray-600 leading-relaxed">
           <strong>{t('services.stats.common.source')}</strong> {t('services.stats.common.sourceNumbeo')} <strong>{cityName}</strong>.

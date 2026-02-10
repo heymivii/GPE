@@ -98,7 +98,6 @@ const CurrencyConverterWidget: React.FC<CurrencyConverterWidgetProps> = ({
       currentSize={currentSize}
     >
       <div className="space-y-4">
-        {/* Amount Input */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             {t("dashboard.personalized.widgets.currencyConverter.amount")}
@@ -112,7 +111,6 @@ const CurrencyConverterWidget: React.FC<CurrencyConverterWidgetProps> = ({
           />
         </div>
 
-        {/* From Currency */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             {t("dashboard.personalized.widgets.currencyConverter.from")}
@@ -130,7 +128,6 @@ const CurrencyConverterWidget: React.FC<CurrencyConverterWidgetProps> = ({
           </select>
         </div>
 
-        {/* Swap Button */}
         <div className="flex justify-center">
           <button
             onClick={handleSwap}
@@ -153,7 +150,6 @@ const CurrencyConverterWidget: React.FC<CurrencyConverterWidgetProps> = ({
           </button>
         </div>
 
-        {/* To Currency */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             {t("dashboard.personalized.widgets.currencyConverter.to")}
@@ -171,7 +167,6 @@ const CurrencyConverterWidget: React.FC<CurrencyConverterWidgetProps> = ({
           </select>
         </div>
 
-        {/* Result */}
         {loading ? (
           <div className="text-center py-4 text-gray-500">
             {t("dashboard.personalized.widgets.currencyConverter.loading")}
