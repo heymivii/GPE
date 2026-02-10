@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { countryApi } from '../../../api/country';
+import { SUPPORTED_COUNTRY_NAMES } from '../../../data/supportedCountries';
 
 export default function Dropdown() {
   const { t } = useTranslation();
@@ -13,7 +14,7 @@ export default function Dropdown() {
     origin: 'France',
     destination: 'Canada',
     category: 'emploi',
-    position: 'Développeur'
+    position: 'developer'
   });
 
   const { data: countries = [] } = useQuery({
@@ -21,7 +22,10 @@ export default function Dropdown() {
     queryFn: countryApi.getAll
   });
 
+
+
   const countryOptions = countries
+    .filter(c => SUPPORTED_COUNTRY_NAMES.includes(c.countryName))
     .map(c => ({ label: c.countryName, value: c.countryName }))
     .sort((a, b) => a.label.localeCompare(b.label));
 
@@ -45,25 +49,23 @@ export default function Dropdown() {
   };
 
   const handleSearch = () => {
-    console.log('🔍 Recherche lancée avec:', formData);
-    
+
     const params = new URLSearchParams();
-    
+
     if (formData.destination) {
       params.append('country', formData.destination);
     }
-    
+
     if (formData.category) {
       params.append('category', formData.category);
     }
-    
+
     if (formData.position) {
       params.append('query', formData.position);
     }
-    
+
     const url = `/search?${params.toString()}`;
-    console.log('📍 Navigation vers:', url);
-    
+
     navigate(url);
   };
 
@@ -87,12 +89,11 @@ export default function Dropdown() {
 
     return (
       <div className="relative w-full min-w-[400px]">
-        <div 
-          className={`flex items-center space-x-4 p-4 border rounded-xl cursor-pointer transition-all duration-200 ${
-            isHighlighted 
-              ? 'border-[#5EA3C0]/30 bg-[#5EA3C0]/5' 
-              : 'border-gray-200 hover:border-gray-300'
-          } ${activeField === field ? 'ring-2 ring-[#5EA3C0] ring-opacity-50' : ''}`}
+        <div
+          className={`flex items-center space-x-4 p-4 border rounded-xl cursor-pointer transition-all duration-200 ${isHighlighted
+            ? 'border-[#5EA3C0]/30 bg-[#5EA3C0]/5'
+            : 'border-gray-200 hover:border-gray-300'
+            } ${activeField === field ? 'ring-2 ring-[#5EA3C0] ring-opacity-50' : ''}`}
           onClick={() => handleFieldClick(field)}
         >
           <div className="flex-shrink-0">
@@ -100,19 +101,17 @@ export default function Dropdown() {
           </div>
           <div className="flex-1">
             <div className="text-sm text-gray-500">{label}</div>
-            <div className={`text-base font-medium ${
-              isHighlighted ? 'text-[#5EA3C0]' : 'text-gray-900'
-            }`}>
+            <div className={`text-base font-medium ${isHighlighted ? 'text-[#5EA3C0]' : 'text-gray-900'
+              }`}>
               {displayValue}
             </div>
           </div>
           <div className="flex-shrink-0">
-            <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${
-              activeField === field ? 'rotate-180' : ''
-            }`} />
+            <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${activeField === field ? 'rotate-180' : ''
+              }`} />
           </div>
         </div>
-        
+
         {activeField === field && (
           <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-10 max-h-60 overflow-y-auto">
             {options.length > 0 ? (
@@ -120,9 +119,8 @@ export default function Dropdown() {
                 {options.map((option) => (
                   <div
                     key={option.value}
-                    className={`px-4 py-2 hover:bg-gray-50 cursor-pointer text-gray-700 ${
-                      value === option.value ? 'bg-gray-50 font-medium' : ''
-                    }`}
+                    className={`px-4 py-2 hover:bg-gray-50 cursor-pointer text-gray-700 ${value === option.value ? 'bg-gray-50 font-medium' : ''
+                      }`}
                     onClick={(e) => {
                       e.stopPropagation();
                       handleSelect(field, option.value);
@@ -134,7 +132,7 @@ export default function Dropdown() {
               </div>
             ) : (
               <div className="text-sm text-gray-500 p-4 text-center">
-                {t('common.noOptions', 'Aucune option disponible')}
+                {t('common.noOptions')}
               </div>
             )}
           </div>
@@ -148,7 +146,7 @@ export default function Dropdown() {
       <div className="max-w-2xl mx-auto">
         <div className="bg-white rounded-2xl shadow-lg p-8">
           <div className="space-y-6">
-   
+
             <SelectField
               icon={Home}
               label={t('landing.search.origin')}
@@ -180,20 +178,19 @@ export default function Dropdown() {
               field="position"
               isHighlighted={true}
               options={[
-                { value: 'Développeur', label: 'Développeur' },
-                { value: 'Designer', label: 'Designer' },
-                { value: 'Manager', label: 'Manager' },
-                { value: 'Commercial', label: 'Commercial' },
-                { value: 'Autre', label: 'Autre' }
+                { value: 'developer', label: t('landing.search.positions.developer') },
+                { value: 'designer', label: t('landing.search.positions.designer') },
+                { value: 'manager', label: t('landing.search.positions.manager') },
+                { value: 'sales', label: t('landing.search.positions.sales') },
+                { value: 'other', label: t('landing.search.positions.other') }
               ]}
             />
 
             <div className="pt-4">
-              <button 
+              <button
                 type="button"
                 onClick={(e) => {
                   e.preventDefault();
-                  console.log('🖱️ Clic sur le bouton Rechercher');
                   handleSearch();
                 }}
                 className="w-full bg-black text-white py-4 px-6 rounded-full font-medium text-lg hover:bg-gray-800 active:scale-95 transition-all duration-200 flex items-center justify-center space-x-3 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"

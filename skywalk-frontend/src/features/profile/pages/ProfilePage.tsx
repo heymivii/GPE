@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 import { useProfile, useUpdateProfile, useDeleteAccount } from '../../../hooks/useProfile';
 import { countryApi } from '../../../api/country';
 import type { UpdateProfileDto } from '../../../types/auth';
@@ -26,6 +27,7 @@ interface SelectFieldProps extends React.SelectHTMLAttributes<HTMLSelectElement>
 }
 
 export default function ProfilePage() {
+  const { t } = useTranslation();
   const { data: profile, isLoading, error } = useProfile();
   const { data: countries = [] } = useQuery({
     queryKey: ['countries'],
@@ -76,21 +78,21 @@ export default function ProfilePage() {
     e.preventDefault();
     try {
       await updateProfile.mutateAsync(formData);
-      toast.success('Profil mis à jour avec succès');
+      toast.success(t('profilePage.updateSuccess'));
       setIsEditing(false);
     } catch (error) {
-      console.error('Erreur lors de la mise à jour du profil:', error);
-      toast.error('Erreur lors de la mise à jour du profil');
+      console.error('Error updating profile:', error);
+      toast.error(t('profilePage.updateErrorToast'));
     }
   };
 
   const handleDeleteAccount = async () => {
     try {
       await deleteAccount.mutateAsync();
-      toast.success('Compte supprimé avec succès');
+      toast.success(t('profilePage.deleteSuccess'));
     } catch (error) {
-      console.error('Erreur lors de la suppression du compte:', error);
-      toast.error('Erreur lors de la suppression du compte');
+      console.error('Error deleting account:', error);
+      toast.error(t('profilePage.deleteErrorToast'));
     }
   };
 
@@ -106,7 +108,7 @@ export default function ProfilePage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-red-600 bg-white px-6 py-4 rounded-lg shadow-sm border border-red-100">
-          Erreur lors du chargement du profil
+          {t('profilePage.loadingError')}
         </div>
       </div>
     );
@@ -132,7 +134,7 @@ export default function ProfilePage() {
       </p>
       <p className="text-gray-900 font-medium text-base flex items-center gap-2 font-sans">
         {icon && <span className="text-gray-400">{icon}</span>}
-        {value || <span className="text-gray-400 italic font-normal text-sm">Non renseigné</span>}
+        {value || <span className="text-gray-400 italic font-normal text-sm">{t('profilePage.notProvided')}</span>}
       </p>
     </div>
   );
@@ -191,7 +193,7 @@ export default function ProfilePage() {
             
             <div className="flex-1 text-center sm:text-left space-y-3 pb-2">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 tracking-tight font-outfit">{profile.fullName || 'Utilisateur'}</h1>
+                <h1 className="text-3xl font-bold text-gray-900 tracking-tight font-outfit">{profile.fullName || t('profilePage.user')}</h1>
                 <div className="flex items-center justify-center sm:justify-start text-gray-500 font-medium mt-1 font-sans">
                   <Mail className="w-4 h-4 mr-2 text-blue-400" />
                   {profile.email}
@@ -201,10 +203,10 @@ export default function ProfilePage() {
               <div className="flex flex-wrap justify-center sm:justify-start gap-2 font-sans">
                 {profile.status && (
                   <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
-                    {profile.status === 'self-employed' ? 'Indépendant' : 
-                     profile.status === 'employed' ? 'Salarié' :
-                     profile.status === 'student' ? 'Étudiant' :
-                     profile.status === 'retired' ? 'Retraité' :
+                    {profile.status === 'self-employed' ? t('profilePage.statusSelfEmployed') : 
+                     profile.status === 'employed' ? t('profilePage.statusEmployed') :
+                     profile.status === 'student' ? t('profilePage.statusStudent') :
+                     profile.status === 'retired' ? t('profilePage.statusRetired') :
                      profile.status}
                   </span>
                 )}
@@ -222,7 +224,7 @@ export default function ProfilePage() {
                 className="group flex items-center px-6 py-3 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-all shadow-lg shadow-gray-200 hover:shadow-gray-300 font-medium text-sm font-outfit"
               >
                 <Edit2 className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
-                Modifier
+                {t('profilePage.edit')}
               </button>
             )}
           </div>
@@ -239,22 +241,22 @@ export default function ProfilePage() {
                     <User className="w-6 h-6" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold text-gray-900 font-outfit">Personnel</h2>
-                    <p className="text-sm text-gray-500 font-sans">Vos informations d'identité</p>
+                    <h2 className="text-xl font-bold text-gray-900 font-outfit">{t('profilePage.personalTitle')}</h2>
+                    <p className="text-sm text-gray-500 font-sans">{t('profilePage.personalSubtitle')}</p>
                   </div>
                 </div>
                 
                 <div className="space-y-6 pl-2">
-                  <InfoItem label="Nom complet" value={`${profile.firstName} ${profile.lastName}`} />
-                  <InfoItem label="Âge" value={profile.age ? `${profile.age} ans` : null} />
+                  <InfoItem label={t('profilePage.fullName')} value={`${profile.firstName} ${profile.lastName}`} />
+                  <InfoItem label={t('profilePage.age')} value={profile.age ? t('profilePage.ageValue', { age: profile.age }) : null} />
                   <InfoItem 
-                    label="Langue maternelle" 
+                    label={t('profilePage.motherTongue')} 
                     value={profile.motherTongue} 
                     icon={<Globe className="w-4 h-4 text-blue-400" />} 
                   />
                   
                   <div>
-                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 font-outfit">Langues parlées</p>
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 font-outfit">{t('profilePage.spokenLanguages')}</p>
                     <div className="flex flex-wrap gap-2 font-sans">
                       {profile.spokenLanguages && profile.spokenLanguages.length > 0 ? (
                         profile.spokenLanguages.map((lang, index) => (
@@ -263,7 +265,7 @@ export default function ProfilePage() {
                           </span>
                         ))
                       ) : (
-                        <span className="text-gray-400 italic text-sm">Aucune langue ajoutée</span>
+                        <span className="text-gray-400 italic text-sm">{t('profilePage.noLanguages')}</span>
                       )}
                     </div>
                   </div>
@@ -277,19 +279,19 @@ export default function ProfilePage() {
                     <MapPin className="w-6 h-6" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold text-gray-900 font-outfit">Localisation</h2>
-                    <p className="text-sm text-gray-500 font-sans">Préférences et origines</p>
+                    <h2 className="text-xl font-bold text-gray-900 font-outfit">{t('profilePage.locationTitle')}</h2>
+                    <p className="text-sm text-gray-500 font-sans">{t('profilePage.locationSubtitle')}</p>
                   </div>
                 </div>
 
                 <div className="space-y-6 pl-2">
-                  <InfoItem label="Pays d'origine" value={originCountry?.countryName} />
-                  <InfoItem label="Niveau de langue (pays cible)" value={profile.languageLevel} />
-                  <InfoItem label="Statut actuel" value={
-                    profile.status === 'self-employed' ? 'Indépendant' : 
-                    profile.status === 'employed' ? 'Salarié' :
-                    profile.status === 'student' ? 'Étudiant' :
-                    profile.status === 'retired' ? 'Retraité' :
+                  <InfoItem label={t('profilePage.originCountry')} value={originCountry?.countryName} />
+                  <InfoItem label={t('profilePage.targetLanguageLevel')} value={profile.languageLevel} />
+                  <InfoItem label={t('profilePage.currentStatus')} value={
+                    profile.status === 'self-employed' ? t('profilePage.statusSelfEmployed') : 
+                    profile.status === 'employed' ? t('profilePage.statusEmployed') :
+                    profile.status === 'student' ? t('profilePage.statusStudent') :
+                    profile.status === 'retired' ? t('profilePage.statusRetired') :
                     profile.status
                   } />
                 </div>
@@ -302,20 +304,20 @@ export default function ProfilePage() {
                 <div className="space-y-6">
                   <div className="flex items-center gap-3 mb-6">
                     <div className="h-8 w-1 bg-blue-500 rounded-full"></div>
-                    <h3 className="text-lg font-bold text-gray-900 font-outfit">Informations personnelles</h3>
+                    <h3 className="text-lg font-bold text-gray-900 font-outfit">{t('profilePage.editPersonal')}</h3>
                   </div>
                   
                   <div className="grid grid-cols-2 gap-5">
                     <InputField
                       id="firstName"
-                      label="Prénom"
+                      label={t('profilePage.firstName')}
                       value={formData.firstName || ''}
                       onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                       required
                     />
                     <InputField
                       id="lastName"
-                      label="Nom"
+                      label={t('profilePage.lastName')}
                       value={formData.lastName || ''}
                       onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                       required
@@ -325,7 +327,7 @@ export default function ProfilePage() {
                   <div className="grid grid-cols-2 gap-5">
                     <InputField
                       id="age"
-                      label="Âge"
+                      label={t('profilePage.age')}
                       type="number"
                       value={formData.age || ''}
                       onChange={(e) => setFormData({ ...formData, age: parseInt(e.target.value) || undefined })}
@@ -334,27 +336,27 @@ export default function ProfilePage() {
                     />
                     <SelectField
                       id="status"
-                      label="Statut"
+                      label={t('profilePage.currentStatus')}
                       value={formData.status || ''}
                       onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                     >
-                      <option value="">Sélectionner</option>
-                      <option value="student">Étudiant</option>
-                      <option value="employee">Salarié</option>
-                      <option value="self_employed">Indépendant</option>
-                      <option value="unemployed">Demandeur d'emploi</option>
-                      <option value="retired">Retraité</option>
-                      <option value="other">Autre</option>
+                      <option value="">{t('profilePage.selectStatus')}</option>
+                      <option value="student">{t('profilePage.statusStudentOption')}</option>
+                      <option value="employee">{t('profilePage.statusEmployeeOption')}</option>
+                      <option value="self_employed">{t('profilePage.statusSelfEmployedOption')}</option>
+                      <option value="unemployed">{t('profilePage.statusUnemployedOption')}</option>
+                      <option value="retired">{t('profilePage.statusRetiredOption')}</option>
+                      <option value="other">{t('profilePage.statusOtherOption')}</option>
                     </SelectField>
                   </div>
 
                   <SelectField
                     id="motherTongue"
-                    label="Langue maternelle"
+                    label={t('profilePage.motherTongue')}
                     value={formData.motherTongue || ''}
                     onChange={(e) => setFormData({ ...formData, motherTongue: e.target.value })}
                   >
-                    <option value="">Sélectionnez votre langue maternelle</option>
+                    <option value="">{t('profilePage.selectMotherTongue')}</option>
                     {availableLanguages.map(lang => (
                       <option key={lang.value} value={lang.value}>{lang.label}</option>
                     ))}
@@ -362,7 +364,7 @@ export default function ProfilePage() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2 font-outfit">
-                      Autres langues parlées
+                      {t('profilePage.otherLanguages')}
                     </label>
                     <MultiPillSelect
                       options={availableLanguages}
@@ -376,32 +378,32 @@ export default function ProfilePage() {
                 <div className="space-y-6">
                   <div className="flex items-center gap-3 mb-6">
                     <div className="h-8 w-1 bg-emerald-500 rounded-full"></div>
-                    <h3 className="text-lg font-bold text-gray-900 font-outfit">Préférences & Sécurité</h3>
+                    <h3 className="text-lg font-bold text-gray-900 font-outfit">{t('profilePage.editPreferences')}</h3>
                   </div>
 
                   <SelectField
                     id="languageLevel"
-                    label="Niveau de langue (pays cible)"
+                    label={t('profilePage.targetLanguageLevel')}
                     value={formData.languageLevel || ''}
                     onChange={(e) => setFormData({ ...formData, languageLevel: e.target.value })}
                   >
-                    <option value="">Sélectionner</option>
-                    <option value="A1">A1 - Débutant</option>
-                    <option value="A2">A2 - Élémentaire</option>
-                    <option value="B1">B1 - Intermédiaire</option>
-                    <option value="B2">B2 - Intermédiaire avancé</option>
-                    <option value="C1">C1 - Avancé</option>
-                    <option value="C2">C2 - Maîtrise</option>
-                    <option value="native">Langue maternelle</option>
+                    <option value="">{t('profilePage.selectLanguageLevel')}</option>
+                    <option value="A1">{t('profilePage.languageLevelA1')}</option>
+                    <option value="A2">{t('profilePage.languageLevelA2')}</option>
+                    <option value="B1">{t('profilePage.languageLevelB1')}</option>
+                    <option value="B2">{t('profilePage.languageLevelB2')}</option>
+                    <option value="C1">{t('profilePage.languageLevelC1')}</option>
+                    <option value="C2">{t('profilePage.languageLevelC2')}</option>
+                    <option value="native">{t('profilePage.languageLevelNative')}</option>
                   </SelectField>
 
                   <SelectField
                     id="originCountry"
-                    label="Pays d'origine"
+                    label={t('profilePage.originCountry')}
                     value={formData.idOriginCountry || ''}
                     onChange={(e) => setFormData({ ...formData, idOriginCountry: parseInt(e.target.value) || undefined })}
                   >
-                    <option value="">Sélectionner un pays</option>
+                    <option value="">{t('profilePage.selectCountry')}</option>
                     {countries.map((country) => (
                       <option key={country.idCountry} value={country.idCountry}>
                         {country.countryName}
@@ -412,14 +414,14 @@ export default function ProfilePage() {
                   <div className="pt-4 border-t border-gray-100 mt-6">
                     <InputField
                       id="password"
-                      label="Nouveau mot de passe"
+                      label={t('profilePage.newPassword')}
                       type="password"
                       value={formData.password || ''}
                       onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                      placeholder="Laisser vide pour conserver"
+                      placeholder={t('profilePage.keepPassword')}
                       minLength={6}
                     />
-                    <p className="text-xs text-gray-400 mt-2 ml-1 font-sans">Minimum 6 caractères. Laissez vide si vous ne souhaitez pas le changer.</p>
+                    <p className="text-xs text-gray-400 mt-2 ml-1 font-sans">{t('profilePage.passwordHint')}</p>
                   </div>
                 </div>
               </div>
@@ -431,7 +433,7 @@ export default function ProfilePage() {
                   disabled={updateProfile.isPending}
                   className="px-6 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all disabled:opacity-50 font-medium text-sm font-outfit"
                 >
-                  Annuler
+                  {t('profilePage.cancel')}
                 </button>
                 <button
                   type="submit"
@@ -439,14 +441,14 @@ export default function ProfilePage() {
                   className="flex items-center px-6 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-200 transition-all disabled:opacity-50 font-medium text-sm font-outfit"
                 >
                   <Save className="w-4 h-4 mr-2" />
-                  {updateProfile.isPending ? 'Enregistrement...' : 'Enregistrer les modifications'}
+                  {updateProfile.isPending ? t('profilePage.saving') : t('profilePage.save')}
                 </button>
               </div>
 
               {updateProfile.isError && (
                 <div className="p-4 bg-red-50 border border-red-100 rounded-xl text-red-600 text-sm flex items-center animate-pulse font-sans">
                   <X className="w-4 h-4 mr-2" />
-                  Erreur lors de la mise à jour du profil. Veuillez réessayer.
+                  {t('profilePage.updateError')}
                 </div>
               )}
             </form>
@@ -465,9 +467,9 @@ export default function ProfilePage() {
                 <Trash2 className="w-6 h-6" />
               </div>
               <div className="flex-1 max-w-2xl">
-                <h2 className="text-lg font-bold text-gray-900 font-outfit">Zone de danger</h2>
+                <h2 className="text-lg font-bold text-gray-900 font-outfit">{t('profilePage.dangerZone')}</h2>
                 <p className="text-gray-500 mt-2 text-sm leading-relaxed font-sans">
-                  La suppression de votre compte est irréversible. Toutes vos données personnelles, préférences et historiques seront définitivement effacés de nos serveurs.
+                  {t('profilePage.dangerDesc')}
                 </p>
                 
                 <div className="mt-6">
@@ -476,26 +478,26 @@ export default function ProfilePage() {
                       onClick={() => setShowDeleteConfirm(true)}
                       className="px-5 py-2.5 border border-red-200 text-red-600 bg-white rounded-xl hover:bg-red-50 hover:border-red-300 transition-all font-medium text-sm shadow-sm font-outfit"
                     >
-                      Supprimer mon compte
+                      {t('profilePage.deleteAccount')}
                     </button>
                   ) : (
                     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-5 bg-white rounded-xl border border-red-100 shadow-sm">
                       <p className="text-sm font-medium text-red-600 flex-1 font-sans">
-                        Êtes-vous vraiment sûr de vouloir supprimer votre compte ?
+                        {t('profilePage.deleteConfirm')}
                       </p>
                       <div className="flex items-center gap-3 w-full sm:w-auto font-outfit">
                         <button
                           onClick={() => setShowDeleteConfirm(false)}
                           className="flex-1 sm:flex-none px-4 py-2 bg-gray-50 text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-100 text-sm font-medium transition-colors"
                         >
-                          Annuler
+                          {t('profilePage.cancel')}
                         </button>
                         <button
                           onClick={handleDeleteAccount}
                           disabled={deleteAccount.isPending}
                           className="flex-1 sm:flex-none px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm font-medium shadow-sm transition-colors"
                         >
-                          {deleteAccount.isPending ? 'Suppression...' : 'Confirmer'}
+                          {deleteAccount.isPending ? t('profilePage.deleting') : t('profilePage.confirm')}
                         </button>
                       </div>
                     </div>

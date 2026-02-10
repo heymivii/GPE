@@ -1,75 +1,46 @@
 import CategoryCard from './CategoryCard'
 import { Briefcase, Home, Car, Heart, FileText } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import type { LucideIcon } from 'lucide-react'
 
-const categories = [
-  {
-    title: 'Emploi',
-    subtitle: 'Trouver un emploi',
-    description: 'Explorez les opportunités professionnelles dans votre pays de destination et obtenez des conseils pour votre recherche d\'emploi.',
-    ctaText: 'Voir les offres d\'emploi',
-    ctaLink: '/services/emploi',
-    icon: Briefcase,
-    backgroundColor: 'bg-blue-50'
-  },
-  {
-    title: 'Logement',
-    subtitle: 'Explorer les logements',
-    description: 'Trouvez le logement idéal selon votre budget et vos préférences dans votre nouvelle ville.',
-    ctaText: 'Explorer les logements',
-    ctaLink: '/services/logement',
-    icon: Home,
-    backgroundColor: 'bg-green-50'
-  },
-  {
-    title: 'Transport',
-    subtitle: 'Se déplacer facilement',
-    description: 'Découvrez les moyens de transport disponibles et planifiez vos déplacements dans votre nouveau pays.',
-    ctaText: 'Voir les infos transport',
-    ctaLink: '/services/transport',
-    icon: Car,
-    backgroundColor: 'bg-purple-50'
-  },
-  {
-    title: 'Santé',
-    subtitle: 'Système de santé',
-    description: 'Informez-vous sur le système de santé local, les assurances et les démarches médicales nécessaires.',
-    ctaText: 'En savoir plus sur la santé',
-    ctaLink: '/services/sante',
-    icon: Heart,
-    backgroundColor: 'bg-red-50'
-  },
-  {
-    title: 'Aides administratives',
-    subtitle: 'Démarches et papiers',
-    description: 'Simplifiez vos démarches administratives avec nos guides et conseils pour vos documents officiels.',
-    ctaText: 'Voir les démarches',
-    ctaLink: '/services/demarches',
-    icon: FileText,
-    backgroundColor: 'bg-yellow-50'
-  }
+interface CategoryDef {
+  id: string;
+  ctaLink: string;
+  icon: LucideIcon;
+  backgroundColor: string;
+}
+
+const CATEGORIES: CategoryDef[] = [
+  { id: 'emploi',    ctaLink: '/services/emploi',    icon: Briefcase, backgroundColor: 'bg-blue-50' },
+  { id: 'logement',  ctaLink: '/services/logement',  icon: Home,      backgroundColor: 'bg-green-50' },
+  { id: 'transport', ctaLink: '/services/transport',  icon: Car,       backgroundColor: 'bg-purple-50' },
+  { id: 'sante',     ctaLink: '/services/sante',      icon: Heart,     backgroundColor: 'bg-red-50' },
+  { id: 'demarches', ctaLink: '/services/demarches',  icon: FileText,  backgroundColor: 'bg-yellow-50' },
 ]
 
 export default function CategoryGrid() {
+  const { t } = useTranslation()
+
   return (
     <section className="bg-gray-50 py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            Explorez nos services
+            {t('categoryGrid.title')}
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Tout ce dont vous avez besoin pour réussir votre expatriation
+            {t('categoryGrid.subtitle')}
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {categories.map((category, index) => (
+          {CATEGORIES.map((category) => (
             <CategoryCard
-              key={index}
-              title={category.title}
-              subtitle={category.subtitle}
-              description={category.description}
-              ctaText={category.ctaText}
+              key={category.id}
+              title={t(`categoryGrid.${category.id}.title`)}
+              subtitle={t(`categoryGrid.${category.id}.subtitle`)}
+              description={t(`categoryGrid.${category.id}.description`)}
+              ctaText={t(`categoryGrid.${category.id}.cta`)}
               ctaLink={category.ctaLink}
               icon={category.icon}
               backgroundColor={category.backgroundColor}

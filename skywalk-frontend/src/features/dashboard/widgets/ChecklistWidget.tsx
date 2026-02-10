@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import type { CountryData } from '../../../hooks/useCountryData';
 import { useChecklistProgress } from '../hooks/useChecklistProgress';
 import { useTranslation } from 'react-i18next';
+import type { WidgetSize } from '../hooks/useDashboardPreferences';
 
 interface ChecklistItem {
   id: string;
@@ -24,6 +25,8 @@ interface ChecklistWidgetProps {
   projectId: number;
   onEdit?: () => void;
   onHide?: () => void;
+  onResize?: (size: WidgetSize) => void;
+  currentSize?: WidgetSize;
 }
 
 export default function ChecklistWidget({
@@ -31,6 +34,8 @@ export default function ChecklistWidget({
   projectId,
   onEdit,
   onHide,
+  onResize,
+  currentSize,
 }: ChecklistWidgetProps) {
   const { t } = useTranslation()
   const [checklist, setChecklist] = useState<ChecklistItem[]>([]);
@@ -185,7 +190,7 @@ export default function ChecklistWidget({
 
   if (isLoading) {
     return (
-      <Widget title={t('dashboard.personalized.widgets.checklist.title')} onEdit={onEdit} onHide={onHide}>
+      <Widget title={t('dashboard.personalized.widgets.checklist.title')} onEdit={onEdit} onHide={onHide} onResize={onResize} currentSize={currentSize}>
         <div className="flex items-center justify-center py-8">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
         </div>
@@ -195,7 +200,7 @@ export default function ChecklistWidget({
 
   if (!countryData || checklist.length === 0) {
     return (
-      <Widget title={t('dashboard.personalized.widgets.checklist.title')} onEdit={onEdit} onHide={onHide}>
+      <Widget title={t('dashboard.personalized.widgets.checklist.title')} onEdit={onEdit} onHide={onHide} onResize={onResize} currentSize={currentSize}>
         <div className="text-center py-8 text-gray-500">
           <p>{t('dashboard.personalized.widgets.checklist.emptyState')}</p>
         </div>
@@ -204,7 +209,7 @@ export default function ChecklistWidget({
   }
 
   return (
-    <Widget title={t('dashboard.personalized.widgets.checklist.title')} onEdit={onEdit} onHide={onHide}>
+    <Widget title={t('dashboard.personalized.widgets.checklist.title')} onEdit={onEdit} onHide={onHide} onResize={onResize} currentSize={currentSize}>
       <div className="space-y-4">
         <div className="bg-gray-100 rounded-lg p-3">
           <div className="flex items-center justify-between mb-2">
@@ -227,7 +232,7 @@ export default function ChecklistWidget({
           </div>
         </div>
 
-        <div className="space-y-2 max-h-64 overflow-y-auto">
+        <div className="space-y-2 max-h-96 overflow-y-auto pr-1 scrollbar-thin">
           {checklist.map((item) => (
             <div key={item.id} className="space-y-1">
               <div 

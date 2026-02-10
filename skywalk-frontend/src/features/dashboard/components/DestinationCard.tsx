@@ -30,7 +30,7 @@ export default function DestinationCard({
       
       <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8 text-white transform transition-transform duration-300 translate-y-2 group-hover:translate-y-0">
         <div className="flex items-center mb-3">
-          <span className="text-3xl mr-3 shadow-sm">{flag}</span>
+          <img src={flag} alt={countryName} className="w-8 h-6 object-cover rounded shadow-sm mr-3" />
           <h3 className={`font-bold font-outfit ${size === 'large' ? 'text-3xl' : 'text-xl'}`}>
             {countryName}
           </h3>

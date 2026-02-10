@@ -1,11 +1,16 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 import { expatriationProjectApi } from '../../../api/expatriation-project';
 import type {
-  ExpatriationProject,
   CreateExpatriationProjectDto,
   UpdateExpatriationProjectDto,
 } from '../../../types/expatriation-project';
+
+interface ApiError {
+  response?: { data?: { message?: string } };
+  message?: string;
+}
 
 export function useProjects(enabled: boolean = true) {
   return useQuery({
@@ -32,6 +37,7 @@ export function useProjectCount() {
 
 export function useCreateProject() {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   return useMutation({
     mutationFn: (data: CreateExpatriationProjectDto) =>
@@ -40,11 +46,11 @@ export function useCreateProject() {
       queryClient.invalidateQueries({ queryKey: ['expatriation-projects'] });
       queryClient.invalidateQueries({ queryKey: ['expatriation-projects-count'] });
       
-      toast.success('Projet créé avec succès !');
+      toast.success(t('projectsPage.createSuccess'));
       return newProject;
     },
-    onError: (error: any) => {
-      const message = error.response?.data?.message || 'Erreur lors de la création du projet';
+    onError: (error: ApiError) => {
+      const message = error.response?.data?.message || t('projectsPage.createError');
       toast.error(message);
     },
   });
@@ -52,6 +58,7 @@ export function useCreateProject() {
 
 export function useUpdateProject() {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   return useMutation({
     mutationFn: ({
@@ -69,11 +76,11 @@ export function useUpdateProject() {
       
       queryClient.invalidateQueries({ queryKey: ['expatriation-projects'] });
       
-      toast.success('Projet mis à jour avec succès !');
+      toast.success(t('projectsPage.updateSuccess'));
       return updatedProject;
     },
-    onError: (error: any) => {
-      const message = error.response?.data?.message || 'Erreur lors de la mise à jour';
+    onError: (error: ApiError) => {
+      const message = error.response?.data?.message || t('projectsPage.updateError');
       toast.error(message);
     },
   });
@@ -81,6 +88,7 @@ export function useUpdateProject() {
 
 export function useDeleteProject() {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   return useMutation({
     mutationFn: (projectId: number) => expatriationProjectApi.delete(projectId),
@@ -91,10 +99,10 @@ export function useDeleteProject() {
       queryClient.invalidateQueries({ queryKey: ['expatriation-projects'] });
       queryClient.invalidateQueries({ queryKey: ['expatriation-projects-count'] });
       
-      toast.success('Projet supprimé avec succès !');
+      toast.success(t('projectsPage.deleteSuccess'));
     },
-    onError: (error: any) => {
-      const message = error.response?.data?.message || 'Erreur lors de la suppression';
+    onError: (error: ApiError) => {
+      const message = error.response?.data?.message || t('projectsPage.deleteError');
       toast.error(message);
     },
   });
