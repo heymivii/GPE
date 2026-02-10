@@ -1,29 +1,14 @@
-# ==================================================
-# SkyWalk CI/CD Pipeline — GitLab CI
-# ==================================================
-# Tous les jobs sont en mode manuel (when: manual)
-# car aucun runner partagé n'est disponible sur ce GitLab.
-# Les jobs peuvent être déclenchés manuellement si un
-# runner est configuré ultérieurement.
-# ==================================================
-
 stages:
   - test
   - build
   - docker
 
-# ---------------------------------------------------
-# Variables globales
-# ---------------------------------------------------
 variables:
   NODE_VERSION: "20"
   POSTGRES_DB: skywalk_db_test
   POSTGRES_USER: skywalk_user
   POSTGRES_PASSWORD: skywalk_password
 
-# ---------------------------------------------------
-# Cache npm pour accélérer les pipelines
-# ---------------------------------------------------
 .node-cache: &node-cache
   cache:
     key:
@@ -33,10 +18,6 @@ variables:
     paths:
       - backend/node_modules/
       - skywalk-frontend/node_modules/
-
-# ==================================================
-# STAGE: TEST
-# ==================================================
 
 backend:lint:
   stage: test
@@ -104,10 +85,6 @@ frontend:test:
   when: manual
   allow_failure: true
 
-# ==================================================
-# STAGE: BUILD
-# ==================================================
-
 backend:build:
   stage: build
   image: node:${NODE_VERSION}-alpine
@@ -139,10 +116,6 @@ frontend:build:
     expire_in: 1 hour
   when: manual
   allow_failure: true
-
-# ==================================================
-# STAGE: DOCKER (uniquement sur develop et main)
-# ==================================================
 
 docker:build:
   stage: docker
