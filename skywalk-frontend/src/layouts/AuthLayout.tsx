@@ -1,7 +1,9 @@
 import { Outlet, Link } from "react-router-dom";
 import ScrollToTop from "../components/ScrollToTop";
+import { useTranslation } from "react-i18next";
 
 export default function AuthLayout() {
+  const { t } = useTranslation();
   return (
     <div className="min-h-screen grid grid-cols-1 md:grid-cols-[1.5fr_1.9fr]">
       <ScrollToTop />
@@ -11,7 +13,7 @@ export default function AuthLayout() {
             <img src="/LogoSW.svg" alt="Logo" className="w-32" />
           </Link>
           <div className=" w-3/12 ">
-            <p className="text-center font-bold">Simplifier chaque étape de votre expatriation</p>
+            <p className="text-center font-bold">{t('authPages.tagline')}</p>
           </div>
         </div> 
       </div>

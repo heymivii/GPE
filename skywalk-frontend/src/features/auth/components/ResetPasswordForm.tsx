@@ -1,6 +1,8 @@
 import { useState, useMemo } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import api from "../../../lib/api";
 
 const calculatePasswordStrength = (password: string) => {
@@ -26,65 +28,75 @@ export default function ResetPasswordForm() {
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
   const navigate = useNavigate();
+  const { t } = useTranslation();
   
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
   const passwordStrength = useMemo(() => {
-    if (!newPassword) return { strength: 0, checks: { length: false, uppercase: false, lowercase: false, number: false, special: false } };
+    if (!newPassword)
+      return {
+        strength: 0,
+        checks: { length: false, uppercase: false, lowercase: false, number: false, special: false },
+      };
     return calculatePasswordStrength(newPassword);
   }, [newPassword]);
-  
+
   const getStrengthColor = () => {
     if (passwordStrength.strength <= 40) return "bg-red-500";
     if (passwordStrength.strength <= 60) return "bg-orange-500";
     if (passwordStrength.strength <= 80) return "bg-yellow-500";
     return "bg-green-500";
   };
-  
+
   const getStrengthText = () => {
-    if (passwordStrength.strength <= 40) return "Faible";
-    if (passwordStrength.strength <= 60) return "Moyen";
-    if (passwordStrength.strength <= 80) return "Bon";
-    return "Fort";
+    if (passwordStrength.strength <= 40) return t("auth.resetPassword.weak");
+    if (passwordStrength.strength <= 60) return t("auth.resetPassword.medium");
+    if (passwordStrength.strength <= 80) return t("auth.resetPassword.good");
+    return t("auth.resetPassword.strong");
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    
-    if (!token) {
-      setError("Token de réinitialisation manquant");
-      return;
-    }
-    
-    if (newPassword !== confirmPassword) {
-      setError("Les mots de passe ne correspondent pas");
-      return;
-    }
-    
-    if (passwordStrength.strength < 60) {
-      setError("Votre mot de passe est trop faible. Utilisez au moins 8 caractères avec majuscules, minuscules et chiffres.");
-      return;
-    }
-    
-    setIsLoading(true);
-    
-    try {
-      await api.post("/auth/reset-password", { token, newPassword });
-      toast.success("Mot de passe réinitialisé avec succès !");
+  const resetMutation = useMutation({
+    mutationFn: (data: { token: string; newPassword: string }) =>
+      api.post("/auth/reset-password", data),
+    onSuccess: () => {
+      toast.success(t("auth.resetPassword.success"));
       navigate("/auth/login");
-    } catch (err: unknown) {
-      const errorMessage = err instanceof Error 
-        ? err.message 
-        : (err as { response?: { data?: { message?: string } } })?.response?.data?.message || "Erreur lors de la réinitialisation";
+    },
+    onError: (err: unknown) => {
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : (err as { response?: { data?: { message?: string } } })?.response
+              ?.data?.message || t("auth.resetPassword.error");
       setError(errorMessage);
       toast.error(errorMessage);
-    } finally {
-      setIsLoading(false);
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+
+    if (!token) {
+      setError(t("auth.resetPassword.tokenMissing"));
+      return;
     }
+
+    if (newPassword !== confirmPassword) {
+      setError(t("auth.resetPassword.passwordMismatch"));
+      return;
+    }
+
+    if (passwordStrength.strength < 60) {
+      setError(
+        t("auth.resetPassword.passwordWeak")
+      );
+      return;
+    }
+
+    resetMutation.mutate({ token, newPassword });
   };
 
   if (!token) {
@@ -96,16 +108,16 @@ export default function ResetPasswordForm() {
           </svg>
         </div>
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          Lien invalide
+          {t("auth.resetPassword.invalidLink")}
         </h2>
         <p className="text-gray-600 mb-6">
-          Le lien de réinitialisation est manquant ou invalide.
+          {t("auth.resetPassword.invalidLinkDesc")}
         </p>
         <Link 
           to="/auth/forgot-password" 
           className="inline-block px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
         >
-          Demander un nouveau lien
+          {t("auth.resetPassword.requestNewLink")}
         </Link>
       </div>
     );
@@ -115,10 +127,10 @@ export default function ResetPasswordForm() {
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="text-center mb-6">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          Nouveau mot de passe
+          {t("auth.resetPassword.title")}
         </h2>
         <p className="text-gray-600">
-          Choisissez un mot de passe fort pour sécuriser votre compte.
+          {t("auth.resetPassword.description")}
         </p>
       </div>
 
@@ -134,10 +146,10 @@ export default function ResetPasswordForm() {
           className="mt-1 w-full px-4 py-4 rounded-lg placeholder-black text-black"
           style={{ backgroundColor: "rgba(217, 217, 217, 0.4)" }}
           value={newPassword}
-          placeholder="Nouveau mot de passe"
+          placeholder={t("auth.resetPassword.newPassword")}
           onChange={(e) => setNewPassword(e.target.value)}
           required
-          disabled={isLoading}
+          disabled={resetMutation.isPending}
         />
         
         {newPassword && (
@@ -150,7 +162,7 @@ export default function ResetPasswordForm() {
             </div>
             <div className="flex justify-between items-center mt-1">
               <p className="text-xs text-gray-600">
-                Force : <span className="font-medium">{getStrengthText()}</span>
+                {t("auth.resetPassword.strength")} <span className="font-medium">{getStrengthText()}</span>
               </p>
               <div className="flex gap-1 text-xs">
                 <span className={passwordStrength.checks.length ? "text-green-600" : "text-gray-400"}>8+</span>
@@ -170,24 +182,24 @@ export default function ResetPasswordForm() {
           className="mt-1 w-full px-4 py-4 rounded-lg placeholder-black text-black"
           style={{ backgroundColor: "rgba(217, 217, 217, 0.4)" }}
           value={confirmPassword}
-          placeholder="Confirmer le mot de passe"
+          placeholder={t("auth.resetPassword.confirmPassword")}
           onChange={(e) => setConfirmPassword(e.target.value)}
           required
-          disabled={isLoading}
+          disabled={resetMutation.isPending}
         />
       </div>
 
       <button
         type="submit"
         className="w-full px-4 py-4 bg-black text-white rounded-lg transition-colors duration-200 disabled:opacity-50 hover:bg-gray-800"
-        disabled={isLoading}
+        disabled={resetMutation.isPending}
       >
-        {isLoading ? "Réinitialisation..." : "Réinitialiser le mot de passe"}
+        {resetMutation.isPending ? t("auth.resetPassword.submitting") : t("auth.resetPassword.submit")}
       </button>
 
       <div className="text-center">
         <Link to="/auth/login" className="text-sm text-[#5EA3C0] hover:underline">
-          Retour à la connexion
+          {t("auth.resetPassword.backToLogin")}
         </Link>
       </div>
     </form>

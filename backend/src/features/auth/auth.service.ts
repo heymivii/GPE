@@ -51,11 +51,13 @@ export class AuthService {
     await this.userRepository.save(newUser);
 
     const token = this.generateToken(newUser);
+    const refreshToken = this.generateRefreshToken(newUser);
 
     return {
       message: 'Inscription réussie',
       user: this.sanitizeUser(newUser),
       access_token: token,
+      refresh_token: refreshToken,
     };
   }
 
@@ -78,11 +80,13 @@ export class AuthService {
     }
 
     const token = this.generateToken(user);
+    const refreshToken = this.generateRefreshToken(user);
 
     return {
       message: 'Connexion réussie',
       user: this.sanitizeUser(user),
       access_token: token,
+      refresh_token: refreshToken,
     };
   }
 
@@ -101,6 +105,11 @@ export class AuthService {
   async refreshToken(refreshToken: string) {
     try {
       const payload = this.jwtService.verify(refreshToken);
+
+      if (payload.type !== 'refresh') {
+        throw new UnauthorizedException('Token invalide');
+      }
+
       const user = await this.userRepository.findOne({
         where: { idUser: payload.sub },
       });
@@ -110,8 +119,9 @@ export class AuthService {
       }
 
       const newToken = this.generateToken(user);
+      const newRefreshToken = this.generateRefreshToken(user);
 
-      return { access_token: newToken };
+      return { access_token: newToken, refresh_token: newRefreshToken };
     } catch {
       throw new UnauthorizedException('Token invalide ou expiré');
     }
@@ -174,6 +184,14 @@ export class AuthService {
     };
 
     return this.jwtService.sign(payload);
+  }
+
+  private generateRefreshToken(user: User): string {
+    const payload = {
+      sub: user.idUser,
+      type: 'refresh',
+    };
+    return this.jwtService.sign(payload, { expiresIn: '7d' });
   }
 
   private sanitizeUser(user: User) {

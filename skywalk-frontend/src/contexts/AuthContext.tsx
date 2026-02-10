@@ -26,10 +26,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     const initAuth = async () => {
       try {
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+          setIsLoading(false);
+          return;
+        }
         const userData = await authApi.getProfile();
         setUser(userData);
-      } catch (error) {
-        console.log('Utilisateur non authentifié ou token expiré');
+      } catch {
+        // Token may have expired — try to refresh silently
+        const refreshed = await tryRefreshToken();
+        if (refreshed) {
+          try {
+            const userData = await authApi.getProfile();
+            setUser(userData);
+          } catch {
+            clearTokens();
+          }
+        } else {
+          clearTokens();
+        }
       } finally {
         setIsLoading(false);
       }
@@ -38,11 +54,36 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     initAuth();
   }, []);
 
+  const tryRefreshToken = async (): Promise<boolean> => {
+    const refreshToken = localStorage.getItem('refresh_token');
+    if (!refreshToken) return false;
+    try {
+      const response = await authApi.refresh({ refreshToken });
+      if (response.access_token) {
+        localStorage.setItem('access_token', response.access_token);
+      }
+      if (response.refresh_token) {
+        localStorage.setItem('refresh_token', response.refresh_token);
+      }
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const clearTokens = () => {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+  };
+
   const login = async (data: LoginDto): Promise<void> => {
     try {
       const response: AuthResponse = await authApi.login(data);
       if (response.access_token) {
         localStorage.setItem('access_token', response.access_token);
+      }
+      if (response.refresh_token) {
+        localStorage.setItem('refresh_token', response.refresh_token);
       }
       setUser(response.user);
     } catch (error) {
@@ -56,6 +97,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const response: AuthResponse = await authApi.register(data);
       if (response.access_token) {
         localStorage.setItem('access_token', response.access_token);
+      }
+      if (response.refresh_token) {
+        localStorage.setItem('refresh_token', response.refresh_token);
       }
       setUser(response.user);
     } catch (error) {
@@ -71,6 +115,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.error('Erreur lors de la déconnexion:', error);
     } finally {
       localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
       localStorage.removeItem('skywalk-onboarding-completed');
       localStorage.removeItem('skywalk-onboarding-draft');
       localStorage.removeItem('skywalk-user-data');

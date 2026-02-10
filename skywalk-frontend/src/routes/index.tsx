@@ -24,6 +24,7 @@ import ProjectDetailPage from '../features/projects/pages/ProjectDetailPage';
 import CountryComparison from '../features/comparison/pages/CountryComparison';
 import ServicePage from '../features/services/pages/ServicePage';
 import ServicesIndexPage from '../features/services/pages/ServicesIndexPage';
+import CostOfLivingTestPage from '../features/cost-of-living/pages/CostOfLivingTestPage';
 
 export const router = createBrowserRouter([
   {
@@ -37,7 +38,7 @@ export const router = createBrowserRouter([
         ],
       },
       {
-        path: '/auth', 
+        path: '/auth',
         element: <AuthLayout />,
         children: [
           { path: 'login', element: <LoginPage /> },
@@ -47,7 +48,7 @@ export const router = createBrowserRouter([
       },
     ],
   },
-  
+
   {
     path: '/',
     element: <MainLayout />,
@@ -59,6 +60,7 @@ export const router = createBrowserRouter([
       { path: 'destinations', element: <DestinationsPage /> },
       { path: 'destinations/:countrySlug', element: <DestinationDetailPage /> },
       { path: 'comparison', element: <CountryComparison /> },
+      { path: 'test/cost-of-living', element: <CostOfLivingTestPage /> },
     ],
   },
   {
@@ -74,25 +76,25 @@ export const router = createBrowserRouter([
 
   {
     path: '/onboarding',
-    element: <OnboardingFlow />,
+    element: <MainLayout />,
+    children: [
+      { index: true, element: <OnboardingFlow /> },
+      { path: ':id', element: <OnboardingFlow /> },
+    ],
   },
-  {
-    path: '/onboarding/:id',
-    element: <OnboardingFlow />,
-  },
-  
+
   {
     element: <ProtectedRoute />,
     children: [
       {
-        path: '/forms', 
-        element: <MainLayout/>,
+        path: '/forms',
+        element: <MainLayout />,
         children: [
           { index: true, element: <FormPage /> },
         ],
       },
       {
-        path: '/dashboard', 
+        path: '/dashboard',
         element: <MainLayout />,
         children: [
           { index: true, element: <DashboardPage /> },
