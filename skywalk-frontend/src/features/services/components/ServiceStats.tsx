@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 interface ServiceStat {
   label: string;
   value: string;
@@ -9,10 +11,11 @@ interface ServiceStatsProps {
 }
 
 export default function ServiceStats({ stats, color }: ServiceStatsProps) {
+  const { t } = useTranslation();
   return (
     <section>
       <h2 className="text-xl font-semibold text-gray-900 mb-6">
-        Chiffres clés
+        {t('services.guides.keyFigures')}
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {stats.map((stat, index) => (

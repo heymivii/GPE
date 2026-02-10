@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronUp, CheckCircle, Lightbulb, HelpCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { ServiceGuide } from '../../../data/services-config';
 
 interface ServiceGuidesProps {
@@ -12,6 +13,7 @@ interface ServiceGuidesProps {
 }
 
 export default function ServiceGuides({ guides, tips, faq }: ServiceGuidesProps) {
+  const { t } = useTranslation();
   const [openGuideIndex, setOpenGuideIndex] = useState<number | null>(0);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
 
@@ -28,7 +30,7 @@ export default function ServiceGuides({ guides, tips, faq }: ServiceGuidesProps)
       {/* Guides */}
       <div>
         <h2 className="text-xl font-semibold text-gray-900 mb-6">
-          Guides étape par étape
+          {t('services.guides.sectionTitle')}
         </h2>
         <div className="space-y-4">
           {guides.map((guide, index) => (
@@ -92,7 +94,7 @@ export default function ServiceGuides({ guides, tips, faq }: ServiceGuidesProps)
       {tips && tips.length > 0 && (
         <div>
           <h2 className="text-xl font-semibold text-gray-900 mb-6">
-            Conseils pratiques
+            {t('services.guides.tipsTitle')}
           </h2>
           <div className="bg-gray-50 rounded-xl p-8 border border-gray-100">
             <div className="grid gap-4">
@@ -113,7 +115,7 @@ export default function ServiceGuides({ guides, tips, faq }: ServiceGuidesProps)
       {faq && faq.length > 0 && (
         <div>
           <h2 className="text-xl font-semibold text-gray-900 mb-6">
-            Questions fréquentes
+            {t('services.guides.faqTitle')}
           </h2>
           <div className="divide-y divide-gray-100 border-t border-b border-gray-100">
             {faq.map((item, index) => (

@@ -1,28 +1,58 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CheckCircle2 } from 'lucide-react';
-import { healthSystemByCountry, healthBudgetByProfile, healthBudgetByProfileSwitzerland } from '../../../data/health-data';
+import { CheckCircle2, Loader2 } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { costOfLivingApi } from '../../../api/costOfLiving';
+import type { CleanedCostOfLivingData } from '../../../api/costOfLiving';
+import { useCurrency } from '../../../contexts/CurrencyContext';
+import { getCountryMapping } from '../../../data/supportedCountries';
 
+/* Static health-system monthly costs in LOCAL currency */
+const HEALTH_COSTS: Record<string, { publicMonthly: number; privateMonthly: number }> = {
+  france:       { publicMonthly: 0,     privateMonthly: 70 },
+  'etats-unis': { publicMonthly: 450,   privateMonthly: 0 },
+  japon:        { publicMonthly: 25000,  privateMonthly: 0 },
+  suisse:       { publicMonthly: 393,   privateMonthly: 450 },
+};
 
 export function HealthCoverageTool({ countryName }: { countryName?: string }) {
   const { t } = useTranslation();
   const [profile, setProfile] = useState<'employee' | 'self-employed' | 'student'>('employee');
 
   const countryKey = countryName || 'france';
-  const countryData = healthSystemByCountry[countryKey] || healthSystemByCountry['france'];
-  
-  const publicCost = countryData.publicCostMonthly || 0;
-  const privateCost = countryData.privateCostMonthly || 50;
-  
-  const displayName = countryName 
-    ? countryName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('-')
-    : undefined;
+  const mapping = getCountryMapping(countryName);
+  const costs = HEALTH_COSTS[countryKey] || HEALTH_COSTS['france'];
+  const { formatPrice } = useCurrency();
+
+  const { data, isLoading } = useQuery<CleanedCostOfLivingData>({
+    queryKey: ['cost-of-living', mapping.city, mapping.country],
+    queryFn: () => costOfLivingApi.getCostOfLiving(mapping.city, mapping.country),
+    staleTime: 60 * 60 * 1000,
+    gcTime: 2 * 60 * 60 * 1000,
+    retry: 2,
+  });
+
+  const localCur = data?.currency?.code ?? 'EUR';
+  const rates = data?.currency?.exchangeRates ?? null;
+  const fp = (v: number) => formatPrice(v, localCur, rates);
+
+  const publicCost = costs.publicMonthly;
+  const privateCost = costs.privateMonthly;
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <Loader2 className="w-5 h-5 animate-spin text-blue-500 mr-2" />
+        <span className="text-xs text-gray-500">{t('common.loading')}</span>
+      </div>
+    );
+  }
 
   return (
     <div>
       <div className="mb-6">
         <h4 className="text-sm font-bold text-gray-900 mb-1">
-          {t('services.tools.healthCoverage.title')} {displayName && `- ${displayName}`}
+          {t('services.tools.healthCoverage.title')} {mapping.displayName && `- ${mapping.displayName}`}
         </h4>
         <p className="text-xs text-gray-500">
           {t('services.tools.healthCoverage.description')}
@@ -52,28 +82,30 @@ export function HealthCoverageTool({ countryName }: { countryName?: string }) {
                 <p className="text-xs font-bold text-gray-900">{t('services.tools.healthCoverage.publicCoverage')}</p>
                 <p className="text-xs text-gray-500">{t('services.tools.healthCoverage.publicDesc')}</p>
               </div>
-              <span className="text-lg font-bold text-gray-900">{publicCost}€</span>
+              <span className="text-lg font-bold text-gray-900">{fp(publicCost)}</span>
             </div>
             <p className="text-[10px] text-gray-500">
               {publicCost === 0 ? t('services.tools.healthCoverage.included') : t('services.tools.healthCoverage.monthlyFee')}
             </p>
           </div>
 
-          <div>
-            <div className="flex justify-between items-start mb-2">
-              <div>
-                <p className="text-xs font-bold text-gray-900">{t('services.tools.healthCoverage.complementary')}</p>
-                <p className="text-xs text-gray-500">{t('services.tools.healthCoverage.complementaryDesc')}</p>
+          {privateCost > 0 && (
+            <div>
+              <div className="flex justify-between items-start mb-2">
+                <div>
+                  <p className="text-xs font-bold text-gray-900">{t('services.tools.healthCoverage.complementary')}</p>
+                  <p className="text-xs text-gray-500">{t('services.tools.healthCoverage.complementaryDesc')}</p>
+                </div>
+                <span className="text-lg font-bold text-gray-900">{fp(privateCost)}</span>
               </div>
-              <span className="text-lg font-bold text-gray-900">{privateCost}€</span>
+              <p className="text-[10px] text-gray-500">{t('services.tools.healthCoverage.perMonth')}</p>
             </div>
-            <p className="text-[10px] text-gray-500">{t('services.tools.healthCoverage.perMonth')}</p>
-          </div>
+          )}
 
           <div className="pt-3 border-t border-gray-100">
             <div className="flex justify-between items-center">
               <span className="text-xs font-bold text-gray-900">{t('services.tools.healthCoverage.totalEstimated')}</span>
-              <span className="text-xl font-bold text-gray-900">{publicCost + privateCost}€/{t('services.tools.rentCalculator.perMonth').replace('/', '').trim()}</span>
+              <span className="text-xl font-bold text-gray-900">{fp(publicCost + privateCost)}{t('services.stats.common.perMonth')}</span>
             </div>
           </div>
         </div>
@@ -81,7 +113,7 @@ export function HealthCoverageTool({ countryName }: { countryName?: string }) {
         <div className="flex items-start gap-2 p-3 rounded-lg bg-white border border-gray-200">
           <div className="flex-shrink-0 w-4 h-4 mt-0.5 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 font-bold text-[10px]">i</div>
           <p className="text-[10px] text-gray-500 leading-relaxed">
-            TODO: Compléter avec les vraies données par pays dans health-data.ts
+            {t('services.healthTools.averageCosts', { city: mapping.displayName })}
           </p>
         </div>
       </div>
@@ -161,76 +193,91 @@ export function MedicalChecklistTool({ countryName }: { countryName?: string }) 
 }
 
 export function HealthBudgetTool({ countryName }: { countryName?: string }) {
+  const { t } = useTranslation();
   const [profile, setProfile] = useState<'young' | 'adult' | 'senior'>('adult');
 
-  const profileMap = {
-    young: 'young_healthy',
-    adult: 'adult_average',
-    senior: 'senior',
-  } as const;
-  
-  const budgetKey = profileMap[profile];
-  
   const countryKey = countryName || 'france';
-  const budget = countryKey === 'suisse' 
-    ? healthBudgetByProfileSwitzerland[budgetKey] 
-    : healthBudgetByProfile[budgetKey];
-  
-  const total = budget.insurance + budget.consultations + budget.medications + 
-                budget.dental + budget.optical + budget.emergency;
-  
-  const displayName = countryName 
-    ? countryName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('-')
-    : undefined;
+  const mapping = getCountryMapping(countryName);
+  const costs = HEALTH_COSTS[countryKey] || HEALTH_COSTS['france'];
+  const { formatPrice } = useCurrency();
+
+  const { data, isLoading } = useQuery<CleanedCostOfLivingData>({
+    queryKey: ['cost-of-living', mapping.city, mapping.country],
+    queryFn: () => costOfLivingApi.getCostOfLiving(mapping.city, mapping.country),
+    staleTime: 60 * 60 * 1000,
+    gcTime: 2 * 60 * 60 * 1000,
+    retry: 2,
+  });
+
+  const localCur = data?.currency?.code ?? 'EUR';
+  const rates = data?.currency?.exchangeRates ?? null;
+  const fp = (v: number) => formatPrice(v, localCur, rates);
+
+  // Profile multipliers for annual estimates (insurance base × 12)
+  const multipliers: Record<string, { insurance: number; extra: number }> = {
+    young: { insurance: 0.8, extra: 300 },   // lower premiums, few extra costs
+    adult: { insurance: 1.0, extra: 600 },   // average
+    senior: { insurance: 1.5, extra: 1200 }, // higher premiums + more care
+  };
+  const mult = multipliers[profile];
+  const monthlyInsurance = Math.round((costs.publicMonthly + costs.privateMonthly) * mult.insurance);
+  const annualInsurance = monthlyInsurance * 12;
+  const annualExtra = Math.round(mult.extra * (localCur === 'JPY' ? 150 : localCur === 'CHF' ? 1.1 : localCur === 'USD' ? 1.1 : 1));
+  const total = annualInsurance + annualExtra;
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <Loader2 className="w-5 h-5 animate-spin text-blue-500 mr-2" />
+        <span className="text-xs text-gray-500">{t('common.loading')}</span>
+      </div>
+    );
+  }
 
   return (
     <div>
       <div className="mb-6">
         <h4 className="text-sm font-bold text-gray-900 mb-1">
-          Budget santé annuel {displayName && `- ${displayName}`}
+          {t('services.healthTools.annualBudget', { city: mapping.displayName })}
         </h4>
         <p className="text-xs text-gray-500">
-          Estimez vos dépenses santé
+          {t('services.healthTools.estimateExpenses')}
         </p>
       </div>
 
       <div className="space-y-4">
         <div>
           <label className="block text-[10px] font-bold text-gray-500 mb-2 uppercase tracking-wider">
-            Votre profil
+            {t('services.healthTools.yourProfile')}
           </label>
           <select
             value={profile}
             onChange={(e) => setProfile(e.target.value as typeof profile)}
             className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:border-gray-900 focus:ring-0 text-sm"
           >
-            <option value="young">18-30 ans (bonne santé)</option>
-            <option value="adult">30-60 ans (santé moyenne)</option>
-            <option value="senior">60+ ans</option>
+            <option value="young">{t('services.healthTools.young')}</option>
+            <option value="adult">{t('services.healthTools.adult')}</option>
+            <option value="senior">{t('services.healthTools.senior')}</option>
           </select>
         </div>
 
         <div className="p-4 bg-white rounded-xl border border-gray-200 space-y-2">
           <div className="flex justify-between text-xs">
-            <span className="text-gray-500">Assurance annuelle</span>
-            <span className="font-medium text-gray-900">{budget.insurance}€</span>
+            <span className="text-gray-500">{t('services.healthTools.monthlyInsurance')}</span>
+            <span className="font-medium text-gray-900">{fp(monthlyInsurance)}</span>
           </div>
           <div className="flex justify-between text-xs">
-            <span className="text-gray-500">Consultations</span>
-            <span className="font-medium text-gray-900">{budget.consultations}€</span>
+            <span className="text-gray-500">{t('services.healthTools.annualInsurance')}</span>
+            <span className="font-medium text-gray-900">{fp(annualInsurance)}</span>
           </div>
           <div className="flex justify-between text-xs">
-            <span className="text-gray-500">Médicaments</span>
-            <span className="font-medium text-gray-900">{budget.medications}€</span>
-          </div>
-          <div className="flex justify-between text-xs">
-            <span className="text-gray-500">Dentaire</span>
-            <span className="font-medium text-gray-900">{budget.dental}€</span>
+            <span className="text-gray-500">{t('services.healthTools.consultations')}</span>
+            <span className="font-medium text-gray-900">{fp(annualExtra)}{t('services.stats.common.perYear')}</span>
           </div>
           
           <div className="pt-3 border-t border-gray-200 mt-3 flex justify-between items-center">
-            <span className="text-xs font-bold text-gray-900">Total estimé</span>
-            <span className="text-xl font-bold text-gray-900">{total}€/an</span>
+            <span className="text-xs font-bold text-gray-900">{t('services.healthTools.totalEstimated')}</span>
+            <span className="text-xl font-bold text-gray-900">{fp(total)}{t('services.stats.common.perYear')}</span>
           </div>
         </div>
 
@@ -238,7 +285,16 @@ export function HealthBudgetTool({ countryName }: { countryName?: string }) {
           <div className="flex items-start gap-2 p-3 rounded-lg bg-orange-50 border border-orange-200">
             <div className="flex-shrink-0 w-4 h-4 mt-0.5 bg-orange-200 rounded-full flex items-center justify-center text-orange-700 font-bold text-[10px]">!</div>
             <p className="text-[10px] text-orange-700 leading-relaxed">
-              ⚠️ <strong>Suisse:</strong> Assurance maladie LAMal OBLIGATOIRE (prime moyenne 413€/mois). Coûts santé parmi les plus élevés d'Europe.
+              {t('services.healthTools.swissWarning')}
+            </p>
+          </div>
+        )}
+
+        {countryKey === 'etats-unis' && (
+          <div className="flex items-start gap-2 p-3 rounded-lg bg-red-50 border border-red-200">
+            <div className="flex-shrink-0 w-4 h-4 mt-0.5 bg-red-200 rounded-full flex items-center justify-center text-red-700 font-bold text-[10px]">!</div>
+            <p className="text-[10px] text-red-700 leading-relaxed">
+              {t('services.healthTools.usaWarning')}
             </p>
           </div>
         )}
@@ -246,7 +302,7 @@ export function HealthBudgetTool({ countryName }: { countryName?: string }) {
         <div className="flex items-start gap-2 p-3 rounded-lg bg-white border border-gray-200">
           <div className="flex-shrink-0 w-4 h-4 mt-0.5 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 font-bold text-[10px]">i</div>
           <p className="text-[10px] text-gray-500 leading-relaxed">
-            Budget moyen sans conditions préexistantes. Données officielles {displayName || 'France'} 2025.
+            {t('services.healthTools.budgetEstimateNote', { city: mapping.displayName })}
           </p>
         </div>
       </div>

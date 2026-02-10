@@ -3,6 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { CheckCircle2, Trophy, Sparkles, Maximize2, Minimize2, FileText, Calculator, Car, Heart } from 'lucide-react';
 import { TransportCostTool } from './TransportTools';
 import { HealthCoverageTool } from './HealthTools';
+import { useCurrency, DISPLAY_CURRENCIES } from '../../../contexts/CurrencyContext';
+import { useQuery } from '@tanstack/react-query';
+import { costOfLivingApi } from '../../../api/costOfLiving';
+import { getCountryMapping, getCurrentLocale } from '../../../data/supportedCountries';
 
 interface ServiceToolsProps {
   category: string;
@@ -244,17 +248,41 @@ function CVReadinessTool({ countryName }: { countryName?: string }) {
 
 function RentCalculatorTool({ countryName }: { countryName?: string }) {
   const { t } = useTranslation();
+  const { displayCurrency, displaySymbol, convert } = useCurrency();
   const [salary, setSalary] = useState<string>('');
   const [period, setPeriod] = useState<'month' | 'year'>('month');
+  const [inputCurrency, setInputCurrency] = useState<string>('EUR');
+
+  // Fetch exchange rates from cost-of-living data for this country
+  const mapping = getCountryMapping(countryName);
+
+  const { data: colData } = useQuery({
+    queryKey: ['cost-of-living', mapping.city, mapping.country],
+    queryFn: () => costOfLivingApi.getCostOfLiving(mapping.city, mapping.country),
+    staleTime: 60 * 60 * 1000,
+    gcTime: 2 * 60 * 60 * 1000,
+  });
+
+  const rates = colData?.currency?.exchangeRates ?? null;
 
   const calculateBudget = () => {
     const numSalary = parseFloat(salary);
-    if (isNaN(numSalary)) return 0;
+    if (isNaN(numSalary) || numSalary <= 0) return null;
     const monthlySalary = period === 'year' ? numSalary / 12 : numSalary;
-    return Math.round(monthlySalary * 0.33); // 33% rule
+    const budget33 = monthlySalary * 0.33;
+
+    // Convert from input currency to the display currency used on the page
+    if (inputCurrency === displayCurrency) {
+      return Math.round(budget33);
+    }
+
+    // Use exchange rates to convert: inputCurrency → USD → displayCurrency
+    const converted = convert(budget33, inputCurrency, rates);
+    return converted != null ? Math.round(converted) : Math.round(budget33);
   };
 
   const budget = calculateBudget();
+  const showConversion = inputCurrency !== displayCurrency && rates;
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -283,6 +311,15 @@ function RentCalculatorTool({ countryName }: { countryName?: string }) {
               />
             </div>
             <select
+              value={inputCurrency}
+              onChange={(e) => setInputCurrency(e.target.value)}
+              className="px-3 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-700 focus:border-gray-900 focus:ring-0 cursor-pointer hover:bg-gray-100 transition-colors text-sm"
+            >
+              {DISPLAY_CURRENCIES.map(c => (
+                <option key={c.code} value={c.code}>{c.symbol} {c.code}</option>
+              ))}
+            </select>
+            <select
               value={period}
               onChange={(e) => setPeriod(e.target.value as 'month' | 'year')}
               className="px-4 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-700 focus:border-gray-900 focus:ring-0 cursor-pointer hover:bg-gray-100 transition-colors text-sm"
@@ -297,18 +334,23 @@ function RentCalculatorTool({ countryName }: { countryName?: string }) {
           <p className="text-xs font-bold text-gray-500 mb-3 uppercase tracking-wide">{t('services.tools.rentCalculator.recommendedBudget')}</p>
           <div className="flex items-baseline justify-center gap-1 mb-2">
             <span className="text-4xl font-bold text-gray-900 tracking-tight">
-              {budget > 0 ? budget : '---'}
+              {budget != null && budget > 0 ? budget.toLocaleString(getCurrentLocale()) : '---'}
             </span>
-            <span className="text-xl font-medium text-gray-400">€</span>
+            <span className="text-xl font-medium text-gray-400">{displaySymbol}</span>
           </div>
           <p className="text-sm text-gray-400">{t('services.tools.rentCalculator.maxPerMonth')}</p>
+          {showConversion && budget != null && budget > 0 && (
+            <p className="text-xs text-gray-400 mt-2">
+              {t('services.tools.rentCalculator.converted', { from: inputCurrency, to: displayCurrency })}
+            </p>
+          )}
         </div>
 
         <div className="flex items-start gap-3 p-4 rounded-xl bg-white border border-gray-200 shadow-sm">
           <div className="flex-shrink-0 w-5 h-5 mt-0.5 bg-gray-100 rounded-full flex items-center justify-center text-gray-500 font-bold text-xs">i</div>
           <p className="text-xs text-gray-500 leading-relaxed">
             {t('services.tools.rentCalculator.info')}
-            {countryName && ` À ${countryName}, les propriétaires peuvent exiger des garanties supplémentaires.`}
+            {countryName && ` ${t('services.tools.rentCalculator.countryWarning', { country: countryName })}`}
           </p>
         </div>
       </div>
