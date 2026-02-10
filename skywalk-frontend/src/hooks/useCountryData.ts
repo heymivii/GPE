@@ -19,7 +19,7 @@ export interface ExpatStep {
 
 export interface Recommendation {
   title: string;
-  importance: 'Urgent' | 'Important' | 'À faire';
+  importanceKey: string;
   description: string;
   link?: string;
   linkText?: string;
@@ -51,6 +51,9 @@ export interface CountryData {
     topSectors: string[];
     averageSalary?: number;
     unemploymentRate?: string;
+    workingHoursPerWeek?: number;
+    salaryByCity?: Record<string, number>;
+    salaryBySector?: Record<string, number>;
     keyJobSites?: Array<{
       name: string;
       url: string;
