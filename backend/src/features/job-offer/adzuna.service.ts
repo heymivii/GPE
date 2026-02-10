@@ -65,7 +65,7 @@ export class AdzunaService {
       return normalizedData;
     } catch (error) {
       this.logger.error('❌ Error calling Adzuna API:', error);
-      
+
       if (axios.isAxiosError(error)) {
         const status = error.response?.status || HttpStatus.BAD_GATEWAY;
         const message = error.response?.data?.message || error.message;
@@ -74,7 +74,7 @@ export class AdzunaService {
           status,
         );
       }
-      
+
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       throw new HttpException(
         `Failed to fetch jobs from Adzuna: ${errorMessage}`,
@@ -92,35 +92,54 @@ export class AdzunaService {
       page = 1,
       resultsPerPage = 20,
       salaryMin,
+      salaryMax,
       sortBy = 'relevance',
+      full_time,
+      part_time,
+      contract,
+      permanent,
+      what_exclude,
+      max_days_old,
     } = searchDto;
 
     let url = `${this.BASE_URL}/${country}/search/${page}?app_id=${this.APP_ID}&app_key=${this.APP_KEY}`;
     url += `&results_per_page=${Math.min(resultsPerPage, 50)}`;
-    
+
     if (keyword) {
       url += `&what=${encodeURIComponent(keyword)}`;
     }
-    
+
+    if (what_exclude) {
+      url += `&what_exclude=${encodeURIComponent(what_exclude)}`;
+    }
+
     if (city) {
       url += `&where=${encodeURIComponent(city)}`;
     }
-    
+
     if (category) {
       url += `&category=${encodeURIComponent(category)}`;
     }
-    
+
     if (salaryMin) {
       url += `&salary_min=${salaryMin}`;
     }
-    
+
+    if (salaryMax) {
+      url += `&salary_max=${salaryMax}`;
+    }
+
     if (sortBy === 'date') {
       url += `&sort_by=date`;
     } else if (sortBy === 'salary') {
       url += `&sort_by=salary`;
     }
-    
-    url += `&full_time=1`;
+
+    if (full_time) url += `&full_time=1`;
+    if (part_time) url += `&part_time=1`;
+    if (contract) url += `&contract=1`;
+    if (permanent) url += `&permanent=1`;
+    if (max_days_old) url += `&max_days_old=${max_days_old}`;
 
     return url;
   }
@@ -141,10 +160,10 @@ export class AdzunaService {
       description: job.description,
       salary: job.salary_min || job.salary_max
         ? {
-            min: job.salary_min,
-            max: job.salary_max,
-            currency: 'EUR',
-          }
+          min: job.salary_min,
+          max: job.salary_max,
+          currency: 'EUR',
+        }
         : undefined,
       contract_type: job.contract_type || job.contract_time,
       remote: this.detectRemote(job.title, job.description),

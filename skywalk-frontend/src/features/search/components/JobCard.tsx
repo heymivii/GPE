@@ -1,4 +1,5 @@
 import { MapPin, DollarSign, Calendar, ExternalLink, Building2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { SearchResult } from '../types';
 
 interface JobCardProps {
@@ -7,23 +8,25 @@ interface JobCardProps {
 }
 
 export default function JobCard({ job, viewMode }: JobCardProps) {
+  const { t } = useTranslation();
+
   const formatSalary = (price?: number, currency?: string) => {
-    if (!price) return 'Salaire non spécifié';
+    if (!price) return t('searchPage.job.salaryNotSpecified');
     
     if (!currency) {
-      return `${price.toLocaleString('fr-FR')}+/an`;
+      return `${price.toLocaleString()}+${t('searchPage.job.perYear')}`;
     }
     
     try {
-      const formatter = new Intl.NumberFormat('fr-FR', {
+      const formatter = new Intl.NumberFormat(undefined, {
         style: 'currency',
         currency: currency.toUpperCase(),
         maximumFractionDigits: 0,
       });
       
-      return `${formatter.format(price)}+/an`;
+      return `${formatter.format(price)}+${t('searchPage.job.perYear')}`;
     } catch {
-      return `${price.toLocaleString('fr-FR')} ${currency}/an`;
+      return `${price.toLocaleString()} ${currency}${t('searchPage.job.perYear')}`;
     }
   };
 
@@ -33,11 +36,11 @@ export default function JobCard({ job, viewMode }: JobCardProps) {
     const diffTime = Math.abs(now.getTime() - date.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     
-    if (diffDays === 0) return "Aujourd'hui";
-    if (diffDays === 1) return 'Hier';
-    if (diffDays < 7) return `Il y a ${diffDays} jours`;
-    if (diffDays < 30) return `Il y a ${Math.floor(diffDays / 7)} semaines`;
-    return `Il y a ${Math.floor(diffDays / 30)} mois`;
+    if (diffDays === 0) return t('searchPage.job.today');
+    if (diffDays === 1) return t('searchPage.job.yesterday');
+    if (diffDays < 7) return t('searchPage.job.daysAgo', { count: diffDays });
+    if (diffDays < 30) return t('searchPage.job.weeksAgo', { count: Math.floor(diffDays / 7) });
+    return t('searchPage.job.monthsAgo', { count: Math.floor(diffDays / 30) });
   };
 
   if (viewMode === 'list') {
@@ -52,7 +55,7 @@ export default function JobCard({ job, viewMode }: JobCardProps) {
                 </h3>
                 <p className="text-sm text-gray-600 mb-2 flex items-center gap-1">
                   <Building2 className="w-4 h-4" />
-                  {job.tags[0] || 'Entreprise'}
+                  {job.tags[0] || t('searchPage.job.company')}
                 </p>
               </div>
               <div className="flex-shrink-0 text-right">
@@ -93,7 +96,7 @@ export default function JobCard({ job, viewMode }: JobCardProps) {
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
               >
-                Voir l'offre
+                {t('searchPage.job.viewOffer')}
                 <ExternalLink className="w-4 h-4" />
               </a>
             </div>
@@ -113,7 +116,7 @@ export default function JobCard({ job, viewMode }: JobCardProps) {
         {/* Company */}
         <p className="text-sm text-gray-600 mb-3 flex items-center gap-1">
           <Building2 className="w-4 h-4 flex-shrink-0" />
-          <span className="truncate">{job.tags[0] || 'Entreprise'}</span>
+          <span className="truncate">{job.tags[0] || t('searchPage.job.company')}</span>
         </p>
 
         {/* Location */}
@@ -157,7 +160,7 @@ export default function JobCard({ job, viewMode }: JobCardProps) {
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
           >
-            Voir
+            {t('searchPage.view')}
             <ExternalLink className="w-3 h-3" />
           </a>
         </div>

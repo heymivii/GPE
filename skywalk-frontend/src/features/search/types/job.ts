@@ -39,4 +39,11 @@ export interface JobSearchParams {
   resultsPerPage?: number;
   salaryMin?: number;
   sortBy?: 'relevance' | 'date' | 'salary';
+  salaryMax?: number;
+  fullTime?: boolean;
+  partTime?: boolean;
+  contract?: boolean;
+  permanent?: boolean;
+  what_exclude?: string;
+  max_days_old?: number;
 }
