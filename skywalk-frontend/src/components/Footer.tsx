@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
 import { Mail, MapPin, Phone, Facebook, Twitter, Instagram, Linkedin, Youtube } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function Footer() {
+  const { t } = useTranslation();
   const currentYear = new Date().getFullYear();
 
   return (
@@ -13,7 +15,7 @@ export default function Footer() {
           <div className="space-y-4">
             <h3 className="text-xl font-bold text-white">SkyWalk</h3>
             <p className="text-sm leading-relaxed">
-              Votre compagnon d'expatriation pour une nouvelle vie à l'étranger. Guides, outils et communauté pour réussir votre projet.
+              {t('footer.description')}
             </p>
             <div className="flex space-x-4">
               <a 
@@ -66,36 +68,36 @@ export default function Footer() {
 
           {/* Services */}
           <div>
-            <h3 className="text-white font-semibold text-lg mb-4">Services</h3>
+            <h3 className="text-white font-semibold text-lg mb-4">{t('footer.services')}</h3>
             <ul className="space-y-2 text-sm">
               <li>
                 <Link to="/services/emploi" className="hover:text-[#5EA3C0] transition-colors">
-                  Trouver un emploi
+                  {t('footer.findJob')}
                 </Link>
               </li>
               <li>
                 <Link to="/services/logement" className="hover:text-[#5EA3C0] transition-colors">
-                  Trouver un logement
+                  {t('footer.findHousing')}
                 </Link>
               </li>
               <li>
                 <Link to="/services/transport" className="hover:text-[#5EA3C0] transition-colors">
-                  Se déplacer
+                  {t('footer.getAround')}
                 </Link>
               </li>
               <li>
                 <Link to="/services/sante" className="hover:text-[#5EA3C0] transition-colors">
-                  Santé et bien-être
+                  {t('footer.healthWellbeing')}
                 </Link>
               </li>
               <li>
                 <Link to="/services/demarches" className="hover:text-[#5EA3C0] transition-colors">
-                  Démarches administratives
+                  {t('footer.adminProcedures')}
                 </Link>
               </li>
               <li>
                 <Link to="/services" className="hover:text-[#5EA3C0] transition-colors">
-                  Tous les services
+                  {t('footer.allServices')}
                 </Link>
               </li>
             </ul>
@@ -103,36 +105,36 @@ export default function Footer() {
 
           {/* Ressources */}
           <div>
-            <h3 className="text-white font-semibold text-lg mb-4">Ressources</h3>
+            <h3 className="text-white font-semibold text-lg mb-4">{t('footer.resources')}</h3>
             <ul className="space-y-2 text-sm">
               <li>
                 <Link to="/destinations" className="hover:text-[#5EA3C0] transition-colors">
-                  Destinations
+                  {t('footer.destinations')}
                 </Link>
               </li>
               <li>
                 <Link to="/forum" className="hover:text-[#5EA3C0] transition-colors">
-                  Forum communauté
+                  {t('footer.communityForum')}
                 </Link>
               </li>
               <li>
                 <Link to="/guides" className="hover:text-[#5EA3C0] transition-colors">
-                  Guides pratiques
+                  {t('footer.practicalGuides')}
                 </Link>
               </li>
               <li>
                 <Link to="/experiences" className="hover:text-[#5EA3C0] transition-colors">
-                  Témoignages
+                  {t('footer.testimonials')}
                 </Link>
               </li>
               <li>
                 <Link to="/comparison" className="hover:text-[#5EA3C0] transition-colors">
-                  Comparateur pays
+                  {t('footer.countryComparator')}
                 </Link>
               </li>
               <li>
                 <Link to="/blog" className="hover:text-[#5EA3C0] transition-colors">
-                  Blog
+                  {t('footer.blog')}
                 </Link>
               </li>
             </ul>
@@ -140,7 +142,7 @@ export default function Footer() {
 
           {/* Contact & Legal */}
           <div>
-            <h3 className="text-white font-semibold text-lg mb-4">Contact</h3>
+            <h3 className="text-white font-semibold text-lg mb-4">{t('footer.contact')}</h3>
             <ul className="space-y-3 text-sm">
               <li className="flex items-start space-x-2">
                 <Mail className="w-4 h-4 mt-1 flex-shrink-0" />
@@ -161,16 +163,16 @@ export default function Footer() {
             </ul>
             <div className="mt-6 space-y-2 text-sm">
               <Link to="/about" className="block hover:text-[#5EA3C0] transition-colors">
-                À propos
+                {t('footer.about')}
               </Link>
               <Link to="/legal" className="block hover:text-[#5EA3C0] transition-colors">
-                Mentions légales
+                {t('footer.legalNotice')}
               </Link>
               <Link to="/privacy" className="block hover:text-[#5EA3C0] transition-colors">
-                Confidentialité
+                {t('footer.privacy')}
               </Link>
               <Link to="/terms" className="block hover:text-[#5EA3C0] transition-colors">
-                CGU
+                {t('footer.terms')}
               </Link>
             </div>
           </div>
@@ -182,12 +184,12 @@ export default function Footer() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p className="text-sm text-gray-400">
-              &copy; {currentYear} SkyWalk. Tous droits réservés.
+              &copy; {currentYear} SkyWalk. {t('footer.allRightsReserved')}
             </p>
             <div className="flex items-center space-x-6 text-sm text-gray-400">
               <div className="flex items-center space-x-2">
                 <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                <span>Service en ligne</span>
+                <span>{t('footer.serviceOnline')}</span>
               </div>
             </div>
           </div>

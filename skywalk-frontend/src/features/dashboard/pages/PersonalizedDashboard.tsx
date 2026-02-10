@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Settings, Plus, LayoutGrid, X, Check, User, CheckSquare, Wallet, Lightbulb, GripVertical } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import {
   DndContext,
   closestCenter,
@@ -14,7 +14,7 @@ import {
   arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
+  rectSortingStrategy,
   useSortable,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -29,24 +29,31 @@ import BudgetTrackerWidget from '../widgets/BudgetTrackerWidget'
 import LocalTimeWidget from '../widgets/LocalTimeWidget'
 import WeatherWidget from '../widgets/WeatherWidget'
 import CurrencyConverterWidget from '../widgets/CurrencyConverterWidget'
+import JobOpportunitiesWidget from '../widgets/JobOpportunitiesWidget'
 import { useTranslation } from 'react-i18next'
+import { getLocale } from '../../../data/supportedCountries'
 
 export default function PersonalizedDashboard() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { data: projects, isLoading } = useProjects()
   const { user } = useAuth()
-  const { hiddenWidgets, toggleWidget, widgetOrder, updateWidgetOrder } = useDashboardPreferences()
-  const [selectedProjectId, setSelectedProjectId] = useState<number | null>(null)
+  const { hiddenWidgets, toggleWidget, widgetOrder, updateWidgetOrder, getWidgetSize, setWidgetSize } = useDashboardPreferences()
+  const [searchParams] = useSearchParams()
+  const [selectedProjectId, setSelectedProjectId] = useState<number | null>(() => {
+    const projectParam = searchParams.get('project')
+    return projectParam ? Number(projectParam) : null
+  })
   const [editMode, setEditMode] = useState(false)
   const [showAddWidget, setShowAddWidget] = useState(false)
   
   const defaultLayout = [
+    'checklist',
     'profile-summary',
+    'job-opportunities',
     'local-time',
     'weather',
-    'checklist', 
-    'budget-tracker',
     'recommendations',
+    'budget-tracker',
     'currency-converter'
   ]
   
@@ -68,10 +75,18 @@ export default function PersonalizedDashboard() {
   )
 
   useEffect(() => {
-    if (projects && projects.length > 0 && selectedProjectId === null) {
-      const mostRecentProject = projects[projects.length - 1]
-      console.log('🎯 Auto-selecting most recent project:', mostRecentProject)
-      setSelectedProjectId(mostRecentProject.idProject)
+    if (projects && projects.length > 0) {
+      if (selectedProjectId === null) {
+        // No project selected — pick the most recent one
+        const mostRecentProject = projects[projects.length - 1]
+        setSelectedProjectId(mostRecentProject.idProject)
+      } else {
+        // Validate that the selected project belongs to the user
+        const exists = projects.some(p => p.idProject === selectedProjectId)
+        if (!exists) {
+          setSelectedProjectId(projects[projects.length - 1].idProject)
+        }
+      }
     }
   }, [projects, selectedProjectId])
 
@@ -83,26 +98,25 @@ export default function PersonalizedDashboard() {
     { id: 'budget-tracker', name: t('dashboard.personalized.widgets.available.budgetTracker.name'), icon: '💰', description: t('dashboard.personalized.widgets.available.budgetTracker.description') },
     { id: 'recommendations', name: t('dashboard.personalized.widgets.available.recommendations.name'), icon: '💡', description: t('dashboard.personalized.widgets.available.recommendations.description') },
     { id: 'currency-converter', name: t('dashboard.personalized.widgets.available.currencyConverter.name'), icon: '💱', description: t('dashboard.personalized.widgets.available.currencyConverter.description') },
+    { id: 'job-opportunities', name: t('dashboard.personalized.widgets.available.jobOpportunities.name'), icon: '💼', description: t('dashboard.personalized.widgets.available.jobOpportunities.description') },
   ]
 
   const activeProject = projects?.find(p => p.idProject === selectedProjectId)
   
-  useEffect(() => {
-    if (activeProject) {
-      console.log('📊 Active project:', activeProject)
-      console.log('   - ID:', activeProject.idProject)
-      console.log('   - Destination Country ID:', activeProject.idDestinationCountry)
-      console.log('   - Budget:', activeProject.housingBudget)
-    }
-  }, [activeProject])
-  
   const countryData = useCountryData(activeProject?.idDestinationCountry)
   const originCountryData = useCountryData(activeProject?.idOriginCountry)
-  
-  useEffect(() => {
-    console.log('🌍 countryData received:', countryData)
-    console.log('   - Country ID asked:', activeProject?.idDestinationCountry)
-  }, [countryData, activeProject?.idDestinationCountry])
+
+  // Widget size is now user-configurable via useDashboardPreferences
+  // Grid is 4 columns so: small=1, medium=2, large=4 (full width)
+  const getWidgetColSpan = (widgetId: string) => {
+    const size = getWidgetSize(widgetId)
+    switch (size) {
+      case 'small': return 'md:col-span-1'
+      case 'medium': return 'md:col-span-2'
+      case 'large': return 'md:col-span-4'
+      default: return 'md:col-span-2'
+    }
+  }
 
   if (isLoading) {
     return (
@@ -136,11 +150,21 @@ export default function PersonalizedDashboard() {
     )
   }
 
+  // Reverse mapping: backend objective values → frontend onboarding keys
+  const objectiveReverseMap: Record<string, string> = {
+    'study': 'studies',
+    'work': 'work',
+    'adventure': 'discovery',
+    'family_reunion': 'family',
+    'retirement': 'other',
+    'other': 'other'
+  }
+
   const userData = {
-    name: user?.fullName || 'Utilisateur', 
+    name: user?.fullName || t('dashboard.personalized.defaultUser'), 
     onboardingData: {
       destination: {
-        fromCountry: 'FR',
+        fromCountry: originCountryData?.code || 'FR',
         toCountry: countryData?.code || 'XX',
         targetCity: '',
         departureYear: activeProject?.expectedDepartureDate 
@@ -149,11 +173,11 @@ export default function PersonalizedDashboard() {
       },
       profile: {
         age: user?.age?.toString() || '25',
-        status: activeProject?.travelType || 'alone',
+        status: user?.status || 'employee',
         travelParty: activeProject?.travelType || 'alone'
       },
       objective: {
-        goal: activeProject?.mainObjective || 'work'
+        goal: objectiveReverseMap[activeProject?.mainObjective || 'work'] || 'other'
       }
     }
   }
@@ -180,7 +204,7 @@ export default function PersonalizedDashboard() {
     }
   }
   
-  const SortableWidget = ({ id, children }: { id: string; children: React.ReactNode }) => {
+  const SortableWidget = ({ id, children, className: extraClass = '' }: { id: string; children: React.ReactNode; className?: string }) => {
     const {
       attributes,
       listeners,
@@ -201,14 +225,14 @@ export default function PersonalizedDashboard() {
       <div 
         ref={setNodeRef} 
         style={style} 
-        className={`relative h-full ${editMode ? 'hover:ring-2 hover:ring-purple-300 rounded-xl transition-all' : ''}`}
+        className={`relative h-full ${extraClass} ${editMode ? 'hover:ring-2 hover:ring-purple-300 rounded-xl transition-all' : ''}`}
       >
         {editMode && (
           <div
             {...attributes}
             {...listeners}
             className="absolute -left-2 top-1/2 -translate-y-1/2 z-10 cursor-grab active:cursor-grabbing bg-purple-500 rounded-lg p-2 shadow-lg hover:shadow-xl hover:bg-purple-600 transition-all"
-            title="Glisser pour réorganiser"
+            title={t('dashboard.dragToReorder')}
           >
             <GripVertical className="w-4 h-4 text-white" />
           </div>
@@ -222,8 +246,9 @@ export default function PersonalizedDashboard() {
 
   const renderWidget = (widgetId: string) => {
     const commonProps = {
-      onEdit: () => console.log(`Edit ${widgetId}`),
-      onHide: () => toggleWidgetVisibility(widgetId)
+      onHide: () => toggleWidgetVisibility(widgetId),
+      onResize: (size: 'small' | 'medium' | 'large') => setWidgetSize(widgetId, size),
+      currentSize: getWidgetSize(widgetId),
     }
 
     switch (widgetId) {
@@ -242,7 +267,7 @@ export default function PersonalizedDashboard() {
             key={widgetId}
             countryCode={countryData?.code || 'FR'}
             countryName={countryData?.name || 'France'}
-            onHide={() => toggleWidgetVisibility(widgetId)}
+            {...commonProps}
           />
         )
       
@@ -252,7 +277,7 @@ export default function PersonalizedDashboard() {
             key={widgetId}
             countryName={countryData?.name || 'France'}
             cityName={countryData?.capital || ''}
-            onHide={() => toggleWidgetVisibility(widgetId)}
+            {...commonProps}
           />
         )
       
@@ -261,6 +286,7 @@ export default function PersonalizedDashboard() {
           <RecommendationsWidget
             key={widgetId}
             countryId={activeProject?.idDestinationCountry}
+            countryIsoCode={countryData?.code}
             {...commonProps}
           />
         )
@@ -281,6 +307,7 @@ export default function PersonalizedDashboard() {
             key={widgetId}
             housingBudget={activeProject?.housingBudget?.toString() || '0'}
             countryData={countryData}
+            originCountryData={originCountryData}
             {...commonProps}
           />
         )
@@ -289,7 +316,22 @@ export default function PersonalizedDashboard() {
         return (
           <CurrencyConverterWidget
             key={widgetId}
-            onHide={() => toggleWidgetVisibility(widgetId)}
+            {...commonProps}
+          />
+        )
+      
+      case 'job-opportunities':
+        return (
+          <JobOpportunitiesWidget
+            key={widgetId}
+            countryData={countryData}
+            userProfile={{
+              age: user?.age || undefined,
+              status: user?.status || undefined,
+              mainObjective: activeProject?.mainObjective || undefined,
+              languages: user?.spokenLanguages || undefined,
+            }}
+            {...commonProps}
           />
         )
       
@@ -301,17 +343,17 @@ export default function PersonalizedDashboard() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
                 {t('dashboard.personalized.greeting')}
               </h1>
               <p className="text-sm text-gray-600">
-                {t('dashboard.personalized.projectTo', { country: countryData?.name || 'Destination' })}
+                {t('dashboard.personalized.projectTo', { country: countryData?.name || t('common.destination') })}
               </p>
             </div>
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center flex-wrap gap-2">
               {projects.length >= 1 && selectedProjectId && (
                 <select
                   value={selectedProjectId}
@@ -320,12 +362,12 @@ export default function PersonalizedDashboard() {
                 >
                   {projects.map((project) => {
                     const countryNames: Record<number, string> = {
-                      1: 'France', 2: 'Canada', 3: 'Suisse', 4: 'Allemagne', 
-                      5: 'Espagne', 6: 'Italie', 7: 'Portugal', 8: 'Belgique',
-                      9: 'Pays-Bas', 10: 'Luxembourg', 11: 'Royaume-Uni', 
-                      12: 'Irlande', 13: 'États-Unis', 14: 'Australie', 16: 'Japon'
+                      1: t('countries.france'), 2: t('countries.canada'), 3: t('countries.switzerland'), 4: t('countries.germany'), 
+                      5: t('countries.spain'), 6: t('countries.italy'), 7: t('countries.portugal'), 8: t('countries.belgium'),
+                      9: t('countries.netherlands'), 10: t('countries.luxembourg'), 11: t('countries.unitedKingdom'), 
+                      12: t('countries.ireland'), 13: t('countries.unitedStates'), 14: t('countries.australia'), 16: t('countries.japan')
                     }
-                    const countryName = countryNames[project.idDestinationCountry] || 'Destination'
+                    const countryName = countryNames[project.idDestinationCountry] || t('dashboard.personalized.defaultDestination')
                     return (
                       <option key={project.idProject} value={project.idProject}>
                         {countryName}
@@ -337,18 +379,18 @@ export default function PersonalizedDashboard() {
               {selectedProjectId && (
                 <Link
                   to={`/onboarding/${selectedProjectId}`}
-                  className="flex items-center space-x-2 px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 hover:border-gray-400 transition-all"
+                  className="flex items-center gap-1.5 px-3 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 hover:border-gray-400 transition-all text-sm"
                   title={t('dashboard.personalized.editProject')}
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                   </svg>
-                  <span className="text-sm">{t('dashboard.personalized.editProject')}</span>
+                  <span className="hidden sm:inline">{t('dashboard.personalized.editProject')}</span>
                 </Link>
               )}
               <button
                 onClick={() => setEditMode(!editMode)}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all ${
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg font-medium transition-all text-sm ${
                   editMode 
                     ? 'bg-blue-600 text-white shadow-md hover:bg-blue-700' 
                     : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 hover:border-gray-400'
@@ -357,18 +399,18 @@ export default function PersonalizedDashboard() {
                 {editMode ? (
                   <>
                     <Check className="w-4 h-4" />
-                    <span className="text-sm">{t('dashboard.personalized.finish')}</span>
+                    <span>{t('dashboard.personalized.finish')}</span>
                   </>
                 ) : (
                   <>
                     <LayoutGrid className="w-4 h-4" />
-                    <span className="text-sm">{t('dashboard.personalized.modifyWidgets')}</span>
+                    <span className="hidden sm:inline">{t('dashboard.personalized.modifyWidgets')}</span>
                   </>
                 )}
               </button>
               <Link
                 to="/profile"
-                className="flex items-center space-x-2 text-gray-600 hover:bg-gray-100 px-3 py-2 rounded-lg transition-colors"
+                className="flex items-center text-gray-600 hover:bg-gray-100 p-2 rounded-lg transition-colors"
                 title={t('dashboard.personalized.settings')}
               >
                 <Settings className="w-4 h-4" />
@@ -379,105 +421,104 @@ export default function PersonalizedDashboard() {
       </div>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transition-shadow">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-blue-50 rounded-lg">
-                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        {/* Quick Stats - Compact row */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2.5 bg-blue-50 rounded-lg">
+                <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
               </div>
               {activeProject?.projectStatus === 'planning' && (
-                <span className="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">
+                <span className="px-2.5 py-0.5 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">
                   {t('dashboard.personalized.stats.projectStatus.ongoing')}
                 </span>
               )}
               {activeProject?.projectStatus === 'active' && (
-                <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
+                <span className="px-2.5 py-0.5 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
                   {t('dashboard.personalized.stats.projectStatus.active')}
                 </span>
               )}
               {activeProject?.projectStatus === 'completed' && (
-                <span className="px-3 py-1 bg-purple-100 text-purple-700 text-xs font-semibold rounded-full">
+                <span className="px-2.5 py-0.5 bg-purple-100 text-purple-700 text-xs font-semibold rounded-full">
                   {t('dashboard.personalized.stats.projectStatus.completed')}
                 </span>
               )}
             </div>
-            <div>
-              <p className="text-sm text-gray-500 mb-1">{t('dashboard.personalized.stats.projectStatus.label')}</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {activeProject?.projectStatus === 'planning' && t('dashboard.personalized.stats.projectStatus.planning')}
-                {activeProject?.projectStatus === 'active' && t('dashboard.personalized.stats.projectStatus.active')}
-                {activeProject?.projectStatus === 'completed' && t('dashboard.personalized.stats.projectStatus.completed')}
-              </p>
-            </div>
+            <p className="text-xs text-gray-500 mb-0.5">{t('dashboard.personalized.stats.projectStatus.label')}</p>
+            <p className="text-xl font-bold text-gray-900">
+              {activeProject?.projectStatus === 'planning' && t('dashboard.personalized.stats.projectStatus.planning')}
+              {activeProject?.projectStatus === 'active' && t('dashboard.personalized.stats.projectStatus.active')}
+              {activeProject?.projectStatus === 'completed' && t('dashboard.personalized.stats.projectStatus.completed')}
+            </p>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transition-shadow">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-green-50 rounded-lg">
-                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2.5 bg-green-50 rounded-lg">
+                <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
               </div>
               {activeProject?.expectedDepartureDate && (
-                <span className="text-xs text-gray-400 font-medium">
+                <span className="text-xs text-emerald-600 font-semibold bg-emerald-50 px-2 py-0.5 rounded-full">
                   {t('dashboard.personalized.stats.departureDate.days', { 
-                    count: Math.ceil((new Date(activeProject.expectedDepartureDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+                    count: Math.max(0, Math.ceil((new Date(activeProject.expectedDepartureDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
                   })}
                 </span>
               )}
             </div>
-            <div>
-              <p className="text-sm text-gray-500 mb-1">{t('dashboard.personalized.stats.departureDate.label')}</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {activeProject?.expectedDepartureDate
-                  ? new Date(activeProject.expectedDepartureDate).toLocaleDateString('fr-FR', { 
-                      day: 'numeric',
-                      month: 'short', 
-                      year: 'numeric' 
-                    })
-                  : t('dashboard.personalized.stats.departureDate.undefined')}
-              </p>
-            </div>
+            <p className="text-xs text-gray-500 mb-0.5">{t('dashboard.personalized.stats.departureDate.label')}</p>
+            <p className="text-xl font-bold text-gray-900">
+              {activeProject?.expectedDepartureDate
+                ? new Date(activeProject.expectedDepartureDate).toLocaleDateString(getLocale(i18n.language), { 
+                    day: 'numeric',
+                    month: 'short', 
+                    year: 'numeric' 
+                  })
+                : t('dashboard.personalized.stats.departureDate.undefined')}
+            </p>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transition-shadow">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-purple-50 rounded-lg">
-                <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2.5 bg-purple-50 rounded-lg">
+                <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                 </svg>
               </div>
               <span className="text-xs text-gray-400 font-medium">{t('dashboard.personalized.stats.housingBudget.perMonth')}</span>
             </div>
-            <div>
-              <p className="text-sm text-gray-500 mb-1">{t('dashboard.personalized.stats.housingBudget.label')}</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {activeProject?.housingBudget
-                  ? `${activeProject.housingBudget} ${originCountryData?.currency || '€'}`
-                  : t('dashboard.personalized.stats.housingBudget.undefined')}
-              </p>
-            </div>
+            <p className="text-xs text-gray-500 mb-0.5">{t('dashboard.personalized.stats.housingBudget.label')}</p>
+            <p className="text-xl font-bold text-gray-900">
+              {activeProject?.housingBudget
+                ? `${activeProject.housingBudget} ${originCountryData?.currency || '€'}`
+                : t('dashboard.personalized.stats.housingBudget.undefined')}
+            </p>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transition-shadow">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-orange-50 rounded-lg">
-                <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2.5 bg-orange-50 rounded-lg">
+                <svg className="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
               <span className="text-xs text-gray-400 font-medium">{t('dashboard.personalized.stats.duration.estimated')}</span>
             </div>
-            <div>
-              <p className="text-sm text-gray-500 mb-1">{t('dashboard.personalized.stats.duration.label')}</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {activeProject?.expectedDuration 
-                  ? t('dashboard.personalized.stats.duration.months', { count: activeProject.expectedDuration })
-                  : t('dashboard.personalized.stats.duration.undefined')}
-              </p>
-            </div>
+            <p className="text-xs text-gray-500 mb-0.5">{t('dashboard.personalized.stats.duration.label')}</p>
+            <p className="text-xl font-bold text-gray-900">
+              {activeProject?.expectedDuration 
+                ? (() => {
+                    const months = activeProject.expectedDuration
+                    if (months <= 6) return t('dashboard.personalized.stats.duration.less6months')
+                    if (months <= 12) return t('dashboard.personalized.stats.duration.6to12months')
+                    if (months <= 36) return t('dashboard.personalized.stats.duration.1to3years')
+                    return t('dashboard.personalized.stats.duration.more3years')
+                  })()
+                : t('dashboard.personalized.stats.duration.undefined')}
+            </p>
           </div>
         </div>
 
@@ -503,11 +544,11 @@ export default function PersonalizedDashboard() {
         >
           <SortableContext
             items={visibleWidgets}
-            strategy={verticalListSortingStrategy}
+            strategy={rectSortingStrategy}
           >
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 auto-rows-auto">
               {visibleWidgets.map((widgetId) => (
-                <SortableWidget key={widgetId} id={widgetId}>
+                <SortableWidget key={widgetId} id={widgetId} className={getWidgetColSpan(widgetId)}>
                   {renderWidget(widgetId)}
                 </SortableWidget>
               ))}
@@ -515,7 +556,7 @@ export default function PersonalizedDashboard() {
               {editMode && (
                 <button
                   onClick={() => setShowAddWidget(true)}
-                  className="border-2 border-dashed border-gray-300 rounded-xl p-6 flex flex-col items-center justify-center text-gray-500 hover:border-gray-400 hover:text-gray-600 cursor-pointer transition-colors"
+                  className="border-2 border-dashed border-gray-300 rounded-xl p-8 flex flex-col items-center justify-center text-gray-500 hover:border-purple-400 hover:text-purple-600 hover:bg-purple-50/50 cursor-pointer transition-all min-h-[200px]"
                 >
                   <Plus className="w-8 h-8 mb-2" />
                   <span className="text-sm font-medium">{t('dashboard.personalized.widgets.addWidget')}</span>
@@ -564,9 +605,9 @@ export default function PersonalizedDashboard() {
             <div className="p-8 overflow-y-auto bg-gray-50/50">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {availableWidgets.map((widget) => {
-                  const isVisible = visibleWidgets.includes(widget.id)
+                  const isInLayout = dashboardLayout.includes(widget.id)
                   const isHidden = hiddenWidgets.includes(widget.id)
-                  const isAdded = isVisible && !isHidden
+                  const isAdded = isInLayout && !isHidden
 
                   const Icon = {
                     'profile-summary': User,
@@ -579,8 +620,15 @@ export default function PersonalizedDashboard() {
                     <button
                       key={widget.id}
                       onClick={() => {
+                        if (isAdded) return
                         if (isHidden) {
+                          // Widget is in layout but hidden → un-hide it
                           toggleWidgetVisibility(widget.id)
+                        } else if (!isInLayout) {
+                          // Widget is not in layout at all → add it
+                          const newLayout = [...dashboardLayout, widget.id]
+                          setDashboardLayout(newLayout)
+                          updateWidgetOrder(newLayout)
                         }
                       }}
                       disabled={isAdded}

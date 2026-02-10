@@ -4,8 +4,5 @@ import { login } from "../../../api/auth";
 export function useLogin() {
   return useMutation({
     mutationFn: login,
-    onSuccess: (data) => {
-      console.log("Connecté :", data);
-    },
   });
 }

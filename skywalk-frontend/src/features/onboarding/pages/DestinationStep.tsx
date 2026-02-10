@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import FormField from '../ui/FormField'
 import Select from '../ui/Select'
 import TextInput from '../ui/TextInput'
 import WizardNav from '../components/WizardNav'
-import { countryApi } from '../../../api/country'
 
 interface DestinationStepData {
   fromCountry: string
@@ -19,7 +18,12 @@ interface DestinationStepProps {
   onBack?: () => void
 }
 
+import { useCostOfLiving } from '../../../contexts/CostOfLivingContext';
+
 export default function DestinationStep({ data, onNext, onBack }: DestinationStepProps) {
+  const { t } = useTranslation()
+  const { supportedCountries } = useCostOfLiving();
+
   const [formData, setFormData] = useState<DestinationStepData>({
     fromCountry: data?.fromCountry || '',
     toCountry: data?.toCountry || '',
@@ -27,22 +31,15 @@ export default function DestinationStep({ data, onNext, onBack }: DestinationSte
     departureYear: data?.departureYear || ''
   })
 
-  const { data: countries = [] } = useQuery({
-    queryKey: ['countries'],
-    queryFn: countryApi.getAll
-  })
+  // Removed direct useQuery for countries, using context instead
 
-  const countryOptions = countries
-    .filter(c => c.isoCode) // Ensure we have an ISO code
-    .map(c => ({
-      value: c.isoCode!,
-      label: c.countryName
-    }))
-    .sort((a, b) => a.label.localeCompare(b.label))
+  const countryOptions = supportedCountries.map(c => ({
+    value: c.code,
+    label: t(c.i18nKey)
+  }));
 
   useEffect(() => {
     if (data) {
-      console.log('📝 DestinationStep - Syncing data:', data)
       setFormData({
         fromCountry: data.fromCountry || '',
         toCountry: data.toCountry || '',
@@ -61,23 +58,23 @@ export default function DestinationStep({ data, onNext, onBack }: DestinationSte
     const newErrors: Partial<DestinationStepData> = {}
 
     if (!formData.fromCountry) {
-      newErrors.fromCountry = 'Le pays de départ est requis'
+      newErrors.fromCountry = t('onboarding.destination.errors.fromCountryRequired')
     }
 
     if (!formData.toCountry) {
-      newErrors.toCountry = 'Le pays de destination est requis'
+      newErrors.toCountry = t('onboarding.destination.errors.toCountryRequired')
     }
 
     if (formData.fromCountry && formData.toCountry && formData.fromCountry === formData.toCountry) {
-      newErrors.toCountry = 'Le pays de destination doit être différent du pays de départ'
+      newErrors.toCountry = t('onboarding.destination.errors.sameCountry')
     }
 
     if (!formData.departureYear) {
-      newErrors.departureYear = 'L\'année de départ est requise'
+      newErrors.departureYear = t('onboarding.destination.errors.departureYearRequired')
     } else {
       const year = parseInt(formData.departureYear)
       if (isNaN(year) || year < currentYear || year > maxYear) {
-        newErrors.departureYear = `L'année doit être entre ${currentYear} et ${maxYear}`
+        newErrors.departureYear = t('onboarding.destination.errors.departureYearRange', { min: currentYear, max: maxYear })
       }
     }
 
@@ -94,11 +91,11 @@ export default function DestinationStep({ data, onNext, onBack }: DestinationSte
   const handleFieldChange = (field: keyof DestinationStepData) => (value: string) => {
     const newFormData = { ...formData, [field]: value }
     setFormData(newFormData)
-    
+
     if (field === 'toCountry' && value && newFormData.fromCountry && value === newFormData.fromCountry) {
-      setErrors(prev => ({ ...prev, toCountry: 'Le pays de destination doit être différent du pays de départ' }))
+      setErrors(prev => ({ ...prev, toCountry: t('onboarding.destination.errors.sameCountry') }))
     } else if (field === 'fromCountry' && value && newFormData.toCountry && value === newFormData.toCountry) {
-      setErrors(prev => ({ ...prev, toCountry: 'Le pays de destination doit être différent du pays de départ' }))
+      setErrors(prev => ({ ...prev, toCountry: t('onboarding.destination.errors.sameCountry') }))
     } else if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: undefined }))
     }
@@ -110,16 +107,16 @@ export default function DestinationStep({ data, onNext, onBack }: DestinationSte
     <div className="space-y-6">
       <div className="text-center mb-8">
         <h1 className="text-2xl font-bold text-gray-900 mb-2">
-          Votre destination
+          {t('onboarding.destination.title')}
         </h1>
         <p className="text-gray-600">
-          Dites-nous d'où vous partez et où vous souhaitez vous installer
+          {t('onboarding.destination.subtitle')}
         </p>
       </div>
 
       <div className="space-y-6">
         <FormField
-          label="Pays de départ"
+          label={t('onboarding.destination.fromCountry')}
           required
           error={errors.fromCountry}
           id="fromCountry"
@@ -129,13 +126,13 @@ export default function DestinationStep({ data, onNext, onBack }: DestinationSte
             options={countryOptions}
             value={formData.fromCountry}
             onChange={handleFieldChange('fromCountry')}
-            placeholder="Sélectionnez votre pays de départ"
+            placeholder={t('onboarding.destination.fromCountryPlaceholder')}
             aria-describedby={errors.fromCountry ? 'fromCountry-error' : undefined}
           />
         </FormField>
 
         <FormField
-          label="Pays de destination"
+          label={t('onboarding.destination.toCountry')}
           required
           error={errors.toCountry}
           id="toCountry"
@@ -145,14 +142,14 @@ export default function DestinationStep({ data, onNext, onBack }: DestinationSte
             options={countryOptions}
             value={formData.toCountry}
             onChange={handleFieldChange('toCountry')}
-            placeholder="Sélectionnez votre pays de destination"
+            placeholder={t('onboarding.destination.toCountryPlaceholder')}
             aria-describedby={errors.toCountry ? 'toCountry-error' : undefined}
           />
         </FormField>
 
         <FormField
-          label="Ville cible (optionnel)"
-          helper="Si vous avez déjà une ville en tête"
+          label={t('onboarding.destination.targetCity')}
+          helper={t('onboarding.destination.targetCityHelper')}
           error={errors.targetCity}
           id="targetCity"
         >
@@ -160,13 +157,13 @@ export default function DestinationStep({ data, onNext, onBack }: DestinationSte
             id="targetCity"
             value={formData.targetCity}
             onChange={handleFieldChange('targetCity')}
-            placeholder="Ex: Zurich, Toronto, Lisbonne..."
+            placeholder={t('onboarding.destination.targetCityPlaceholder')}
             aria-describedby={errors.targetCity ? 'targetCity-error' : 'targetCity-helper'}
           />
         </FormField>
 
         <FormField
-          label="Année de départ prévue"
+          label={t('onboarding.destination.departureYear')}
           required
           error={errors.departureYear}
           id="departureYear"
