@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, Search } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface ServiceResultsProps {
   category: string;
@@ -7,12 +8,13 @@ interface ServiceResultsProps {
 }
 
 export default function ServiceResults({ category, title }: ServiceResultsProps) {
+  const { t } = useTranslation();
   return (
     <section>
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-gray-900 flex items-center space-x-2">
           <Search className="w-6 h-6 text-gray-700" />
-          <span>Rechercher dans "{title}"</span>
+          <span>{t('services.serviceResults.searchIn', { title })}</span>
         </h2>
       </div>
 
@@ -21,17 +23,16 @@ export default function ServiceResults({ category, title }: ServiceResultsProps)
         <div className="max-w-2xl mx-auto">
           <Search className="w-16 h-16 text-gray-300 mx-auto mb-4" />
           <h3 className="text-xl font-semibold text-gray-900 mb-3">
-            Explorez les résultats
+            {t('services.serviceResults.exploreResults')}
           </h3>
           <p className="text-gray-600 mb-6">
-            Utilisez notre moteur de recherche pour trouver des ressources,
-            offres et informations spécifiques à {title.toLowerCase()}.
+            {t('services.serviceResults.useSearchEngine', { title: title.toLowerCase() })}
           </p>
           <Link
             to={`/search?category=${category}`}
             className="inline-flex items-center space-x-2 px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium"
           >
-            <span>Accéder à la recherche</span>
+            <span>{t('services.serviceResults.goToSearch')}</span>
             <ArrowRight className="w-5 h-5" />
           </Link>
         </div>
@@ -43,14 +44,14 @@ export default function ServiceResults({ category, title }: ServiceResultsProps)
           to={`/search?category=${category}&sort=recent`}
           className="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200 hover:border-gray-300 transition-all group"
         >
-          <span className="text-gray-700 font-medium">Voir les plus récents</span>
+          <span className="text-gray-700 font-medium">{t('services.serviceResults.viewRecent')}</span>
           <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-gray-700 group-hover:translate-x-1 transition-all" />
         </Link>
         <Link
           to={`/search?category=${category}&sort=popular`}
           className="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200 hover:border-gray-300 transition-all group"
         >
-          <span className="text-gray-700 font-medium">Voir les plus populaires</span>
+          <span className="text-gray-700 font-medium">{t('services.serviceResults.viewPopular')}</span>
           <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-gray-700 group-hover:translate-x-1 transition-all" />
         </Link>
       </div>

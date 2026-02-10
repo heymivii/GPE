@@ -1,4 +1,4 @@
-import { Briefcase, Home, Car, Heart, FileText, GraduationCap, Building2, Users } from 'lucide-react';
+import { Briefcase, Home, Car, Heart, FileText, GraduationCap, Building2, Users, Globe, Landmark, ClipboardList } from 'lucide-react';
 import type { TFunction } from 'i18next';
 
 export interface ServiceGuide {
@@ -11,7 +11,7 @@ export interface ServiceConfig {
   title: string;
   subtitle: string;
   description: string;
-  icon: any;
+  icon: React.ElementType;
   color: string;
   bgColor: string;
   hasTools?: boolean; // Indique si le service a des outils interactifs
@@ -26,6 +26,7 @@ export interface ServiceConfig {
     question: string;
     answer: string;
   }[];
+  comingSoon?: boolean; // Indique que le service est à venir (grisé)
 }
 
 export const getServicesConfig = (t: TFunction): Record<string, ServiceConfig> => ({
@@ -246,6 +247,47 @@ export const getServicesConfig = (t: TFunction): Record<string, ServiceConfig> =
     tips: t('services.categories.business.tips', { returnObjects: true }) as string[],
     searchCategory: 'business',
   },
+
+  /* ── Coming Soon services ── */
+
+  visa: {
+    id: 'visa',
+    title: t('services.categories.visa.title'),
+    subtitle: t('services.categories.visa.subtitle'),
+    description: t('services.categories.visa.description'),
+    icon: Globe,
+    color: 'text-cyan-600',
+    bgColor: 'bg-cyan-50',
+    comingSoon: true,
+    guides: [],
+    tips: [],
+  },
+
+  banque: {
+    id: 'banque',
+    title: t('services.categories.banque.title'),
+    subtitle: t('services.categories.banque.subtitle'),
+    description: t('services.categories.banque.description'),
+    icon: Landmark,
+    color: 'text-emerald-600',
+    bgColor: 'bg-emerald-50',
+    comingSoon: true,
+    guides: [],
+    tips: [],
+  },
+
+  'demarches-admin': {
+    id: 'demarches-admin',
+    title: t('services.categories.demarches-admin.title'),
+    subtitle: t('services.categories.demarches-admin.subtitle'),
+    description: t('services.categories.demarches-admin.description'),
+    icon: ClipboardList,
+    color: 'text-amber-600',
+    bgColor: 'bg-amber-50',
+    comingSoon: true,
+    guides: [],
+    tips: [],
+  },
 });
 
 export const getServiceBySlug = (slug: string, t: TFunction): ServiceConfig | undefined => {
@@ -259,4 +301,9 @@ export const getAllServices = (t: TFunction): ServiceConfig[] => {
 
 export const getServicesWithTools = (t: TFunction): ServiceConfig[] => {
   return Object.values(getServicesConfig(t)).filter(service => service.hasTools === true);
+};
+
+/** Services with tools + coming soon services (for the index page) */
+export const getServicesForIndex = (t: TFunction): ServiceConfig[] => {
+  return Object.values(getServicesConfig(t)).filter(service => service.hasTools === true || service.comingSoon === true);
 };

@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../../hooks/useAuth';
 import { useQuery } from '@tanstack/react-query';
 import { expatriationProjectApi } from '../../../api/expatriation-project';
@@ -13,6 +14,7 @@ interface UseServiceContentParams {
 
 export function useServiceContent({ service, category }: UseServiceContentParams) {
   const { isAuthenticated } = useAuth();
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
 
@@ -56,15 +58,20 @@ export function useServiceContent({ service, category }: UseServiceContentParams
 
     const combinedGuides: ServiceGuide[] = [
       ...service.guides,
-      ...(countryContent.specificGuides || []),
+      ...(countryContent.specificGuides || []).map(g => ({
+        title: t(g.title),
+        steps: g.steps.map(s => t(s)),
+      })),
     ];
 
     const combinedTips = [
       ...service.tips,
-      ...(countryContent.tips || []),
+      ...(countryContent.tips || []).map(tip => t(tip)),
     ];
 
-    const stats = countryContent.stats || service.stats;
+    const stats = countryContent.stats
+      ? countryContent.stats.map(s => ({ label: t(s.label), value: s.value }))
+      : service.stats;
 
     return {
       ...service,
@@ -75,7 +82,7 @@ export function useServiceContent({ service, category }: UseServiceContentParams
       countryName: selectedCountry,
       countrySpecific: countryContent,
     };
-  }, [service, selectedCountry, category]);
+  }, [service, selectedCountry, category, t]);
 
   const displayMode = useMemo(() => {
     if (!isAuthenticated) {

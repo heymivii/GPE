@@ -2,6 +2,7 @@ import { useParams, Navigate, Link } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import { getServiceBySlug } from '../../../data/services-config';
+import type { ServiceConfig } from '../../../data/services-config';
 import { PageHeader } from '../../../components/PageHeader';
 import ServiceGuides from '../components/ServiceGuides';
 import ServiceStats from '../components/ServiceStats';
@@ -29,7 +30,7 @@ export default function ServicePage() {
     displayMode,
     isAuthenticated,
   } = useServiceContent({ 
-    service: service || { guides: [], tips: [], stats: [] } as any, 
+    service: service || { id: '', title: '', subtitle: '', description: '', icon: Plus, color: '', bgColor: '', guides: [], tips: [], stats: [] } satisfies ServiceConfig, 
     category: category || '' 
   });
 
@@ -173,18 +174,15 @@ export default function ServicePage() {
 
           {/* Main Content */}
           <main className="flex-1 min-w-0 space-y-8">
-            {/* Stats Section - Dynamique pour tous les services avec données complètes */}
-            {selectedCountry && ['france', 'royaume-uni', 'suisse'].includes(selectedCountry) ? (
-              <>
-                {category === 'sante' && <HealthStats countryName={selectedCountry} />}
-                {category === 'transport' && <TransportStats countryName={selectedCountry} />}
-                {category === 'logement' && <LogementStats countryName={selectedCountry} />}
-                {category === 'emploi' && <EmploiStats countryName={selectedCountry} />}
-                {!['sante', 'transport', 'logement', 'emploi'].includes(category || '') && 
-                  content.stats && content.stats.length > 0 && (
-                    <ServiceStats stats={content.stats} color={service.color} />
-                  )}
-              </>
+            {/* Logement: powered by Cost of Living API — works for all supported countries */}
+            {selectedCountry && category === 'logement' ? (
+              <LogementStats countryName={selectedCountry} />
+            ) : selectedCountry && category === 'emploi' ? (
+              <EmploiStats countryName={selectedCountry} />
+            ) : selectedCountry && category === 'sante' ? (
+              <HealthStats countryName={selectedCountry} />
+            ) : selectedCountry && category === 'transport' ? (
+              <TransportStats countryName={selectedCountry} />
             ) : content.stats && content.stats.length > 0 ? (
               <ServiceStats stats={content.stats} color={service.color} />
             ) : null}
