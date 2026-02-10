@@ -1,5 +1,6 @@
 import { Check } from 'lucide-react'
 import type { EnrichedCountry } from '../hooks/useCountriesWithData'
+import { useTranslation } from 'react-i18next'
 
 interface CountrySelectorProps {
   countries: EnrichedCountry[]
@@ -14,6 +15,7 @@ export default function CountrySelector({
   onCountryToggle,
   maxSelection
 }: CountrySelectorProps) {
+  const { t } = useTranslation()
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
       {countries.map((country) => {
@@ -59,7 +61,7 @@ export default function CountrySelector({
                 {country.countryName}
               </span>
               <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">
-                {country.continent || 'Destination'}
+                {country.continent || t('comparison.fields.destination')}
               </span>
             </div>
 
