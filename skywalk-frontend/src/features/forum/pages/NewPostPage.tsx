@@ -1,26 +1,40 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Loader2 } from 'lucide-react';
+import { ArrowLeft, Loader2, Globe, ShieldAlert, CheckCircle2, X } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 import { useCreateForumTopic } from '../../../hooks/useForum';
 import { useAuth } from '../../../hooks/useAuth';
 import { TopicCategoryValues, type TopicCategory } from '../../../types/forum';
 import { useTranslation } from 'react-i18next';
+import { destinationsApi } from '../../../api/destinations';
 
-const categories = [
-  { id: TopicCategoryValues.QUESTION, name: 'Question', icon: '❓' },
-  { id: TopicCategoryValues.TESTIMONY, name: 'Témoignage', icon: '📝' },
-  { id: TopicCategoryValues.ADVICE, name: 'Conseil', icon: '💡' },
-  { id: TopicCategoryValues.DISCUSSION, name: 'Discussion', icon: '💬' },
-  { id: TopicCategoryValues.ANNOUNCEMENT, name: 'Annonce', icon: '📢' },
-  { id: TopicCategoryValues.OTHER, name: 'Autre', icon: '📌' }
-];
+const categoryIcons: Record<string, string> = {
+  [TopicCategoryValues.QUESTION]: '❓',
+  [TopicCategoryValues.TESTIMONY]: '📝',
+  [TopicCategoryValues.ADVICE]: '💡',
+  [TopicCategoryValues.DISCUSSION]: '💬',
+  [TopicCategoryValues.ANNOUNCEMENT]: '📢',
+  [TopicCategoryValues.OTHER]: '📌',
+};
 
 export default function NewPostPage() {
   const { t } = useTranslation();
+  const categories = Object.values(TopicCategoryValues).map(id => ({
+    id,
+    name: t(`forum.categories.${id}.name`),
+    icon: categoryIcons[id] || '📌',
+  }));
   const navigate = useNavigate();
   const { user } = useAuth();
   const createTopic = useCreateForumTopic();
   
+  // Fetch countries for the country selector
+  const { data: countries = [] } = useQuery({
+    queryKey: ['destinations-list'],
+    queryFn: destinationsApi.getAll,
+    staleTime: 10 * 60 * 1000,
+  });
+
   const [formData, setFormData] = useState({
     title: '',
     content: '', 
@@ -28,29 +42,44 @@ export default function NewPostPage() {
     countryId: undefined as number | undefined
   });
 
+  // Feedback banners
+  const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
+  const [feedbackType, setFeedbackType] = useState<'error' | 'success'>('error');
+
+  const showFeedback = (message: string, type: 'error' | 'success' = 'error') => {
+    setFeedbackMessage(message);
+    setFeedbackType(type);
+    if (type === 'success') {
+      setTimeout(() => setFeedbackMessage(null), 4000);
+    }
+  };
+
+  const clearFeedback = () => setFeedbackMessage(null);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    clearFeedback();
     
     if (!user) {
-      alert(t('forum.newTopic.mustBeLoggedIn'));
+      showFeedback(t('forum.newTopic.mustBeLoggedIn'));
       navigate('/auth/login');
       return;
     }
 
     if (!formData.title.trim()) {
-      alert(t('forum.newTopic.titleRequired'));
+      showFeedback(t('forum.newTopic.titleRequired'));
       return;
     }
 
     if (!formData.content.trim()) {
-      alert(t('forum.newTopic.contentRequired'));
+      showFeedback(t('forum.newTopic.contentRequired'));
       return;
     }
 
     try {
       const userId = user.idUser || user.id;
       if (!userId) {
-        alert(t('forum.newTopic.userIdError'));
+        showFeedback(t('forum.newTopic.userIdError'));
         return;
       }
 
@@ -65,8 +94,13 @@ export default function NewPostPage() {
       navigate(`/forum/post/${newTopic.topic_id}`);
     } catch (error: unknown) {
       console.error('Erreur:', error);
-      const msg = error instanceof Error ? error.message : t('forum.newTopic.submitError');
-      alert(`${t('forum.newTopic.submitError')}: ${msg}`);
+      const axiosErr = error as { response?: { data?: { message?: string }; status?: number } };
+      if (axiosErr?.response?.status === 400 && axiosErr.response.data?.message) {
+        showFeedback(axiosErr.response.data.message);
+      } else {
+        const msg = error instanceof Error ? error.message : t('forum.newTopic.submitError');
+        showFeedback(`${t('forum.newTopic.submitError')}: ${msg}`);
+      }
     }
   };
 
@@ -100,7 +134,42 @@ export default function NewPostPage() {
           <p className="text-gray-600">{t('forum.newTopic.subtitle')}</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Feedback banner */}
+        {feedbackMessage && (
+          <div
+            className={`mb-6 flex items-center gap-3 px-4 py-3 rounded-lg border text-sm font-medium ${
+              feedbackType === 'error'
+                ? 'bg-red-50 border-red-200 text-red-800'
+                : 'bg-green-50 border-green-200 text-green-800'
+            }`}
+          >
+            {feedbackType === 'error' ? (
+              <ShieldAlert className="w-5 h-5 text-red-500 flex-shrink-0" />
+            ) : (
+              <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
+            )}
+            <span className="flex-1">{feedbackMessage}</span>
+            <button
+              onClick={clearFeedback}
+              className={`p-1 rounded hover:bg-black/5 ${
+                feedbackType === 'error' ? 'text-red-500' : 'text-green-500'
+              }`}
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-6 relative">
+          {/* Loading overlay */}
+          {createTopic.isPending && (
+            <div className="absolute inset-0 bg-white/60 backdrop-blur-sm z-10 flex items-center justify-center rounded-lg">
+              <div className="flex flex-col items-center gap-3">
+                <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+                <span className="text-sm font-medium text-gray-600">{t('forum.newTopic.publishing')}</span>
+              </div>
+            </div>
+          )}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
             <label htmlFor="title" className="block text-sm font-medium text-gray-900 mb-2">
               {t('forum.newTopic.titleLabel')} <span className="text-red-500">{t('forum.newTopic.required')}</span>
@@ -158,6 +227,33 @@ export default function NewPostPage() {
                 </button>
               ))}
             </div>
+          </div>
+
+          {/* Country Selector */}
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <label className="block text-sm font-medium text-gray-900 mb-2">
+              <Globe className="w-4 h-4 inline mr-1.5 text-blue-500" />
+              {t('forum.newTopic.countryLabel', 'Pays concerné')}
+              <span className="text-gray-400 text-xs ml-2">{t('forum.newTopic.optional', '(optionnel)')}</span>
+            </label>
+            <p className="text-sm text-gray-500 mb-3">
+              {t('forum.newTopic.countryHelp', 'Associer un pays permet de comptabiliser les discussions par destination.')}
+            </p>
+            <select
+              value={formData.countryId ?? ''}
+              onChange={(e) => setFormData(prev => ({ ...prev, countryId: e.target.value ? Number(e.target.value) : undefined }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white text-gray-900"
+            >
+              <option value="">{t('forum.newTopic.noCountry', '— Aucun pays —')}</option>
+              {countries
+                .slice()
+                .sort((a, b) => (a.countryName || '').localeCompare(b.countryName || ''))
+                .map((c) => (
+                  <option key={c.idCountry} value={c.idCountry}>
+                    {c.countryName}
+                  </option>
+                ))}
+            </select>
           </div>
 
           <div className="flex items-center justify-end gap-4">

@@ -9,6 +9,10 @@ import type {
   CreateForumMessageDto,
   UpdateForumMessageDto,
   ForumTopicWithMessages,
+  ForumReport,
+  CreateReportDto,
+  ResolveReportDto,
+  ReportStats,
 } from '../types/forum';
 
 
@@ -19,6 +23,8 @@ export const forumKeys = {
   messages: () => [...forumKeys.all, 'messages'] as const,
   message: (id: number) => [...forumKeys.messages(), id] as const,
   messagesByTopic: (topicId: number) => [...forumKeys.messages(), 'topic', topicId] as const,
+  reports: (status?: string) => [...forumKeys.all, 'reports', status] as const,
+  reportStats: () => [...forumKeys.all, 'report-stats'] as const,
 };
 
 export function useForumTopics(): UseQueryResult<ForumTopic[], Error> {
@@ -45,6 +51,8 @@ export function useCreateForumTopic(): UseMutationResult<ForumTopic, Error, Crea
     mutationFn: (data: CreateForumTopicDto) => forumTopicsApi.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: forumKeys.topics() });
+      // Also refresh destination stats (forum topics count per country)
+      queryClient.invalidateQueries({ queryKey: ['destinations-list'] });
     },
   });
 }
@@ -75,6 +83,8 @@ export function useDeleteForumTopic(): UseMutationResult<void, Error, number> {
     mutationFn: (id: number) => forumTopicsApi.remove(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: forumKeys.topics() });
+      // Also refresh destination stats (forum topics count per country)
+      queryClient.invalidateQueries({ queryKey: ['destinations-list'] });
     },
   });
 }
@@ -155,6 +165,104 @@ export function useDeleteForumMessage(): UseMutationResult<void, Error, { id: nu
         queryClient.invalidateQueries({ queryKey: forumKeys.topic(variables.topicId) });
         queryClient.invalidateQueries({ queryKey: forumKeys.messagesByTopic(variables.topicId) });
       }
+    },
+  });
+}
+
+
+// ─── Moderation hooks ──────────────────────────────────────────────
+
+/** Submit a report on a message or topic */
+export function useReportContent(): UseMutationResult<ForumReport, Error, CreateReportDto> {
+  return useMutation({
+    mutationFn: (data: CreateReportDto) => forumMessagesApi.report(data),
+  });
+}
+
+/** Admin/Mod: list all reports */
+export function useForumReports(status?: string): UseQueryResult<ForumReport[], Error> {
+  return useQuery({
+    queryKey: forumKeys.reports(status),
+    queryFn: () => forumMessagesApi.getReports(status),
+  });
+}
+
+/** Admin/Mod: report statistics */
+export function useReportStats(): UseQueryResult<ReportStats, Error> {
+  return useQuery({
+    queryKey: forumKeys.reportStats(),
+    queryFn: () => forumMessagesApi.getReportStats(),
+  });
+}
+
+/** Admin/Mod: resolve or reject a report */
+export function useResolveReport(): UseMutationResult<
+  ForumReport,
+  Error,
+  { id: number; data: ResolveReportDto }
+> {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number; data: ResolveReportDto }) =>
+      forumMessagesApi.resolveReport(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: forumKeys.reports() });
+      queryClient.invalidateQueries({ queryKey: forumKeys.reportStats() });
+    },
+  });
+}
+
+/** Admin/Mod: toggle lock on a topic */
+export function useLockTopic(): UseMutationResult<ForumTopic, Error, number> {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: number) => forumTopicsApi.lockTopic(id),
+    onSuccess: (_, id) => {
+      queryClient.invalidateQueries({ queryKey: forumKeys.topic(id) });
+      queryClient.invalidateQueries({ queryKey: forumKeys.topics() });
+    },
+  });
+}
+
+/** Admin/Mod: toggle pin on a topic */
+export function usePinTopic(): UseMutationResult<ForumTopic, Error, number> {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: number) => forumTopicsApi.pinTopic(id),
+    onSuccess: (_, id) => {
+      queryClient.invalidateQueries({ queryKey: forumKeys.topic(id) });
+      queryClient.invalidateQueries({ queryKey: forumKeys.topics() });
+    },
+  });
+}
+
+/** Admin/Mod: delete any message as moderator */
+export function useModeratorDeleteMessage(): UseMutationResult<void, Error, { id: number; topicId?: number }> {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id }: { id: number; topicId?: number }) => forumMessagesApi.moderatorRemove(id),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: forumKeys.messages() });
+      if (variables.topicId) {
+        queryClient.invalidateQueries({ queryKey: forumKeys.topic(variables.topicId) });
+        queryClient.invalidateQueries({ queryKey: forumKeys.messagesByTopic(variables.topicId) });
+      }
+    },
+  });
+}
+
+/** Admin/Mod: delete any topic as moderator */
+export function useModeratorDeleteTopic(): UseMutationResult<void, Error, number> {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: number) => forumTopicsApi.moderatorRemove(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: forumKeys.topics() });
     },
   });
 }

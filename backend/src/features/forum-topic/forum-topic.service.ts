@@ -1,10 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateForumTopicDto } from './dto/create-forum-topic.dto';
 import { UpdateForumTopicDto } from './dto/update-forum-topic.dto';
 import { ForumTopic } from './entities/forum-topic.entity';
 import { ForumMessage } from '../forum-message/entities/forum-message.entity';
+import { ContentFilterService } from '../forum-message/content-filter.service';
 
 @Injectable()
 export class ForumTopicService {
@@ -13,22 +14,38 @@ export class ForumTopicService {
     private readonly forumTopicRepository: Repository<ForumTopic>,
     @InjectRepository(ForumMessage)
     private readonly forumMessageRepository: Repository<ForumMessage>,
+    private readonly contentFilterService: ContentFilterService,
   ) {}
 
   async create(createForumTopicDto: CreateForumTopicDto): Promise<ForumTopic> {
+    // Content filter on title
+    const titleFilter = await this.contentFilterService.validate(createForumTopicDto.title);
+    if (!titleFilter.ok) {
+      throw new BadRequestException(`Topic title rejected: ${titleFilter.reason}`);
+    }
+
+    // Content filter on initial message content
+    const contentFilter = await this.contentFilterService.validate(createForumTopicDto.content);
+    if (!contentFilter.ok) {
+      throw new BadRequestException(`Topic content rejected: ${contentFilter.reason}`);
+    }
+
+    const sanitizedTitle = this.contentFilterService.sanitize(createForumTopicDto.title);
+    const sanitizedContent = this.contentFilterService.sanitize(createForumTopicDto.content.trim());
+
     const topic = this.forumTopicRepository.create({
-      title: createForumTopicDto.title,
+      title: sanitizedTitle,
       category: createForumTopicDto.category,
       user: { idUser: createForumTopicDto.idUser } as any,
-      country: createForumTopicDto.idCountry 
-        ? ({ id_country: createForumTopicDto.idCountry } as any)
+      country: createForumTopicDto.idCountry
+        ? ({ idCountry: createForumTopicDto.idCountry } as any)
         : undefined,
     });
     
     const savedTopic = await this.forumTopicRepository.save(topic);
 
     const initialMessage = this.forumMessageRepository.create({
-      content: createForumTopicDto.content.trim(),
+      content: sanitizedContent,
       topic: { topic_id: savedTopic.topic_id } as any,
       user: { idUser: createForumTopicDto.idUser } as any,
     });
@@ -66,36 +83,75 @@ export class ForumTopicService {
 
   async update(id: number, updateForumTopicDto: UpdateForumTopicDto): Promise<ForumTopic> {
     const topic = await this.findOne(id);
-    
-    if (updateForumTopicDto.title) topic.title = updateForumTopicDto.title;
+
+    // Content filter on title if provided
+    if (updateForumTopicDto.title) {
+      const titleFilter = await this.contentFilterService.validate(updateForumTopicDto.title);
+      if (!titleFilter.ok) {
+        throw new BadRequestException(`Topic title rejected: ${titleFilter.reason}`);
+      }
+      topic.title = this.contentFilterService.sanitize(updateForumTopicDto.title);
+    }
     if (updateForumTopicDto.category) topic.category = updateForumTopicDto.category;
     
     const updatedTopic = await this.forumTopicRepository.save(topic);
 
     if (updateForumTopicDto.content !== undefined) {
-      const firstMessage = await this.forumMessageRepository.findOne({
-        where: { topic: { topic_id: id } },
-        order: { sent_at: 'ASC' },
-      });
-
+      // Content filter on content if provided
       if (updateForumTopicDto.content.trim()) {
+        const contentFilter = await this.contentFilterService.validate(updateForumTopicDto.content);
+        if (!contentFilter.ok) {
+          throw new BadRequestException(`Topic content rejected: ${contentFilter.reason}`);
+        }
+        const sanitizedContent = this.contentFilterService.sanitize(updateForumTopicDto.content.trim());
+
+        const firstMessage = await this.forumMessageRepository.findOne({
+          where: { topic: { topic_id: id } },
+          order: { sent_at: 'ASC' },
+        });
+
         if (firstMessage) {
-          firstMessage.content = updateForumTopicDto.content.trim();
+          firstMessage.content = sanitizedContent;
           await this.forumMessageRepository.save(firstMessage);
         } else {
           const newMessage = this.forumMessageRepository.create({
-            content: updateForumTopicDto.content.trim(),
+            content: sanitizedContent,
             topic: { topic_id: id } as any,
             user: topic.user,
           });
           await this.forumMessageRepository.save(newMessage);
         }
-      } else if (firstMessage) {
-        await this.forumMessageRepository.remove(firstMessage);
+      } else {
+        const firstMessage = await this.forumMessageRepository.findOne({
+          where: { topic: { topic_id: id } },
+          order: { sent_at: 'ASC' },
+        });
+        if (firstMessage) {
+          await this.forumMessageRepository.remove(firstMessage);
+        }
       }
     }
     
     return updatedTopic;
+  }
+
+  // ─── Moderation methods ───────────────────────────────────────────
+
+  async lockTopic(id: number): Promise<ForumTopic> {
+    const topic = await this.findOne(id);
+    topic.is_locked = !topic.is_locked;
+    return this.forumTopicRepository.save(topic);
+  }
+
+  async pinTopic(id: number): Promise<ForumTopic> {
+    const topic = await this.findOne(id);
+    topic.is_pinned = !topic.is_pinned;
+    return this.forumTopicRepository.save(topic);
+  }
+
+  async moderatorRemove(id: number): Promise<void> {
+    const topic = await this.findOne(id);
+    await this.forumTopicRepository.remove(topic);
   }
 
   async remove(id: number): Promise<void> {
