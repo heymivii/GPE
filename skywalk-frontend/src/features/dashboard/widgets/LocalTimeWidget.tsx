@@ -92,7 +92,6 @@ export default function LocalTimeWidget({
       currentSize={currentSize}
     >
       <div className="space-y-6">
-        {/* Heure destination */}
         <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-100">
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-sm font-medium text-gray-600 flex items-center">
@@ -113,7 +112,6 @@ export default function LocalTimeWidget({
           </p>
         </div>
 
-        {/* Heure locale (votre fuseau) */}
         <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
           <h4 className="text-xs font-medium text-gray-500 mb-2 uppercase tracking-wide">
             {t('dashboard.personalized.widgets.localTime.yourLocalTime')}

@@ -134,7 +134,6 @@ export default function EmploiStats({ countryName }: EmploiStatsProps) {
 
   return (
     <section className="space-y-8">
-      {/* ── Header ── */}
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold text-gray-900">
           {t('services.stats.emploi.title', { city: displayName })}
@@ -146,9 +145,7 @@ export default function EmploiStats({ countryName }: EmploiStatsProps) {
         )}
       </div>
 
-      {/* ── 1) Key Stats Cards ── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        {/* Offres disponibles (Adzuna) */}
         <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200 hover:shadow-md transition-all">
           <div className="flex items-center justify-between mb-3">
             <Search className="w-5 h-5 text-blue-600" />
@@ -165,7 +162,6 @@ export default function EmploiStats({ countryName }: EmploiStatsProps) {
           </p>
         </div>
 
-        {/* Salaire moyen (Cost of Living API) */}
         <div className="bg-white rounded-xl p-6 border border-gray-200 hover:border-gray-300 transition-all hover:shadow-sm">
           <div className="flex items-center justify-between mb-3">
             <DollarSign className="w-5 h-5 text-emerald-600" />
@@ -193,7 +189,6 @@ export default function EmploiStats({ countryName }: EmploiStatsProps) {
           )}
         </div>
 
-        {/* Taux de chômage (static) */}
         {staticData && (
           <div className={`rounded-xl p-6 border transition-all hover:shadow-sm ${unemploymentColors.bg} ${unemploymentColors.border}`}>
             <div className="flex items-center justify-between mb-3">
@@ -209,7 +204,6 @@ export default function EmploiStats({ countryName }: EmploiStatsProps) {
           </div>
         )}
 
-        {/* Heures légales (static) */}
         {staticData && (
           <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-6 border border-gray-200 hover:border-gray-300 transition-all hover:shadow-sm">
             <div className="flex items-center justify-between mb-3">
@@ -228,7 +222,6 @@ export default function EmploiStats({ countryName }: EmploiStatsProps) {
         )}
       </div>
 
-      {/* ── 2) Live Job Offers from Adzuna ── */}
       {sampleJobs.length > 0 && (
         <div>
           <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
@@ -281,7 +274,6 @@ export default function EmploiStats({ countryName }: EmploiStatsProps) {
         </div>
       )}
 
-      {/* ── 3) In-demand sectors ── */}
       {sectors.length > 0 && (
         <div>
           <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
@@ -313,9 +305,7 @@ export default function EmploiStats({ countryName }: EmploiStatsProps) {
         </div>
       )}
 
-      {/* ── 4) Contract types & Job platforms (side by side) ── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Contract types */}
         {contracts.length > 0 && (
           <div className="bg-white rounded-xl p-6 border border-gray-200">
             <h3 className="text-base font-semibold text-gray-900 mb-4 flex items-center gap-2">
@@ -333,7 +323,6 @@ export default function EmploiStats({ countryName }: EmploiStatsProps) {
           </div>
         )}
 
-        {/* Job platforms */}
         {platforms.length > 0 && (
           <div className="bg-white rounded-xl p-6 border border-gray-200">
             <h3 className="text-base font-semibold text-gray-900 mb-4 flex items-center gap-2">
@@ -361,7 +350,6 @@ export default function EmploiStats({ countryName }: EmploiStatsProps) {
         )}
       </div>
 
-      {/* ── 5) Work permit & Notes ── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {permits.length > 0 && (
           <div className="bg-amber-50 rounded-xl p-6 border border-amber-200">

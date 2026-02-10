@@ -97,7 +97,6 @@ export default function WeatherWidget({
   return (
     <Widget title={t('dashboard.personalized.widgets.weather.title')} icon={Cloud} onHide={onHide} onResize={onResize} currentSize={currentSize}>
       <div className="space-y-4">
-        {/* Météo principale */}
         <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-6 border border-blue-100">
           <div className="flex items-center justify-between mb-4">
             <div>
@@ -123,7 +122,6 @@ export default function WeatherWidget({
           </p>
         </div>
 
-        {/* Détails météo */}
         <div className="grid grid-cols-3 gap-3">
           <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
             <div className="flex items-center mb-2">
@@ -156,7 +154,6 @@ export default function WeatherWidget({
           </div>
         </div>
 
-        {/* Info */}
         <p className="text-xs text-gray-400 text-center">
           {t('dashboard.personalized.widgets.weather.updated')}
         </p>

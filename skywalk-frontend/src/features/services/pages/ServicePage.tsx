@@ -61,13 +61,11 @@ export default function ServicePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header Section */}
       <PageHeader 
         title={service.title} 
         description={service.description} 
       />
 
-      {/* Context Banner - Full Width */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
@@ -139,7 +137,6 @@ export default function ServicePage() {
               )}
             </div>
 
-            {/* Country Selector */}
             {isAuthenticated && (
               <div className="w-full lg:w-auto flex-shrink-0">
                 <CountrySelector
@@ -153,10 +150,8 @@ export default function ServicePage() {
         </div>
       </div>
 
-      {/* Main Content Area with Sidebar Layout */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
-          {/* Sidebar - Tools (uniquement pour utilisateurs connectés) */}
           {isAuthenticated && (
             <aside className={`flex-shrink-0 transition-all duration-300 ${
               isToolsExpanded ? 'lg:w-96' : 'lg:w-80'
@@ -172,9 +167,7 @@ export default function ServicePage() {
             </aside>
           )}
 
-          {/* Main Content */}
           <main className="flex-1 min-w-0 space-y-8">
-            {/* Logement: powered by Cost of Living API — works for all supported countries */}
             {selectedCountry && category === 'logement' ? (
               <LogementStats countryName={selectedCountry} />
             ) : selectedCountry && category === 'emploi' ? (
@@ -187,14 +180,12 @@ export default function ServicePage() {
               <ServiceStats stats={content.stats} color={service.color} />
             ) : null}
 
-            {/* Guides Section */}
             <ServiceGuides
               guides={content.guides}
               tips={content.tips}
               faq={service.faq}
             />
 
-            {/* Search Results Section */}
             {service.searchCategory && (
               <ServiceResults
                 category={service.searchCategory}

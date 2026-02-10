@@ -137,7 +137,6 @@ export default function SearchPage() {
       </PageSearch>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* Section des filtres */}
         {isFilterOpen && (
           <div className="mb-6 bg-white rounded-lg shadow-sm p-6">
             <FilterSection
@@ -182,7 +181,6 @@ export default function SearchPage() {
           </div>
         </div>
 
-        {/* Message pour les résultats par défaut */}
         {!filters.query && !filters.category && !filters.country && (
           <div className="mb-6 space-y-4">
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
@@ -203,7 +201,6 @@ export default function SearchPage() {
               </div>
             </div>
 
-            {/* Quick filters */}
             <div className="flex flex-wrap gap-2">
               <span className="text-sm text-gray-600 font-medium">{t('searchPage.popularSearches')}</span>
               {[
@@ -236,7 +233,6 @@ export default function SearchPage() {
           onLoadMore={loadMore}
         />
 
-        {/* Infinite scroll trigger for authenticated users */}
         {isAuthenticated && filters.category === 'emploi' && (
           <InfiniteScrollTrigger
             onLoadMore={loadMore}
@@ -245,7 +241,6 @@ export default function SearchPage() {
           />
         )}
 
-        {/* Limit prompt for non-authenticated users */}
         {hasMoreResults && (
           <div className="mt-8 bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200 rounded-2xl p-8 text-center">
             <div className="max-w-md mx-auto">

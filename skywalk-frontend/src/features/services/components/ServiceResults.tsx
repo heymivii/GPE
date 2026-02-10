@@ -18,7 +18,6 @@ export default function ServiceResults({ category, title }: ServiceResultsProps)
         </h2>
       </div>
 
-      {/* Search Integration Placeholder */}
       <div className="bg-white rounded-xl border border-gray-200 p-8 text-center">
         <div className="max-w-2xl mx-auto">
           <Search className="w-16 h-16 text-gray-300 mx-auto mb-4" />
@@ -38,7 +37,6 @@ export default function ServiceResults({ category, title }: ServiceResultsProps)
         </div>
       </div>
 
-      {/* Quick Actions */}
       <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Link
           to={`/search?category=${category}&sort=recent`}

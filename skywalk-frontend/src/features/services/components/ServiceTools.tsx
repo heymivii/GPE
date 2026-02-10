@@ -113,7 +113,6 @@ function ToolContainer({ title, description, tools, activeToolId, onToolChange, 
   const { t } = useTranslation();
   return (
     <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden h-full flex flex-col">
-      {/* Header */}
       <div className="px-6 py-4 border-b border-gray-100 bg-gradient-to-b from-gray-50 to-white flex-shrink-0">
         <div className="flex items-center justify-between mb-1">
           <div className="flex items-center gap-2">
@@ -137,7 +136,6 @@ function ToolContainer({ title, description, tools, activeToolId, onToolChange, 
         <p className="text-xs text-gray-500">{description}</p>
       </div>
 
-      {/* Navigation */}
       <div className="px-4 py-3 space-y-1 border-b border-gray-100">
         {tools.map((tool) => (
           <button
@@ -161,7 +159,6 @@ function ToolContainer({ title, description, tools, activeToolId, onToolChange, 
         ))}
       </div>
 
-      {/* Content Area */}
       <div className="flex-1 overflow-y-auto p-6 bg-gray-50/50">
         {children}
       </div>

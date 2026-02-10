@@ -108,7 +108,6 @@ export default function TransportStats({ countryName }: TransportStatsProps) {
         </div>
       </div>
 
-      {/* Headline cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
         <div className="bg-white rounded-xl p-5 border border-gray-200 hover:border-orange-200 transition-all hover:shadow-sm">
           <div className="flex items-center justify-between mb-3">
@@ -145,9 +144,7 @@ export default function TransportStats({ countryName }: TransportStatsProps) {
         </div>
       </div>
 
-      {/* Detail tables */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        {/* Public transport */}
         <div className="bg-white rounded-xl p-6 border border-gray-200">
           <div className="flex items-center gap-2 mb-4">
             <Bus className="w-5 h-5 text-blue-600" />
@@ -157,7 +154,6 @@ export default function TransportStats({ countryName }: TransportStatsProps) {
           <PriceRow label={t('services.stats.transport.monthlyPassLabel')} avg={monthlyPass} min={transport.publicTransport.monthlyPass.min} max={transport.publicTransport.monthlyPass.max} localCur={localCur} exchangeRates={rates} />
         </div>
 
-        {/* Taxi */}
         <div className="bg-white rounded-xl p-6 border border-gray-200">
           <div className="flex items-center gap-2 mb-4">
             <Car className="w-5 h-5 text-yellow-600" />
@@ -169,7 +165,6 @@ export default function TransportStats({ countryName }: TransportStatsProps) {
         </div>
       </div>
 
-      {/* Personal vehicle */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <div className="bg-white rounded-xl p-6 border border-gray-200">
           <div className="flex items-center gap-2 mb-4">
@@ -180,7 +175,6 @@ export default function TransportStats({ countryName }: TransportStatsProps) {
           <PriceRow label={t('services.stats.transport.newCar')} avg={newCar} min={transport.personal.newCar.min} max={transport.personal.newCar.max} localCur={localCur} exchangeRates={rates} />
         </div>
 
-        {/* Budget summary */}
         <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 flex flex-col justify-center">
           <div className="flex items-start space-x-3">
             <Timer className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
@@ -209,7 +203,6 @@ export default function TransportStats({ countryName }: TransportStatsProps) {
         </div>
       </div>
 
-      {/* Source note */}
       <div className="bg-gray-50 border border-gray-200 rounded-xl p-5">
         <p className="text-sm text-gray-600 leading-relaxed">
           <strong>{t('services.stats.common.source')}</strong> {t('services.stats.common.sourceNumbeo')} <strong>{cityName}</strong>.

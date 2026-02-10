@@ -30,12 +30,10 @@ export default function CountryComparison() {
 
   return (
     <div className="min-h-screen bg-gray-50/50 pb-20">
-      {/* Header avec PageHeader standard */}
       <PageHeader 
         title={t('comparison.title')}
         description={t('comparison.description')}
       >
-        {/* Badge de sélection */}
         <div className="mb-6 inline-flex items-center gap-3 bg-white px-4 py-2 rounded-full border border-gray-200 shadow-sm">
           <span className="text-sm font-medium text-gray-600">{t('comparison.selection')}</span>
           <div className="flex items-center gap-1">
@@ -49,7 +47,6 @@ export default function CountryComparison() {
       </PageHeader>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Section Sélection */}
         <div className="mb-12">
           {!isAuthenticated && selectedCountries.length >= 2 && (
             <div className="mb-6 p-4 bg-[#5EA3C0]/10 border border-[#5EA3C0]/20 rounded-xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
@@ -79,7 +76,6 @@ export default function CountryComparison() {
           />
         </div>
 
-        {/* Section Résultats */}
         {selectedCountriesData.length >= 2 ? (
           <div className="animate-in fade-in slide-in-from-bottom-8 duration-700">
             <div className="flex items-center gap-3 mb-8">

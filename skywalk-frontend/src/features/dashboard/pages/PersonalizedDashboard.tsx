@@ -522,7 +522,6 @@ export default function PersonalizedDashboard() {
           </div>
         </div>
 
-        {/* Edit Mode Notification */}
         {editMode && (
           <div className="mb-6 bg-purple-50 border border-purple-200 rounded-lg p-4 flex items-start space-x-3">
             <GripVertical className="w-5 h-5 text-purple-600 mt-0.5 flex-shrink-0" />
