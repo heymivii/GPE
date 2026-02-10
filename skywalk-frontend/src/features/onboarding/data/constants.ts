@@ -1,91 +1,88 @@
 
-export const COUNTRIES = [
-  { value: 'FR', label: 'France' },
-  { value: 'CA', label: 'Canada' },
-  { value: 'CH', label: 'Suisse' },
-  { value: 'DE', label: 'Allemagne' },
-  { value: 'ES', label: 'Espagne' },
-  { value: 'IT', label: 'Italie' },
-  { value: 'PT', label: 'Portugal' },
-  { value: 'BE', label: 'Belgique' },
-  { value: 'NL', label: 'Pays-Bas' },
-  { value: 'LU', label: 'Luxembourg' },
-  { value: 'GB', label: 'Royaume-Uni' },
-  { value: 'IE', label: 'Irlande' },
-  { value: 'US', label: 'États-Unis' },
-  { value: 'AU', label: 'Australie' },
-  { value: 'NZ', label: 'Nouvelle-Zélande' },
-  { value: 'JP', label: 'Japon' },
-  { value: 'SG', label: 'Singapour' },
-  { value: 'AE', label: 'Émirats arabes unis' },
-  { value: 'MX', label: 'Mexique' },
-  { value: 'BR', label: 'Brésil' }
-]
+import { SUPPORTED_COUNTRIES } from '../../../data/supportedCountries';
 
+export const COUNTRIES = SUPPORTED_COUNTRIES.map(c => ({
+  value: c.code,
+  label: c.name,
+  i18nKey: c.i18nKey
+}));
+
+// IDs for translation lookup - labels resolved dynamically via t()
+export const LANGUAGE_LEVEL_IDS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'] as const;
+export const STATUS_IDS = ['student', 'employee', 'self_employed', 'unemployed', 'retired', 'other'] as const;
+export const TRAVEL_PARTY_IDS = ['alone', 'couple', 'family', 'friends'] as const;
+export const GOAL_IDS = ['studies', 'work', 'discovery', 'family', 'internship', 'other'] as const;
+export const STAY_DURATION_IDS = ['less_6_months', '6_12_months', '1_3_years', 'more_3_years'] as const;
+export const STEPS_DONE_IDS = ['school_registration', 'housing_search', 'job_search', 'visa_application', 'other', 'none'] as const;
+export const PRIORITY_IDS = ['housing', 'employment', 'transport', 'admin_help', 'health', 'social_integration'] as const;
+export const ONBOARDING_STEP_IDS = ['destination', 'profile', 'objective', 'preparation', 'needs', 'summary'] as const;
+
+// Legacy exports for backward compatibility (used by SummaryStep getOptionLabel)
+// Labels are now i18n keys — resolve with t(item.labelKey) at render time
 export const LANGUAGE_LEVELS = [
-  { value: 'A1', label: 'A1 - Débutant' },
-  { value: 'A2', label: 'A2 - Élémentaire' },
-  { value: 'B1', label: 'B1 - Intermédiaire' },
-  { value: 'B2', label: 'B2 - Intermédiaire avancé' },
-  { value: 'C1', label: 'C1 - Avancé' },
-  { value: 'C2', label: 'C2 - Maîtrise' }
+  { value: 'A1', labelKey: 'onboardingLegacy.languageLevels.A1' },
+  { value: 'A2', labelKey: 'onboardingLegacy.languageLevels.A2' },
+  { value: 'B1', labelKey: 'onboardingLegacy.languageLevels.B1' },
+  { value: 'B2', labelKey: 'onboardingLegacy.languageLevels.B2' },
+  { value: 'C1', labelKey: 'onboardingLegacy.languageLevels.C1' },
+  { value: 'C2', labelKey: 'onboardingLegacy.languageLevels.C2' }
 ]
 
 export const STATUS_OPTIONS = [
-  { value: 'student', label: 'Étudiant' },
-  { value: 'employee', label: 'Salarié' },
-  { value: 'self_employed', label: 'Indépendant' },
-  { value: 'unemployed', label: 'Demandeur d\'emploi' },
-  { value: 'retired', label: 'Retraité' },
-  { value: 'other', label: 'Autre' }
+  { value: 'student', labelKey: 'onboardingLegacy.status.student' },
+  { value: 'employee', labelKey: 'onboardingLegacy.status.employee' },
+  { value: 'self_employed', labelKey: 'onboardingLegacy.status.selfEmployed' },
+  { value: 'unemployed', labelKey: 'onboardingLegacy.status.unemployed' },
+  { value: 'retired', labelKey: 'onboardingLegacy.status.retired' },
+  { value: 'other', labelKey: 'onboardingLegacy.status.other' }
 ]
 
 export const TRAVEL_PARTY_OPTIONS = [
-  { value: 'alone', label: 'Seul' },
-  { value: 'couple', label: 'En couple' },
-  { value: 'family', label: 'En famille' },
-  { value: 'friends', label: 'Avec des amis' }
+  { value: 'alone', labelKey: 'onboardingLegacy.travelParty.alone' },
+  { value: 'couple', labelKey: 'onboardingLegacy.travelParty.couple' },
+  { value: 'family', labelKey: 'onboardingLegacy.travelParty.family' },
+  { value: 'friends', labelKey: 'onboardingLegacy.travelParty.friends' }
 ]
 
 export const GOAL_OPTIONS = [
-  { value: 'studies', label: 'Études' },
-  { value: 'work', label: 'Travail' },
-  { value: 'discovery', label: 'Découverte' },
-  { value: 'family', label: 'Famille' },
-  { value: 'internship', label: 'Stage' },
-  { value: 'other', label: 'Autre' }
+  { value: 'studies', labelKey: 'onboardingLegacy.goals.studies' },
+  { value: 'work', labelKey: 'onboardingLegacy.goals.work' },
+  { value: 'discovery', labelKey: 'onboardingLegacy.goals.discovery' },
+  { value: 'family', labelKey: 'onboardingLegacy.goals.family' },
+  { value: 'internship', labelKey: 'onboardingLegacy.goals.internship' },
+  { value: 'other', labelKey: 'onboardingLegacy.goals.other' }
 ]
 
 export const STAY_DURATION_OPTIONS = [
-  { value: 'less_6_months', label: 'Moins de 6 mois' },
-  { value: '6_12_months', label: '6 à 12 mois' },
-  { value: '1_3_years', label: '1 à 3 ans' },
-  { value: 'more_3_years', label: 'Plus de 3 ans' }
+  { value: 'less_6_months', labelKey: 'onboardingLegacy.stayDuration.less6Months' },
+  { value: '6_12_months', labelKey: 'onboardingLegacy.stayDuration.sixTo12Months' },
+  { value: '1_3_years', labelKey: 'onboardingLegacy.stayDuration.oneToThreeYears' },
+  { value: 'more_3_years', labelKey: 'onboardingLegacy.stayDuration.moreThanThreeYears' }
 ]
 
 export const STEPS_DONE_OPTIONS = [
-  { value: 'school_registration', label: 'Inscription école' },
-  { value: 'housing_search', label: 'Recherche logement' },
-  { value: 'job_search', label: 'Recherche emploi' },
-  { value: 'visa_application', label: 'Demande visa' },
-  { value: 'other', label: 'Autre' },
-  { value: 'none', label: 'Aucune démarche' }
+  { value: 'school_registration', labelKey: 'onboardingLegacy.stepsDone.schoolRegistration' },
+  { value: 'housing_search', labelKey: 'onboardingLegacy.stepsDone.housingSearch' },
+  { value: 'job_search', labelKey: 'onboardingLegacy.stepsDone.jobSearch' },
+  { value: 'visa_application', labelKey: 'onboardingLegacy.stepsDone.visaApplication' },
+  { value: 'other', labelKey: 'onboardingLegacy.stepsDone.other' },
+  { value: 'none', labelKey: 'onboardingLegacy.stepsDone.none' }
 ]
 
 export const PRIORITY_OPTIONS = [
-  { value: 'housing', label: 'Logement' },
-  { value: 'employment', label: 'Emploi' },
-  { value: 'transport', label: 'Transport' },
-  { value: 'admin_help', label: 'Aides administratives' },
-  { value: 'health', label: 'Santé' },
-  { value: 'social_integration', label: 'Intégration sociale' }
+  { value: 'housing', labelKey: 'onboardingLegacy.priorities.housing' },
+  { value: 'employment', labelKey: 'onboardingLegacy.priorities.employment' },
+  { value: 'transport', labelKey: 'onboardingLegacy.priorities.transport' },
+  { value: 'admin_help', labelKey: 'onboardingLegacy.priorities.adminHelp' },
+  { value: 'health', labelKey: 'onboardingLegacy.priorities.health' },
+  { value: 'social_integration', labelKey: 'onboardingLegacy.priorities.socialIntegration' }
 ]
 
 export const ONBOARDING_STEPS = [
-  { id: 1, label: 'Destination', state: 'current' as const },
-  { id: 2, label: 'Profil', state: 'todo' as const },
-  { id: 3, label: 'Objectif', state: 'todo' as const },
-  { id: 4, label: 'Préparation', state: 'todo' as const },
-  { id: 5, label: 'Besoins', state: 'todo' as const },
-  { id: 6, label: 'Résumé', state: 'todo' as const }
+  { id: 1, labelKey: 'onboardingLegacy.steps.destination', state: 'current' as const },
+  { id: 2, labelKey: 'onboardingLegacy.steps.profile', state: 'todo' as const },
+  { id: 3, labelKey: 'onboardingLegacy.steps.objective', state: 'todo' as const },
+  { id: 4, labelKey: 'onboardingLegacy.steps.preparation', state: 'todo' as const },
+  { id: 5, labelKey: 'onboardingLegacy.steps.needs', state: 'todo' as const },
+  { id: 6, labelKey: 'onboardingLegacy.steps.summary', state: 'todo' as const }
 ]

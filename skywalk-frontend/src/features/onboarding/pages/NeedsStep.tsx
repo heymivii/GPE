@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import FormField from '../ui/FormField'
 import MultiPillSelect from '../ui/MultiPillSelect'
 import YesNoToggle from '../ui/YesNoToggle'
 import WizardNav from '../components/WizardNav'
-import { PRIORITY_OPTIONS } from '../data/constants'
+import { PRIORITY_IDS } from '../data/constants'
 
 interface NeedsStepData {
   priorities: string[]
@@ -17,6 +18,7 @@ interface NeedsStepProps {
 }
 
 export default function NeedsStep({ data, onNext, onBack }: NeedsStepProps) {
+  const { t } = useTranslation()
   const [formData, setFormData] = useState<NeedsStepData>({
     priorities: data?.priorities || [],
     needPersonalizedSupport: data?.needPersonalizedSupport
@@ -24,15 +26,17 @@ export default function NeedsStep({ data, onNext, onBack }: NeedsStepProps) {
 
   const [errors, setErrors] = useState<Partial<Record<keyof NeedsStepData, string>>>({})
 
+  const priorityOptions = useMemo(() => PRIORITY_IDS.map(id => ({ value: id, label: t(`onboarding.constants.priorities.${id}`) })), [t])
+
   const validateForm = (): boolean => {
     const newErrors: Partial<Record<keyof NeedsStepData, string>> = {}
 
     if (!formData.priorities || formData.priorities.length === 0) {
-      newErrors.priorities = 'Veuillez sélectionner au moins une thématique prioritaire'
+      newErrors.priorities = t('onboarding.needs.errors.prioritiesRequired')
     }
 
     if (formData.needPersonalizedSupport === undefined) {
-      newErrors.needPersonalizedSupport = 'Veuillez indiquer si vous souhaitez un accompagnement personnalisé'
+      newErrors.needPersonalizedSupport = t('onboarding.needs.errors.supportRequired')
     }
 
     setErrors(newErrors)
@@ -65,23 +69,23 @@ export default function NeedsStep({ data, onNext, onBack }: NeedsStepProps) {
     <div className="space-y-6">
       <div className="text-center mb-8">
         <h1 className="text-2xl font-bold text-gray-900 mb-2">
-          Vos besoins spécifiques
+          {t('onboarding.needs.title')}
         </h1>
         <p className="text-gray-600">
-          Aidez-nous à identifier vos priorités pour personnaliser notre accompagnement
+          {t('onboarding.needs.subtitle')}
         </p>
       </div>
 
       <div className="space-y-6">
         <FormField
-          label="Thématiques prioritaires"
+          label={t('onboarding.needs.priorities')}
           required
           error={errors.priorities}
-          helper="Sélectionnez au moins une thématique qui vous préoccupe le plus"
+          helper={t('onboarding.needs.prioritiesHelper')}
           id="priorities"
         >
           <MultiPillSelect
-            options={PRIORITY_OPTIONS}
+            options={priorityOptions}
             values={formData.priorities}
             onChange={handlePrioritiesChange}
             aria-describedby={errors.priorities ? 'priorities-error' : 'priorities-helper'}
@@ -89,10 +93,10 @@ export default function NeedsStep({ data, onNext, onBack }: NeedsStepProps) {
         </FormField>
 
         <FormField
-          label="Accompagnement personnalisé"
+          label={t('onboarding.needs.personalizedSupport')}
           required
           error={errors.needPersonalizedSupport}
-          helper="Souhaitez-vous bénéficier d'un accompagnement individuel avec un conseiller ?"
+          helper={t('onboarding.needs.personalizedSupportHelper')}
           id="personalizedSupport"
         >
           <YesNoToggle

@@ -1,11 +1,12 @@
 import { useState, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import FormField from '../ui/FormField'
 import Select from '../ui/Select'
 import TextInput from '../ui/TextInput'
 import ToggleGroup from '../ui/ToggleGroup'
 import MultiPillSelect from '../ui/MultiPillSelect'
 import WizardNav from '../components/WizardNav'
-import { STATUS_OPTIONS, TRAVEL_PARTY_OPTIONS, LANGUAGE_LEVELS } from '../data/constants'
+import { STATUS_IDS, TRAVEL_PARTY_IDS, LANGUAGE_LEVEL_IDS } from '../data/constants'
 import countriesData from '../../../data/countries-data.json'
 
 interface ProfileStepData {
@@ -24,6 +25,7 @@ interface ProfileStepProps {
 }
 
 export default function ProfileStep({ data, onNext, onBack }: ProfileStepProps) {
+  const { t } = useTranslation()
   const [formData, setFormData] = useState<ProfileStepData>({
     age: data?.age || '',
     motherTongue: data?.motherTongue || '',
@@ -50,28 +52,28 @@ export default function ProfileStep({ data, onNext, onBack }: ProfileStepProps) 
     const newErrors: Partial<ProfileStepData> = {}
 
     if (!formData.age) {
-      newErrors.age = 'L\'âge est requis'
+      newErrors.age = t('onboarding.profile.errors.ageRequired')
     } else {
       const age = parseInt(formData.age)
       if (isNaN(age) || age < 16 || age > 90) {
-        newErrors.age = 'L\'âge doit être entre 16 et 90 ans'
+        newErrors.age = t('onboarding.profile.errors.ageRange')
       }
     }
 
     if (!formData.motherTongue) {
-      newErrors.motherTongue = 'La langue maternelle est requise'
+      newErrors.motherTongue = t('onboarding.profile.errors.motherTongueRequired')
     }
 
     if (!formData.status) {
-      newErrors.status = 'Le statut actuel est requis'
+      newErrors.status = t('onboarding.profile.errors.statusRequired')
     }
 
     if (!formData.travelParty) {
-      newErrors.travelParty = 'Veuillez indiquer avec qui vous voyagez'
+      newErrors.travelParty = t('onboarding.profile.errors.travelPartyRequired')
     }
 
     if (!formData.languageLevel) {
-      newErrors.languageLevel = 'Le niveau de langue est requis'
+      newErrors.languageLevel = t('onboarding.profile.errors.languageLevelRequired')
     }
 
     setErrors(newErrors)
@@ -91,22 +93,26 @@ export default function ProfileStep({ data, onNext, onBack }: ProfileStepProps) 
     }
   }
 
+  const statusOptions = useMemo(() => STATUS_IDS.map(id => ({ value: id, label: t(`onboarding.constants.status.${id}`) })), [t])
+  const travelPartyOptions = useMemo(() => TRAVEL_PARTY_IDS.map(id => ({ value: id, label: t(`onboarding.constants.travelParty.${id}`) })), [t])
+  const languageLevelOptions = useMemo(() => LANGUAGE_LEVEL_IDS.map(id => ({ value: id, label: t(`onboarding.constants.languageLevels.${id}`) })), [t])
+
   const isNextDisabled = !formData.age || !formData.motherTongue || !formData.status || !formData.travelParty || !formData.languageLevel
 
   return (
     <div className="space-y-6">
       <div className="text-center mb-8">
         <h1 className="text-2xl font-bold text-gray-900 mb-2">
-          Votre profil personnel
+          {t('onboarding.profile.title')}
         </h1>
         <p className="text-gray-600">
-          Aidez-nous à mieux vous connaître pour personnaliser nos conseils
+          {t('onboarding.profile.subtitle')}
         </p>
       </div>
 
       <div className="space-y-6">
         <FormField
-          label="Âge"
+          label={t('onboarding.profile.age')}
           required
           error={errors.age}
           id="age"
@@ -116,7 +122,7 @@ export default function ProfileStep({ data, onNext, onBack }: ProfileStepProps) 
             type="number"
             value={formData.age}
             onChange={handleFieldChange('age')}
-            placeholder="Ex: 25"
+            placeholder={t('onboarding.profile.agePlaceholder')}
             min={16}
             max={90}
             aria-describedby={errors.age ? 'age-error' : undefined}
@@ -124,7 +130,7 @@ export default function ProfileStep({ data, onNext, onBack }: ProfileStepProps) 
         </FormField>
 
         <FormField
-          label="Langue maternelle"
+          label={t('onboarding.profile.motherTongue')}
           required
           error={errors.motherTongue}
           id="motherTongue"
@@ -134,13 +140,13 @@ export default function ProfileStep({ data, onNext, onBack }: ProfileStepProps) 
             value={formData.motherTongue}
             onChange={handleFieldChange('motherTongue')}
             options={availableLanguages}
-            placeholder="Sélectionnez votre langue maternelle"
+            placeholder={t('onboarding.profile.motherTonguePlaceholder')}
             aria-describedby={errors.motherTongue ? 'motherTongue-error' : undefined}
           />
         </FormField>
 
         <FormField
-          label="Autres langues parlées (optionnel)"
+          label={t('onboarding.profile.spokenLanguages')}
           id="spokenLanguages"
         >
           <MultiPillSelect
@@ -151,29 +157,29 @@ export default function ProfileStep({ data, onNext, onBack }: ProfileStepProps) 
         </FormField>
 
         <FormField
-          label="Statut actuel"
+          label={t('onboarding.profile.status')}
           required
           error={errors.status}
           id="status"
         >
           <Select
             id="status"
-            options={STATUS_OPTIONS}
+            options={statusOptions}
             value={formData.status}
             onChange={handleFieldChange('status')}
-            placeholder="Sélectionnez votre statut"
+            placeholder={t('onboarding.profile.statusPlaceholder')}
             aria-describedby={errors.status ? 'status-error' : undefined}
           />
         </FormField>
 
         <FormField
-          label="Vous voyagez..."
+          label={t('onboarding.profile.travelParty')}
           required
           error={errors.travelParty}
           id="travelParty"
         >
           <ToggleGroup
-            options={TRAVEL_PARTY_OPTIONS}
+            options={travelPartyOptions}
             value={formData.travelParty}
             onChange={handleFieldChange('travelParty')}
             aria-describedby={errors.travelParty ? 'travelParty-error' : undefined}
@@ -181,18 +187,18 @@ export default function ProfileStep({ data, onNext, onBack }: ProfileStepProps) 
         </FormField>
 
         <FormField
-          label="Niveau de langue du pays de destination"
+          label={t('onboarding.profile.languageLevel')}
           required
           error={errors.languageLevel}
-          helper="Indiquez votre niveau de maîtrise de la langue principale parlée dans le pays où vous souhaitez vous expatrier. (Selon le Cadre européen commun de référence - CECRL)"
+          helper={t('onboarding.profile.languageLevelHelper')}
           id="languageLevel"
         >
           <Select
             id="languageLevel"
-            options={LANGUAGE_LEVELS}
+            options={languageLevelOptions}
             value={formData.languageLevel}
             onChange={handleFieldChange('languageLevel')}
-            placeholder="Sélectionnez votre niveau"
+            placeholder={t('onboarding.profile.languageLevelPlaceholder')}
             aria-describedby={errors.languageLevel ? 'languageLevel-error' : 'languageLevel-helper'}
           />
         </FormField>

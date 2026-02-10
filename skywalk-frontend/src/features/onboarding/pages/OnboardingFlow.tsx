@@ -2,6 +2,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../../hooks/useAuth'
 import OnboardingLayout from '../components/OnboardingLayout'
 import DestinationStep from '../pages/DestinationStep'
@@ -34,6 +35,7 @@ const CURRENCY_SYMBOLS: Record<string, string> = {
 
 export default function OnboardingFlow() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const { id } = useParams<{ id: string }>()
   const editMode = !!id
   const dataLoadedRef = useRef(false)
@@ -80,7 +82,6 @@ export default function OnboardingFlow() {
 
   useEffect(() => {
     if (existingProject && editMode && !dataLoadedRef.current && countries.length > 0 && user) {
-      console.log('Loading existing project data:', existingProject);
       dataLoadedRef.current = true;
       
       const objectiveReverseMapping: Record<string, string> = {
@@ -138,19 +139,23 @@ export default function OnboardingFlow() {
 
       setAllData(projectData);
       
-      console.log('Project data loaded successfully with user profile:', projectData);
     }
   }, [existingProject, editMode, countries, setAllData, user])
 
   useEffect(() => {
     if (!editMode && isAuthenticated && user && countries.length > 0 && !profileLoadedRef.current) {
       
-      console.log('👤 Pre-filling onboarding with user profile:', user);
       
       const originCountry = countries.find(c => c.idCountry === user.idOriginCountry);
       
-      const profileData: any = {};
-      const destinationData: any = {};
+      const profileData: {
+        age?: string;
+        status?: string;
+        languageLevel?: string;
+        motherTongue?: string;
+        spokenLanguages?: string[];
+      } = {};
+      const destinationData: { fromCountry?: string } = {};
       let hasUpdates = false;
 
       if (user.age) {
@@ -202,7 +207,7 @@ export default function OnboardingFlow() {
         });
         
         if (!localStorage.getItem('skywalk-onboarding-draft')) {
-             toast.success('Vos informations de profil ont été pré-remplies !', { id: 'profile-prefill' });
+             toast.success(t('onboarding.profilePrefilled'), { id: 'profile-prefill' });
         }
       }
       
@@ -223,7 +228,6 @@ export default function OnboardingFlow() {
         return;
       }
 
-      console.log('Submitting onboarding data:', data)
   
       if (data.profile) {
         try {
@@ -247,7 +251,7 @@ export default function OnboardingFlow() {
       const originCountryId = originCountry?.idCountry;
       
       if (!destinationCountryId) {
-        toast.error('Pays de destination invalide');
+        toast.error(t('onboarding.invalidDestination'));
         return;
       }
 
@@ -282,28 +286,22 @@ export default function OnboardingFlow() {
         expectedDepartureDate: data.destination?.departureYear ? `${data.destination.departureYear}-01-01` : undefined,
       };
 
-      console.log('📦 Payload to send:', projectData);
 
       if (editMode && id) {
-        console.log('Updating project with data:', projectData);
         
         const countryChanged = existingProject && 
           existingProject.idDestinationCountry !== destinationCountryId;
         
         if (countryChanged) {
-          const confirmed = window.confirm(
-            '⚠️ Attention : Vous changez de pays de destination.\n\n' +
-            'Votre checklist actuelle sera réinitialisée car les démarches sont spécifiques à chaque pays.\n\n' +
-            'Voulez-vous continuer ?'
-          );
+          const confirmed = window.confirm(t('onboarding.countryChangeWarning'));
           
           if (!confirmed) {
-            toast('Modification annulée', { icon: 'ℹ️' });
+            toast(t('onboarding.modificationCancelled'), { icon: 'ℹ️' });
             return;
           }
           
           projectData.checklistProgress = {};
-          toast('Votre checklist a été réinitialisée pour le nouveau pays', { 
+          toast(t('onboarding.checklistReset'), { 
             icon: '⚠️',
             duration: 5000 
           });
@@ -313,22 +311,19 @@ export default function OnboardingFlow() {
           projectId: Number(id),
           data: projectData
         });
-        console.log('Project updated');
         
-        toast.success('Projet mis à jour avec succès !');
+        toast.success(t('onboarding.projectUpdated'));
         
         navigate(`/projects/${id}`);
       } else {
-        console.log('Creating project with data:', projectData);
-        const newProject = await createProject(projectData as CreateExpatriationProjectDto);
-        console.log('Project created:', newProject);
+        await createProject(projectData as CreateExpatriationProjectDto);
         
         localStorage.setItem('skywalk-user-data', JSON.stringify(data))
         localStorage.setItem('skywalk-onboarding-completed', 'true')
         
         clearDraft()
         
-        toast.success('Projet créé avec succès !');
+        toast.success(t('onboarding.projectCreated'));
         
         navigate(`/projects`);
       }
@@ -336,48 +331,34 @@ export default function OnboardingFlow() {
     } catch (error) {
       console.error('Error completing onboarding:', error)
       if (error && typeof error === 'object' && 'response' in error) {
-        const axiosError = error as any;
+        const axiosError = error as { response?: { data?: { message?: string | string[] } }; message?: string };
         const errorMessage = axiosError.response?.data?.message || axiosError.message;
         const errorDetails = Array.isArray(errorMessage) ? errorMessage.join(', ') : errorMessage;
-        toast.error(`Erreur: ${errorDetails}`);
+        toast.error(`${t('onboarding.errorPrefix')}: ${errorDetails}`);
         console.error('Backend error details:', axiosError.response?.data);
       } else if (error instanceof Error) {
-        toast.error(`Erreur: ${error.message}`);
+        toast.error(`${t('onboarding.errorPrefix')}: ${error.message}`);
       } else {
-        toast.error("Une erreur est survenue lors de la création du projet");
+        toast.error(t('onboarding.genericError'));
       }
     }
-  }, [isAuthenticated, data, countries, editMode, id, existingProject, updateProject, createProject, navigate, clearDraft, refreshUser])
+  }, [isAuthenticated, data, countries, editMode, id, existingProject, updateProject, createProject, navigate, clearDraft, refreshUser, t])
 
   useEffect(() => {
     const paramShouldSave = searchParams.get('save') === 'true';
     const localShouldSave = localStorage.getItem('skywalk-should-save') === 'true';
     const shouldSave = paramShouldSave || localShouldSave;
 
-    console.log('🔄 Auto-save Effect Debug:', {
-      shouldSave,
-      paramShouldSave,
-      localShouldSave,
-      isAuthenticated,
-      isAuthLoading,
-      countriesCount: countries.length,
-      dataKeys: Object.keys(data).length,
-      saveAttempted: saveAttemptedRef.current
-    });
-
     const tryAutoSave = async () => {
       if (isAuthLoading) {
-        console.log('⏳ Waiting for auth to load...');
         return;
       }
 
       if (Object.keys(data).length === 0) {
-        console.log('⏳ Waiting for data to load...');
         return;
       }
 
       if (shouldSave && !isAuthenticated && !saveAttemptedRef.current) {
-         console.log('🔄 Should save but not authenticated. Waiting and attempting refresh...');
          
          await new Promise(resolve => setTimeout(resolve, 1000));
          
@@ -397,8 +378,7 @@ export default function OnboardingFlow() {
         countries.length > 0 && 
         !saveAttemptedRef.current
       ) {
-        console.log('🚀 Triggering auto-save with data:', data);
-        toast.loading('Création de votre projet en cours...', { id: 'auto-save' });
+        toast.loading(t('onboarding.creatingProject'), { id: 'auto-save' });
         saveAttemptedRef.current = true;
         
         localStorage.removeItem('skywalk-should-save');
@@ -415,10 +395,9 @@ export default function OnboardingFlow() {
     };
 
     tryAutoSave();
-  }, [isAuthenticated, isAuthLoading, countries, data, handleComplete, setSearchParams, refreshUser, searchParams]);
+  }, [isAuthenticated, isAuthLoading, countries, data, handleComplete, setSearchParams, refreshUser, searchParams, t]);
 
   const renderCurrentStep = () => {
-    console.log('🎯 Rendering step', currentStep, 'with data:', data);
     
     if (showAuthGate) {
       return (
@@ -441,7 +420,6 @@ export default function OnboardingFlow() {
           />
         )
       case 2:
-        console.log('📋 ProfileStep data:', data.profile);
         return (
           <ProfileStep
             data={data.profile}
@@ -505,7 +483,6 @@ export default function OnboardingFlow() {
     <OnboardingLayout
       steps={getSteps()}
       onStepClick={handleStepClick}
-      title={editMode ? 'Modifier mon projet' : undefined}
     >
       {renderCurrentStep()}
     </OnboardingLayout>

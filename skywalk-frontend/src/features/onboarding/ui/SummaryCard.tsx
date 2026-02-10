@@ -1,4 +1,5 @@
 import { Edit2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 interface SummaryItem {
   label: string
@@ -18,6 +19,7 @@ export default function SummaryCard({
   onEdit,
   className = ""
 }: SummaryCardProps) {
+  const { t } = useTranslation()
   return (
     <div className={`bg-white rounded-xl border border-gray-200 p-6 ${className}`}>
       <div className="flex justify-between items-start mb-4">
@@ -28,7 +30,7 @@ export default function SummaryCard({
             className="flex items-center text-sm text-blue-600 hover:text-blue-700 transition-colors duration-200"
           >
             <Edit2 className="w-4 h-4 mr-1" />
-            Éditer
+            {t('common.edit')}
           </button>
         )}
       </div>

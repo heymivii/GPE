@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Lock, CheckCircle, ArrowRight } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 interface AuthGateStepProps {
   age?: string
@@ -7,11 +8,13 @@ interface AuthGateStepProps {
 }
 
 export default function AuthGateStep({ age, onBack }: AuthGateStepProps) {
+  const { t } = useTranslation()
+  
   const benefits = [
-    "Sauvegardez votre projet et retrouvez-le à tout moment",
-    "Accédez à des recommandations personnalisées",
-    "Comparez jusqu'à 5 pays en détail",
-    "Rejoignez une communauté d'expatriés"
+    t('onboarding.authGate.benefit1'),
+    t('onboarding.authGate.benefit2'),
+    t('onboarding.authGate.benefit3'),
+    t('onboarding.authGate.benefit4')
   ]
 
   const redirectPath = encodeURIComponent('/onboarding?save=true')
@@ -27,15 +30,15 @@ export default function AuthGateStep({ age, onBack }: AuthGateStepProps) {
       </div>
 
       <h2 className="text-3xl font-bold text-gray-900 mb-4">
-        Sauvegardez votre projet pour continuer
+        {t('onboarding.authGate.title')}
       </h2>
       
       <p className="text-lg text-gray-600 mb-10">
-        Vous y êtes presque ! Créez un compte gratuit pour accéder à votre plan d'expatriation personnalisé et sauvegarder vos préférences.
+        {t('onboarding.authGate.subtitle')}
       </p>
 
       <div className="bg-gray-50 rounded-2xl p-8 mb-10 text-left">
-        <h3 className="font-bold text-gray-900 mb-4">Ce que vous obtenez :</h3>
+        <h3 className="font-bold text-gray-900 mb-4">{t('onboarding.authGate.benefitsTitle')}</h3>
         <div className="grid gap-4">
           {benefits.map((benefit, index) => (
             <div key={index} className="flex items-start gap-3">
@@ -52,7 +55,7 @@ export default function AuthGateStep({ age, onBack }: AuthGateStepProps) {
           onClick={() => localStorage.setItem('skywalk-should-save', 'true')}
           className="inline-flex items-center justify-center px-8 py-4 bg-black text-white rounded-xl font-bold hover:bg-gray-800 transition-all transform hover:-translate-y-0.5 shadow-lg shadow-gray-900/20"
         >
-          Créer mon compte gratuit
+          {t('onboarding.authGate.createAccount')}
           <ArrowRight className="ml-2 w-5 h-5" />
         </Link>
         
@@ -61,7 +64,7 @@ export default function AuthGateStep({ age, onBack }: AuthGateStepProps) {
           onClick={() => localStorage.setItem('skywalk-should-save', 'true')}
           className="inline-flex items-center justify-center px-8 py-4 bg-white text-gray-900 border border-gray-200 rounded-xl font-bold hover:bg-gray-50 transition-all"
         >
-          J'ai déjà un compte
+          {t('onboarding.authGate.hasAccount')}
         </Link>
       </div>
 
@@ -69,7 +72,7 @@ export default function AuthGateStep({ age, onBack }: AuthGateStepProps) {
         onClick={onBack}
         className="mt-8 text-sm text-gray-500 hover:text-gray-900 underline"
       >
-        Retourner à l'étape précédente
+        {t('onboarding.authGate.goBack')}
       </button>
     </div>
   )

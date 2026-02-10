@@ -1,16 +1,9 @@
+import { useMemo, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { CheckCircle } from 'lucide-react'
 import SummaryCard from '../ui/SummaryCard'
 import WizardNav from '../components/WizardNav'
-import { 
-  COUNTRIES, 
-  STATUS_OPTIONS, 
-  TRAVEL_PARTY_OPTIONS, 
-  LANGUAGE_LEVELS,
-  GOAL_OPTIONS,
-  STAY_DURATION_OPTIONS,
-  STEPS_DONE_OPTIONS,
-  PRIORITY_OPTIONS
-} from '../data/constants'
+import { COUNTRIES } from '../data/constants'
 
 interface AllStepsData {
   destination: {
@@ -48,97 +41,101 @@ interface SummaryStepProps {
 }
 
 export default function SummaryStep({ data, onBack, onEdit, onComplete, isSubmitting = false }: SummaryStepProps) {
+  const { t } = useTranslation()
+
   const handleComplete = async () => {
     await onComplete()
   }
 
-  const getCountryLabel = (code: string) => 
-    COUNTRIES.find(c => c.value === code)?.label || code
+  const getCountryLabel = useCallback((code: string) => {
+    const country = COUNTRIES.find(c => c.value === code)
+    return country ? t(country.i18nKey) : code
+  }, [t])
 
-  const getOptionLabel = (options: Array<{value: string, label: string}>, value: string) =>
-    options.find(o => o.value === value)?.label || value
+  const getTranslatedLabel = useCallback((prefix: string, value: string) =>
+    t(`onboarding.constants.${prefix}.${value}`, { defaultValue: value }), [t])
 
-  const getMultipleLabels = (options: Array<{value: string, label: string}>, values: string[]) =>
-    values.map(v => getOptionLabel(options, v)).join(', ')
+  const getMultipleTranslatedLabels = useCallback((prefix: string, values: string[]) =>
+    values.map(v => getTranslatedLabel(prefix, v)).join(', '), [getTranslatedLabel])
 
-  const destinationItems = [
-    { label: 'Pays de départ', value: getCountryLabel(data.destination.fromCountry) },
-    { label: 'Pays de destination', value: getCountryLabel(data.destination.toCountry) },
-    { label: 'Ville cible', value: data.destination.targetCity || 'Non précisée' },
-    { label: 'Année de départ', value: data.destination.departureYear }
-  ]
+  const destinationItems = useMemo(() => [
+    { label: t('onboarding.summary.fromCountry'), value: getCountryLabel(data.destination.fromCountry) },
+    { label: t('onboarding.summary.toCountry'), value: getCountryLabel(data.destination.toCountry) },
+    { label: t('onboarding.summary.targetCity'), value: data.destination.targetCity || t('onboarding.summary.notSpecified') },
+    { label: t('onboarding.summary.departureYear'), value: data.destination.departureYear }
+  ], [data.destination, t, getCountryLabel])
 
-  const profileItems = [
-    { label: 'Âge', value: `${data.profile.age} ans` },
-    { label: 'Statut', value: getOptionLabel(STATUS_OPTIONS, data.profile.status) },
-    { label: 'Voyage', value: getOptionLabel(TRAVEL_PARTY_OPTIONS, data.profile.travelParty) },
-    { label: 'Niveau de langue', value: getOptionLabel(LANGUAGE_LEVELS, data.profile.languageLevel) }
-  ]
+  const profileItems = useMemo(() => [
+    { label: t('onboarding.summary.age'), value: t('onboarding.summary.ageYears', { age: data.profile.age }) },
+    { label: t('onboarding.summary.status'), value: getTranslatedLabel('status', data.profile.status) },
+    { label: t('onboarding.summary.travel'), value: getTranslatedLabel('travelParty', data.profile.travelParty) },
+    { label: t('onboarding.summary.languageLevel'), value: getTranslatedLabel('languageLevels', data.profile.languageLevel) }
+  ], [data.profile, t, getTranslatedLabel])
 
-  const objectiveItems = [
-    { label: 'Objectif principal', value: getOptionLabel(GOAL_OPTIONS, data.objective.goal) },
-    { label: 'Durée prévue', value: getOptionLabel(STAY_DURATION_OPTIONS, data.objective.stayDuration) }
-  ]
+  const objectiveItems = useMemo(() => [
+    { label: t('onboarding.summary.mainGoal'), value: getTranslatedLabel('goals', data.objective.goal) },
+    { label: t('onboarding.summary.expectedDuration'), value: getTranslatedLabel('stayDuration', data.objective.stayDuration) }
+  ], [data.objective, t, getTranslatedLabel])
 
-  const preparationItems = [
+  const preparationItems = useMemo(() => [
     { 
-      label: 'Démarches effectuées', 
+      label: t('onboarding.summary.stepsDone'), 
       value: data.preparation.stepsDone.length > 0 
-        ? getMultipleLabels(STEPS_DONE_OPTIONS, data.preparation.stepsDone)
-        : 'Aucune'
+        ? getMultipleTranslatedLabels('stepsDone', data.preparation.stepsDone)
+        : t('onboarding.summary.none')
     },
-    { label: 'Budget logement', value: `${data.preparation.housingBudget} € / mois` }
-  ]
+    { label: t('onboarding.summary.housingBudget'), value: t('onboarding.summary.housingBudgetValue', { budget: data.preparation.housingBudget }) }
+  ], [data.preparation, t, getMultipleTranslatedLabels])
 
-  const needsItems = [
+  const needsItems = useMemo(() => [
     { 
-      label: 'Priorités', 
-      value: getMultipleLabels(PRIORITY_OPTIONS, data.needs.priorities)
+      label: t('onboarding.summary.prioritiesLabel'), 
+      value: getMultipleTranslatedLabels('priorities', data.needs.priorities)
     },
     { 
-      label: 'Accompagnement personnalisé', 
-      value: data.needs.needPersonalizedSupport ? 'Oui' : 'Non'
+      label: t('onboarding.summary.personalizedSupport'), 
+      value: data.needs.needPersonalizedSupport ? t('onboarding.summary.yes') : t('onboarding.summary.no')
     }
-  ]
+  ], [data.needs, t, getMultipleTranslatedLabels])
 
   return (
     <div className="space-y-6">
       <div className="text-center mb-8">
         <h1 className="text-2xl font-bold text-gray-900 mb-2">
-          Récapitulatif de votre profil
+          {t('onboarding.summary.title')}
         </h1>
         <p className="text-gray-600">
-          Vérifiez vos informations avant de valider votre profil d'expatriation
+          {t('onboarding.summary.subtitle')}
         </p>
       </div>
 
       <div className="space-y-4">
         <SummaryCard
-          title="Destination"
+          title={t('onboarding.summary.destinationCard')}
           items={destinationItems}
           onEdit={() => onEdit(1)}
         />
 
         <SummaryCard
-          title="Profil personnel"
+          title={t('onboarding.summary.profileCard')}
           items={profileItems}
           onEdit={() => onEdit(2)}
         />
 
         <SummaryCard
-          title="Objectif du départ"
+          title={t('onboarding.summary.objectiveCard')}
           items={objectiveItems}
           onEdit={() => onEdit(3)}
         />
 
         <SummaryCard
-          title="Préparation & moyens"
+          title={t('onboarding.summary.preparationCard')}
           items={preparationItems}
           onEdit={() => onEdit(4)}
         />
 
         <SummaryCard
-          title="Besoins spécifiques"
+          title={t('onboarding.summary.needsCard')}
           items={needsItems}
           onEdit={() => onEdit(5)}
         />
@@ -151,11 +148,10 @@ export default function SummaryStep({ data, onBack, onEdit, onComplete, isSubmit
           </div>
           <div className="ml-3">
             <h3 className="text-sm font-medium text-blue-800">
-              Prêt à commencer votre aventure ?
+              {t('onboarding.summary.readyTitle')}
             </h3>
             <p className="mt-1 text-sm text-blue-700">
-              En validant votre profil, vous accéderez à des recommandations personnalisées 
-              et pourrez commencer à planifier votre expatriation avec nos outils.
+              {t('onboarding.summary.readyDesc')}
             </p>
           </div>
         </div>
@@ -165,7 +161,7 @@ export default function SummaryStep({ data, onBack, onEdit, onComplete, isSubmit
         onBack={onBack}
         onNext={handleComplete}
         isNextDisabled={isSubmitting}
-        nextLabel={isSubmitting ? "Création du projet en cours..." : "Valider et créer mon projet"}
+        nextLabel={isSubmitting ? t('onboarding.summary.creatingLabel') : t('onboarding.summary.submitLabel')}
         isLastStep={true}
       />
     </div>

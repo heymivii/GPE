@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import FormField from '../ui/FormField'
 import CurrencyInput from '../ui/CurrencyInput'
 import MultiPillSelect from '../ui/MultiPillSelect'
 import WizardNav from '../components/WizardNav'
-import { STEPS_DONE_OPTIONS } from '../data/constants'
+import { STEPS_DONE_IDS } from '../data/constants'
 
 interface PreparationStepData {
   stepsDone: string[]
@@ -18,6 +19,7 @@ interface PreparationStepProps {
 }
 
 export default function PreparationStep({ data, onNext, onBack, currency = "€" }: PreparationStepProps) {
+  const { t } = useTranslation()
   const [formData, setFormData] = useState<PreparationStepData>({
     stepsDone: data?.stepsDone || [],
     housingBudget: data?.housingBudget || ''
@@ -25,15 +27,17 @@ export default function PreparationStep({ data, onNext, onBack, currency = "€"
 
   const [errors, setErrors] = useState<Partial<PreparationStepData>>({})
 
+  const stepsDoneOptions = useMemo(() => STEPS_DONE_IDS.map(id => ({ value: id, label: t(`onboarding.constants.stepsDone.${id}`) })), [t])
+
   const validateForm = (): boolean => {
     const newErrors: Partial<PreparationStepData> = {}
 
     if (!formData.housingBudget || formData.housingBudget === '') {
-      newErrors.housingBudget = 'Le budget logement est requis'
+      newErrors.housingBudget = t('onboarding.preparation.errors.housingBudgetRequired')
     } else {
       const budget = parseFloat(formData.housingBudget)
       if (isNaN(budget) || budget < 0) {
-        newErrors.housingBudget = `Le budget doit être supérieur ou égal à 0 ${currency}`
+        newErrors.housingBudget = t('onboarding.preparation.errors.housingBudgetMin', { currency })
       }
     }
 
@@ -67,21 +71,21 @@ export default function PreparationStep({ data, onNext, onBack, currency = "€"
     <div className="space-y-6">
       <div className="text-center mb-8">
         <h1 className="text-2xl font-bold text-gray-900 mb-2">
-          Préparation & moyens
+          {t('onboarding.preparation.title')}
         </h1>
         <p className="text-gray-600">
-          Où en êtes-vous dans vos préparatifs et quel est votre budget ?
+          {t('onboarding.preparation.subtitle')}
         </p>
       </div>
 
       <div className="space-y-6">
         <FormField
-          label="Démarches déjà effectuées"
-          helper="Sélectionnez toutes les démarches que vous avez déjà entreprises"
+          label={t('onboarding.preparation.stepsDone')}
+          helper={t('onboarding.preparation.stepsDoneHelper')}
           id="stepsDone"
         >
           <MultiPillSelect
-            options={STEPS_DONE_OPTIONS}
+            options={stepsDoneOptions}
             values={formData.stepsDone}
             onChange={handleStepsDoneChange}
             exclusiveValue="none"
@@ -90,17 +94,17 @@ export default function PreparationStep({ data, onNext, onBack, currency = "€"
         </FormField>
 
         <FormField
-          label="Budget mensuel pour le logement"
+          label={t('onboarding.preparation.housingBudget')}
           required
           error={errors.housingBudget}
-          helper="Montant maximum que vous souhaitez consacrer au logement par mois"
+          helper={t('onboarding.preparation.housingBudgetHelper')}
           id="housingBudget"
         >
           <CurrencyInput
             id="housingBudget"
             value={formData.housingBudget}
             onChange={handleBudgetChange}
-            placeholder="Ex: 800"
+            placeholder={t('onboarding.preparation.housingBudgetPlaceholder')}
             currency={currency}
             aria-describedby={errors.housingBudget ? 'housingBudget-error' : 'housingBudget-helper'}
           />
