@@ -1,29 +1,32 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-hot-toast";
+import { useMutation } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import api from "../../../lib/api";
 
 export default function ForgotPasswordForm() {
   const [email, setEmail] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const { t } = useTranslation();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    
-    try {
-      await api.post("/auth/forgot-password", { email });
+  const forgotMutation = useMutation({
+    mutationFn: (emailAddr: string) => api.post("/auth/forgot-password", { email: emailAddr }),
+    onSuccess: () => {
       setIsSuccess(true);
-      toast.success("Email envoyé ! Vérifiez votre boîte de réception.");
-    } catch (err: unknown) {
+      toast.success(t("auth.forgotPassword.emailSent"));
+    },
+    onError: (err: unknown) => {
       const errorMessage = err instanceof Error 
         ? err.message 
-        : (err as { response?: { data?: { message?: string } } })?.response?.data?.message || "Erreur lors de l'envoi de l'email";
+        : (err as { response?: { data?: { message?: string } } })?.response?.data?.message || t("auth.forgotPassword.emailError");
       toast.error(errorMessage);
-    } finally {
-      setIsLoading(false);
-    }
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    forgotMutation.mutate(email);
   };
 
   if (isSuccess) {
@@ -36,20 +39,16 @@ export default function ForgotPasswordForm() {
             </svg>
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Email envoyé !
+            {t("auth.forgotPassword.emailSentTitle")}
           </h2>
-          <p className="text-gray-600 mb-6">
-            Un lien de réinitialisation a été envoyé à <strong>{email}</strong>.
-            <br />
-            Cliquez sur le lien pour créer un nouveau mot de passe.
-          </p>
+          <p className="text-gray-600 mb-6" dangerouslySetInnerHTML={{ __html: t("auth.forgotPassword.emailSentDesc", { email }) }} />
           <p className="text-sm text-gray-500 mb-4">
-            Vous n'avez pas reçu l'email ? Vérifiez vos spams ou{" "}
+            {t("auth.forgotPassword.notReceived")}{" "}
             <button 
               onClick={() => setIsSuccess(false)} 
               className="text-[#5EA3C0] hover:underline"
             >
-              réessayez
+              {t("auth.forgotPassword.retry")}
             </button>
           </p>
         </div>
@@ -58,7 +57,7 @@ export default function ForgotPasswordForm() {
           to="/auth/login" 
           className="block w-full text-center px-4 py-4 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
         >
-          Retour à la connexion
+          {t("auth.forgotPassword.backToLogin")}
         </Link>
       </div>
     );
@@ -68,10 +67,10 @@ export default function ForgotPasswordForm() {
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="text-center mb-6">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          Mot de passe oublié ?
+          {t("auth.forgotPassword.title")}
         </h2>
         <p className="text-gray-600">
-          Entrez votre email et nous vous enverrons un lien pour réinitialiser votre mot de passe.
+          {t("auth.forgotPassword.description")}
         </p>
       </div>
 
@@ -81,24 +80,24 @@ export default function ForgotPasswordForm() {
           className="mt-1 w-full px-4 py-4 rounded-lg placeholder-black text-black"
           style={{ backgroundColor: "rgba(217, 217, 217, 0.4)" }}
           value={email}
-          placeholder="Votre email"
+          placeholder={t("auth.forgotPassword.emailPlaceholder")}
           onChange={(e) => setEmail(e.target.value)}
           required
-          disabled={isLoading}
+          disabled={forgotMutation.isPending}
         />
       </div>
 
       <button
         type="submit"
         className="w-full px-4 py-4 bg-black text-white rounded-lg transition-colors duration-200 disabled:opacity-50 hover:bg-gray-800"
-        disabled={isLoading}
+        disabled={forgotMutation.isPending}
       >
-        {isLoading ? "Envoi en cours..." : "Envoyer le lien de réinitialisation"}
+        {forgotMutation.isPending ? t("auth.forgotPassword.submitting") : t("auth.forgotPassword.submit")}
       </button>
 
       <div className="text-center">
         <Link to="/auth/login" className="text-sm text-[#5EA3C0] hover:underline">
-          Retour à la connexion
+          {t("auth.forgotPassword.backToLogin")}
         </Link>
       </div>
     </form>

@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../../hooks/useAuth";
 import { countryApi } from "../../../api/country";
 
@@ -27,6 +28,7 @@ export default function RegisterForm() {
   const { register } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { t } = useTranslation();
   const redirect = searchParams.get("redirect") || "/dashboard";
   const initialAge = searchParams.get("age") || "";
 
@@ -38,11 +40,23 @@ export default function RegisterForm() {
   const [age, setAge] = useState(initialAge);
   const [idOriginCountry, setIdOriginCountry] = useState<number | undefined>();
   const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
 
   const { data: countries = [] } = useQuery({
     queryKey: ['countries'],
     queryFn: countryApi.getAll,
+  });
+
+  const registerMutation = useMutation({
+    mutationFn: (data: Parameters<typeof register>[0]) => register(data),
+    onSuccess: () => {
+      navigate(redirect);
+    },
+    onError: (err: unknown) => {
+      const errorMessage = err instanceof Error 
+        ? err.message 
+        : (err as { response?: { data?: { message?: string } } })?.response?.data?.message || t("auth.register.error");
+      setError(errorMessage);
+    },
   });
   
   const passwordStrength = useMemo(() => {
@@ -58,46 +72,34 @@ export default function RegisterForm() {
   };
   
   const getStrengthText = () => {
-    if (passwordStrength.strength <= 40) return "Faible";
-    if (passwordStrength.strength <= 60) return "Moyen";
-    if (passwordStrength.strength <= 80) return "Bon";
-    return "Fort";
+    if (passwordStrength.strength <= 40) return t("auth.register.weak");
+    if (passwordStrength.strength <= 60) return t("auth.register.medium");
+    if (passwordStrength.strength <= 80) return t("auth.register.good");
+    return t("auth.register.strong");
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     
     if (password !== confirmPassword) {
-      setError("Les mots de passe ne correspondent pas");
+      setError(t("auth.register.passwordMismatch"));
       return;
     }
 
     if (!firstName.trim() || !lastName.trim()) {
-      setError("Veuillez renseigner votre prénom et nom");
+      setError(t("auth.register.nameRequired"));
       return;
     }
     
-    setIsLoading(true);
-    
-    try {
-      await register({
-        email,
-        password,
-        firstName: firstName.trim(),
-        lastName: lastName.trim(),
-        age: age ? parseInt(age) : undefined,
-        idOriginCountry,
-      });
-      navigate(redirect);
-    } catch (err: unknown) {
-      const errorMessage = err instanceof Error 
-        ? err.message 
-        : (err as { response?: { data?: { message?: string } } })?.response?.data?.message || "Erreur lors de l'inscription";
-      setError(errorMessage);
-    } finally {
-      setIsLoading(false);
-    }
+    registerMutation.mutate({
+      email,
+      password,
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+      age: age ? parseInt(age) : undefined,
+      idOriginCountry,
+    });
   };
 
   return (
@@ -110,7 +112,7 @@ export default function RegisterForm() {
       
       {firstName && lastName && (
         <div className="p-3 text-blue-700 bg-blue-50 rounded-lg text-sm">
-          Votre nom d'affichage sera : <strong>{firstName} {lastName}</strong>
+          {t("auth.register.displayName")} <strong>{firstName} {lastName}</strong>
         </div>
       )}
       
@@ -121,10 +123,10 @@ export default function RegisterForm() {
             className="mt-1 w-full px-4 py-4 rounded-lg placeholder-black text-black"
             style={{ backgroundColor: "rgba(217, 217, 217, 0.4)" }}
             value={firstName}
-            placeholder="Prénom"
+            placeholder={t("auth.register.firstName")}
             onChange={(e) => setFirstName(e.target.value)}
             required
-            disabled={isLoading}
+            disabled={registerMutation.isPending}
           />
         </div>
         
@@ -134,10 +136,10 @@ export default function RegisterForm() {
             className="mt-1 w-full px-4 py-4 rounded-lg placeholder-black text-black"
             style={{ backgroundColor: "rgba(217, 217, 217, 0.4)" }}
             value={lastName}
-            placeholder="Nom"
+            placeholder={t("auth.register.lastName")}
             onChange={(e) => setLastName(e.target.value)}
             required
-            disabled={isLoading}
+            disabled={registerMutation.isPending}
           />
         </div>
       </div>
@@ -148,10 +150,10 @@ export default function RegisterForm() {
           className="mt-1 w-full px-4 py-4 rounded-lg placeholder-black text-black"
           style={{ backgroundColor: "rgba(217, 217, 217, 0.4)" }}
           value={email}
-          placeholder="Email"
+          placeholder={t("auth.register.email")}
           onChange={(e) => setEmail(e.target.value)}
           required
-          disabled={isLoading}
+          disabled={registerMutation.isPending}
         />
       </div>
 
@@ -164,9 +166,9 @@ export default function RegisterForm() {
             className="mt-1 w-full px-4 py-4 rounded-lg placeholder-black text-black"
             style={{ backgroundColor: "rgba(217, 217, 217, 0.4)" }}
             value={age}
-            placeholder="Âge"
+            placeholder={t("auth.register.age")}
             onChange={(e) => setAge(e.target.value)}
-            disabled={isLoading}
+            disabled={registerMutation.isPending}
           />
         </div>
         
@@ -176,9 +178,9 @@ export default function RegisterForm() {
             style={{ backgroundColor: "rgba(217, 217, 217, 0.4)" }}
             value={idOriginCountry || ""}
             onChange={(e) => setIdOriginCountry(e.target.value ? parseInt(e.target.value) : undefined)}
-            disabled={isLoading}
+            disabled={registerMutation.isPending}
           >
-            <option value="">Pays d'origine</option>
+            <option value="">{t("auth.register.originCountry")}</option>
             {countries.map((country) => (
               <option key={country.idCountry} value={country.idCountry}>
                 {country.countryName}
@@ -194,10 +196,10 @@ export default function RegisterForm() {
           className="mt-1 w-full px-4 py-4 rounded-lg placeholder-black text-black"
           style={{ backgroundColor: "rgba(217, 217, 217, 0.4)" }}
           value={password}
-          placeholder="Mot de passe"
+          placeholder={t("auth.register.password")}
           onChange={(e) => setPassword(e.target.value)}
           required
-          disabled={isLoading}
+          disabled={registerMutation.isPending}
         />
         
         {password && (
@@ -210,7 +212,7 @@ export default function RegisterForm() {
             </div>
             <div className="flex justify-between items-center mt-1">
               <p className="text-xs text-gray-600">
-                Force : <span className="font-medium">{getStrengthText()}</span>
+                {t("auth.register.strength")} <span className="font-medium">{getStrengthText()}</span>
               </p>
               <div className="flex gap-1 text-xs">
                 <span className={passwordStrength.checks.length ? "text-green-600" : "text-gray-400"}>8+</span>
@@ -230,10 +232,10 @@ export default function RegisterForm() {
           className="mt-1 w-full px-4 py-4 rounded-lg placeholder-black text-black"
           style={{ backgroundColor: "rgba(217, 217, 217, 0.4)" }}
           value={confirmPassword}
-          placeholder="Confirmation du mot de passe"
+          placeholder={t("auth.register.confirmPassword")}
           onChange={(e) => setConfirmPassword(e.target.value)}
           required
-          disabled={isLoading}
+          disabled={registerMutation.isPending}
         />
       </div>
       
@@ -243,16 +245,16 @@ export default function RegisterForm() {
           className="mt-1 w-4 h-4 cursor-pointer flex-shrink-0"
           id="terms"
           required
-          disabled={isLoading}
+          disabled={registerMutation.isPending}
         />
         <span className="text-sm text-gray-700">
-          J'accepte les{" "}
+          {t("auth.register.terms")}{" "}
           <Link to="/legal/terms" className="text-[#5EA3C0] hover:underline" target="_blank">
-            conditions d'utilisation
+            {t("auth.register.termsOfUse")}
           </Link>{" "}
-          et la{" "}
+          {t("auth.register.and")}{" "}
           <Link to="/legal/privacy" className="text-[#5EA3C0] hover:underline" target="_blank">
-            politique de confidentialité
+            {t("auth.register.privacyPolicy")}
           </Link>
         </span>
       </label>
@@ -260,12 +262,12 @@ export default function RegisterForm() {
       <button
         type="submit"
         className="w-full px-4 py-4 bg-black text-white rounded-lg transition-colors duration-200 disabled:opacity-50"
-        disabled={isLoading}
+        disabled={registerMutation.isPending}
       >
-        {isLoading ? "Inscription..." : "Rejoindre l'aventure SkyWalk"}
+        {registerMutation.isPending ? t("auth.register.submitting") : t("auth.register.submit")}
       </button>
       
-      <p>Vous avez déjà un compte ? <Link to={`/auth/login?redirect=${encodeURIComponent(redirect)}`}>Connectez-vous</Link> </p>
+      <p>{t("auth.register.hasAccount")} <Link to={`/auth/login?redirect=${encodeURIComponent(redirect)}`}>{t("auth.register.login")}</Link> </p>
     </form>
   );
 }
