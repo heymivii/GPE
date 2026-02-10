@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { typeOrmConfigAsync } from './config/typeorm.config';
 
 import { AuthModule } from './features/auth/auth.module';
@@ -22,13 +24,21 @@ import { ExperienceModule } from './features/experience/experience.module';
 import { JobOfferModule } from './features/job-offer/job-offer.module';
 import { CityComparisonModule } from './features/city-comparison/city-comparison.module';
 import { ExpatriationProjectModule } from './features/expatriation-project/expatriation-project.module';
+import { DestinationsModule } from './features/destinations/destinations.module';
+import { GlobalSearchModule } from './features/global-search/global-search.module';
+import { OecdMigrationModule } from './features/oecd-migration/oecd-migration.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env',
+      envFilePath: ['.env', '../.env'],
     }),
+
+    // Rate limiting: 60 requests per minute globally
+    ThrottlerModule.forRoot([
+      { ttl: 60_000, limit: 60 },
+    ]),
 
     TypeOrmModule.forRootAsync(typeOrmConfigAsync),
 
@@ -51,6 +61,13 @@ import { ExpatriationProjectModule } from './features/expatriation-project/expat
     NotificationModule,
     ExperienceModule,
     ExpatriationProjectModule,
+    DestinationsModule,
+    GlobalSearchModule,
+    OecdMigrationModule,
+  ],
+  providers: [
+    // Apply rate limiting globally
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
   ],
 })
 export class AppModule {}
