@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface UserData {
   id: string
@@ -40,6 +41,7 @@ interface UserPreferences {
 }
 
 export default function useUserData() {
+  const { t } = useTranslation()
   const [userData, setUserData] = useState<UserData | null>(null)
   const [preferences, setPreferences] = useState<UserPreferences>({
     dashboardLayout: ['profile-summary', 'objectives', 'recommendations', 'checklist', 'budget-tracker'],
@@ -65,7 +67,7 @@ export default function useUserData() {
         
         const userData: UserData = {
           id: '1',
-          name: 'Utilisateur SkyWalk',
+          name: 'SkyWalk User',
           email: 'user@skywalk.com',
           onboardingCompleted: true,
           onboardingData: onboardingData
@@ -76,7 +78,7 @@ export default function useUserData() {
       } else {
         setUserData({
           id: '1',
-          name: 'Utilisateur SkyWalk',
+          name: 'SkyWalk User',
           email: 'user@skywalk.com',
           onboardingCompleted: false
         })
@@ -88,7 +90,7 @@ export default function useUserData() {
       }
       
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur lors du chargement des données')
+      setError(err instanceof Error ? err.message : t('common.loadingError'))
     } finally {
       setLoading(false)
     }

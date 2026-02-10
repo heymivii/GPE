@@ -2,18 +2,20 @@ import { useQuery } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
 import { Plus, MapPin, Calendar, Trash2, Edit, ArrowRight, Globe, Briefcase, GraduationCap, Heart, Users, User, MoreHorizontal } from 'lucide-react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { getLocale } from '../../../data/supportedCountries';
 import { expatriationProjectApi } from '../../../api/expatriation-project';
 import { countryApi } from '../../../api/country';
 import { useDeleteProject } from '../hooks/useProjectMutations';
 import type { ExpatriationProject } from '../../../types/expatriation-project';
 import { PageHeader } from '../../../components/PageHeader';
 
-const PROJECT_STATUS_LABELS = {
-  planning: 'En planification',
-  active: 'Actif',
-  completed: 'Terminé',
-  cancelled: 'Annulé',
-  on_hold: 'En pause',
+const STATUS_LABEL_KEYS: Record<string, string> = {
+  planning: 'projectDetail.statusPlanning',
+  active: 'projectDetail.statusActive',
+  completed: 'projectDetail.statusCompleted',
+  cancelled: 'projectDetail.statusCancelled',
+  on_hold: 'projectDetail.statusOnHold',
 };
 
 const PROJECT_STATUS_STYLES = {
@@ -24,24 +26,25 @@ const PROJECT_STATUS_STYLES = {
   on_hold: 'bg-amber-50 text-amber-700 ring-1 ring-amber-600/10',
 };
 
-const OBJECTIVE_LABELS: Record<string, string> = {
-  work: 'Travailler',
-  study: 'Étudier',
-  retirement: 'Retraite',
-  adventure: 'Aventure',
-  family_reunion: 'Regroupement familial',
-  other: 'Autre',
+const OBJECTIVE_LABEL_KEYS: Record<string, string> = {
+  work: 'projectDetail.objectiveWork',
+  study: 'projectDetail.objectiveStudy',
+  retirement: 'projectDetail.objectiveRetirement',
+  adventure: 'projectDetail.objectiveAdventure',
+  family_reunion: 'projectDetail.objectiveFamilyReunion',
+  other: 'projectDetail.objectiveOther',
 };
 
-const TRAVEL_TYPE_LABELS: Record<string, string> = {
-  alone: 'Seul',
-  couple: 'En couple',
-  family: 'En famille',
-  friends: 'Entre amis',
-  other: 'Autre',
+const TRAVEL_TYPE_LABEL_KEYS: Record<string, string> = {
+  alone: 'projectDetail.travelAlone',
+  couple: 'projectDetail.travelCouple',
+  family: 'projectDetail.travelFamily',
+  friends: 'projectDetail.travelFriends',
+  other: 'projectDetail.travelOther',
 };
 
 export default function ProjectsPage() {
+  const { t } = useTranslation();
   const { data: projects, isLoading: isLoadingProjects, error } = useQuery({
     queryKey: ['expatriation-projects'],
     queryFn: expatriationProjectApi.getAll,
@@ -53,7 +56,7 @@ export default function ProjectsPage() {
   });
 
   const getCountryName = (id: number) => {
-    return countries?.find(c => c.idCountry === id)?.countryName || `Pays #${id}`;
+    return countries?.find(c => c.idCountry === id)?.countryName || t('projectsPage.countryFallback', { id });
   };
 
   const getCountryFlag = (id: number) => {
@@ -77,13 +80,13 @@ export default function ProjectsPage() {
           <div className="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
             <Globe className="w-6 h-6 text-red-500" />
           </div>
-          <h2 className="text-lg font-semibold text-gray-900 mb-2">Une erreur est survenue</h2>
-          <p className="text-sm text-gray-600 mb-6">Impossible de charger vos projets pour le moment.</p>
+          <h2 className="text-lg font-semibold text-gray-900 mb-2">{t('projectsPage.errorTitle')}</h2>
+          <p className="text-sm text-gray-600 mb-6">{t('projectsPage.errorDesc')}</p>
           <button 
             onClick={() => window.location.reload()}
             className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
           >
-            Réessayer
+            {t('projectsPage.retry')}
           </button>
         </div>
       </div>
@@ -93,8 +96,8 @@ export default function ProjectsPage() {
   return (
     <div className="min-h-screen bg-gray-50/50">
       <PageHeader 
-        title="Mes Projets" 
-        description="Gérez vos projets d'expatriation, suivez votre avancement et accédez à vos outils personnalisés."
+        title={t('projectsPage.pageTitle')} 
+        description={t('projectsPage.pageDesc')}
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -107,7 +110,7 @@ export default function ProjectsPage() {
             className="inline-flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium shadow-sm"
           >
             <Plus className="w-4 h-4" />
-            Nouveau projet
+            {t('projectsPage.newProject')}
           </Link>
         </div>
 
@@ -117,17 +120,17 @@ export default function ProjectsPage() {
               <MapPin className="w-8 h-8 text-gray-400" />
             </div>
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              Aucun projet
+              {t('projectsPage.noProjects')}
             </h3>
             <p className="text-gray-500 mb-6 max-w-sm mx-auto text-sm">
-              Commencez par créer votre premier projet d'expatriation.
+              {t('projectsPage.noProjectsDesc')}
             </p>
             <Link
               to="/onboarding"
               className="inline-flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium"
             >
               <Plus className="w-4 h-4" />
-              Créer un projet
+              {t('projectsPage.createProject')}
             </Link>
           </div>
         ) : (
@@ -149,11 +152,12 @@ export default function ProjectsPage() {
 
 function ProjectCard({ project, countryName, countryFlag }: { project: ExpatriationProject; countryName: string; countryFlag?: string }) {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const { mutate: deleteProject } = useDeleteProject();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   
-  const statusLabel = PROJECT_STATUS_LABELS[project.projectStatus];
+  const statusLabel = t(STATUS_LABEL_KEYS[project.projectStatus] || STATUS_LABEL_KEYS.planning);
   const statusStyle = PROJECT_STATUS_STYLES[project.projectStatus];
 
   const handleDelete = () => {
@@ -198,7 +202,7 @@ function ProjectCard({ project, countryName, countryFlag }: { project: Expatriat
                   {countryName}
                 </h3>
                 <p className="text-xs text-gray-500">
-                  Projet #{project.idProject}
+                  {t('projectsPage.projectId', { id: project.idProject })}
                 </p>
               </div>
             </div>
@@ -217,13 +221,23 @@ function ProjectCard({ project, countryName, countryFlag }: { project: Expatriat
                   <div className="absolute right-0 mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-20">
                     <button
                       onClick={() => {
+                        navigate(`/projects/${project.idProject}`);
+                        setShowMenu(false);
+                      }}
+                      className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                    >
+                      <ArrowRight className="w-4 h-4" />
+                      {t('projectsPage.viewDetails')}
+                    </button>
+                    <button
+                      onClick={() => {
                         navigate(`/onboarding/${project.idProject}`);
                         setShowMenu(false);
                       }}
                       className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                     >
                       <Edit className="w-4 h-4" />
-                      Modifier
+                      {t('projectsPage.edit')}
                     </button>
                     <button
                       onClick={() => {
@@ -233,7 +247,7 @@ function ProjectCard({ project, countryName, countryFlag }: { project: Expatriat
                       className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
                     >
                       <Trash2 className="w-4 h-4" />
-                      Supprimer
+                      {t('projectsPage.delete')}
                     </button>
                   </div>
                 </>
@@ -254,7 +268,7 @@ function ProjectCard({ project, countryName, countryFlag }: { project: Expatriat
                   {getObjectiveIcon(project.mainObjective)}
                 </div>
                 <span className="font-medium">
-                  {OBJECTIVE_LABELS[project.mainObjective] || project.mainObjective}
+                  {OBJECTIVE_LABEL_KEYS[project.mainObjective] ? t(OBJECTIVE_LABEL_KEYS[project.mainObjective]) : project.mainObjective}
                 </span>
               </div>
             )}
@@ -265,7 +279,7 @@ function ProjectCard({ project, countryName, countryFlag }: { project: Expatriat
                   {getTravelTypeIcon(project.travelType)}
                 </div>
                 <span className="font-medium">
-                  {TRAVEL_TYPE_LABELS[project.travelType] || project.travelType}
+                  {TRAVEL_TYPE_LABEL_KEYS[project.travelType] ? t(TRAVEL_TYPE_LABEL_KEYS[project.travelType]) : project.travelType}
                 </span>
               </div>
             )}
@@ -276,7 +290,7 @@ function ProjectCard({ project, countryName, countryFlag }: { project: Expatriat
                   <Calendar className="w-4 h-4" />
                 </div>
                 <span className="font-medium">
-                  {new Date(project.expectedDepartureDate).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}
+                  {new Date(project.expectedDepartureDate).toLocaleDateString(getLocale(i18n.language), { month: 'long', year: 'numeric' })}
                 </span>
               </div>
             )}
@@ -285,10 +299,10 @@ function ProjectCard({ project, countryName, countryFlag }: { project: Expatriat
 
         <div className="px-5 py-4 border-t border-gray-100 bg-gray-50/50 rounded-b-xl">
           <Link
-            to={`/projects/${project.idProject}`}
+            to={`/dashboard/personalized?project=${project.idProject}`}
             className="flex items-center justify-between w-full text-sm font-medium text-[#5EA3C0] hover:text-[#4A8299] transition-colors"
           >
-            Accéder au tableau de bord
+            {t('projectsPage.goToDashboard')}
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
@@ -301,23 +315,23 @@ function ProjectCard({ project, countryName, countryFlag }: { project: Expatriat
               <Trash2 className="w-5 h-5 text-red-600" />
             </div>
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              Supprimer le projet ?
+              {t('projectsPage.deleteTitle')}
             </h3>
             <p className="text-sm text-gray-500 mb-6">
-              Cette action est irréversible. Toutes les données associées à ce projet seront perdues.
+              {t('projectsPage.deleteDesc')}
             </p>
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setShowDeleteConfirm(false)}
                 className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
               >
-                Annuler
+                {t('projectsPage.cancel')}
               </button>
               <button
                 onClick={handleDelete}
                 className="px-4 py-2 text-sm font-medium bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors shadow-sm"
               >
-                Supprimer
+                {t('projectsPage.delete')}
               </button>
             </div>
           </div>

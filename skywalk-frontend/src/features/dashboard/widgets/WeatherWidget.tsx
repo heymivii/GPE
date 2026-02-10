@@ -2,11 +2,14 @@ import { Cloud, Sun, CloudRain, Wind, Droplets, Eye } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import Widget from './Widget';
 import { useTranslation } from 'react-i18next';
+import type { WidgetSize } from '../hooks/useDashboardPreferences';
 
 interface WeatherWidgetProps {
   countryName: string;
   cityName?: string;
   onHide?: () => void;
+  onResize?: (size: WidgetSize) => void;
+  currentSize?: WidgetSize;
 }
 
 interface WeatherData {
@@ -21,21 +24,24 @@ interface WeatherData {
 export default function WeatherWidget({ 
   countryName, 
   cityName = '',
-  onHide 
+  onHide,
+  onResize,
+  currentSize,
 }: WeatherWidgetProps) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const location = cityName || countryName;
+  const weatherLang = i18n.language === 'fr' ? 'fr' : 'en';
 
   const { data: weather, isLoading: loading, isError: error } = useQuery({
-    queryKey: ['weather', location],
+    queryKey: ['weather', location, weatherLang],
     queryFn: async () => {
       const apiKey = import.meta.env.VITE_OPENWEATHER_API_KEY;
       
       const response = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${apiKey}&units=metric&lang=fr`
+        `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${apiKey}&units=metric&lang=${weatherLang}`
       );
       
-      if (!response.ok) throw new Error('Erreur API');
+      if (!response.ok) throw new Error('Weather API error');
       
       const data = await response.json();
       
@@ -64,7 +70,7 @@ export default function WeatherWidget({
 
   if (loading) {
     return (
-      <Widget title={t('dashboard.personalized.widgets.weather.title')} icon={Cloud} onHide={onHide}>
+      <Widget title={t('dashboard.personalized.widgets.weather.title')} icon={Cloud} onHide={onHide} onResize={onResize} currentSize={currentSize}>
         <div className="flex items-center justify-center py-8">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
         </div>
@@ -74,7 +80,7 @@ export default function WeatherWidget({
 
   if (error || !weather) {
     return (
-      <Widget title={t('dashboard.personalized.widgets.weather.title')} icon={Cloud} onHide={onHide}>
+      <Widget title={t('dashboard.personalized.widgets.weather.title')} icon={Cloud} onHide={onHide} onResize={onResize} currentSize={currentSize}>
         <div className="text-center py-8">
           <Cloud className="w-12 h-12 text-gray-300 mx-auto mb-3" />
           <p className="text-sm text-gray-500">
@@ -89,7 +95,7 @@ export default function WeatherWidget({
   }
 
   return (
-    <Widget title={t('dashboard.personalized.widgets.weather.title')} icon={Cloud} onHide={onHide}>
+    <Widget title={t('dashboard.personalized.widgets.weather.title')} icon={Cloud} onHide={onHide} onResize={onResize} currentSize={currentSize}>
       <div className="space-y-4">
         {/* Météo principale */}
         <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-6 border border-blue-100">

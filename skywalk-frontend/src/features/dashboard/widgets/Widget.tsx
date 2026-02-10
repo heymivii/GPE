@@ -1,7 +1,8 @@
 import type { ReactNode, ComponentType } from 'react'
-import { MoreHorizontal } from 'lucide-react'
+import { MoreHorizontal, Minimize2, Square, Maximize2 } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import type { WidgetSize } from '../hooks/useDashboardPreferences'
 
 interface WidgetProps {
   id?: string
@@ -13,6 +14,8 @@ interface WidgetProps {
   onEdit?: () => void
   onHide?: () => void
   onExpand?: () => void
+  onResize?: (size: WidgetSize) => void
+  currentSize?: WidgetSize
   className?: string
   size?: 'small' | 'medium' | 'large'
   isEditable?: boolean
@@ -27,22 +30,16 @@ export default function Widget({
   onEdit,
   onHide,
   onExpand,
+  onResize,
+  currentSize,
   className = "",
-  size = 'medium',
   isEditable = true
 }: WidgetProps) {
   const { t } = useTranslation()
   const [showMenu, setShowMenu] = useState(false)
 
   const getSizeClasses = () => {
-    switch (size) {
-      case 'small':
-        return 'col-span-1 row-span-1'
-      case 'large':
-        return 'col-span-2 row-span-2'
-      default:
-        return 'col-span-1 row-span-1'
-    }
+    return ''
   }
 
   const getIconBgColor = () => {
@@ -86,7 +83,7 @@ export default function Widget({
             </button>
 
             {showMenu && (
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-10">
+              <div className="absolute right-0 mt-2 w-52 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-10">
                 {onEdit && (
                   <button
                     onClick={() => {
@@ -110,17 +107,64 @@ export default function Widget({
                     {t('dashboard.personalized.widgets.menu.expand')}
                   </button>
                 )}
+
+                {onResize && (
+                  <>
+                    <div className="border-t border-gray-100 my-1" />
+                    <p className="px-4 py-1.5 text-xs font-medium text-gray-400 uppercase tracking-wider">
+                      {t('dashboard.personalized.widgets.menu.resize')}
+                    </p>
+                    <div className="px-3 pb-2 flex gap-1.5">
+                      <button
+                        onClick={() => { onResize('small'); setShowMenu(false) }}
+                        className={`flex-1 flex flex-col items-center gap-1 px-2 py-2 rounded-lg text-xs font-medium transition-all ${
+                          currentSize === 'small'
+                            ? 'bg-blue-100 text-blue-700 ring-2 ring-blue-300'
+                            : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                        }`}
+                      >
+                        <Minimize2 className="w-3.5 h-3.5" />
+                        {t('dashboard.personalized.widgets.menu.sizeSmall')}
+                      </button>
+                      <button
+                        onClick={() => { onResize('medium'); setShowMenu(false) }}
+                        className={`flex-1 flex flex-col items-center gap-1 px-2 py-2 rounded-lg text-xs font-medium transition-all ${
+                          currentSize === 'medium'
+                            ? 'bg-blue-100 text-blue-700 ring-2 ring-blue-300'
+                            : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                        }`}
+                      >
+                        <Square className="w-3.5 h-3.5" />
+                        {t('dashboard.personalized.widgets.menu.sizeMedium')}
+                      </button>
+                      <button
+                        onClick={() => { onResize('large'); setShowMenu(false) }}
+                        className={`flex-1 flex flex-col items-center gap-1 px-2 py-2 rounded-lg text-xs font-medium transition-all ${
+                          currentSize === 'large'
+                            ? 'bg-blue-100 text-blue-700 ring-2 ring-blue-300'
+                            : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                        }`}
+                      >
+                        <Maximize2 className="w-3.5 h-3.5" />
+                        {t('dashboard.personalized.widgets.menu.sizeLarge')}
+                      </button>
+                    </div>
+                  </>
+                )}
                 
                 {onHide && (
-                  <button
-                    onClick={() => {
-                      onHide()
-                      setShowMenu(false)
-                    }}
-                    className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
-                  >
-                    {t('dashboard.personalized.widgets.menu.hide')}
-                  </button>
+                  <>
+                    <div className="border-t border-gray-100 my-1" />
+                    <button
+                      onClick={() => {
+                        onHide()
+                        setShowMenu(false)
+                      }}
+                      className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                    >
+                      {t('dashboard.personalized.widgets.menu.hide')}
+                    </button>
+                  </>
                 )}
               </div>
             )}

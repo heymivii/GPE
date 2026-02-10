@@ -3,6 +3,8 @@ import { useProject, useDeleteProject } from '../hooks/useProjectMutations';
 import { useQuery } from '@tanstack/react-query';
 import { countryApi } from '../../../api/country';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { getLocale } from '../../../data/supportedCountries';
 import { 
   ArrowLeft, Calendar, MapPin, Clock, Wallet, 
   Briefcase, GraduationCap, Heart, Globe, User, Users,
@@ -10,34 +12,43 @@ import {
   Target, Flag
 } from 'lucide-react';
 
-const STATUS_CONFIG = {
-  planning: { label: 'En planification', color: 'bg-blue-50 text-blue-700 border-blue-200', icon: Calendar },
-  active: { label: 'Actif', color: 'bg-green-50 text-green-700 border-green-200', icon: Plane },
-  completed: { label: 'Terminé', color: 'bg-gray-50 text-gray-700 border-gray-200', icon: CheckCircle2 },
-  cancelled: { label: 'Annulé', color: 'bg-red-50 text-red-700 border-red-200', icon: AlertCircle },
-  on_hold: { label: 'En pause', color: 'bg-amber-50 text-amber-700 border-amber-200', icon: Clock },
+const STATUS_STYLES = {
+  planning: { color: 'bg-blue-50 text-blue-700 border-blue-200', icon: Calendar },
+  active: { color: 'bg-green-50 text-green-700 border-green-200', icon: Plane },
+  completed: { color: 'bg-gray-50 text-gray-700 border-gray-200', icon: CheckCircle2 },
+  cancelled: { color: 'bg-red-50 text-red-700 border-red-200', icon: AlertCircle },
+  on_hold: { color: 'bg-amber-50 text-amber-700 border-amber-200', icon: Clock },
 };
 
-const OBJECTIVE_LABELS: Record<string, string> = {
-  work: 'Travailler',
-  study: 'Étudier',
-  retirement: 'Retraite',
-  adventure: 'Aventure',
-  family_reunion: 'Regroupement familial',
-  other: 'Autre',
+const STATUS_LABEL_KEYS: Record<string, string> = {
+  planning: 'projectDetail.statusPlanning',
+  active: 'projectDetail.statusActive',
+  completed: 'projectDetail.statusCompleted',
+  cancelled: 'projectDetail.statusCancelled',
+  on_hold: 'projectDetail.statusOnHold',
 };
 
-const TRAVEL_TYPE_LABELS: Record<string, string> = {
-  alone: 'Seul',
-  couple: 'En couple',
-  family: 'En famille',
-  friends: 'Entre amis',
-  other: 'Autre',
+const OBJECTIVE_LABEL_KEYS: Record<string, string> = {
+  work: 'projectDetail.objectiveWork',
+  study: 'projectDetail.objectiveStudy',
+  retirement: 'projectDetail.objectiveRetirement',
+  adventure: 'projectDetail.objectiveAdventure',
+  family_reunion: 'projectDetail.objectiveFamilyReunion',
+  other: 'projectDetail.objectiveOther',
+};
+
+const TRAVEL_TYPE_LABEL_KEYS: Record<string, string> = {
+  alone: 'projectDetail.travelAlone',
+  couple: 'projectDetail.travelCouple',
+  family: 'projectDetail.travelFamily',
+  friends: 'projectDetail.travelFriends',
+  other: 'projectDetail.travelOther',
 };
 
 export default function ProjectDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const { data: project, isLoading, isError } = useProject(Number(id));
   const { mutate: deleteProject } = useDeleteProject();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -63,13 +74,13 @@ export default function ProjectDetailPage() {
           <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
             <AlertCircle className="w-8 h-8 text-red-500" />
           </div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">Projet introuvable</h2>
-          <p className="text-gray-600 mb-6">Le projet demandé n'existe pas ou vous n'y avez pas accès.</p>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">{t('projectDetail.notFound')}</h2>
+          <p className="text-gray-600 mb-6">{t('projectDetail.notFoundDesc')}</p>
           <button
             onClick={() => navigate('/projects')}
             className="w-full px-4 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium"
           >
-            Retour aux projets
+            {t('projectDetail.backToProjects')}
           </button>
         </div>
       </div>
@@ -84,8 +95,12 @@ export default function ProjectDetailPage() {
     });
   };
 
-  const statusConfig = STATUS_CONFIG[project.projectStatus as keyof typeof STATUS_CONFIG] || STATUS_CONFIG.planning;
-  const StatusIcon = statusConfig.icon;
+  const statusKey = project.projectStatus as keyof typeof STATUS_STYLES;
+  const statusStyle = STATUS_STYLES[statusKey] || STATUS_STYLES.planning;
+  const StatusIcon = statusStyle.icon;
+  const statusLabel = t(STATUS_LABEL_KEYS[statusKey] || STATUS_LABEL_KEYS.planning);
+
+  const dateLocale = getLocale(i18n.language);
 
   const getObjectiveIcon = (objective?: string) => {
     switch (objective) {
@@ -108,9 +123,9 @@ export default function ProjectDetailPage() {
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
-            <Link to="/projects" className="hover:text-blue-600 transition-colors">Projets</Link>
+            <Link to="/projects" className="hover:text-blue-600 transition-colors">{t('projectDetail.projects')}</Link>
             <span>/</span>
-            <span className="text-gray-900 font-medium">Projet #{project.idProject}</span>
+            <span className="text-gray-900 font-medium">{t('projectDetail.project')} #{project.idProject}</span>
           </div>
           
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -123,14 +138,14 @@ export default function ProjectDetailPage() {
               </button>
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-                  {country?.countryName || 'Chargement...'}
+                  {country?.countryName || t('projectDetail.loading')}
                   {country?.flagUrl && (
                     <img src={country.flagUrl} alt={country.countryName} className="w-8 h-6 object-cover rounded shadow-sm" />
                   )}
                 </h1>
                 <div className="flex items-center gap-2 mt-1 text-sm text-gray-500">
                   <Calendar className="w-4 h-4" />
-                  Créé le {new Date(project.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                  {t('projectDetail.createdOn')} {new Date(project.createdAt).toLocaleDateString(dateLocale, { day: 'numeric', month: 'long', year: 'numeric' })}
                 </div>
               </div>
             </div>
@@ -141,14 +156,14 @@ export default function ProjectDetailPage() {
                 className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
               >
                 <Edit className="w-4 h-4" />
-                Modifier
+                {t('projectDetail.edit')}
               </button>
               <button
                 onClick={() => setShowDeleteConfirm(true)}
                 className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 border border-red-100 rounded-lg hover:bg-red-100 transition-colors text-sm font-medium"
               >
                 <Trash2 className="w-4 h-4" />
-                Supprimer
+                {t('projectDetail.delete')}
               </button>
             </div>
           </div>
@@ -161,16 +176,16 @@ export default function ProjectDetailPage() {
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                 <MapPin className="w-5 h-5 text-blue-600" />
-                Destination
+                {t('projectDetail.destination')}
               </h2>
               <div className="space-y-4">
                 <div>
-                  <p className="text-sm text-gray-500 mb-1">Pays</p>
-                  <p className="font-medium text-gray-900">{country?.countryName || 'Chargement...'}</p>
+                  <p className="text-sm text-gray-500 mb-1">{t('projectDetail.country')}</p>
+                  <p className="font-medium text-gray-900">{country?.countryName || t('projectDetail.loading')}</p>
                 </div>
                 {project.idDestinationCity && (
                   <div className="pt-4 border-t border-gray-100">
-                    <p className="text-sm text-gray-500 mb-1">Ville (ID)</p>
+                    <p className="text-sm text-gray-500 mb-1">{t('projectDetail.cityId')}</p>
                     <p className="font-medium text-gray-900">#{project.idDestinationCity}</p>
                   </div>
                 )}
@@ -180,7 +195,7 @@ export default function ProjectDetailPage() {
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
                 <Target className="w-5 h-5 text-blue-600" />
-                Informations générales
+                {t('projectDetail.generalInfo')}
               </h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -189,9 +204,11 @@ export default function ProjectDetailPage() {
                     {getObjectiveIcon(project.mainObjective)}
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500 mb-1">Objectif</p>
+                    <p className="text-sm text-gray-500 mb-1">{t('projectDetail.objective')}</p>
                     <p className="font-medium text-gray-900">
-                      {OBJECTIVE_LABELS[project.mainObjective || ''] || project.mainObjective || 'Non défini'}
+                      {project.mainObjective && OBJECTIVE_LABEL_KEYS[project.mainObjective] 
+                        ? t(OBJECTIVE_LABEL_KEYS[project.mainObjective]) 
+                        : project.mainObjective || t('projectDetail.notDefined')}
                     </p>
                   </div>
                 </div>
@@ -201,9 +218,11 @@ export default function ProjectDetailPage() {
                     {getTravelTypeIcon(project.travelType)}
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500 mb-1">Type de voyage</p>
+                    <p className="text-sm text-gray-500 mb-1">{t('projectDetail.travelType')}</p>
                     <p className="font-medium text-gray-900">
-                      {TRAVEL_TYPE_LABELS[project.travelType || ''] || project.travelType || 'Non défini'}
+                      {project.travelType && TRAVEL_TYPE_LABEL_KEYS[project.travelType]
+                        ? t(TRAVEL_TYPE_LABEL_KEYS[project.travelType])
+                        : project.travelType || t('projectDetail.notDefined')}
                     </p>
                   </div>
                 </div>
@@ -213,11 +232,11 @@ export default function ProjectDetailPage() {
                     <Calendar className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500 mb-1">Date de départ</p>
+                    <p className="text-sm text-gray-500 mb-1">{t('projectDetail.departureDate')}</p>
                     <p className="font-medium text-gray-900">
                       {project.expectedDepartureDate 
-                        ? new Date(project.expectedDepartureDate).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })
-                        : 'Non définie'}
+                        ? new Date(project.expectedDepartureDate).toLocaleDateString(dateLocale, { month: 'long', year: 'numeric' })
+                        : t('projectDetail.notDefinedFem')}
                     </p>
                   </div>
                 </div>
@@ -227,9 +246,17 @@ export default function ProjectDetailPage() {
                     <Clock className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500 mb-1">Durée prévue</p>
+                    <p className="text-sm text-gray-500 mb-1">{t('projectDetail.expectedDuration')}</p>
                     <p className="font-medium text-gray-900">
-                      {project.expectedDuration ? `${project.expectedDuration} mois` : 'Non définie'}
+                      {project.expectedDuration 
+                        ? (() => {
+                            const months = project.expectedDuration
+                            if (months <= 6) return t('projectDetail.less6months')
+                            if (months <= 12) return t('projectDetail.6to12months')
+                            if (months <= 36) return t('projectDetail.1to3years')
+                            return t('projectDetail.more3years')
+                          })()
+                        : t('projectDetail.notDefinedFem')}
                     </p>
                   </div>
                 </div>
@@ -240,7 +267,7 @@ export default function ProjectDetailPage() {
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
                   <Flag className="w-5 h-5 text-blue-600" />
-                  Priorités
+                  {t('projectDetail.priorities')}
                 </h2>
                 <div className="flex flex-wrap gap-2">
                   {project.priorities.split(',').map((priority, index) => (
@@ -258,22 +285,22 @@ export default function ProjectDetailPage() {
 
           <div className="space-y-6">
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">État du projet</h2>
-              <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg border ${statusConfig.color}`}>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('projectDetail.projectStatus')}</h2>
+              <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg border ${statusStyle.color}`}>
                 <StatusIcon className="w-5 h-5" />
-                <span className="font-medium">{statusConfig.label}</span>
+                <span className="font-medium">{statusLabel}</span>
               </div>
             </div>
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                 <Wallet className="w-5 h-5 text-blue-600" />
-                Budget Logement
+                {t('projectDetail.housingBudget')}
               </h2>
               <div className="text-3xl font-bold text-gray-900 mb-1">
-                {project.housingBudget ? `${project.housingBudget} €` : 'Non défini'}
+                {project.housingBudget ? `${project.housingBudget} €` : t('projectDetail.notDefined')}
               </div>
-              <p className="text-sm text-gray-500">par mois estimé</p>
+              <p className="text-sm text-gray-500">{t('projectDetail.perMonth')}</p>
             </div>
 
             {project.needsSupport && (
@@ -283,9 +310,9 @@ export default function ProjectDetailPage() {
                     <Users className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-lg mb-2">Accompagnement</h3>
+                    <h3 className="font-semibold text-lg mb-2">{t('projectDetail.support')}</h3>
                     <p className="text-blue-50 text-sm leading-relaxed">
-                      Vous avez demandé un accompagnement personnalisé pour ce projet. Un conseiller prendra contact avec vous prochainement.
+                      {t('projectDetail.supportDesc')}
                     </p>
                   </div>
                 </div>
@@ -302,23 +329,23 @@ export default function ProjectDetailPage() {
               <Trash2 className="w-6 h-6 text-red-600" />
             </div>
             <h3 className="text-2xl font-bold text-gray-900 mb-2">
-              Supprimer le projet ?
+              {t('projectDetail.deleteTitle')}
             </h3>
             <p className="text-gray-600 mb-8">
-              Êtes-vous sûr de vouloir supprimer ce projet ? Cette action est irréversible et toutes les données associées seront perdues.
+              {t('projectDetail.deleteDesc')}
             </p>
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setShowDeleteConfirm(false)}
                 className="px-5 py-2.5 text-gray-700 hover:bg-gray-100 rounded-xl transition-colors font-medium"
               >
-                Annuler
+                {t('projectDetail.cancel')}
               </button>
               <button
                 onClick={handleDelete}
                 className="px-5 py-2.5 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors font-medium shadow-lg shadow-red-600/20"
               >
-                Supprimer définitivement
+                {t('projectDetail.deleteForever')}
               </button>
             </div>
           </div>

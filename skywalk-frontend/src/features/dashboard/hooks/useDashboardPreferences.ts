@@ -1,11 +1,25 @@
 import { useState, useEffect } from 'react';
 
+export type WidgetSize = 'small' | 'medium' | 'large';
+
 interface DashboardPreferences {
   hiddenWidgets: string[];
   layout?: string[];
+  widgetSizes?: Record<string, WidgetSize>;
 }
 
 const STORAGE_KEY = 'skywalk-dashboard-preferences';
+
+const DEFAULT_WIDGET_SIZES: Record<string, WidgetSize> = {
+  'profile-summary': 'medium',
+  'local-time': 'small',
+  'weather': 'small',
+  'checklist': 'large',
+  'budget-tracker': 'medium',
+  'recommendations': 'large',
+  'currency-converter': 'medium',
+  'job-opportunities': 'medium',
+};
 
 export function useDashboardPreferences() {
   const [preferences, setPreferences] = useState<DashboardPreferences>(() => {
@@ -64,6 +78,26 @@ export function useDashboardPreferences() {
     }));
   };
 
+  const getWidgetSize = (widgetId: string): WidgetSize => {
+    return preferences.widgetSizes?.[widgetId] || DEFAULT_WIDGET_SIZES[widgetId] || 'medium';
+  };
+
+  const setWidgetSize = (widgetId: string, size: WidgetSize) => {
+    setPreferences(prev => ({
+      ...prev,
+      widgetSizes: {
+        ...prev.widgetSizes,
+        [widgetId]: size,
+      }
+    }));
+  };
+
+  const cycleWidgetSize = (widgetId: string) => {
+    const current = getWidgetSize(widgetId);
+    const next: WidgetSize = current === 'small' ? 'medium' : current === 'medium' ? 'large' : 'small';
+    setWidgetSize(widgetId, next);
+  };
+
   return {
     preferences,
     hiddenWidgets: preferences.hiddenWidgets,
@@ -73,6 +107,9 @@ export function useDashboardPreferences() {
     toggleWidget,
     resetPreferences,
     isWidgetHidden,
-    updateWidgetOrder
+    updateWidgetOrder,
+    getWidgetSize,
+    setWidgetSize,
+    cycleWidgetSize,
   };
 }

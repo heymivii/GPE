@@ -1,10 +1,14 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useQuery } from "@tanstack/react-query";
 import { Banknote } from "lucide-react";
 import Widget from "./Widget";
+import type { WidgetSize } from "../hooks/useDashboardPreferences";
 
 interface CurrencyConverterWidgetProps {
   onHide?: () => void;
+  onResize?: (size: WidgetSize) => void;
+  currentSize?: WidgetSize;
 }
 
 const CURRENCIES = [
@@ -20,76 +24,48 @@ const CURRENCIES = [
 
 const CurrencyConverterWidget: React.FC<CurrencyConverterWidgetProps> = ({
   onHide,
+  onResize,
+  currentSize,
 }) => {
   const { t } = useTranslation();
   const [amount, setAmount] = useState<string>("100");
   const [fromCurrency, setFromCurrency] = useState<string>("EUR");
   const [toCurrency, setToCurrency] = useState<string>("USD");
-  const [exchangeRate, setExchangeRate] = useState<number | null>(null);
   const [result, setResult] = useState<number | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  const [lastUpdate, setLastUpdate] = useState<string | null>(null);
-  
-  const rateCache = useRef<Record<string, { rate: number; timestamp: number }>>({});
 
   const API_KEY = import.meta.env.VITE_EXCHANGERATE_API_KEY;
 
-  useEffect(() => {
-    if (!API_KEY) {
-      setError("API key not configured");
-      return;
-    }
+  const {
+    data: rateData,
+    isLoading: loading,
+    error: rateError,
+  } = useQuery({
+    queryKey: ["exchangeRate", fromCurrency, toCurrency],
+    queryFn: async () => {
+      const response = await fetch(
+        `https://v6.exchangerate-api.com/v6/${API_KEY}/pair/${fromCurrency}/${toCurrency}`
+      );
+      if (!response.ok) throw new Error("Failed to fetch exchange rate");
+      const data = await response.json();
+      if (data.result !== "success") throw new Error(data["error-type"] || "Unknown error");
+      return {
+        rate: data.conversion_rate as number,
+        lastUpdate: new Date(data.time_last_update_unix * 1000).toLocaleDateString(),
+      };
+    },
+    enabled: !!API_KEY,
+    staleTime: 3600000, // 1 hour cache — replaces manual rateCache ref
+    retry: 1,
+  });
 
-    const fetchExchangeRate = async () => {
-      const cacheKey = `${fromCurrency}-${toCurrency}`;
-      const now = Date.now();
-      const cached = rateCache.current[cacheKey];
-      
-      if (cached && now - cached.timestamp < 3600000) {
-        setExchangeRate(cached.rate);
-        const numAmount = parseFloat(amount) || 0;
-        setResult(numAmount * cached.rate);
-        return;
-      }
+  const exchangeRate = rateData?.rate ?? null;
+  const lastUpdate = rateData?.lastUpdate ?? null;
+  const error = !API_KEY
+    ? "API key not configured"
+    : rateError
+      ? t("dashboard.personalized.widgets.currencyConverter.error")
+      : null;
 
-      setLoading(true);
-      setError(null);
-
-      try {
-        const response = await fetch(
-          `https://v6.exchangerate-api.com/v6/${API_KEY}/pair/${fromCurrency}/${toCurrency}`
-        );
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch exchange rate");
-        }
-
-        const data = await response.json();
-
-        if (data.result === "success") {
-          const rate = data.conversion_rate;
-          
-          rateCache.current[cacheKey] = { rate, timestamp: now };
-          
-          setExchangeRate(rate);
-          const numAmount = parseFloat(amount) || 0;
-          setResult(numAmount * rate);
-          setLastUpdate(new Date(data.time_last_update_unix * 1000).toLocaleDateString());
-        } else {
-          throw new Error(data["error-type"] || "Unknown error");
-        }
-      } catch (err) {
-        console.error("Currency conversion error:", err);
-        setError(t("dashboard.personalized.widgets.currencyConverter.error"));
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchExchangeRate();
-  }, [fromCurrency, toCurrency, API_KEY, t]);
-  
   useEffect(() => {
     if (exchangeRate !== null) {
       const numAmount = parseFloat(amount) || 0;
@@ -118,6 +94,8 @@ const CurrencyConverterWidget: React.FC<CurrencyConverterWidgetProps> = ({
       title={t("dashboard.personalized.widgets.currencyConverter.title")}
       icon={Banknote}
       onHide={onHide}
+      onResize={onResize}
+      currentSize={currentSize}
     >
       <div className="space-y-4">
         {/* Amount Input */}

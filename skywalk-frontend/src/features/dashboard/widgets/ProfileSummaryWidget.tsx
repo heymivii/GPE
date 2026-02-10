@@ -1,7 +1,8 @@
 import Widget from './Widget'
 import { User, MapPin, Target } from 'lucide-react'
-import { COUNTRIES, STATUS_OPTIONS, TRAVEL_PARTY_OPTIONS, GOAL_OPTIONS } from '../../onboarding/data/constants'
+import { COUNTRIES } from '../../onboarding/data/constants'
 import { useTranslation } from 'react-i18next'
+import type { WidgetSize } from '../hooks/useDashboardPreferences'
 
 interface ProfileSummaryWidgetProps {
   userData: {
@@ -25,20 +26,21 @@ interface ProfileSummaryWidgetProps {
   }
   onEdit?: () => void
   onHide?: () => void
+  onResize?: (size: WidgetSize) => void
+  currentSize?: WidgetSize
 }
 
-export default function ProfileSummaryWidget({ userData, onEdit, onHide }: ProfileSummaryWidgetProps) {
+export default function ProfileSummaryWidget({ userData, onEdit, onHide, onResize, currentSize }: ProfileSummaryWidgetProps) {
   const { t } = useTranslation()
   
-  const getCountryLabel = (code: string) => 
-    COUNTRIES.find(c => c.value === code)?.label || code
-
-  const getOptionLabel = (options: Array<{value: string, label: string}>, value: string) =>
-    options.find(o => o.value === value)?.label || value
+  const getCountryLabel = (code: string) => {
+    const country = COUNTRIES.find(c => c.value === code)
+    return country ? t(country.i18nKey) : code
+  }
 
   if (!userData.onboardingData) {
     return (
-      <Widget title={t('dashboard.personalized.widgets.profileSummary.title')} onEdit={onEdit} onHide={onHide}>
+      <Widget title={t('dashboard.personalized.widgets.profileSummary.title')} onEdit={onEdit} onHide={onHide} onResize={onResize} currentSize={currentSize}>
         <div className="text-center text-gray-500 py-8">
           <User className="w-12 h-12 mx-auto mb-4 text-gray-300" />
           <p>{t('dashboard.personalized.widgets.profileSummary.emptyState')}</p>
@@ -50,14 +52,14 @@ export default function ProfileSummaryWidget({ userData, onEdit, onHide }: Profi
   const { destination, profile, objective } = userData.onboardingData
 
   return (
-    <Widget title={t('dashboard.personalized.widgets.profileSummary.title')} onEdit={onEdit} onHide={onHide}>
+    <Widget title={t('dashboard.personalized.widgets.profileSummary.title')} onEdit={onEdit} onHide={onHide} onResize={onResize} currentSize={currentSize}>
       <div className="space-y-4">
         <div className="flex items-center space-x-3">
           <User className="w-5 h-5 text-blue-600" />
           <div>
             <p className="font-medium text-gray-900">{userData.name}</p>
             <p className="text-sm text-gray-600">
-              {profile.age} {t('dashboard.personalized.widgets.profileSummary.age')} • {getOptionLabel(STATUS_OPTIONS, profile.status)} • {getOptionLabel(TRAVEL_PARTY_OPTIONS, profile.travelParty)}
+              {profile.age} {t('dashboard.personalized.widgets.profileSummary.age')} • {t(`onboarding.constants.status.${profile.status}`)} • {t(`onboarding.constants.travelParty.${profile.travelParty}`)}
             </p>
           </div>
         </div>
@@ -78,7 +80,7 @@ export default function ProfileSummaryWidget({ userData, onEdit, onHide }: Profi
           <Target className="w-5 h-5 text-purple-600" />
           <div>
             <p className="font-medium text-gray-900">
-              {getOptionLabel(GOAL_OPTIONS, objective.goal)}
+              {t(`onboarding.constants.goal.${objective.goal}`)}
             </p>
             <p className="text-sm text-gray-600">{t('dashboard.personalized.widgets.profileSummary.mainGoal')}</p>
           </div>

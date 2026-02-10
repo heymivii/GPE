@@ -12,25 +12,25 @@ export default function LandingPage() {
 
   const popularDestinations = [
     {
-      countryName: 'Canada',
-      flag: '🇨🇦',
-      description: t('landing.destinations.canada.description'),
-      image: 'https://images.unsplash.com/photo-1503614472-8c93d56e92ce?q=80&w=2311&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      slug: 'canada'
+      countryName: t('countries.japan'),
+      flag: 'https://flagcdn.com/w80/jp.png',
+      description: t('landing.destinations.japon.description'),
+      image: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1600&q=80',
+      isoCode: 'JP'
     },
     {
-      countryName: 'France',
-      flag: '🇫🇷',
-      description: t('landing.destinations.france.description'),
-      image: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=2346&auto=format&fit=crop',
-      slug: 'france'
+      countryName: t('countries.unitedStates'),
+      flag: 'https://flagcdn.com/w80/us.png',
+      description: t('landing.destinations.etats-unis.description'),
+      image: 'https://images.unsplash.com/photo-1534430480872-3498386e7856?auto=format&fit=crop&w=1600&q=80',
+      isoCode: 'US'
     },
     {
-      countryName: 'Portugal',
-      flag: '🇵🇹',
-      description: t('landing.destinations.portugal.description'),
-      image: 'https://images.unsplash.com/photo-1555881400-74d7acaacd8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
-      slug: 'portugal'
+      countryName: t('countries.switzerland'),
+      flag: 'https://flagcdn.com/w80/ch.png',
+      description: t('landing.destinations.suisse.description'),
+      image: 'https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80',
+      isoCode: 'CH'
     }
   ];
 
@@ -109,7 +109,7 @@ export default function LandingPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Large card on the left */}
           <Link 
-            to={`/destinations/${popularDestinations[0].slug}`}
+            to={`/destinations/${popularDestinations[0].isoCode}`}
             className="lg:row-span-2 h-full min-h-[400px] block"
           >
             <DestinationCard
@@ -125,7 +125,7 @@ export default function LandingPage() {
           {/* Two smaller cards on the right */}
           <div className="space-y-6">
             <Link 
-              to={`/destinations/${popularDestinations[1].slug}`}
+              to={`/destinations/${popularDestinations[1].isoCode}`}
               className="block"
             >
               <DestinationCard
@@ -138,7 +138,7 @@ export default function LandingPage() {
             </Link>
             
             <Link 
-              to={`/destinations/${popularDestinations[2].slug}`}
+              to={`/destinations/${popularDestinations[2].isoCode}`}
               className="block"
             >
               <DestinationCard

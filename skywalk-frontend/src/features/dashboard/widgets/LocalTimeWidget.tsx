@@ -2,11 +2,15 @@ import { useEffect, useState } from 'react';
 import { Clock } from 'lucide-react';
 import Widget from './Widget';
 import { useTranslation } from 'react-i18next';
+import { getLocale } from '../../../data/supportedCountries';
+import type { WidgetSize } from '../hooks/useDashboardPreferences';
 
 interface LocalTimeWidgetProps {
   countryCode: string;
   countryName: string;
   onHide?: () => void;
+  onResize?: (size: WidgetSize) => void;
+  currentSize?: WidgetSize;
 }
 
 const TIMEZONE_MAP: Record<string, string> = {
@@ -29,13 +33,16 @@ const TIMEZONE_MAP: Record<string, string> = {
 export default function LocalTimeWidget({ 
   countryCode, 
   countryName, 
-  onHide 
+  onHide,
+  onResize,
+  currentSize,
 }: LocalTimeWidgetProps) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [localTime, setLocalTime] = useState<Date>(new Date());
   const [destinationTime, setDestinationTime] = useState<Date>(new Date());
   
   const timezone = TIMEZONE_MAP[countryCode] || 'UTC';
+  const locale = getLocale(i18n.language);
 
   useEffect(() => {
     const updateTime = () => {
@@ -53,7 +60,7 @@ export default function LocalTimeWidget({
   }, [timezone]);
 
   const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('fr-FR', {
+    return date.toLocaleTimeString(locale, {
       hour: '2-digit',
       minute: '2-digit',
       second: '2-digit',
@@ -61,7 +68,7 @@ export default function LocalTimeWidget({
   };
 
   const formatDate = (date: Date) => {
-    return date.toLocaleDateString('fr-FR', {
+    return date.toLocaleDateString(locale, {
       weekday: 'long',
       day: 'numeric',
       month: 'long',
@@ -81,6 +88,8 @@ export default function LocalTimeWidget({
       title={t('dashboard.personalized.widgets.localTime.title')} 
       icon={Clock}
       onHide={onHide}
+      onResize={onResize}
+      currentSize={currentSize}
     >
       <div className="space-y-6">
         {/* Heure destination */}
