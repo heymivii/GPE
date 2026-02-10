@@ -1,34 +1,27 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Query } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { CostOfLivingService } from './cost-of-living.service';
-import { CreateCostOfLivingDto } from './dto/create-cost-of-living.dto';
-import { UpdateCostOfLivingDto } from './dto/update-cost-of-living.dto';
 
+@ApiTags('Cost of Living')
 @Controller('cost-of-living')
 export class CostOfLivingController {
   constructor(private readonly costOfLivingService: CostOfLivingService) {}
 
-  @Post()
-  create(@Body() createCostOfLivingDto: CreateCostOfLivingDto) {
-    return this.costOfLivingService.create(createCostOfLivingDto);
+  @Get('search')
+  async getCostOfLiving(
+    @Query('city') city: string,
+    @Query('country') country: string,
+  ) {
+    return this.costOfLivingService.getCostOfLiving(city, country);
   }
 
-  @Get()
-  findAll() {
-    return this.costOfLivingService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.costOfLivingService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCostOfLivingDto: UpdateCostOfLivingDto) {
-    return this.costOfLivingService.update(+id, updateCostOfLivingDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.costOfLivingService.remove(+id);
+  /**
+   * Seed the DB cache for all supported cities.
+   * Spaces API calls 4s apart to avoid 429 rate-limiting.
+   * POST /api/cost-of-living/seed
+   */
+  @Post('seed')
+  async seedCache() {
+    return this.costOfLivingService.seedAllCities();
   }
 }

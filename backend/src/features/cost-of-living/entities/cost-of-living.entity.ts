@@ -3,17 +3,17 @@ import { City } from '../../city/entities/city.entity';
 
 @Entity({ name: 'cost_of_living' })
 export class CostOfLiving {
-  @PrimaryGeneratedColumn({ name: 'cost_id' })
-  cost_id: number;
+  @PrimaryGeneratedColumn({ name: 'id_cost' })
+  id_cost: number;
 
-  @Column({ name: 'avg_housing', type: 'numeric', precision: 10, scale: 2, nullable: true })
-  avg_housing?: string;
+  @Column({ name: 'average_rent', type: 'numeric', precision: 10, scale: 2, nullable: true })
+  average_rent?: string;
 
   @Column({ name: 'monthly_transport', type: 'numeric', precision: 10, scale: 2, nullable: true })
   monthly_transport?: string;
 
-  @Column({ name: 'food', type: 'numeric', precision: 10, scale: 2, nullable: true })
-  food?: string;
+  @Column({ name: 'food_expenses', type: 'numeric', precision: 10, scale: 2, nullable: true })
+  food_expenses?: string;
 
   @Column({ name: 'public_services', type: 'numeric', precision: 10, scale: 2, nullable: true })
   public_services?: string;
@@ -22,7 +22,7 @@ export class CostOfLiving {
   updated_at: Date;
 
   @ManyToOne(() => City, { nullable: false })
-  @JoinColumn({ name: 'city_id'})
+  @JoinColumn({ name: 'id_city' })
   city: City;
 }
 
