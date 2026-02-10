@@ -12,52 +12,24 @@ import {
   AlertCircle,
   Bookmark,
   Filter,
-  X
+  X,
+  Globe
 } from 'lucide-react'
 import { useForumTopics } from '../../../hooks/useForum'
 import { useAuth } from '../../../hooks/useAuth'
 import { PageHeader } from '../../../components/PageHeader'
 import { PageSearch } from '../../../components/PageSearch'
 import { useTranslation } from 'react-i18next'
+import { getCurrentLocale } from '../../../data/supportedCountries'
 
 
-const categoryConfig: Record<string, { name: string; description: string; icon: string; color: string }> = {
-  question: {
-    name: 'Question',
-    description: 'Posez vos questions à la communauté',
-    icon: '❓',
-    color: 'bg-blue-50 border-blue-200'
-  },
-  testimony: {
-    name: 'Témoignage',
-    description: 'Partagez votre expérience d\'expatriation',
-    icon: '📝',
-    color: 'bg-green-50 border-green-200'
-  },
-  advice: {
-    name: 'Conseil',
-    description: 'Donnez ou recevez des conseils pratiques',
-    icon: '�',
-    color: 'bg-yellow-50 border-yellow-200'
-  },
-  discussion: {
-    name: 'Discussion',
-    description: 'Discussions générales sur l\'expatriation',
-    icon: '💬',
-    color: 'bg-purple-50 border-purple-200'
-  },
-  announcement: {
-    name: 'Annonce',
-    description: 'Annonces et informations importantes',
-    icon: '📢',
-    color: 'bg-red-50 border-red-200'
-  },
-  other: {
-    name: 'Autre',
-    description: 'Autres sujets divers',
-    icon: '📌',
-    color: 'bg-gray-50 border-gray-200'
-  }
+const categoryConfig: Record<string, { icon: string; color: string }> = {
+  question: { icon: '❓', color: 'bg-blue-50 border-blue-200' },
+  testimony: { icon: '📝', color: 'bg-green-50 border-green-200' },
+  advice: { icon: '💡', color: 'bg-yellow-50 border-yellow-200' },
+  discussion: { icon: '💬', color: 'bg-purple-50 border-purple-200' },
+  announcement: { icon: '📢', color: 'bg-red-50 border-red-200' },
+  other: { icon: '📌', color: 'bg-gray-50 border-gray-200' }
 }
 
 export default function ForumPage() {
@@ -66,6 +38,7 @@ export default function ForumPage() {
   const { user } = useAuth()
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<string>('')
+  const [selectedCountry, setSelectedCountry] = useState<number | null>(null)
   const [showMyTopics, setShowMyTopics] = useState(false)
   const topicsListRef = useRef<HTMLDivElement>(null)
   
@@ -120,7 +93,7 @@ export default function ForumPage() {
     if (diffInHours < 24) return t('forum.timeAgo.hours', { count: diffInHours })
     const diffInDays = Math.floor(diffInHours / 24)
     if (diffInDays < 7) return t('forum.timeAgo.days', { count: diffInDays })
-    return date.toLocaleDateString('fr-FR')
+    return date.toLocaleDateString()
   }
 
   const getCategoryStats = () => {
@@ -136,9 +109,26 @@ export default function ForumPage() {
       id: key,
       ...config,
       name: t(`forum.categories.${key}.name`),
+      description: t(`forum.categories.${key}.description`),
       postCount: categoryCounts[key] || 0
     }))
   }
+
+  // Extract unique countries from topics for the filter
+  const availableCountries = useMemo(() => {
+    if (!topics) return []
+    const countryMap = new Map<number, { idCountry: number; countryName: string; flagUrl?: string }>()
+    topics.forEach(topic => {
+      if (topic.country?.idCountry && topic.country?.countryName) {
+        countryMap.set(topic.country.idCountry, {
+          idCountry: topic.country.idCountry,
+          countryName: topic.country.countryName,
+          flagUrl: topic.country.flagUrl,
+        })
+      }
+    })
+    return Array.from(countryMap.values()).sort((a, b) => a.countryName.localeCompare(b.countryName))
+  }, [topics])
 
   const filteredTopics = useMemo(() => {
     if (!topics) return []
@@ -160,8 +150,12 @@ export default function ForumPage() {
       result = result.filter(topic => topic.category === selectedCategory)
     }
     
+    if (selectedCountry) {
+      result = result.filter(topic => topic.country?.idCountry === selectedCountry)
+    }
+    
     return result
-  }, [topics, searchQuery, selectedCategory, showMyTopics, user])
+  }, [topics, searchQuery, selectedCategory, selectedCountry, showMyTopics, user])
 
   const updatedStats = {
     totalPosts: stats.totalTopics,
@@ -215,7 +209,7 @@ export default function ForumPage() {
                   </div>
                   <div>
                     <div className="text-2xl font-bold text-gray-900 tracking-tight leading-none">
-                      {updatedStats.totalPosts.toLocaleString('fr-FR')}
+                      {updatedStats.totalPosts.toLocaleString(getCurrentLocale())}
                     </div>
                     <div className="text-sm font-medium text-gray-500 mt-1">{t('forum.stats.topics')}</div>
                   </div>
@@ -229,7 +223,7 @@ export default function ForumPage() {
                   </div>
                   <div>
                     <div className="text-2xl font-bold text-gray-900 tracking-tight leading-none">
-                      {updatedStats.totalReplies.toLocaleString('fr-FR')}
+                      {updatedStats.totalReplies.toLocaleString(getCurrentLocale())}
                     </div>
                     <div className="text-sm font-medium text-gray-500 mt-1">{t('forum.stats.replies')}</div>
                   </div>
@@ -329,11 +323,12 @@ export default function ForumPage() {
                     </>
                   )}
                 </h2>
-                {(selectedCategory || showMyTopics) && (
+                {(selectedCategory || showMyTopics || selectedCountry) && (
                   <button
                     onClick={() => {
                       setSelectedCategory('')
                       setShowMyTopics(false)
+                      setSelectedCountry(null)
                     }}
                     className="flex items-center gap-1 text-sm text-[#5EA3C0] hover:text-[#4A8299] font-medium"
                   >
@@ -397,8 +392,16 @@ export default function ForumPage() {
                                 {formatTimeAgo(topic.created_at)}
                               </span>
                               <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded">
-                                {categoryInfo?.name || 'Autre'}
+                                {t(`forum.categories.${topic.category || 'other'}.name`)}
                               </span>
+                              {topic.country?.countryName && (
+                                <span className="flex items-center gap-1 px-2 py-1 bg-blue-50 text-blue-700 rounded">
+                                  {topic.country.flagUrl && (
+                                    <img src={topic.country.flagUrl} alt="" className="w-3 h-2 rounded-sm object-cover" />
+                                  )}
+                                  {topic.country.countryName}
+                                </span>
+                              )}
                             </div>
                           </div>
                           
@@ -486,6 +489,7 @@ export default function ForumPage() {
                   onClick={() => {
                     setSearchQuery('')
                     setSelectedCategory('')
+                    setSelectedCountry(null)
                     setShowMyTopics(false)
                   }}
                   className="flex items-center gap-2 p-3 w-full text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
@@ -507,7 +511,7 @@ export default function ForumPage() {
                       const diffInHours = (new Date().getTime() - new Date(t.created_at).getTime()) / (1000 * 60 * 60)
                       return diffInHours <= 24
                     })
-                    alert(`${recent?.length || 0} topics dans les dernières 24h`)
+                    alert(`${recent?.length || 0} ${t('forum.stats.last24h')}`)
                   }}
                   className="flex items-center justify-between p-3 w-full text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
                 >
@@ -531,6 +535,56 @@ export default function ForumPage() {
                 </button>
               </div>
             </div>
+
+            {/* Country Filter */}
+            {availableCountries.length > 0 && (
+              <div className="bg-white rounded-lg border border-gray-200">
+                <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+                  <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+                    <Globe className="w-4 h-4 text-blue-500" />
+                    {t('forum.filterByCountry', 'Filtrer par pays')}
+                  </h3>
+                  {selectedCountry && (
+                    <button
+                      onClick={() => setSelectedCountry(null)}
+                      className="flex items-center gap-1 text-xs text-[#5EA3C0] hover:text-[#4A8299]"
+                    >
+                      <X className="w-3 h-3" />
+                      {t('forum.reset')}
+                    </button>
+                  )}
+                </div>
+                <div className="p-4 space-y-1 max-h-64 overflow-y-auto">
+                  {availableCountries.map((country) => {
+                    const topicCount = topics?.filter(t => t.country?.idCountry === country.idCountry).length || 0
+                    return (
+                      <button
+                        key={country.idCountry}
+                        onClick={() => {
+                          setSelectedCountry(selectedCountry === country.idCountry ? null : country.idCountry)
+                          scrollToResults()
+                        }}
+                        className={`flex items-center justify-between p-2.5 w-full text-sm rounded-lg transition-colors ${
+                          selectedCountry === country.idCountry
+                            ? 'bg-blue-50 text-blue-700 font-medium border border-blue-200'
+                            : 'text-gray-700 hover:bg-gray-50'
+                        }`}
+                      >
+                        <span className="flex items-center gap-2">
+                          {country.flagUrl && (
+                            <img src={country.flagUrl} alt="" className="w-4 h-3 rounded-sm object-cover" />
+                          )}
+                          {country.countryName}
+                        </span>
+                        <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
+                          {topicCount}
+                        </span>
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
