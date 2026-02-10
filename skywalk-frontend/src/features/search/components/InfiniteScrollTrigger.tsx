@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { Loader2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 interface InfiniteScrollTriggerProps {
   onLoadMore: () => void
@@ -13,6 +14,7 @@ export default function InfiniteScrollTrigger({
   isLoading 
 }: InfiniteScrollTriggerProps) {
   const observerTarget = useRef<HTMLDivElement>(null)
+  const { t } = useTranslation()
 
   useEffect(() => {
     if (isLoading || !hasMore) return
@@ -55,11 +57,11 @@ export default function InfiniteScrollTrigger({
       {isLoading ? (
         <div className="flex items-center gap-3 text-blue-600">
           <Loader2 className="w-6 h-6 animate-spin" />
-          <span className="text-sm font-medium">Chargement des résultats...</span>
+          <span className="text-sm font-medium">{t('searchPage.loadingResults')}</span>
         </div>
       ) : (
         <div className="text-gray-400 text-sm">
-          Faites défiler pour charger plus de résultats
+          {t('searchPage.scrollForMore')}
         </div>
       )}
     </div>

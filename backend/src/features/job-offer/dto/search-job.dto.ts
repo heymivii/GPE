@@ -44,4 +44,40 @@ export class SearchJobDto {
   @IsOptional()
   @IsString()
   sortBy?: 'relevance' | 'date' | 'salary' = 'relevance'; // Tri des résultats
+
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  @Type(() => Number)
+  salaryMax?: number;
+
+  @IsOptional()
+  @IsBoolean()
+  @Type(() => Boolean)
+  full_time?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  @Type(() => Boolean)
+  part_time?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  @Type(() => Boolean)
+  contract?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  @Type(() => Boolean)
+  permanent?: boolean;
+
+  @IsOptional()
+  @IsString()
+  what_exclude?: string;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Type(() => Number)
+  max_days_old?: number;
 }

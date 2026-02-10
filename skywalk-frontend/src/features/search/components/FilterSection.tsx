@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { MapPin, Calendar, DollarSign, Tag, X } from 'lucide-react'
+import { MapPin, Calendar, DollarSign, Tag, X, Briefcase } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import type { SearchFilters } from '../types'
 
 interface FilterSectionProps {
@@ -7,26 +8,42 @@ interface FilterSectionProps {
   onFiltersChange: (filters: Partial<SearchFilters>) => void
 }
 
-const categories = [
-  { id: 'emploi', name: 'Emploi', color: 'bg-blue-100 text-blue-800' },
-  { id: 'logement', name: 'Logement', color: 'bg-green-100 text-green-800' },
-  { id: 'transport', name: 'Transport', color: 'bg-purple-100 text-purple-800' },
-  { id: 'administration', name: 'Administration', color: 'bg-orange-100 text-orange-800' },
-  { id: 'sante', name: 'Santé', color: 'bg-red-100 text-red-800' }
-]
+const categoryIds = ['emploi', 'logement', 'transport', 'administration', 'sante'] as const
 
-const countries = [
-  { code: 'FR', name: 'France', flag: '🇫🇷' },
-  { code: 'CA', name: 'Canada', flag: '🇨🇦' },
-  { code: 'CH', name: 'Suisse', flag: '🇨🇭' },
-  { code: 'DE', name: 'Allemagne', flag: '🇩🇪' },
-  { code: 'US', name: 'États-Unis', flag: '🇺🇸' },
-  { code: 'GB', name: 'Royaume-Uni', flag: '🇬🇧' }
-]
+const categoryColors: Record<string, string> = {
+  emploi: 'bg-blue-100 text-blue-800',
+  logement: 'bg-green-100 text-green-800',
+  transport: 'bg-purple-100 text-purple-800',
+  administration: 'bg-orange-100 text-orange-800',
+  sante: 'bg-red-100 text-red-800'
+}
+
+const contractTypeIds = ['permanent', 'contract', 'full_time', 'part_time'] as const
+
+import { SUPPORTED_COUNTRIES } from '../../../data/supportedCountries'
+
+const countries = SUPPORTED_COUNTRIES.map(c => ({
+  code: c.code,
+  name: c.name,
+  i18nKey: c.i18nKey,
+  flag: c.flag
+}))
 
 export default function FilterSection({ filters, onFiltersChange }: FilterSectionProps) {
+  const { t } = useTranslation()
   const [isPriceExpanded, setIsPriceExpanded] = useState(false)
   const [isDateExpanded, setIsDateExpanded] = useState(false)
+
+  const categories = categoryIds.map(id => ({
+    id,
+    name: t(`searchPage.filter.categories.${id}`),
+    color: categoryColors[id]
+  }))
+
+  const contractTypes = contractTypeIds.map(id => ({
+    id,
+    name: t(`searchPage.filter.contracts.${id}`)
+  }))
 
   const handleCategoryToggle = (categoryId: string) => {
     const currentCategory = filters.category
@@ -36,6 +53,14 @@ export default function FilterSection({ filters, onFiltersChange }: FilterSectio
 
   const handleCountryChange = (countryName: string) => {
     onFiltersChange({ country: countryName === filters.country ? '' : countryName })
+  }
+
+  const handleContractTypeToggle = (typeId: string) => {
+    const currentTypes = filters.contractType || []
+    const newTypes = currentTypes.includes(typeId)
+      ? currentTypes.filter(t => t !== typeId)
+      : [...currentTypes, typeId]
+    onFiltersChange({ contractType: newTypes })
   }
 
   const handlePriceRangeChange = (min: number, max: number) => {
@@ -48,7 +73,9 @@ export default function FilterSection({ filters, onFiltersChange }: FilterSectio
       country: '',
       city: '',
       priceRange: [0, 10000],
-      dateRange: ['', '']
+      dateRange: ['', ''],
+      contractType: [],
+      sortBy: 'relevance'
     })
   }
 
@@ -64,7 +91,7 @@ export default function FilterSection({ filters, onFiltersChange }: FilterSectio
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold text-gray-900">
-          Filtres {activeFiltersCount > 0 && <span className="text-sm text-gray-500">({activeFiltersCount})</span>}
+          {t('searchPage.filter.title')} {activeFiltersCount > 0 && <span className="text-sm text-gray-500">({activeFiltersCount})</span>}
         </h3>
         {activeFiltersCount > 0 && (
           <button
@@ -72,7 +99,7 @@ export default function FilterSection({ filters, onFiltersChange }: FilterSectio
             className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1"
           >
             <X className="w-4 h-4" />
-            Tout effacer
+            {t('searchPage.filter.clearAll')}
           </button>
         )}
       </div>
@@ -81,18 +108,17 @@ export default function FilterSection({ filters, onFiltersChange }: FilterSectio
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             <Tag className="w-4 h-4 text-gray-500" />
-            <label className="font-medium text-gray-700">Catégorie</label>
+            <label className="font-medium text-gray-700">{t('searchPage.filter.category')}</label>
           </div>
           <div className="space-y-2">
             {categories.map((category) => (
               <button
                 key={category.id}
                 onClick={() => handleCategoryToggle(category.id)}
-                className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                  filters.category === category.id
-                    ? category.color
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
+                className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-all ${filters.category === category.id
+                  ? category.color
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
               >
                 {category.name}
               </button>
@@ -103,21 +129,49 @@ export default function FilterSection({ filters, onFiltersChange }: FilterSectio
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             <MapPin className="w-4 h-4 text-gray-500" />
-            <label className="font-medium text-gray-700">Pays</label>
+            <label className="font-medium text-gray-700">{t('searchPage.filter.country')}</label>
           </div>
           <div className="space-y-2">
             {countries.map((country) => (
               <button
                 key={country.code}
                 onClick={() => handleCountryChange(country.name)}
-                className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all flex items-center gap-2 ${
-                  filters.country === country.name
-                    ? 'bg-blue-100 text-blue-800 font-medium'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
+                className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all flex items-center gap-2 ${filters.country === country.name
+                  ? 'bg-blue-100 text-blue-800 font-medium'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
               >
                 <span>{country.flag}</span>
-                <span>{country.name}</span>
+                <span>{t(country.i18nKey)}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+
+
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <Briefcase className="w-4 h-4 text-gray-500" />
+            <label className="font-medium text-gray-700">{t('searchPage.filter.contractType')}</label>
+          </div>
+          <div className="space-y-2">
+            {contractTypes.map((type) => (
+              <button
+                key={type.id}
+                onClick={() => handleContractTypeToggle(type.id)}
+                className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all flex items-center gap-2 ${filters.contractType?.includes(type.id)
+                  ? 'bg-blue-100 text-blue-800 font-medium'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+              >
+                <div className={`w-4 h-4 rounded border flex items-center justify-center ${filters.contractType?.includes(type.id)
+                  ? 'border-blue-500 bg-blue-500 text-white'
+                  : 'border-gray-400 bg-white'
+                  }`}>
+                  {filters.contractType?.includes(type.id) && <span className="text-[10px]">✓</span>}
+                </div>
+                <span>{type.name}</span>
               </button>
             ))}
           </div>
@@ -126,7 +180,7 @@ export default function FilterSection({ filters, onFiltersChange }: FilterSectio
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             <DollarSign className="w-4 h-4 text-gray-500" />
-            <label className="font-medium text-gray-700">Budget</label>
+            <label className="font-medium text-gray-700">{t('searchPage.filter.budget')}</label>
           </div>
           <div className="space-y-3">
             <button
@@ -134,10 +188,10 @@ export default function FilterSection({ filters, onFiltersChange }: FilterSectio
               className="w-full text-left px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm"
             >
               {filters.priceRange[0] === 0 && filters.priceRange[1] === 10000
-                ? 'Tous les prix'
+                ? t('searchPage.filter.allPrices')
                 : `${filters.priceRange[0]}€ - ${filters.priceRange[1]}€`}
             </button>
-            
+
             {isPriceExpanded && (
               <div className="space-y-2">
                 <div className="flex gap-2">
@@ -175,7 +229,7 @@ export default function FilterSection({ filters, onFiltersChange }: FilterSectio
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             <Calendar className="w-4 h-4 text-gray-500" />
-            <label className="font-medium text-gray-700">Période</label>
+            <label className="font-medium text-gray-700">{t('searchPage.filter.period')}</label>
           </div>
           <div className="space-y-2">
             <button
@@ -183,10 +237,10 @@ export default function FilterSection({ filters, onFiltersChange }: FilterSectio
               className="w-full text-left px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm"
             >
               {!filters.dateRange[0] && !filters.dateRange[1]
-                ? 'Toutes les dates'
-                : `${filters.dateRange[0] || 'Début'} - ${filters.dateRange[1] || 'Fin'}`}
+                ? t('searchPage.filter.allDates')
+                : `${filters.dateRange[0] || t('searchPage.filter.start')} - ${filters.dateRange[1] || t('searchPage.filter.end')}`}
             </button>
-            
+
             {isDateExpanded && (
               <div className="space-y-2">
                 <div className="flex gap-2">
@@ -204,23 +258,25 @@ export default function FilterSection({ filters, onFiltersChange }: FilterSectio
                   />
                 </div>
                 <div className="flex gap-1">
-                  {['Aujourd\'hui', 'Cette semaine', 'Ce mois'].map((period) => (
+                  {(['today', 'thisWeek', 'thisMonth'] as const).map((periodKey) => {
+                    const today = new Date().toISOString().split('T')[0]
+                    const ranges: Record<string, [string, string]> = {
+                      today: [today, today],
+                      thisWeek: [today, new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]],
+                      thisMonth: [today, new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]]
+                    }
+                    return (
                     <button
-                      key={period}
+                      key={periodKey}
                       onClick={() => {
-                        const today = new Date().toISOString().split('T')[0]
-                        const ranges = {
-                          'Aujourd\'hui': [today, today],
-                          'Cette semaine': [today, new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]],
-                          'Ce mois': [today, new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]]
-                        }
-                        onFiltersChange({ dateRange: ranges[period as keyof typeof ranges] })
+                        onFiltersChange({ dateRange: ranges[periodKey] })
                       }}
                       className="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded"
                     >
-                      {period}
+                      {t(`searchPage.filter.${periodKey}`)}
                     </button>
-                  ))}
+                    )
+                  })}
                 </div>
               </div>
             )}
@@ -230,16 +286,16 @@ export default function FilterSection({ filters, onFiltersChange }: FilterSectio
 
       <div className="pt-4 border-t">
         <div className="flex items-center gap-4">
-          <label className="font-medium text-gray-700">Ville:</label>
+          <label className="font-medium text-gray-700">{t('searchPage.filter.city')}</label>
           <input
             type="text"
             value={filters.city}
             onChange={(e) => onFiltersChange({ city: e.target.value })}
-            placeholder="Entrez une ville..."
+            placeholder={t('searchPage.filter.cityPlaceholder')}
             className="flex-1 max-w-xs px-3 py-2 border border-gray-300 rounded-lg text-sm"
           />
         </div>
       </div>
-    </div>
+    </div >
   )
 }

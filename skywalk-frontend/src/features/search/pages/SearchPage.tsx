@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Search, Filter, Grid, List, ChevronDown } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import SearchBar from '../components/SearchBar'
 import FilterSection from '../components/FilterSection'
 import ResultsSection from '../components/ResultsSection'
@@ -14,6 +15,7 @@ import { PageSearch } from '../../../components/PageSearch'
 export default function SearchPage() {
   const { isAuthenticated } = useAuth();
   const [searchParams] = useSearchParams();
+  const { t } = useTranslation();
   const {
     filters,
     results,
@@ -66,9 +68,9 @@ export default function SearchPage() {
       }
       
       const priorities = data.needs?.priorities || []
-      if (priorities.includes('Emploi')) {
+      if (priorities.includes('employment')) {
         defaultFilters.category = 'emploi'
-      } else if (priorities.includes('Logement')) {
+      } else if (priorities.includes('housing')) {
         defaultFilters.category = 'logement'
       }
       
@@ -92,8 +94,8 @@ export default function SearchPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <PageHeader 
-        title="Recherche Avancée" 
-        description="Trouvez des emplois, logements et services adaptés à votre projet d'expatriation."
+        title={t('searchPage.title')} 
+        description={t('searchPage.description')}
       />
 
       <PageSearch>
@@ -102,7 +104,7 @@ export default function SearchPage() {
             <SearchBar
               initialQuery={filters.query}
               onSearch={handleSearch}
-              placeholder="Rechercher emplois, logements, transports..."
+              placeholder={t('searchPage.placeholder')}
             />
           </div>
           
@@ -112,7 +114,7 @@ export default function SearchPage() {
               className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
             >
               <Filter className="w-4 h-4" />
-              <span>Filtres</span>
+              <span>{t('searchPage.filters')}</span>
               <ChevronDown className={`w-4 h-4 transition-transform ${isFilterOpen ? 'rotate-180' : ''}`} />
             </button>
 
@@ -149,19 +151,19 @@ export default function SearchPage() {
           <div className="flex items-center gap-4">
             <h1 className="text-2xl font-bold text-gray-900">
               {filters.query || filters.category || filters.country 
-                ? 'Résultats de recherche'
-                : 'Destinations & Services Populaires'
+                ? t('searchPage.searchResults')
+                : t('searchPage.popularDestinations')
               }
             </h1>
             {totalResults > 0 && (
               <span className="text-sm text-gray-600">
-                {totalResults.toLocaleString('fr-FR')} résultat{totalResults > 1 ? 's' : ''} {filters.query || filters.category || filters.country ? 'trouvé' : 'disponible'}{totalResults > 1 ? 's' : ''}
+                {t('searchPage.resultCount', { count: totalResults, context: filters.query || filters.category || filters.country ? t(totalResults > 1 ? 'searchPage.founds' : 'searchPage.found') : t(totalResults > 1 ? 'searchPage.availables' : 'searchPage.available') })}
               </span>
             )}
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-600">Trier par:</span>
+            <span className="text-sm text-gray-600">{t('searchPage.sortBy')}</span>
             <select
               value={`${filters.sortBy}-${filters.sortOrder}`}
               onChange={(e) => {
@@ -170,12 +172,12 @@ export default function SearchPage() {
               }}
               className="text-sm border border-gray-300 rounded px-3 py-1"
             >
-              <option value="relevance-desc">Pertinence</option>
-              <option value="date-desc">Plus récent</option>
-              <option value="date-asc">Plus ancien</option>
-              <option value="price-asc">Prix croissant</option>
-              <option value="price-desc">Prix décroissant</option>
-              <option value="rating-desc">Mieux noté</option>
+              <option value="relevance-desc">{t('searchPage.relevance')}</option>
+              <option value="date-desc">{t('searchPage.mostRecent')}</option>
+              <option value="date-asc">{t('searchPage.oldest')}</option>
+              <option value="price-asc">{t('searchPage.priceAsc')}</option>
+              <option value="price-desc">{t('searchPage.priceDesc')}</option>
+              <option value="rating-desc">{t('searchPage.bestRated')}</option>
             </select>
           </div>
         </div>
@@ -192,11 +194,10 @@ export default function SearchPage() {
                 </div>
                 <div>
                   <h3 className="text-sm font-semibold text-blue-900 mb-1">
-                    Découvrez nos destinations populaires
+                    {t('searchPage.discoverDestinations')}
                   </h3>
                   <p className="text-sm text-blue-800">
-                    Vous voyez ici une sélection d'opportunités et de services dans les destinations les plus prisées. 
-                    Utilisez la barre de recherche et les filtres pour affiner vos résultats.
+                    {t('searchPage.discoverDestinationsDesc')}
                   </p>
                 </div>
               </div>
@@ -204,15 +205,15 @@ export default function SearchPage() {
 
             {/* Quick filters */}
             <div className="flex flex-wrap gap-2">
-              <span className="text-sm text-gray-600 font-medium">Recherches populaires :</span>
+              <span className="text-sm text-gray-600 font-medium">{t('searchPage.popularSearches')}</span>
               {[
-                { label: '🇫🇷 France', filters: { country: 'France' } },
-                { label: '🇬🇧 Royaume-Uni', filters: { country: 'Royaume-Uni' } },
-                { label: '🇨🇭 Suisse', filters: { country: 'Suisse' } },
-                { label: '🇨🇦 Canada', filters: { country: 'Canada' } },
-                { label: '💼 Emploi', filters: { category: 'emploi' } },
-                { label: '🏠 Logement', filters: { category: 'logement' } },
-                { label: '🚇 Transport', filters: { category: 'transport' } },
+                { label: `🇫🇷 ${t('searchPage.france')}`, filters: { country: 'France' } },
+                { label: `🇬🇧 ${t('searchPage.unitedKingdom')}`, filters: { country: 'Royaume-Uni' } },
+                { label: `🇨🇭 ${t('searchPage.switzerland')}`, filters: { country: 'Suisse' } },
+                { label: `🇨🇦 ${t('searchPage.canada')}`, filters: { country: 'Canada' } },
+                { label: `💼 ${t('searchPage.jobs')}`, filters: { category: 'emploi' } },
+                { label: `🏠 ${t('searchPage.housing')}`, filters: { category: 'logement' } },
+                { label: `🚇 ${t('searchPage.transport')}`, filters: { category: 'transport' } },
               ].map((item, index) => (
                 <button
                   key={index}
@@ -251,22 +252,22 @@ export default function SearchPage() {
               <div className="w-16 h-16 bg-[#5EA3C0] rounded-full flex items-center justify-center mx-auto mb-4">
                 <Search className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Découvrez {results.length - 10}+ résultats supplémentaires</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">{t('searchPage.discoverMore', { count: results.length - 10 })}</h3>
               <p className="text-gray-600 mb-6">
-                Créez un compte gratuit pour accéder à tous les résultats, sauvegarder vos recherches et recevoir des alertes personnalisées.
+                {t('searchPage.createAccountDesc')}
               </p>
               <div className="flex gap-3 justify-center">
                 <Link
                   to="/auth/register"
                   className="px-6 py-3 bg-[#5EA3C0] text-white font-semibold rounded-full hover:bg-[#4d8a9d] transition-colors"
                 >
-                  Créer un compte gratuit
+                  {t('searchPage.createFreeAccount')}
                 </Link>
                 <Link
                   to="/auth/login"
                   className="px-6 py-3 bg-white text-[#5EA3C0] font-semibold rounded-full border-2 border-[#5EA3C0] hover:bg-blue-50 transition-colors"
                 >
-                  Se connecter
+                  {t('searchPage.login')}
                 </Link>
               </div>
             </div>
@@ -278,10 +279,10 @@ export default function SearchPage() {
           <div className="text-center py-12">
             <Search className="w-16 h-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              Aucun résultat trouvé
+              {t('searchPage.noResults')}
             </h3>
             <p className="text-gray-600 mb-4">
-              Essayez de modifier vos critères de recherche ou vos filtres.
+              {t('searchPage.noResultsDesc')}
             </p>
             <button
               onClick={() => {
@@ -297,7 +298,7 @@ export default function SearchPage() {
               }}
               className="text-[#5EA3C0] hover:text-[#4A8299] font-medium"
             >
-              Réinitialiser les filtres
+              {t('searchPage.resetFilters')}
             </button>
           </div>
         )}

@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { SearchFilters, SearchResult, SearchState } from '../types'
 import { searchJobs } from '../../../api/jobOffers'
 import type { AdzunaJobDto } from '../types/job'
@@ -7,8 +8,8 @@ import { enhanceSearchKeyword } from '../utils/keywordTranslation'
 const mockResults: SearchResult[] = [
   {
     id: '1',
-    title: 'Développeur Full-Stack - Startup Tech Toronto',
-    description: 'Rejoignez une startup innovante en pleine croissance. Stack: React, Node.js, PostgreSQL. Télétravail possible.',
+    title: 'Full-Stack Developer - Tech Startup Toronto',
+    description: 'Join an innovative fast-growing startup. Stack: React, Node.js, PostgreSQL. Remote possible.',
     category: 'emploi',
     country: 'Canada',
     city: 'Toronto',
@@ -17,15 +18,15 @@ const mockResults: SearchResult[] = [
     date: '2024-01-15',
     image: 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=500',
     link: '#',
-    tags: ['React', 'Node.js', 'Startup', 'Télétravail'],
+    tags: ['React', 'Node.js', 'Startup', 'Remote'],
     rating: 4.8,
     provider: 'TechJobs Canada',
-    urgency: 'haute'
+    urgency: 'high'
   },
   {
     id: '2',
-    title: 'Appartement 2 pièces - Centre-ville Paris',
-    description: 'Magnifique appartement rénové dans le 3ème arrondissement. Métro à 2 min, toutes commodités.',
+    title: '2-Room Apartment - Downtown Paris',
+    description: 'Beautiful renovated apartment in the 3rd arrondissement. Metro 2 min away, all amenities.',
     category: 'logement',
     country: 'France',
     city: 'Paris',
@@ -34,15 +35,15 @@ const mockResults: SearchResult[] = [
     date: '2024-01-14',
     image: 'https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=500',
     link: '#',
-    tags: ['Meublé', 'Métro', 'Centre-ville'],
+    tags: ['Furnished', 'Metro', 'Downtown'],
     rating: 4.5,
     provider: 'SeLoger',
-    urgency: 'moyenne'
+    urgency: 'medium'
   },
   {
     id: '3',
-    title: 'Guide des transports publics à Berlin',
-    description: 'Tout savoir sur le système de transport berlinois : métro, bus, trams. Tarifs, abonnements, cartes.',
+    title: 'Public Transport Guide in Berlin',
+    description: 'Everything about the Berlin transport system: metro, bus, trams. Fares, passes, cards.',
     category: 'transport',
     country: 'Allemagne',
     city: 'Berlin',
@@ -52,27 +53,27 @@ const mockResults: SearchResult[] = [
     tags: ['U-Bahn', 'S-Bahn', 'BVG', 'Guide'],
     rating: 4.9,
     provider: 'Berlin Guide',
-    urgency: 'faible'
+    urgency: 'low'
   },
   {
     id: '4',
-    title: 'Ouverture de compte bancaire en Suisse',
-    description: 'Procédure complète pour ouvrir un compte bancaire en Suisse. Documents requis, banques recommandées.',
+    title: 'Opening a Bank Account in Switzerland',
+    description: 'Complete procedure to open a bank account in Switzerland. Required documents, recommended banks.',
     category: 'administration',
     country: 'Suisse',
     city: 'Zurich',
     date: '2024-01-12',
     image: 'https://images.unsplash.com/photo-1553729459-efe14ef6055d?w=500',
     link: '#',
-    tags: ['Banque', 'Administration', 'Documents'],
+    tags: ['Bank', 'Administration', 'Documents'],
     rating: 4.7,
     provider: 'Swiss Info',
-    urgency: 'haute'
+    urgency: 'high'
   },
   {
     id: '5',
-    title: 'Assurance santé privée - Canada',
-    description: 'Comparatif des meilleures assurances santé privées au Canada. Couverture, tarifs, procédures.',
+    title: 'Private Health Insurance - Canada',
+    description: 'Comparison of the best private health insurances in Canada. Coverage, rates, procedures.',
     category: 'sante',
     country: 'Canada',
     city: 'Montreal',
@@ -81,15 +82,15 @@ const mockResults: SearchResult[] = [
     date: '2024-01-11',
     image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=500',
     link: '#',
-    tags: ['Assurance', 'Santé', 'Privé'],
+    tags: ['Insurance', 'Health', 'Private'],
     rating: 4.6,
     provider: 'HealthGuide CA',
-    urgency: 'moyenne'
+    urgency: 'medium'
   },
   {
     id: '6',
-    title: 'Ingénieur Logiciel - Fintech Zurich',
-    description: 'Opportunité unique dans une fintech leader. Technologies modernes, équipe internationale, salaire attractif.',
+    title: 'Software Engineer - Fintech Zurich',
+    description: 'Unique opportunity in a leading fintech. Modern technologies, international team, attractive salary.',
     category: 'emploi',
     country: 'Suisse',
     city: 'Zurich',
@@ -101,12 +102,12 @@ const mockResults: SearchResult[] = [
     tags: ['Fintech', 'Java', 'International'],
     rating: 4.9,
     provider: 'Swiss Jobs',
-    urgency: 'haute'
+    urgency: 'high'
   },
   {
     id: '7',
-    title: 'Studio meublé - Londres Shoreditch',
-    description: 'Studio moderne dans le quartier branché de Shoreditch. Proche transports, commerces et vie nocturne.',
+    title: 'Furnished Studio - London Shoreditch',
+    description: 'Modern studio in the trendy Shoreditch neighborhood. Near transport, shops, and nightlife.',
     category: 'logement',
     country: 'Royaume-Uni',
     city: 'Londres',
@@ -115,15 +116,15 @@ const mockResults: SearchResult[] = [
     date: '2024-01-09',
     image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=500',
     link: '#',
-    tags: ['Studio', 'Meublé', 'Shoreditch', 'Métro'],
+    tags: ['Studio', 'Furnished', 'Shoreditch', 'Metro'],
     rating: 4.4,
     provider: 'Rightmove',
-    urgency: 'haute'
+    urgency: 'high'
   },
   {
     id: '8',
-    title: 'Chef de Projet Digital - Paris La Défense',
-    description: 'Grande entreprise recherche chef de projet expérimenté. Gestion d\'équipe, projets innovants, CDI.',
+    title: 'Digital Project Manager - Paris La Défense',
+    description: 'Large company looking for experienced project manager. Team management, innovative projects, permanent contract.',
     category: 'emploi',
     country: 'France',
     city: 'Paris',
@@ -132,15 +133,15 @@ const mockResults: SearchResult[] = [
     date: '2024-01-08',
     image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=500',
     link: '#',
-    tags: ['Management', 'Digital', 'CDI'],
+    tags: ['Management', 'Digital', 'Permanent'],
     rating: 4.6,
     provider: 'Indeed France',
-    urgency: 'moyenne'
+    urgency: 'medium'
   },
   {
     id: '9',
-    title: 'Guide expatriation au Royaume-Uni',
-    description: 'Tout ce qu\'il faut savoir pour s\'installer au UK : visa, logement, santé, banque, impôts.',
+    title: 'UK Expatriation Guide',
+    description: 'Everything you need to know to settle in the UK: visa, housing, health, bank, taxes.',
     category: 'administration',
     country: 'Royaume-Uni',
     city: 'Londres',
@@ -150,12 +151,12 @@ const mockResults: SearchResult[] = [
     tags: ['Guide', 'Visa', 'NHS', 'Administration'],
     rating: 4.8,
     provider: 'UK Expat Guide',
-    urgency: 'faible'
+    urgency: 'low'
   },
   {
     id: '10',
-    title: 'Colocation 3 chambres - Genève centre',
-    description: 'Chambre dans colocation internationale. Quartier calme, proche ONU et transports. Charges incluses.',
+    title: '3-Bedroom Flatshare - Geneva Center',
+    description: 'Room in international flatshare. Quiet neighborhood, near UN and transport. Charges included.',
     category: 'logement',
     country: 'Suisse',
     city: 'Genève',
@@ -164,40 +165,40 @@ const mockResults: SearchResult[] = [
     date: '2024-01-06',
     image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=500',
     link: '#',
-    tags: ['Colocation', 'International', 'Centre-ville'],
+    tags: ['Flatshare', 'International', 'Downtown'],
     rating: 4.3,
     provider: 'WG-Zimmer',
-    urgency: 'moyenne'
+    urgency: 'medium'
   },
   {
     id: '11',
-    title: 'Transports publics à Paris : Guide complet',
-    description: 'Métro, RER, bus, tram : tout savoir sur les transports parisiens. Tarifs Navigo, zones, horaires.',
+    title: 'Public Transport in Paris: Complete Guide',
+    description: 'Metro, RER, bus, tram: everything about Parisian transport. Navigo fares, zones, schedules.',
     category: 'transport',
     country: 'France',
     city: 'Paris',
     date: '2024-01-05',
     image: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=500',
     link: '#',
-    tags: ['Métro', 'RER', 'Navigo', 'RATP'],
+    tags: ['Metro', 'RER', 'Navigo', 'RATP'],
     rating: 4.7,
     provider: 'Paris Transport Guide',
-    urgency: 'faible'
+    urgency: 'low'
   },
   {
     id: '12',
-    title: 'Système de santé britannique (NHS)',
-    description: 'Comprendre le NHS : inscription, médecin traitant, consultations, urgences, pharmacies.',
+    title: 'British Health System (NHS)',
+    description: 'Understanding the NHS: registration, GP, consultations, emergencies, pharmacies.',
     category: 'sante',
     country: 'Royaume-Uni',
     city: 'Londres',
     date: '2024-01-04',
     image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=500',
     link: '#',
-    tags: ['NHS', 'Santé', 'GP', 'Gratuit'],
+    tags: ['NHS', 'Health', 'GP', 'Free'],
     rating: 4.5,
     provider: 'NHS Guide',
-    urgency: 'haute'
+    urgency: 'high'
   }
 ]
 
@@ -209,7 +210,9 @@ const defaultFilters: SearchFilters = {
   priceRange: [0, 10000],
   dateRange: ['', ''],
   sortBy: 'relevance',
-  sortOrder: 'desc'
+  sortOrder: 'desc',
+  contractType: [],
+  maxDaysOld: undefined
 }
 
 const countryToAdzunaCode: Record<string, string> = {
@@ -221,14 +224,14 @@ const countryToAdzunaCode: Record<string, string> = {
   'Royaume-Uni': 'gb'
 }
 
-function convertAdzunaJobToSearchResult(job: AdzunaJobDto): SearchResult {
+function convertAdzunaJobToSearchResult(job: AdzunaJobDto, t: (key: string) => string): SearchResult {
   return {
     id: job.id,
     title: job.title,
     description: job.description,
     category: 'emploi',
     country: job.location.country,
-    city: job.location.city || 'Non spécifié',
+    city: job.location.city || t('searchPage.notSpecified'),
     price: job.salary?.min,
     currency: job.salary?.currency,
     date: job.created_at,
@@ -242,11 +245,12 @@ function convertAdzunaJobToSearchResult(job: AdzunaJobDto): SearchResult {
     ].filter(Boolean),
     rating: undefined,
     provider: 'Adzuna',
-    urgency: 'moyenne' as const
+    urgency: 'medium' as const
   };
 }
 
 export default function useSearch() {
+  const { t, i18n } = useTranslation()
   const [state, setState] = useState<SearchState>({
     filters: defaultFilters,
     results: [],
@@ -263,7 +267,7 @@ export default function useSearch() {
   useEffect(() => {
     const recentSearches = JSON.parse(localStorage.getItem('skywalk-recent-searches') || '[]')
     const savedFilters = JSON.parse(localStorage.getItem('skywalk-saved-filters') || '[]')
-    
+
     setState(prev => ({
       ...prev,
       recentSearches,
@@ -280,8 +284,8 @@ export default function useSearch() {
   }, [])
 
   const search = useCallback(async () => {
-    setState(prev => ({ 
-      ...prev, 
+    setState(prev => ({
+      ...prev,
       isLoading: true,
       currentPage: 1,
       results: [],
@@ -295,26 +299,26 @@ export default function useSearch() {
       if (category === 'emploi') {
         try {
           const adzunaCountryCode = country ? countryToAdzunaCode[country] : undefined;
-          const enhancedKeyword = enhanceSearchKeyword(query || '', country);
-          
-          console.log('🔍 Search params:', {
-            original: query,
-            enhanced: enhancedKeyword,
-            country: country,
-            countryCode: adzunaCountryCode,
-          });
-          
+          const enhancedKeyword = enhanceSearchKeyword(query || '', country, i18n.language);
+
           const jobSearchParams = {
             country: adzunaCountryCode || undefined,
             city: city || undefined,
             keyword: enhancedKeyword || undefined,
             page: 1,
             resultsPerPage: 20,
-            sortBy: state.filters.sortBy as 'relevance' | 'date' | 'salary' || 'relevance'
+            sortBy: (state.filters.sortBy as 'relevance' | 'date' | 'salary') || 'relevance',
+            salaryMin: priceRange[0] > 0 ? priceRange[0] : undefined,
+            salaryMax: priceRange[1] < 10000 ? priceRange[1] : undefined,
+            fullTime: state.filters.contractType?.includes('full_time'),
+            partTime: state.filters.contractType?.includes('part_time'),
+            contract: state.filters.contractType?.includes('contract'),
+            permanent: state.filters.contractType?.includes('permanent'),
+            max_days_old: state.filters.maxDaysOld
           };
 
           const adzunaResponse = await searchJobs(jobSearchParams);
-          filteredResults = adzunaResponse.results.map(convertAdzunaJobToSearchResult);
+          filteredResults = adzunaResponse.results.map(job => convertAdzunaJobToSearchResult(job, t));
 
           setState(prev => ({
             ...prev,
@@ -333,7 +337,7 @@ export default function useSearch() {
 
           return;
         } catch (error) {
-          console.error('Erreur lors de la recherche Adzuna:', error);
+          console.error('Adzuna search error:', error);
           filteredResults = mockResults.filter(result => result.category === 'emploi');
         }
       } else {
@@ -386,9 +390,9 @@ export default function useSearch() {
           case 'relevance':
           default: {
             const scoreA = (a.title.toLowerCase().includes(query.toLowerCase()) ? 2 : 0) +
-                          (a.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase())) ? 1 : 0)
+              (a.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase())) ? 1 : 0)
             const scoreB = (b.title.toLowerCase().includes(query.toLowerCase()) ? 2 : 0) +
-                          (b.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase())) ? 1 : 0)
+              (b.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase())) ? 1 : 0)
             comparison = scoreB - scoreA
           }
         }
@@ -411,7 +415,7 @@ export default function useSearch() {
       }
 
     } catch (error) {
-      console.error('Erreur lors de la recherche:', error)
+      console.error('Search error:', error)
       setState(prev => ({
         ...prev,
         results: [],
@@ -419,7 +423,7 @@ export default function useSearch() {
         isLoading: false
       }))
     }
-  }, [state.filters])
+  }, [state.filters, t, i18n.language])
 
   const loadMore = useCallback(async () => {
     if (isLoadingMoreRef.current || !state.hasMore || state.isLoading) {
@@ -437,7 +441,7 @@ export default function useSearch() {
 
       const nextPage = state.currentPage + 1;
       const adzunaCountryCode = country ? countryToAdzunaCode[country] : undefined;
-      const enhancedKeyword = enhanceSearchKeyword(query || '', country);
+      const enhancedKeyword = enhanceSearchKeyword(query || '', country, i18n.language);
 
       const jobSearchParams = {
         country: adzunaCountryCode || undefined,
@@ -445,11 +449,11 @@ export default function useSearch() {
         keyword: enhancedKeyword || undefined,
         page: nextPage,
         resultsPerPage: 20,
-        sortBy: state.filters.sortBy as 'relevance' | 'date' | 'salary' || 'relevance'
+        sortBy: (state.filters.sortBy as 'relevance' | 'date' | 'salary') || 'relevance'
       };
 
       const adzunaResponse = await searchJobs(jobSearchParams);
-      const newResults = adzunaResponse.results.map(convertAdzunaJobToSearchResult);
+      const newResults = adzunaResponse.results.map(job => convertAdzunaJobToSearchResult(job, t));
 
       setState(prev => ({
         ...prev,
@@ -459,11 +463,11 @@ export default function useSearch() {
       }));
 
     } catch (error) {
-      console.error('Erreur lors du chargement de plus de résultats:', error);
+      console.error('Load more results error:', error);
     } finally {
       isLoadingMoreRef.current = false;
     }
-  }, [state.filters, state.currentPage, state.hasMore, state.isLoading])
+  }, [state.filters, state.currentPage, state.hasMore, state.isLoading, t, i18n.language])
 
   const isFirstRenderRef = useRef(true)
   useEffect(() => {
@@ -471,7 +475,7 @@ export default function useSearch() {
       isFirstRenderRef.current = false
       return
     }
-    
+
     search()
   }, [state.filters.category, state.filters.country, state.filters.city, state.filters.query, search])
 
@@ -480,7 +484,7 @@ export default function useSearch() {
     const newFilter = { name, filters: state.filters, date: new Date().toISOString() }
     const updatedFilters = [newFilter, ...savedFilters.filter((item: { name: string }) => item.name !== name)].slice(0, 5)
     localStorage.setItem('skywalk-saved-filters', JSON.stringify(updatedFilters))
-    
+
     setState(prev => ({
       ...prev,
       savedFilters: updatedFilters

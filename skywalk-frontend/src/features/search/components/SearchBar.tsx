@@ -1,5 +1,6 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { Search, X, Clock, MapPin } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 interface SearchBarProps {
   initialQuery?: string
@@ -7,22 +8,23 @@ interface SearchBarProps {
   placeholder?: string
 }
 
-const recentSearches = [
-  'Emploi développeur Toronto',
-  'Logement Paris centre',
-  'Transport public Berlin',
-  'Assurance santé Canada'
-]
-
-const popularSearches = [
-  'Emploi informatique',
-  'Appartement 2 pièces',
-  'Visa de travail',
-  'Compte bancaire',
-  'Permis de conduire'
-]
-
 export default function SearchBar({ initialQuery = '', onSearch, placeholder }: SearchBarProps) {
+  const { t } = useTranslation()
+
+  const recentSearches = useMemo(() => [
+    t('searchPage.recentSearchItems.devToronto'),
+    t('searchPage.recentSearchItems.housingParis'),
+    t('searchPage.recentSearchItems.transportBerlin'),
+    t('searchPage.recentSearchItems.healthCanada')
+  ], [t])
+
+  const popularSearches = useMemo(() => [
+    t('searchPage.popularSearchItems.itJobs'),
+    t('searchPage.popularSearchItems.apartment'),
+    t('searchPage.popularSearchItems.workVisa'),
+    t('searchPage.popularSearchItems.bankAccount'),
+    t('searchPage.popularSearchItems.driverLicense')
+  ], [t])
   const [query, setQuery] = useState(initialQuery)
   const [isFocused, setIsFocused] = useState(false)
   const [suggestions, setSuggestions] = useState<string[]>([])
@@ -37,7 +39,7 @@ export default function SearchBar({ initialQuery = '', onSearch, placeholder }: 
     } else {
       setSuggestions([])
     }
-  }, [query])
+  }, [query, recentSearches, popularSearches])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -95,7 +97,7 @@ export default function SearchBar({ initialQuery = '', onSearch, placeholder }: 
           {suggestions.length > 0 && (
             <div className="p-2">
               <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide px-3 py-2">
-                Suggestions
+                {t('searchPage.suggestions')}
               </div>
               {suggestions.map((suggestion, index) => (
                 <button
@@ -114,7 +116,7 @@ export default function SearchBar({ initialQuery = '', onSearch, placeholder }: 
             <>
               <div className="p-2 border-t border-gray-100">
                 <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide px-3 py-2">
-                  Recherches récentes
+                  {t('searchPage.recentSearches')}
                 </div>
                 {recentSearches.slice(0, 4).map((search, index) => (
                   <button
@@ -130,7 +132,7 @@ export default function SearchBar({ initialQuery = '', onSearch, placeholder }: 
 
               <div className="p-2 border-t border-gray-100">
                 <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide px-3 py-2">
-                  Recherches populaires
+                  {t('searchPage.popularSearchesList')}
                 </div>
                 {popularSearches.slice(0, 5).map((search, index) => (
                   <button

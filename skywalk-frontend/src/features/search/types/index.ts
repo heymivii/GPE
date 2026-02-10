@@ -7,6 +7,8 @@ export interface SearchFilters {
   dateRange: [string, string]
   sortBy: string
   sortOrder: 'asc' | 'desc'
+  contractType: string[]
+  maxDaysOld?: number
 }
 
 export interface SearchResult {
@@ -24,7 +26,7 @@ export interface SearchResult {
   tags: string[]
   rating?: number
   provider: string
-  urgency: 'haute' | 'moyenne' | 'faible'
+  urgency: 'high' | 'medium' | 'low'
 }
 
 export interface Category {

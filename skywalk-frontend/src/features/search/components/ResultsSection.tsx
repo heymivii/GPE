@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Star, MapPin, Clock, ExternalLink, Heart, Share2, Calendar, Euro } from 'lucide-react'
+import { Star, MapPin, ExternalLink, Heart, Share2, Calendar, Euro } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import type { SearchResult } from '../types'
 import JobCard from './JobCard'
 
@@ -19,13 +20,14 @@ const categoryColors = {
 }
 
 const urgencyColors = {
-  haute: 'bg-red-100 text-red-800',
-  moyenne: 'bg-yellow-100 text-yellow-800',
-  faible: 'bg-gray-100 text-gray-800'
+  high: 'bg-red-100 text-red-800',
+  medium: 'bg-yellow-100 text-yellow-800',
+  low: 'bg-gray-100 text-gray-800'
 }
 
 function ResultCard({ result, viewMode }: { result: SearchResult; viewMode: 'grid' | 'list' }) {
   const [isFavorited, setIsFavorited] = useState(false)
+  const { t } = useTranslation()
 
   const handleFavorite = () => {
     setIsFavorited(!isFavorited)
@@ -59,10 +61,10 @@ function ResultCard({ result, viewMode }: { result: SearchResult; viewMode: 'gri
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${categoryColors[result.category]}`}>
-                  {result.category}
+                  {t(`searchPage.filter.categories.${result.category}`)}
                 </span>
                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${urgencyColors[result.urgency]}`}>
-                  {result.urgency}
+                  {t(`searchPage.urgency.${result.urgency}`)}
                 </span>
                 {result.rating && (
                   <div className="flex items-center gap-1">
@@ -87,18 +89,18 @@ function ResultCard({ result, viewMode }: { result: SearchResult; viewMode: 'gri
                 </div>
                 <div className="flex items-center gap-1">
                   <Calendar className="w-4 h-4" />
-                  <span>{new Date(result.date).toLocaleDateString('fr-FR')}</span>
+                  <span>{new Date(result.date).toLocaleDateString()}</span>
                 </div>
                 {result.price && (
                   <div className="flex items-center gap-1">
                     <Euro className="w-4 h-4" />
-                    <span>{result.price.toLocaleString('fr-FR')} {result.currency}</span>
+                    <span>{result.price.toLocaleString()} {result.currency}</span>
                   </div>
                 )}
               </div>
 
               <div className="flex items-center gap-2">
-                <span className="text-xs text-gray-500">Par {result.provider}</span>
+                <span className="text-xs text-gray-500">{t('searchPage.by', { provider: result.provider })}</span>
                 {result.tags.slice(0, 3).map((tag, index) => (
                   <span key={index} className="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs">
                     {tag}
@@ -129,7 +131,7 @@ function ResultCard({ result, viewMode }: { result: SearchResult; viewMode: 'gri
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium"
               >
-                <span>Voir détails</span>
+                <span>{t('searchPage.viewDetails')}</span>
                 <ExternalLink className="w-4 h-4" />
               </a>
             </div>
@@ -162,10 +164,10 @@ function ResultCard({ result, viewMode }: { result: SearchResult; viewMode: 'gri
       <div className="p-4">
         <div className="flex items-center gap-2 mb-2">
           <span className={`px-2 py-1 rounded-full text-xs font-medium ${categoryColors[result.category]}`}>
-            {result.category}
+            {t(`searchPage.filter.categories.${result.category}`)}
           </span>
           <span className={`px-2 py-1 rounded-full text-xs font-medium ${urgencyColors[result.urgency]}`}>
-            {result.urgency}
+            {t(`searchPage.urgency.${result.urgency}`)}
           </span>
         </div>
 
@@ -185,7 +187,7 @@ function ResultCard({ result, viewMode }: { result: SearchResult; viewMode: 'gri
           {result.price && (
             <div className="flex items-center gap-1 font-semibold text-gray-900">
               <Euro className="w-4 h-4" />
-              <span>{result.price.toLocaleString('fr-FR')}</span>
+              <span>{result.price.toLocaleString()}</span>
             </div>
           )}
         </div>
@@ -214,7 +216,7 @@ function ResultCard({ result, viewMode }: { result: SearchResult; viewMode: 'gri
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1 px-3 py-1 bg-black text-white rounded text-sm hover:bg-gray-800 transition-colors"
             >
-              <span>Voir</span>
+              <span>{t('searchPage.view')}</span>
               <ExternalLink className="w-3 h-3" />
             </a>
           </div>
@@ -225,6 +227,8 @@ function ResultCard({ result, viewMode }: { result: SearchResult; viewMode: 'gri
 }
 
 export default function ResultsSection({ results, isLoading, viewMode, onLoadMore }: ResultsSectionProps) {
+  const { t } = useTranslation()
+
   if (isLoading && results.length === 0) {
     return (
       <div className="space-y-4">
@@ -276,7 +280,7 @@ export default function ResultsSection({ results, isLoading, viewMode, onLoadMor
             disabled={isLoading}
             className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            {isLoading ? 'Chargement...' : 'Voir plus de résultats'}
+            {isLoading ? t('searchPage.loading') : t('searchPage.loadMore')}
           </button>
         </div>
       )}
