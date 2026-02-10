@@ -1,6 +1,11 @@
 # ==================================================
 # SkyWalk CI/CD Pipeline — GitLab CI
 # ==================================================
+# Tous les jobs sont en mode manuel (when: manual)
+# car aucun runner partagé n'est disponible sur ce GitLab.
+# Les jobs peuvent être déclenchés manuellement si un
+# runner est configuré ultérieurement.
+# ==================================================
 
 stages:
   - test
@@ -42,11 +47,8 @@ backend:lint:
     - npm ci --prefer-offline
   script:
     - npm run lint
-  rules:
-    - changes:
-        - backend/**/*
-    - when: manual
-      allow_failure: true
+  when: manual
+  allow_failure: true
 
 backend:test:
   stage: test
@@ -74,11 +76,8 @@ backend:test:
   script:
     - npm run test -- --passWithNoTests --forceExit
   coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
-  rules:
-    - changes:
-        - backend/**/*
-    - when: manual
-      allow_failure: true
+  when: manual
+  allow_failure: true
 
 frontend:lint:
   stage: test
@@ -89,11 +88,8 @@ frontend:lint:
     - npm ci --prefer-offline
   script:
     - npm run lint
-  rules:
-    - changes:
-        - skywalk-frontend/**/*
-    - when: manual
-      allow_failure: true
+  when: manual
+  allow_failure: true
 
 frontend:test:
   stage: test
@@ -105,11 +101,8 @@ frontend:test:
   script:
     - npm run test
   coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
-  rules:
-    - changes:
-        - skywalk-frontend/**/*
-    - when: manual
-      allow_failure: true
+  when: manual
+  allow_failure: true
 
 # ==================================================
 # STAGE: BUILD
@@ -128,11 +121,8 @@ backend:build:
     paths:
       - backend/dist/
     expire_in: 1 hour
-  rules:
-    - changes:
-        - backend/**/*
-    - when: manual
-      allow_failure: true
+  when: manual
+  allow_failure: true
 
 frontend:build:
   stage: build
@@ -147,11 +137,8 @@ frontend:build:
     paths:
       - skywalk-frontend/dist/
     expire_in: 1 hour
-  rules:
-    - changes:
-        - skywalk-frontend/**/*
-    - when: manual
-      allow_failure: true
+  when: manual
+  allow_failure: true
 
 # ==================================================
 # STAGE: DOCKER (uniquement sur develop et main)
@@ -168,11 +155,5 @@ docker:build:
     - docker info
   script:
     - docker compose build --no-cache
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_BRANCH == "main"'
-      changes:
-        - backend/Dockerfile
-        - skywalk-frontend/Dockerfile
-        - docker-compose.yml
-    - when: manual
-      allow_failure: true
+  when: manual
+  allow_failure: true
