@@ -16,7 +16,9 @@ import { CreateExpatriationProjectDto } from './dto/create-expatriation-project.
 import { UpdateExpatriationProjectDto } from './dto/update-expatriation-project.dto';
 import { UpdateChecklistProgressDto } from './dto/update-checklist-progress.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Expatriation Project')
 @Controller('expatriation-project')
 @UseGuards(JwtAuthGuard)
 export class ExpatriationProjectController {

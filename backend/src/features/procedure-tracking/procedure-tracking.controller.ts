@@ -1,9 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { ProcedureTrackingService } from './procedure-tracking.service';
 import { CreateProcedureTrackingDto } from './dto/create-procedure-tracking.dto';
 import { UpdateProcedureTrackingDto } from './dto/update-procedure-tracking.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
+@ApiTags('Procedure Tracking')
 @Controller('procedure-tracking')
+@UseGuards(JwtAuthGuard)
 export class ProcedureTrackingController {
   constructor(private readonly procedureTrackingService: ProcedureTrackingService) {}
 
