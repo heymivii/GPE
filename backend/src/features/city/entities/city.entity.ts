@@ -3,11 +3,11 @@ import { Country } from '../../country/entities/country.entity';
 
 @Entity({ name: 'city' })
 export class City {
-  @PrimaryGeneratedColumn({ name: 'city_id' })
-  city_id: number; 
+  @PrimaryGeneratedColumn({ name: 'id_city' })
+  city_id: number;
 
-  @Column({ name: 'name', type: 'varchar', length: 100 })
-  name: string; 
+  @Column({ name: 'city_name', type: 'varchar', length: 100 })
+  name: string;
 
   @Column({ name: 'latitude', type: 'numeric', precision: 10, scale: 8, nullable: true })
   latitude?: string;
@@ -19,7 +19,25 @@ export class City {
   population?: number;
 
   @ManyToOne(() => Country, { nullable: false })
-  @JoinColumn({ name: 'country_id'})
-  country: Country; 
+  @JoinColumn({ name: 'id_country' })
+  country: Country;
+
+  @Column({ name: 'slug', type: 'varchar', length: 150, unique: true, nullable: true })
+  slug: string;
+
+  @Column({ name: 'timezone', type: 'varchar', length: 100, nullable: true })
+  timezone: string;
+
+  @Column({ name: 'is_capital', type: 'boolean', default: false })
+  isCapital: boolean;
+
+  @Column({ name: 'priority', type: 'int', default: 0 })
+  priority: number;
+
+  @Column({ name: 'image_url', type: 'text', nullable: true })
+  imageUrl: string;
+
+  @Column({ name: 'description', type: 'text', nullable: true })
+  description: string;
 }
 

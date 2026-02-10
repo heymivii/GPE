@@ -1,3 +1,19 @@
+export interface Country {
+  idCountry: number;
+  countryName: string;
+  isoCode: string;
+  currency?: string;
+  language?: string;
+  flagUrl?: string;
+  visaInfo?: string;
+  description?: string;
+  imageUrl?: string;
+  capital?: string;
+  continent?: {
+    idContinent: number;
+    continentName: string;
+  };
+}
 
 export interface DestinationStats {
   memberCount: number;
@@ -6,13 +22,102 @@ export interface DestinationStats {
   resourcesCount: number;
 }
 
-export interface Destination {
-  id: string;
+/* ── Cost of Living types (from JSONB cache) ── */
+
+export interface PriceRange {
+  avg: number;
+  min: number;
+  max: number;
+  currency: string;
+}
+
+export interface CostOfLivingCurrency {
+  code: string;
+  lastUpdated: string;
+  exchangeRates: Record<string, number>;
+}
+
+export interface CostOfLivingSummary {
+  averageSalary: number;
+  monthlyBudget: { avg: number; min: number; max: number };
+}
+
+export interface CostOfLivingHousing {
+  rent: {
+    oneBedroom: { cityCenter: PriceRange; outsideCenter: PriceRange };
+    threeBedroom: { cityCenter: PriceRange; outsideCenter: PriceRange };
+  };
+  buy: {
+    pricePerSqm: { cityCenter: PriceRange; outsideCenter: PriceRange };
+  };
+}
+
+export interface CostOfLivingRestaurants {
+  inexpensiveMeal: PriceRange;
+  midRangeMeal2People: PriceRange;
+  mcMeal: PriceRange;
+  cappuccino: PriceRange;
+  cocaCola: PriceRange;
+  domesticBeer: PriceRange;
+  importedBeer: PriceRange;
+}
+
+export interface CostOfLivingTransportation {
+  publicTransport: { monthlyPass: PriceRange; oneWayTicket: PriceRange };
+  taxi: { start: PriceRange; per1km: PriceRange; waitingHour: PriceRange };
+  personal: { gasoline1L: PriceRange; newCar: PriceRange };
+}
+
+export interface CostOfLivingData {
+  city: { id: number; name: string; country: string };
+  summary: CostOfLivingSummary;
+  currency: CostOfLivingCurrency;
+  categories: {
+    housing: CostOfLivingHousing;
+    restaurants: CostOfLivingRestaurants;
+    transportation: CostOfLivingTransportation;
+    food: { markets: Record<string, PriceRange> };
+    utilities: { basic85m2: PriceRange; internet: PriceRange; mobileMinute: PriceRange };
+    clothing: Record<string, PriceRange>;
+    childcare: Record<string, PriceRange>;
+    sports: Record<string, PriceRange>;
+    salary: { averageMonthly: PriceRange; mortgageRate: { avg: number; min: number; max: number } };
+  };
+}
+
+// Rename the old "Destination" (which was a City) to CityDestination
+export interface CityDestination {
+  city_id?: number; // Backend uses city_id or id
+  id?: number;
   name: string;
   slug: string;
-  flagEmoji: string;
-  continent: string;
-  description: string;
-  stats: DestinationStats;
-  highlights: string[];
+  latitude?: string;
+  longitude?: string;
+  population?: number;
+  timezone?: string;
+  isCapital: boolean;
+  priority: number;
+  imageUrl?: string;
+  description?: string;
+  country: Country;
+  costOfLiving?: CostOfLivingData | null;
+
+  // Computed fields for UI compatibility
+  stats?: DestinationStats;
+  highlights?: string[];
+}
+
+// New type for the Country Card on the main page
+export interface CountryDestination extends Country {
+  stats?: DestinationStats;
+}
+
+// New type for the Country Detail page
+export interface CountryDetail extends CountryDestination {
+  cities: CityDestination[];
+  costOfLiving?: {
+    averageHousing: string | null;
+    currency: string;
+  };
+  administrativeProcedures?: { id: number; title: string; description?: string }[];
 }
