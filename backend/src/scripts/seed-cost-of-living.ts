@@ -9,10 +9,6 @@ const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY;
 const RAPIDAPI_HOST = process.env.RAPIDAPI_HOST;
 const CACHE_TTL_DAYS = 30;
 
-/**
- * Villes MVP à seeder (doivent exister dans la table city)
- * apiName = nom reconnu par l'API RapidAPI (peut différer du nom en BDD)
- */
 const targetCities = [
   { cityName: 'Paris', countryName: 'France', apiName: 'Paris' },
   { cityName: 'Lyon', countryName: 'France', apiName: 'Lyon' },
@@ -51,7 +47,6 @@ async function seedCostOfLiving() {
     const cityRepo = AppDataSource.getRepository(City);
     const cleaner = new CostOfLivingCleanerService();
 
-    // Create the cache table if it doesn't exist
     await AppDataSource.query(`
       CREATE TABLE IF NOT EXISTS cost_of_living_cache (
         id SERIAL PRIMARY KEY,
@@ -72,7 +67,6 @@ async function seedCostOfLiving() {
     for (const target of targetCities) {
       console.log(`📍 Processing ${target.cityName}, ${target.countryName}...`);
 
-      // 1. Find city in DB
       const city = await cityRepo.findOne({
         where: { name: target.cityName },
         relations: ['country'],
@@ -85,7 +79,6 @@ async function seedCostOfLiving() {
       }
       console.log(`   Found city: ${city.name} (id=${city.city_id})`);
 
-      // 1b. Check if already cached (skip if valid cache exists)
       const existing = await AppDataSource.query(
         `SELECT id, expires_at FROM cost_of_living_cache WHERE city_id = $1 AND expires_at > NOW()`,
         [city.city_id],
@@ -96,7 +89,6 @@ async function seedCostOfLiving() {
         continue;
       }
 
-      // 2. Fetch from RapidAPI
       try {
         console.log(`   🌐 Calling API for "${target.apiName}, ${target.countryName}"...`);
         const rawData = await fetchFromApi(target.apiName, target.countryName);
@@ -109,11 +101,9 @@ async function seedCostOfLiving() {
 
         console.log(`   📊 Received ${rawData.prices?.length || 0} price items`);
 
-        // 3. Clean data
         const cleanedData = cleaner.cleanData(rawData);
         console.log(`   🧹 Data cleaned. Monthly budget avg: ${cleanedData.summary?.monthlyBudget?.avg}`);
 
-        // 4. Upsert into cache
         const expiresAt = new Date(Date.now() + CACHE_TTL_DAYS * 24 * 60 * 60 * 1000);
 
         await AppDataSource.query(
@@ -132,7 +122,6 @@ async function seedCostOfLiving() {
         errorCount++;
       }
 
-      // 5. Respect rate limits (wait 2 seconds between calls)
       if (targetCities.indexOf(target) < targetCities.length - 1) {
         console.log('   ⏳ Waiting 2s (rate limit)...\n');
         await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -145,7 +134,6 @@ async function seedCostOfLiving() {
     console.log(`   ⏩ Skipped (already cached): ${skippedCount}`);
     console.log(`   ❌ Errors: ${errorCount}`);
 
-    // Show what's in cache
     const cacheRows = await AppDataSource.query(
       `SELECT c.city_id, ci.city_name, c.cached_at, c.expires_at
        FROM cost_of_living_cache c

@@ -9,7 +9,7 @@ import {
   ArrowLeft, Calendar, MapPin, Clock, Wallet, 
   Briefcase, GraduationCap, Heart, Globe, User, Users,
   CheckCircle2, AlertCircle, Trash2, Edit, Plane,
-  Target, Flag, XCircle, RotateCcw, PartyPopper
+  Target, Flag, XCircle, RotateCcw, PartyPopper,
 } from 'lucide-react';
 
 const STATUS_STYLES = {
@@ -319,6 +319,7 @@ export default function ProjectDetailPage() {
                 </div>
               </div>
             )}
+
           </div>
 
           <div className="space-y-6">

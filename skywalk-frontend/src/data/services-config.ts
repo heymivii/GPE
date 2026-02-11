@@ -14,7 +14,7 @@ export interface ServiceConfig {
   icon: React.ElementType;
   color: string;
   bgColor: string;
-  hasTools?: boolean; // Indique si le service a des outils interactifs
+  hasTools?: boolean;
   stats?: {
     label: string;
     value: string;
@@ -26,7 +26,7 @@ export interface ServiceConfig {
     question: string;
     answer: string;
   }[];
-  comingSoon?: boolean; // Indique que le service est à venir (grisé)
+  comingSoon?: boolean;
 }
 
 export const getServicesConfig = (t: TFunction): Record<string, ServiceConfig> => ({
@@ -38,7 +38,7 @@ export const getServicesConfig = (t: TFunction): Record<string, ServiceConfig> =
     icon: Briefcase,
     color: 'text-blue-600',
     bgColor: 'bg-blue-50',
-    hasTools: true, // ✅ A des outils (CV, Interview)
+    hasTools: true,
     stats: [
       { label: t('services.categories.emploi.stats.offers'), value: '2,500+' },
       { label: t('services.categories.emploi.stats.sectors'), value: '15' },
@@ -67,7 +67,7 @@ export const getServicesConfig = (t: TFunction): Record<string, ServiceConfig> =
     icon: Home,
     color: 'text-green-600',
     bgColor: 'bg-green-50',
-    hasTools: true, // ✅ A des outils (Budget, Dossier, Garantie)
+    hasTools: true,
     stats: [
       { label: t('services.categories.logement.stats.ads'), value: '1,800+' },
       { label: t('services.categories.logement.stats.cities'), value: '45' },
@@ -96,7 +96,7 @@ export const getServicesConfig = (t: TFunction): Record<string, ServiceConfig> =
     icon: Car,
     color: 'text-purple-600',
     bgColor: 'bg-purple-50',
-    hasTools: true, // ✅ A des outils (Coût, Permis, Véhicule)
+    hasTools: true,
     stats: [
       { label: t('services.categories.transport.stats.networks'), value: '120+' },
       { label: t('services.categories.transport.stats.passes'), value: '35' },
@@ -124,7 +124,7 @@ export const getServicesConfig = (t: TFunction): Record<string, ServiceConfig> =
     icon: Heart,
     color: 'text-red-600',
     bgColor: 'bg-red-50',
-    hasTools: true, // ✅ A des outils (Couverture, Dossier médical, Budget)
+    hasTools: true,
     stats: [
       { label: t('services.categories.sante.stats.professionals'), value: '5,000+' },
       { label: t('services.categories.sante.stats.languages'), value: '25' },
@@ -248,7 +248,6 @@ export const getServicesConfig = (t: TFunction): Record<string, ServiceConfig> =
     searchCategory: 'business',
   },
 
-  /* ── Coming Soon services ── */
 
   visa: {
     id: 'visa',
@@ -258,7 +257,7 @@ export const getServicesConfig = (t: TFunction): Record<string, ServiceConfig> =
     icon: Globe,
     color: 'text-cyan-600',
     bgColor: 'bg-cyan-50',
-    comingSoon: true,
+    hasTools: true,
     guides: [],
     tips: [],
   },
@@ -303,7 +302,6 @@ export const getServicesWithTools = (t: TFunction): ServiceConfig[] => {
   return Object.values(getServicesConfig(t)).filter(service => service.hasTools === true);
 };
 
-/** Services with tools + coming soon services (for the index page) */
 export const getServicesForIndex = (t: TFunction): ServiceConfig[] => {
   return Object.values(getServicesConfig(t)).filter(service => service.hasTools === true || service.comingSoon === true);
 };

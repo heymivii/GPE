@@ -7,9 +7,6 @@ import { useCurrency } from '../../../contexts/CurrencyContext';
 import CurrencySelector from '../../../components/CurrencySelector';
 import { getCountryMapping, getCurrentLocale } from '../../../data/supportedCountries';
 
-/* ------------------------------------------------------------------ */
-/*  Static health-system metadata (not available in cost-of-living API) */
-/* ------------------------------------------------------------------ */
 interface HealthSystemMeta {
   systemTypeKey: string;
   systemLabelKey: string;
@@ -132,19 +129,15 @@ export default function HealthStats({ countryName }: HealthStatsProps) {
   const same = isSameCurrency(localCur);
   const fp = (v?: number) => formatPrice(v, localCur, rates);
 
-  // Monthly budget from API
   const monthlyBudgetAvg = data.summary.monthlyBudget.avg;
   const avgSalary = data.summary.averageSalary;
 
-  // Insurance cost (static meta, expressed in local currency)
   const insuranceMonthly = meta.insuranceMonthlyLocal;
   const complementaryMonthly = meta.complementaryMonthlyLocal;
   const totalHealthMonthly = insuranceMonthly + complementaryMonthly;
 
-  // Childcare as a proxy for family health cost
   const preschool = data.categories.childcare?.preschool?.avg;
 
-  // Health % of salary estimate
   const healthPctOfSalary = avgSalary > 0 ? Math.round((totalHealthMonthly / avgSalary) * 100) : null;
 
   const HeadlinePrice = ({ value, suffix }: { value?: number; suffix?: string }) => (

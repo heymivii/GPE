@@ -15,11 +15,6 @@ export class CostOfLivingController {
     return this.costOfLivingService.getCostOfLiving(city, country);
   }
 
-  /**
-   * Seed the DB cache for all supported cities.
-   * Spaces API calls 4s apart to avoid 429 rate-limiting.
-   * POST /api/cost-of-living/seed
-   */
   @Post('seed')
   async seedCache() {
     return this.costOfLivingService.seedAllCities();

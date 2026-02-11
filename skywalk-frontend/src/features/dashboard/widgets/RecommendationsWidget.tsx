@@ -1,15 +1,36 @@
 import Widget from './Widget'
-import { Lightbulb, ExternalLink, Star, Users, Briefcase, MessageSquare } from 'lucide-react'
-import { useCountryData, type Recommendation } from '../../../hooks/useCountryData'
+import { Sparkles, ChevronRight, Shield, Zap, Clock, ArrowRight, Briefcase, GraduationCap, Home, Heart, Train, FileText, Users, Globe } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
-import { destinationsApi } from '../../../api/destinations'
-import React from 'react'
+import { countryApi } from '../../../api/country'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 import type { WidgetSize } from '../hooks/useDashboardPreferences'
+import type { ExpatriationProject } from '../../../types/expatriation-project'
+import { useProjectRecommendations } from '../../projects/hooks/useProjectRecommendations'
+import type { ReactNode } from 'react'
+
+const ICON_MAP: Record<string, ReactNode> = {
+  '🛂': <Shield className="w-4 h-4" />,
+  '💼': <Briefcase className="w-4 h-4" />,
+  '🎓': <GraduationCap className="w-4 h-4" />,
+  '🏠': <Home className="w-4 h-4" />,
+  '🏥': <Heart className="w-4 h-4" />,
+  '📋': <FileText className="w-4 h-4" />,
+  '🤝': <Users className="w-4 h-4" />,
+  '🚗': <Train className="w-4 h-4" />,
+  '🏦': <Globe className="w-4 h-4" />,
+  '🏢': <Briefcase className="w-4 h-4" />,
+  '🗣️': <GraduationCap className="w-4 h-4" />,
+}
+
+function resolveIcon(emoji: string): ReactNode {
+  return ICON_MAP[emoji] ?? <Zap className="w-4 h-4" />
+}
 
 interface RecommendationsWidgetProps {
   countryId?: number
   countryIsoCode?: string
+  activeProject?: ExpatriationProject
   onEdit?: () => void
   onHide?: () => void
   onResize?: (size: WidgetSize) => void
@@ -18,154 +39,157 @@ interface RecommendationsWidgetProps {
 
 export default function RecommendationsWidget({ 
   countryId,
-  countryIsoCode,
+  activeProject,
   onEdit, 
   onHide,
   onResize,
   currentSize,
 }: RecommendationsWidgetProps) {
   const { t } = useTranslation()
-  const countryData = useCountryData(countryId)
+  const navigate = useNavigate()
 
-  // Fetch real community stats from destinations API
-  const { data: destStats } = useQuery({
-    queryKey: ['destination-stats-widget', countryIsoCode],
-    queryFn: () => destinationsApi.getBySlug(countryIsoCode!),
-    enabled: !!countryIsoCode,
-    staleTime: 30 * 60 * 1000,
-    retry: 1,
+  const { data: country } = useQuery({
+    queryKey: ['country', countryId],
+    queryFn: () => countryApi.getById(countryId!),
+    enabled: !!countryId,
   })
 
-  const communityStats = destStats?.stats as { memberCount?: number; jobOffersCount?: number; forumTopicsCount?: number; resourcesCount?: number } | undefined
+  const recommendations = useProjectRecommendations(activeProject, country)
 
-  const recommendations: Recommendation[] = React.useMemo(() => {
-    if (countryData?.recommendations && typeof countryData.recommendations === 'object' && !Array.isArray(countryData.recommendations)) {
-      const recs: Recommendation[] = []
-      
-      if (countryData.recommendations.bestFor && Array.isArray(countryData.recommendations.bestFor)) {
-        recs.push({
-          title: t('dashboard.personalized.widgets.recommendations.categories.profile'),
-          importanceKey: 'recommendations.important',
-          description: t('dashboard.personalized.widgets.recommendations.categories.profileDesc', { profiles: countryData.recommendations.bestFor.join(', ') }),
-          category: t('recommendations.categoryProfile')
-        })
-      }
-      
-      if (countryData.recommendations.language) {
-        recs.push({
-          title: t('dashboard.personalized.widgets.recommendations.categories.language'),
-          importanceKey: 'recommendations.important',
-          description: countryData.recommendations.language,
-          category: t('recommendations.categoryLanguage')
-        })
-      }
-      
-      if (countryData.recommendations.visaDifficulty) {
-        const difficulty = countryData.recommendations.visaDifficulty.toLowerCase()
-        recs.push({
-          title: t('dashboard.personalized.widgets.recommendations.categories.visa'),
-          importanceKey: (difficulty.includes('élevée') || difficulty.includes('high') || difficulty.includes('difficile'))
-            ? 'recommendations.urgent'
-            : (difficulty.includes('moyenne') || difficulty.includes('medium'))
-              ? 'recommendations.important'
-              : 'recommendations.todo',
-          description: t('dashboard.personalized.widgets.recommendations.categories.visaDesc', { difficulty: countryData.recommendations.visaDifficulty.toLowerCase() }),
-          category: t('recommendations.categoryVisa')
-        })
-      }
-      
-      return recs
-    }
-    
-    if (countryData?.oldRecommendations && Array.isArray(countryData.oldRecommendations)) {
-      return countryData.oldRecommendations
-    }
-    
-    return []
-  }, [countryData, t])
-
-  const getPriorityColor = (importanceKey: string) => {
-    if (importanceKey.includes('urgent')) return 'text-red-600 bg-red-50'
-    if (importanceKey.includes('important')) return 'text-orange-600 bg-orange-50'
-    return 'text-green-600 bg-green-50'
-  }
+  const hasContent = !!(
+    activeProject &&
+    (recommendations.visa || recommendations.services.length > 0 || recommendations.actionPlan.length > 0)
+  )
 
   return (
-    <Widget title={t('dashboard.personalized.widgets.recommendations.title')} onEdit={onEdit} onHide={onHide} onResize={onResize} currentSize={currentSize}>
-      <div className="space-y-4">
-        {recommendations.length === 0 ? (
+    <Widget 
+      title={t('projectRecommendations.title')} 
+      icon={Sparkles}
+      iconColor="text-gray-600"
+      onEdit={onEdit} 
+      onHide={onHide} 
+      onResize={onResize} 
+      currentSize={currentSize}
+    >
+      <div className="space-y-5">
+        {!hasContent ? (
           <div className="text-center text-gray-500 py-8">
-            <Lightbulb className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-            <p>{t('dashboard.personalized.widgets.recommendations.emptyState')}</p>
+            <Sparkles className="w-10 h-10 mx-auto mb-3 text-gray-300" />
+            <p className="text-sm font-medium text-gray-600 mb-1">{t('projectRecommendations.title')}</p>
+            <p className="text-xs text-gray-400">{t('projectRecommendations.subtitle')}</p>
           </div>
         ) : (
-          recommendations.map((rec, index) => (
-            <div key={index} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center space-x-2 mb-2">
-                    <Lightbulb className="w-4 h-4 text-blue-600" />
-                    <h4 className="font-medium text-gray-900">{rec.title}</h4>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(rec.importanceKey)}`}>
-                      {t(rec.importanceKey)}
+          <>
+            {recommendations.visa && (
+              <div className="bg-gray-900 rounded-xl p-4 text-white">
+                <div className="flex items-center gap-2 mb-3">
+                  <Shield className="w-4 h-4 text-gray-400" />
+                  <h4 className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">
+                    {t('projectRecommendations.recommendedVisa')}
+                  </h4>
+                  <span className={`ml-auto text-[10px] px-2 py-0.5 rounded-full font-medium ${
+                    recommendations.visa.confidence === 'high'
+                      ? 'bg-white/15 text-white'
+                      : recommendations.visa.confidence === 'medium'
+                        ? 'bg-white/10 text-gray-300'
+                        : 'bg-white/5 text-gray-400'
+                  }`}>
+                    {t(`projectRecommendations.confidence.${recommendations.visa.confidence}`)}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2 mb-2">
+                  <Shield className="w-5 h-5 text-white" />
+                  <span className="font-bold text-white text-sm">
+                    {t(`visa.types.${recommendations.visa.visaType}`)}
+                  </span>
+                </div>
+
+                <p className="text-gray-400 text-xs mb-3 leading-relaxed">
+                  {t(recommendations.visa.reason, { country: country?.countryName })}
+                </p>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex gap-3 text-[10px] text-gray-500">
+                    <span className="flex items-center gap-1">
+                      <Clock className="w-3 h-3" /> {t(`visa.durations.${recommendations.visa.duration}`)}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Zap className="w-3 h-3" /> {t(`visa.timelines.${recommendations.visa.processing}`)}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-600 mb-3">{rec.description}</p>
-                  
-                  {rec.link && (
-                    <a 
-                      href={rec.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center text-sm text-blue-600 hover:text-blue-700"
-                    >
-                      {rec.linkText || t('dashboard.personalized.widgets.recommendations.learnMore')}
-                      <ExternalLink className="w-3 h-3 ml-1" />
-                    </a>
-                  )}
+                  <button
+                    onClick={() => navigate(`/services/visa?country=${recommendations.countryCode}`)}
+                    className="flex items-center gap-1 px-2.5 py-1 bg-white/10 hover:bg-white/20 rounded-md text-xs font-medium transition-colors"
+                  >
+                    {t('projectRecommendations.seeDetails')}
+                    <ChevronRight className="w-3 h-3" />
+                  </button>
                 </div>
-                
-                <button className="p-1 text-gray-400 hover:text-yellow-500">
-                  <Star className="w-4 h-4" />
-                </button>
               </div>
-            </div>
-          ))
-        )}
+            )}
 
-        {/* Live community stats from backend */}
-        {communityStats && (communityStats.memberCount || communityStats.jobOffersCount || communityStats.forumTopicsCount) && (
-          <div className="grid grid-cols-3 gap-3 pt-2">
-            {communityStats.memberCount != null && communityStats.memberCount > 0 && (
-              <div className="bg-indigo-50 rounded-lg p-3 text-center">
-                <Users className="w-4 h-4 text-indigo-600 mx-auto mb-1" />
-                <p className="text-lg font-bold text-gray-900">{communityStats.memberCount}</p>
-                <p className="text-[10px] text-gray-500">{t('dashboard.personalized.widgets.recommendations.members')}</p>
+            {recommendations.actionPlan.length > 0 && (
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <Zap className="w-4 h-4 text-gray-500" />
+                  <h4 className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+                    {t('projectRecommendations.actionPlan.title')}
+                  </h4>
+                </div>
+                <div className="space-y-2">
+                  {recommendations.actionPlan.slice(0, 5).map((step, index) => (
+                    <button
+                      key={step.id}
+                      onClick={() => step.link && navigate(step.link)}
+                      className="w-full border border-gray-200 rounded-lg p-3 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left group"
+                    >
+                      <div className="w-7 h-7 bg-gray-100 rounded-full flex items-center justify-center text-[10px] font-bold text-gray-500 shrink-0">
+                        {index + 1}
+                      </div>
+                      <div className="w-8 h-8 bg-gray-50 rounded-lg flex items-center justify-center text-gray-500 shrink-0">
+                        {resolveIcon(step.icon)}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900 truncate">{t(step.title)}</p>
+                        <p className="text-[11px] text-gray-400 truncate flex items-center gap-1">
+                          <Clock className="w-3 h-3" /> {t(step.timeline)}
+                        </p>
+                      </div>
+                      <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-gray-600 transition-colors shrink-0" />
+                    </button>
+                  ))}
+                </div>
               </div>
             )}
-            {communityStats.jobOffersCount != null && communityStats.jobOffersCount > 0 && (
-              <div className="bg-green-50 rounded-lg p-3 text-center">
-                <Briefcase className="w-4 h-4 text-green-600 mx-auto mb-1" />
-                <p className="text-lg font-bold text-gray-900">{communityStats.jobOffersCount.toLocaleString()}</p>
-                <p className="text-[10px] text-gray-500">{t('dashboard.personalized.widgets.recommendations.jobs')}</p>
-              </div>
-            )}
-            {communityStats.forumTopicsCount != null && communityStats.forumTopicsCount > 0 && (
-              <div className="bg-orange-50 rounded-lg p-3 text-center">
-                <MessageSquare className="w-4 h-4 text-orange-600 mx-auto mb-1" />
-                <p className="text-lg font-bold text-gray-900">{communityStats.forumTopicsCount}</p>
-                <p className="text-[10px] text-gray-500">{t('dashboard.personalized.widgets.recommendations.forumTopics')}</p>
-              </div>
-            )}
-          </div>
-        )}
 
-        {recommendations.length > 0 && (
-          <div className="pt-4 border-t border-gray-200 text-center">
-            <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">
-              {t('dashboard.personalized.widgets.recommendations.seeAll')}
-            </button>
-          </div>
+            {recommendations.services.length > 0 && (
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <Globe className="w-4 h-4 text-gray-500" />
+                  <h4 className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+                    {t('projectRecommendations.servicesTitle')}
+                  </h4>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {recommendations.services.slice(0, 6).map((svc) => (
+                    <button
+                      key={svc.id}
+                      onClick={() => navigate(svc.link)}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-medium transition-colors hover:bg-gray-50 ${
+                        svc.priority === 'high'
+                          ? 'border-gray-300 text-gray-900 bg-gray-50'
+                          : 'border-gray-200 text-gray-600'
+                      }`}
+                    >
+                      <span className="text-gray-500">{resolveIcon(svc.icon)}</span>
+                      {t(`projectRecommendations.serviceNames.${svc.id}`)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
     </Widget>

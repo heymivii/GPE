@@ -58,7 +58,6 @@ export class ForumMessageController {
     return this.forumMessageService.remove(+id);
   }
 
-  /* ────────── Moderation: Admin/Moderator delete any message ────────── */
 
   @Delete('moderate/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -67,7 +66,6 @@ export class ForumMessageController {
     return this.forumMessageService.moderatorRemove(+id);
   }
 
-  /* ────────── Reports ────────── */
 
   @Post('report')
   @UseGuards(JwtAuthGuard)

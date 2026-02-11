@@ -62,7 +62,6 @@ export default function TransportStats({ countryName }: TransportStatsProps) {
   const same = isSameCurrency(localCur);
   const fp = (v?: number) => formatPrice(v, localCur, rates);
 
-  // Key figures
   const gasoline = transport.personal.gasoline1L.avg;
   const monthlyPass = transport.publicTransport.monthlyPass.avg;
   const oneWayTicket = transport.publicTransport.oneWayTicket.avg;
@@ -71,7 +70,6 @@ export default function TransportStats({ countryName }: TransportStatsProps) {
   const taxiWait = transport.taxi.waitingHour.avg;
   const newCar = transport.personal.newCar.avg;
 
-  // Estimate monthly fuel budget: 100km/week × 4.33 weeks × 7L/100km × gasoline
   const monthlyFuelCost = Math.round((100 * 4.33 * 7 / 100) * gasoline);
 
   const HeadlinePrice = ({ value, prefix, suffix }: { value?: number; prefix?: string; suffix?: string }) => (

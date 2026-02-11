@@ -1,55 +1,55 @@
 
 export interface HealthSystemInfo {
-  type: 'public' | 'private' | 'mixed'; // Type de système
-  hasUniversalCoverage: boolean; // Couverture universelle ?
-  publicCostMonthly?: number; // Cotisation publique mensuelle en €
-  privateCostMonthly?: number; // Assurance privée moyenne en €
-  coPaymentRate?: number; // Taux de remboursement (0-100%)
-  emergencyFree: boolean; // Urgences gratuites ?
-  prescriptionSubsidized: boolean; // Médicaments remboursés ?
+  type: 'public' | 'private' | 'mixed';
+  hasUniversalCoverage: boolean;
+  publicCostMonthly?: number;
+  privateCostMonthly?: number;
+  coPaymentRate?: number;
+  emergencyFree: boolean;
+  prescriptionSubsidized: boolean;
 }
 
 export interface VaccinationRequirement {
-  name: string; // Nom du vaccin
-  required: boolean; // Obligatoire ?
-  recommended: boolean; // Recommandé ?
-  cost?: number; // Coût estimé en €
+  name: string;
+  required: boolean;
+  recommended: boolean;
+  cost?: number;
   notes?: string;
 }
 
 export interface HealthBudgetEstimate {
-  insurance: number; // Assurance mensuelle
-  consultations: number; // Consultations annuelles
-  medications: number; // Médicaments mensuels
-  dental: number; // Soins dentaires annuels
-  optical: number; // Optique annuel
-  emergency: number; // Urgences potentielles annuelles
+  insurance: number;
+  consultations: number;
+  medications: number;
+  dental: number;
+  optical: number;
+  emergency: number;
 }
 
 export const healthSystemByCountry: Record<string, HealthSystemInfo> = {
   france: {
     type: 'mixed',
     hasUniversalCoverage: true,
-    publicCostMonthly: 0, // Sécurité sociale via cotisations automatiques
-    privateCostMonthly: 70, // Mutuelle complémentaire moyenne 2025
-    coPaymentRate: 70, // 70% remboursé par sécurité sociale
+    publicCostMonthly: 0,
+    privateCostMonthly: 70,
+    coPaymentRate: 70,
     emergencyFree: true,
-    prescriptionSubsidized: true, // Remboursement selon tarif conventionné
+    prescriptionSubsidized: true,
   },
   canada: {
     type: 'public',
     hasUniversalCoverage: true,
-    publicCostMonthly: 0, // Via impôts
-    privateCostMonthly: 100, // Pour médicaments, dentaire, optique
-    coPaymentRate: 100, // Soins couverts à 100%
+    publicCostMonthly: 0,
+    privateCostMonthly: 100,
+    coPaymentRate: 100,
     emergencyFree: true,
-    prescriptionSubsidized: false, // Nécessite assurance privée
+    prescriptionSubsidized: false,
   },
   allemagne: {
     type: 'mixed',
     hasUniversalCoverage: true,
-    publicCostMonthly: 180, // Environ 14.6% du salaire
-    privateCostMonthly: 300, // Assurance privée
+    publicCostMonthly: 180,
+    privateCostMonthly: 300,
     coPaymentRate: 90,
     emergencyFree: true,
     prescriptionSubsidized: true,
@@ -64,22 +64,22 @@ export const healthSystemByCountry: Record<string, HealthSystemInfo> = {
     prescriptionSubsidized: true,
   },
   'royaume-uni': {
-    type: 'public', // NHS (National Health Service)
+    type: 'public',
     hasUniversalCoverage: true,
-    publicCostMonthly: 0, // NHS gratuit via impôts + IHS (£624/an pour visas)
-    privateCostMonthly: 81, // 70 GBP × 1.16 (pour éviter délais NHS)
-    coPaymentRate: 80, // NHS couvre ~80% en moyenne
-    emergencyFree: true, // Urgences NHS gratuites pour résidents
-    prescriptionSubsidized: true, // Prescriptions NHS ~£9.90 par item
+    publicCostMonthly: 0,
+    privateCostMonthly: 81,
+    coPaymentRate: 80,
+    emergencyFree: true,
+    prescriptionSubsidized: true,
   },
   suisse: {
-    type: 'mixed', // Assurance obligatoire privée (LAMal) + complémentaires
+    type: 'mixed',
     hasUniversalCoverage: true,
-    publicCostMonthly: 413, // 393.30 CHF × 1.05 = Prime LAMal moyenne 2026 (OBLIGATOIRE)
-    privateCostMonthly: 473, // 450 CHF × 1.05 = Complémentaires privées optionnelles
-    coPaymentRate: 90, // 90% remboursé après franchise + 10% quote-part (max 700 CHF/an)
-    emergencyFree: false, // Franchise + quote-part s'appliquent
-    prescriptionSubsidized: true, // Après franchise
+    publicCostMonthly: 413,
+    privateCostMonthly: 473,
+    coPaymentRate: 90,
+    emergencyFree: false,
+    prescriptionSubsidized: true,
   },
 };
 
@@ -98,33 +98,33 @@ export const vaccinationsByCountry: Record<string, VaccinationRequirement[]> = {
 
 export const healthBudgetByProfile: Record<string, HealthBudgetEstimate> = {
   young_healthy: {
-    insurance: 450, // 55€/mois mutuelle France (formule intermédiaire)
-    consultations: 80, // 2-3 consultations médecin généraliste
-    medications: 120, // Faible besoin médicaments
-    dental: 200, // Contrôle annuel + petits soins
-    optical: 80, // Peu de besoins
-    emergency: 0, // Rarement (inclus dans consultations)
+    insurance: 450,
+    consultations: 80,
+    medications: 120,
+    dental: 200,
+    optical: 80,
+    emergency: 0,
   },
   adult_average: {
-    insurance: 660, // 55€/mois mutuelle France
-    consultations: 120, // 4-5 consultations/an
-    medications: 180, // Besoins moyens
-    dental: 350, // Soins + détartrage
-    optical: 150, // Lunettes/lentilles
-    emergency: 0, // Inclus
+    insurance: 660,
+    consultations: 120,
+    medications: 180,
+    dental: 350,
+    optical: 150,
+    emergency: 0,
   },
   senior: {
-    insurance: 1200, // 100€/mois (mutuelle senior plus chère)
-    consultations: 200, // Suivi régulier 6-8 consultations/an
-    medications: 300, // Traitements plus fréquents
+    insurance: 1200,
+    consultations: 200,
+    medications: 300,
     dental: 400,
     optical: 200,
     emergency: 0,
   },
   chronic_condition: {
-    insurance: 900, // Mutuelle adaptée aux maladies chroniques
-    consultations: 250, // Suivi médical régulier
-    medications: 400, // Traitements réguliers (ALD 100% remboursée Sécu)
+    insurance: 900,
+    consultations: 250,
+    medications: 400,
     dental: 300,
     optical: 100,
     emergency: 0,
@@ -133,35 +133,35 @@ export const healthBudgetByProfile: Record<string, HealthBudgetEstimate> = {
 
 export const healthBudgetByProfileSwitzerland: Record<string, HealthBudgetEstimate> = {
   young_healthy: {
-    insurance: 4725, // 4500 CHF × 1.05 (LAMal obligatoire + franchise)
-    consultations: 158, // 150 CHF × 1.05
-    medications: 263, // 250 CHF × 1.05
-    dental: 315, // 300 CHF × 1.05 (NON couvert par LAMal)
-    optical: 158, // 150 CHF × 1.05 (NON couvert par LAMal)
+    insurance: 4725,
+    consultations: 158,
+    medications: 263,
+    dental: 315,
+    optical: 158,
     emergency: 0,
   },
   adult_average: {
-    insurance: 6300, // 6000 CHF × 1.05
-    consultations: 263, // 250 CHF × 1.05
-    medications: 420, // 400 CHF × 1.05
-    dental: 525, // 500 CHF × 1.05
-    optical: 210, // 200 CHF × 1.05
+    insurance: 6300,
+    consultations: 263,
+    medications: 420,
+    dental: 525,
+    optical: 210,
     emergency: 0,
   },
   senior: {
-    insurance: 9450, // 9000 CHF × 1.05 (primes seniors très élevées)
-    consultations: 420, // 400 CHF × 1.05
-    medications: 630, // 600 CHF × 1.05
-    dental: 735, // 700 CHF × 1.05
-    optical: 315, // 300 CHF × 1.05
+    insurance: 9450,
+    consultations: 420,
+    medications: 630,
+    dental: 735,
+    optical: 315,
     emergency: 0,
   },
   chronic_condition: {
-    insurance: 8400, // 8000 CHF × 1.05
-    consultations: 315, // 300 CHF × 1.05
-    medications: 840, // 800 CHF × 1.05
-    dental: 525, // 500 CHF × 1.05
-    optical: 210, // 200 CHF × 1.05
+    insurance: 8400,
+    consultations: 315,
+    medications: 840,
+    dental: 525,
+    optical: 210,
     emergency: 0,
   },
 };

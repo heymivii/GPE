@@ -26,7 +26,6 @@ export default function ServicesIndexPage() {
                   key={service.id}
                   className="relative block bg-gray-50 rounded-2xl border border-gray-200 p-8 opacity-60 cursor-default select-none"
                 >
-                  {/* Coming soon badge */}
                   <div className="absolute top-4 right-4 flex items-center gap-1.5 px-3 py-1 bg-gray-200 rounded-full">
                     <Lock className="w-3 h-3 text-gray-500" />
                     <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">

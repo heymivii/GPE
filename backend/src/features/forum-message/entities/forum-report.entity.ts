@@ -43,22 +43,18 @@ export class ForumReport {
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  // The user who reported
   @ManyToOne(() => User, { nullable: false })
   @JoinColumn({ name: 'id_reporter' })
   reporter: User;
 
-  // The reported message (nullable — could be a topic-level report)
   @ManyToOne(() => ForumMessage, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'id_message' })
   message?: ForumMessage;
 
-  // The reported topic
   @ManyToOne(() => ForumTopic, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'id_topic' })
   topic?: ForumTopic;
 
-  // The moderator who resolved
   @ManyToOne(() => User, { nullable: true })
   @JoinColumn({ name: 'id_moderator' })
   moderator?: User;

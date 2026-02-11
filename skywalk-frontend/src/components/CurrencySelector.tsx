@@ -3,10 +3,6 @@ import { ChevronDown, Check } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useCurrency, DISPLAY_CURRENCIES } from '../contexts/CurrencyContext';
 
-/**
- * Compact dropdown to pick the display currency.
- * Can be placed in NavBar, dashboard, or any page header.
- */
 export default function CurrencySelector() {
   const { displayCurrency, setDisplayCurrency, displaySymbol } = useCurrency();
   const { t } = useTranslation();

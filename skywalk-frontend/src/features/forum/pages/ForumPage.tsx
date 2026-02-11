@@ -114,7 +114,6 @@ export default function ForumPage() {
     }))
   }
 
-  // Extract unique countries from topics for the filter
   const availableCountries = useMemo(() => {
     if (!topics) return []
     const countryMap = new Map<number, { idCountry: number; countryName: string; flagUrl?: string }>()
@@ -555,7 +554,6 @@ export default function ForumPage() {
               </div>
             </div>
 
-            {/* Country Filter */}
             {availableCountries.length > 0 && (
               <div className="bg-white rounded-lg border border-gray-200">
                 <div className="p-4 border-b border-gray-200 flex items-center justify-between">

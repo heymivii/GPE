@@ -382,6 +382,7 @@ export default function ProfilePage() {
                     onChange={(e) => setFormData({ ...formData, languageLevel: e.target.value })}
                   >
                     <option value="">{t('profilePage.selectLanguageLevel')}</option>
+                    <option value="none">{t('profilePage.languageLevelNone')}</option>
                     <option value="A1">{t('profilePage.languageLevelA1')}</option>
                     <option value="A2">{t('profilePage.languageLevelA2')}</option>
                     <option value="B1">{t('profilePage.languageLevelB1')}</option>

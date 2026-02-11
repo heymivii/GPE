@@ -87,7 +87,6 @@ export interface UIForumMessage extends ForumMessage {
   isAccepted?: boolean;
 }
 
-// ─── Report / Moderation types ─────────────────────────────────────
 
 export const ReportReasonValues = {
   SPAM: 'spam',

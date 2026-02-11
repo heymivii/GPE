@@ -51,7 +51,6 @@ export function DestinationDetailPage() {
     retry: 1,
   });
 
-  // Fetch preview jobs for this country (5 results)
   const countryCode = country?.isoCode?.toLowerCase();
   const { data: jobsData } = useQuery({
     queryKey: ['destination-jobs-preview', countryCode],
@@ -60,14 +59,12 @@ export function DestinationDetailPage() {
     staleTime: 10 * 60 * 1000,
   });
 
-  // Fetch forum topics — filter client-side by country
   const { data: allTopics } = useQuery<ForumTopic[]>({
     queryKey: ['forum-topics'],
     queryFn: forumTopicsApi.findAll,
     staleTime: 5 * 60 * 1000,
   });
 
-  // Fetch OECD migration data for this country
   const iso2 = country?.isoCode?.toUpperCase();
   const { data: migrationData } = useQuery<CountryMigrationData | null>({
     queryKey: ['oecd-migration', iso2],
@@ -104,7 +101,6 @@ export function DestinationDetailPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
       <div className="relative h-[400px]">
         <img
           src={country.imageUrl || 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1920&q=80'}
@@ -145,7 +141,6 @@ export function DestinationDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
 
-            {/* Tabs */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
               <div className="border-b border-gray-100">
                 <nav className="flex overflow-x-auto">
@@ -174,7 +169,6 @@ export function DestinationDetailPage() {
                       </p>
                     </div>
 
-                    {/* Highlights (Mocked for now if not in DB) */}
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('services.destinationDetail.whyChoose', { country: country.countryName })}</h3>
                       <div className="grid sm:grid-cols-2 gap-4">
@@ -497,7 +491,6 @@ export function DestinationDetailPage() {
               </div>
             </div>
 
-            {/* Migration Statistics (OECD) */}
             {migrationData && (
               isAuthenticated ? (
               <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">

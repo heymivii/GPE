@@ -23,9 +23,9 @@ export default function InfiniteScrollTrigger({
     if (!target) return
 
     const options: IntersectionObserverInit = {
-      root: null, // viewport
-      rootMargin: '200px', // Commence à charger 200px avant d'atteindre l'élément
-      threshold: 0.1 // Déclenche quand 10% de l'élément est visible
+      root: null,
+      rootMargin: '200px',
+      threshold: 0.1
     }
 
     const handleIntersection = (entries: IntersectionObserverEntry[]) => {

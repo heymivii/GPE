@@ -24,11 +24,8 @@ export function DestinationsPage() {
   const filteredDestinations = destinations
     .filter(dest => {
       const name = dest.countryName || '';
-      if (!name) return false; // Skip invalid entries
+      if (!name) return false;
       const matchesSearch = name.toLowerCase().includes(searchTerm.toLowerCase());
-      // Filter by Continent if available, or keep 'all' logic
-      // Ideally we should have continent info. For now, let's just filter by search.
-      // If we want to filter by something else (like currency or language?)
       return matchesSearch;
     })
     .sort((a, b) => {
@@ -36,12 +33,11 @@ export function DestinationsPage() {
       const nameB = b.countryName || '';
       if (sortBy === 'name') return nameA.localeCompare(nameB);
 
-      // Fallback stats for sorting
       const statsA = a.stats || { memberCount: 0, jobOffersCount: 0 };
       const statsB = b.stats || { memberCount: 0, jobOffersCount: 0 };
 
       if (sortBy === 'jobs') return statsB.jobOffersCount - statsA.jobOffersCount;
-      return statsB.memberCount - statsA.memberCount; // default: popularity
+      return statsB.memberCount - statsA.memberCount;
     });
 
   return (

@@ -36,7 +36,6 @@ export default function EditTopicPage() {
     category: TopicCategoryValues.QUESTION as TopicCategory,
   });
 
-  // Feedback banner
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
   const showFeedback = (message: string) => setFeedbackMessage(message);
   const clearFeedback = () => setFeedbackMessage(null);
@@ -196,7 +195,6 @@ export default function EditTopicPage() {
           <p className="text-gray-600">{t('forum.editTopic.subtitle')}</p>
         </div>
 
-        {/* Feedback banner */}
         {feedbackMessage && (
           <div className="mb-6 flex items-center gap-3 px-4 py-3 rounded-lg border text-sm font-medium bg-red-50 border-red-200 text-red-800">
             <ShieldAlert className="w-5 h-5 text-red-500 flex-shrink-0" />
@@ -208,7 +206,6 @@ export default function EditTopicPage() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6 relative">
-          {/* Loading overlay */}
           {updateTopic.isPending && (
             <div className="absolute inset-0 bg-white/60 backdrop-blur-sm z-10 flex items-center justify-center rounded-lg">
               <div className="flex flex-col items-center gap-3">

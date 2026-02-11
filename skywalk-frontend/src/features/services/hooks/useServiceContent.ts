@@ -86,12 +86,12 @@ export function useServiceContent({ service, category }: UseServiceContentParams
 
   const displayMode = useMemo(() => {
     if (!isAuthenticated) {
-      return 'generic'; // Visiteur anonyme
+      return 'generic';
     }
     if (projects && projects.length > 0) {
-      return 'with-project'; // Utilisateur avec projet
+      return 'with-project';
     }
-    return 'without-project'; // Utilisateur sans projet
+    return 'without-project';
   }, [isAuthenticated, projects]);
 
   return {

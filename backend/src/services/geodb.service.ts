@@ -12,12 +12,9 @@ interface CityData {
 }
 
 class GeoDBService {
-    private readonly apiKey = process.env.RAPIDAPI_KEY || ''; // Ensure key exists
+    private readonly apiKey = process.env.RAPIDAPI_KEY || '';
     private readonly baseURL = 'https://wft-geo-db.p.rapidapi.com/v1/geo';
 
-    /**
-     * Search for a city by name and country code
-     */
     async searchCity(cityName: string, countryCode: string): Promise<CityData | null> {
         try {
             const response = await axios.get(`${this.baseURL}/cities`, {
@@ -29,7 +26,7 @@ class GeoDBService {
                     sort: '-population'
                 },
                 headers: {
-                    'x-rapidapi-key': this.apiKey, // Use lowercase header key as per axios example
+                    'x-rapidapi-key': this.apiKey,
                     'x-rapidapi-host': 'wft-geo-db.p.rapidapi.com'
                 }
             });
@@ -47,9 +44,6 @@ class GeoDBService {
         }
     }
 
-    /**
-     * Helper to respect rate limits
-     */
     async sleep(ms: number): Promise<void> {
         return new Promise(resolve => setTimeout(resolve, ms));
     }

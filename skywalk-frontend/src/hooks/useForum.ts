@@ -51,7 +51,6 @@ export function useCreateForumTopic(): UseMutationResult<ForumTopic, Error, Crea
     mutationFn: (data: CreateForumTopicDto) => forumTopicsApi.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: forumKeys.topics() });
-      // Also refresh destination stats (forum topics count per country)
       queryClient.invalidateQueries({ queryKey: ['destinations-list'] });
     },
   });
@@ -83,7 +82,6 @@ export function useDeleteForumTopic(): UseMutationResult<void, Error, number> {
     mutationFn: (id: number) => forumTopicsApi.remove(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: forumKeys.topics() });
-      // Also refresh destination stats (forum topics count per country)
       queryClient.invalidateQueries({ queryKey: ['destinations-list'] });
     },
   });
@@ -170,16 +168,13 @@ export function useDeleteForumMessage(): UseMutationResult<void, Error, { id: nu
 }
 
 
-// ─── Moderation hooks ──────────────────────────────────────────────
 
-/** Submit a report on a message or topic */
 export function useReportContent(): UseMutationResult<ForumReport, Error, CreateReportDto> {
   return useMutation({
     mutationFn: (data: CreateReportDto) => forumMessagesApi.report(data),
   });
 }
 
-/** Admin/Mod: list all reports */
 export function useForumReports(status?: string): UseQueryResult<ForumReport[], Error> {
   return useQuery({
     queryKey: forumKeys.reports(status),
@@ -187,7 +182,6 @@ export function useForumReports(status?: string): UseQueryResult<ForumReport[], 
   });
 }
 
-/** Admin/Mod: report statistics */
 export function useReportStats(): UseQueryResult<ReportStats, Error> {
   return useQuery({
     queryKey: forumKeys.reportStats(),
@@ -195,7 +189,6 @@ export function useReportStats(): UseQueryResult<ReportStats, Error> {
   });
 }
 
-/** Admin/Mod: resolve or reject a report */
 export function useResolveReport(): UseMutationResult<
   ForumReport,
   Error,
@@ -213,7 +206,6 @@ export function useResolveReport(): UseMutationResult<
   });
 }
 
-/** Admin/Mod: toggle lock on a topic */
 export function useLockTopic(): UseMutationResult<ForumTopic, Error, number> {
   const queryClient = useQueryClient();
 
@@ -226,7 +218,6 @@ export function useLockTopic(): UseMutationResult<ForumTopic, Error, number> {
   });
 }
 
-/** Admin/Mod: toggle pin on a topic */
 export function usePinTopic(): UseMutationResult<ForumTopic, Error, number> {
   const queryClient = useQueryClient();
 
@@ -239,7 +230,6 @@ export function usePinTopic(): UseMutationResult<ForumTopic, Error, number> {
   });
 }
 
-/** Admin/Mod: delete any message as moderator */
 export function useModeratorDeleteMessage(): UseMutationResult<void, Error, { id: number; topicId?: number }> {
   const queryClient = useQueryClient();
 
@@ -255,7 +245,6 @@ export function useModeratorDeleteMessage(): UseMutationResult<void, Error, { id
   });
 }
 
-/** Admin/Mod: delete any topic as moderator */
 export function useModeratorDeleteTopic(): UseMutationResult<void, Error, number> {
   const queryClient = useQueryClient();
 

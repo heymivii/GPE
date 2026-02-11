@@ -1,17 +1,9 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-/**
- * Creates a materialized view `global_search_index` that aggregates
- * countries, cities, guides, checklists, resources, forum topics,
- * and admin procedures into a single full-text searchable index.
- *
- * PostgreSQL `tsvector` + GIN index for fast FTS.
- */
 export class CreateGlobalSearchView1770800000000 implements MigrationInterface {
   name = 'CreateGlobalSearchView1770800000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    // 1. Create the materialized view
     await queryRunner.query(`
       CREATE MATERIALIZED VIEW IF NOT EXISTS global_search_index AS
 
@@ -148,13 +140,11 @@ export class CreateGlobalSearchView1770800000000 implements MigrationInterface {
       ;
     `);
 
-    // 2. GIN index on the tsvector column for fast search
     await queryRunner.query(`
       CREATE INDEX IF NOT EXISTS idx_global_search_vector
       ON global_search_index USING GIN (search_vector);
     `);
 
-    // 3. B-tree index on category for filtering
     await queryRunner.query(`
       CREATE INDEX IF NOT EXISTS idx_global_search_category
       ON global_search_index (category);

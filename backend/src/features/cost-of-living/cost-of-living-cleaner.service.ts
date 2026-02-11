@@ -16,9 +16,6 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class CostOfLivingCleanerService {
-    /**
-     * Nettoie et organise les données brutes de l'API
-     */
     cleanData(rawData: RawAPIResponse): CleanedCostOfLivingData {
         return {
             city: this.extractCityInfo(rawData),
@@ -38,9 +35,6 @@ export class CostOfLivingCleanerService {
         };
     }
 
-    /**
-     * Extrait les informations de la ville
-     */
     private extractCityInfo(data: RawAPIResponse) {
         return {
             id: data.city_id,
@@ -50,9 +44,6 @@ export class CostOfLivingCleanerService {
         };
     }
 
-    /**
-     * Extrait les informations de devise
-     */
     private extractCurrencyInfo(data: RawAPIResponse) {
         return {
             code: data.prices[0]?.currency_code || 'EUR',
@@ -61,9 +52,6 @@ export class CostOfLivingCleanerService {
         };
     }
 
-    /**
-     * Extrait les données de logement
-     */
     private extractHousingData(prices: any[]): HousingData {
         return {
             rent: {
@@ -100,9 +88,6 @@ export class CostOfLivingCleanerService {
         };
     }
 
-    /**
-     * Extrait les données de nourriture
-     */
     private extractFoodData(prices: any[]): FoodData {
         return {
             markets: {
@@ -141,9 +126,6 @@ export class CostOfLivingCleanerService {
         };
     }
 
-    /**
-     * Extrait les données de transport
-     */
     private extractTransportationData(prices: any[]): TransportationData {
         return {
             publicTransport: {
@@ -171,9 +153,6 @@ export class CostOfLivingCleanerService {
         };
     }
 
-    /**
-     * Extrait les données d'utilities
-     */
     private extractUtilitiesData(prices: any[]): UtilitiesData {
         return {
             basic85m2: this.findPrice(
@@ -191,9 +170,6 @@ export class CostOfLivingCleanerService {
         };
     }
 
-    /**
-     * Extrait les données de restaurants
-     */
     private extractRestaurantsData(prices: any[]): RestaurantsData {
         return {
             inexpensiveMeal: this.findPrice(
@@ -215,9 +191,6 @@ export class CostOfLivingCleanerService {
         };
     }
 
-    /**
-     * Extrait les données de vêtements
-     */
     private extractClothingData(prices: any[]): ClothingData {
         return {
             jeans: this.findPrice(
@@ -236,9 +209,6 @@ export class CostOfLivingCleanerService {
         };
     }
 
-    /**
-     * Extrait les données de garde d'enfants
-     */
     private extractChildcareData(prices: any[]): ChildcareData {
         return {
             preschool: this.findPrice(
@@ -252,9 +222,6 @@ export class CostOfLivingCleanerService {
         };
     }
 
-    /**
-     * Extrait les données de sports et loisirs
-     */
     private extractSportsData(prices: any[]): SportsData {
         return {
             cinema: this.findPrice(prices, 'Cinema ticket, 1 Seat'),
@@ -263,9 +230,6 @@ export class CostOfLivingCleanerService {
         };
     }
 
-    /**
-     * Extrait les données de salaire
-     */
     private extractSalaryData(prices: any[]): SalaryData {
         const salary = this.findPrice(
             prices,
@@ -287,9 +251,6 @@ export class CostOfLivingCleanerService {
         };
     }
 
-    /**
-     * Calcule un résumé du budget mensuel
-     */
     private calculateSummary(data: RawAPIResponse) {
         const rent = data.prices.find((p) =>
             p.item_name.includes('One bedroom apartment in city centre'),
@@ -300,7 +261,7 @@ export class CostOfLivingCleanerService {
         const transport = data.prices.find((p) =>
             p.item_name.includes('Monthly Pass'),
         );
-        const food = 400; // Estimation moyenne nourriture/mois
+        const food = 400;
         const salary = data.prices.find((p) =>
             p.item_name.includes('Average Monthly Net Salary'),
         );
@@ -329,9 +290,6 @@ export class CostOfLivingCleanerService {
         };
     }
 
-    /**
-     * Trouve un prix dans le tableau par nom d'item
-     */
     private findPrice(prices: any[], itemName: string): PriceRange {
         const item = prices.find((p) => p.item_name === itemName);
 

@@ -1,6 +1,6 @@
 import * as crypto from 'crypto';
 if (!globalThis.crypto) {
-  // @ts-ignore
+
   globalThis.crypto = crypto as any;
 }
 
@@ -19,7 +19,7 @@ async function bootstrap() {
     }),
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
+
   const cookieParser = require('cookie-parser');
   app.use(cookieParser());
 
@@ -41,7 +41,6 @@ async function bootstrap() {
     }),
   );
 
-  // ─── Swagger UI ─────────────────────────────────────────────
   const swaggerConfig = new DocumentBuilder()
     .setTitle('SkyWalk API')
     .setDescription(

@@ -2,18 +2,11 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import OpenAI from 'openai';
 
-/**
- * Content moderation service using the OpenAI Moderation API (free).
- * Falls back to a local blocklist if the API is unavailable or no API key is configured.
- *
- * @see https://platform.openai.com/docs/guides/moderation
- */
 @Injectable()
 export class ContentFilterService {
   private readonly logger = new Logger(ContentFilterService.name);
   private readonly openai: OpenAI | null;
 
-  // Categories we want to reject (OpenAI returns these in the response)
   private readonly rejectedCategories: string[] = [
     'harassment',
     'harassment/threatening',
@@ -30,7 +23,6 @@ export class ContentFilterService {
     'illicit/violent',
   ];
 
-  // Friendly labels for each category (used in rejection reasons)
   private readonly categoryLabels: Record<string, string> = {
     harassment: 'harassment',
     'harassment/threatening': 'threatening harassment',
@@ -47,7 +39,6 @@ export class ContentFilterService {
     'illicit/violent': 'illicit violent content',
   };
 
-  // ─── Local fallback blocklist ──────────────────────────────────────
   private readonly blocklist: RegExp[] = [
     /\bn[i1]gg[ae3]r?\b/i,
     /\bfagg?[o0]t\b/i,
@@ -91,10 +82,6 @@ export class ContentFilterService {
     }
   }
 
-  /**
-   * Validate content using OpenAI Moderation API, with local fallback.
-   * Returns { ok: true } or { ok: false, reason: string }
-   */
   async validate(
     content: string,
   ): Promise<{ ok: boolean; reason?: string }> {
@@ -102,7 +89,6 @@ export class ContentFilterService {
       return { ok: false, reason: 'Content is empty' };
     }
 
-    // 1) Try OpenAI Moderation API
     if (this.openai) {
       try {
         const moderation = await this.openai.moderations.create({
@@ -113,7 +99,6 @@ export class ContentFilterService {
         const result = moderation.results[0];
 
         if (result.flagged) {
-          // Find which categories were flagged
           const flaggedCategories = this.rejectedCategories.filter(
             (cat) =>
               (result.categories as unknown as Record<string, boolean>)[cat],
@@ -133,23 +118,17 @@ export class ContentFilterService {
           };
         }
 
-        // OpenAI says it's OK — pass
         return { ok: true };
       } catch (error) {
         this.logger.error(
           `OpenAI Moderation API error, falling back to local filter: ${error}`,
         );
-        // Fall through to local filter
       }
     }
 
-    // 2) Local fallback: blocklist + spam patterns
     return this.validateLocal(content);
   }
 
-  /**
-   * Local-only validation (blocklist + spam + all-caps detection).
-   */
   private validateLocal(content: string): { ok: boolean; reason?: string } {
     for (const pattern of this.blocklist) {
       if (pattern.test(content)) {
@@ -186,9 +165,6 @@ export class ContentFilterService {
     return { ok: true };
   }
 
-  /**
-   * Sanitize content — strip dangerous HTML / XSS.
-   */
   sanitize(content: string): string {
     return content
       .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')

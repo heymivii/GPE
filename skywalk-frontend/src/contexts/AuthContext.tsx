@@ -34,7 +34,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const userData = await authApi.getProfile();
         setUser(userData);
       } catch {
-        // Token may have expired — try to refresh silently
         const refreshed = await tryRefreshToken();
         if (refreshed) {
           try {

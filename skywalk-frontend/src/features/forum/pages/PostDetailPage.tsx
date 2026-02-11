@@ -57,14 +57,12 @@ export default function PostDetailPage() {
   const [editingMessageId, setEditingMessageId] = useState<number | null>(null);
   const [editContent, setEditContent] = useState('');
 
-  // Report modal state
   const [reportModalOpen, setReportModalOpen] = useState(false);
   const [reportTargetMessageId, setReportTargetMessageId] = useState<number | undefined>(undefined);
   const [reportTargetTopicId, setReportTargetTopicId] = useState<number | undefined>(undefined);
   const [reportReason, setReportReason] = useState<ReportReason>('spam');
   const [reportDetails, setReportDetails] = useState('');
 
-  // Feedback banners
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
   const [feedbackType, setFeedbackType] = useState<'error' | 'success'>('error');
 
@@ -187,7 +185,6 @@ export default function PostDetailPage() {
     }
   };
 
-  // ─── Report handlers ──────────────────────────────────────────────
 
   const openReportModal = (messageId?: number, topicIdTarget?: number) => {
     setReportTargetMessageId(messageId);
@@ -229,7 +226,6 @@ export default function PostDetailPage() {
     }
   };
 
-  // ─── Moderation handlers ──────────────────────────────────────────
 
   const handleLockTopic = async () => {
     try {
@@ -334,7 +330,6 @@ export default function PostDetailPage() {
           </Link>
         </div>
 
-        {/* Feedback banner */}
         {feedbackMessage && (
           <div
             className={`mb-6 flex items-center gap-3 px-4 py-3 rounded-lg border text-sm font-medium animate-in fade-in slide-in-from-top-2 ${
@@ -418,7 +413,6 @@ export default function PostDetailPage() {
             </div>
           </div>
 
-          {/* Moderator toolbar */}
           {isModOrAdmin && (
             <div className="flex items-center gap-2 pt-3 border-t border-gray-100">
               <Shield className="w-4 h-4 text-purple-500" />
@@ -511,7 +505,6 @@ export default function PostDetailPage() {
                       </div>
 
                       <div className="flex items-center gap-1">
-                        {/* Report button (any authenticated user) */}
                         {user && !isOwner && (
                           <button
                             onClick={() => openReportModal(message.message_id)}
@@ -522,7 +515,6 @@ export default function PostDetailPage() {
                           </button>
                         )}
 
-                        {/* Owner actions */}
                         {isOwner && !isEditing && (
                           <>
                             <button
@@ -548,7 +540,6 @@ export default function PostDetailPage() {
                           </>
                         )}
 
-                        {/* Moderator delete (not owner — mods can always delete) */}
                         {isModOrAdmin && !isOwner && (
                           <button
                             onClick={() => handleModDeleteMessage(message.message_id)}
@@ -618,7 +609,6 @@ export default function PostDetailPage() {
             </div>
           ) : (
           <div className="bg-white rounded-lg border border-gray-200 p-6 relative">
-            {/* Loading overlay for reply */}
             {createMessage.isPending && (
               <div className="absolute inset-0 bg-white/60 backdrop-blur-sm z-10 flex items-center justify-center rounded-lg">
                 <div className="flex flex-col items-center gap-3">
@@ -687,7 +677,6 @@ export default function PostDetailPage() {
         )}
       </div>
 
-      {/* Report modal */}
       {reportModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 p-6">

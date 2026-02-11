@@ -1,7 +1,6 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
 import { getCurrentLocale } from '../data/supportedCountries';
 
-/* ── Supported display currencies ── */
 export const DISPLAY_CURRENCIES = [
   { code: 'EUR', symbol: '€', nameKey: 'currencies.EUR' },
   { code: 'USD', symbol: '$', nameKey: 'currencies.USD' },
@@ -13,41 +12,21 @@ export const DISPLAY_CURRENCIES = [
 
 export type CurrencyCode = (typeof DISPLAY_CURRENCIES)[number]['code'];
 
-/* ── Context shape ── */
 interface CurrencyContextType {
-  /** The user's chosen display currency (default: EUR) */
   displayCurrency: CurrencyCode;
-  /** Change the display currency */
   setDisplayCurrency: (code: CurrencyCode) => void;
-  /** Symbol for the current display currency */
   displaySymbol: string;
-  /**
-   * Convert an amount from a source currency to the user's display currency.
-   * `exchangeRates` is the map returned by the Cost of Living API
-   * (keys = target currency codes, values = conversion factor FROM source).
-   *
-   * Example: source is JPY, exchangeRates = { EUR: 0.006, USD: 0.007 }
-   *   convert(100000, 'JPY', { EUR: 0.006, USD: 0.007 }) → 600 (if display = EUR)
-   *
-   * Returns null if conversion is impossible.
-   */
   convert: (
     amount: number | undefined | null,
     sourceCurrency: string,
     exchangeRates: Record<string, number> | undefined | null,
   ) => number | null;
-  /**
-   * Format a converted price with symbol, e.g. "1 234 €"
-   */
   formatPrice: (
     amount: number | undefined | null,
     sourceCurrency: string,
     exchangeRates: Record<string, number> | undefined | null,
     decimals?: number,
   ) => string;
-  /**
-   * Returns true when source currency already matches display currency
-   */
   isSameCurrency: (sourceCurrency: string) => boolean;
 }
 
@@ -62,7 +41,6 @@ function getInitialCurrency(): CurrencyCode {
       return stored as CurrencyCode;
     }
   } catch {
-    // localStorage unavailable
   }
   return 'EUR';
 }
@@ -79,7 +57,6 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
     try {
       localStorage.setItem(STORAGE_KEY, code);
     } catch {
-      // silent
     }
   }, []);
 
@@ -98,18 +75,9 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
     ): number | null => {
       if (amount == null || amount === 0) return null;
 
-      // Same currency — no conversion needed
       if (sourceCurrency === displayCurrency) return amount;
 
       if (!exchangeRates) return null;
-
-      // The exchange_rates from the API are ALL relative to USD:
-      //   rates['EUR'] = 0.846  means 1 USD = 0.846 EUR
-      //   rates['JPY'] = 157.2  means 1 USD = 157.2 JPY
-      //
-      // To convert: source → USD → display
-      //   amountInUSD = amount / rates[sourceCurrency]
-      //   result      = amountInUSD * rates[displayCurrency]
 
       const sourceRate = exchangeRates[sourceCurrency];
       const targetRate = exchangeRates[displayCurrency];

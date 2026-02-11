@@ -17,7 +17,6 @@ interface BudgetTrackerWidgetProps {
   currentSize?: WidgetSize
 }
 
-// Simple exchange rate cache (session-level)
 const rateCache: Record<string, { rate: number; ts: number }> = {}
 
 async function fetchExchangeRate(from: string, to: string): Promise<number | null> {
@@ -41,7 +40,6 @@ async function fetchExchangeRate(from: string, to: string): Promise<number | nul
   }
 }
 
-/** ISO-2 country code → capital city (English name for the API) */
 const COUNTRY_CAPITAL_MAP: Record<string, { city: string; apiCountry: string }> = {
   FR: { city: 'Paris', apiCountry: 'France' },
   US: { city: 'New York', apiCountry: 'United States' },
@@ -74,16 +72,14 @@ export default function BudgetTrackerWidget({
   const destCode = countryData?.code || ''
   const capitalInfo = COUNTRY_CAPITAL_MAP[destCode]
 
-  // Fetch real cost-of-living data from backend API
   const { data: liveColData } = useQuery<CleanedCostOfLivingData>({
     queryKey: ['cost-of-living-widget', capitalInfo?.city, capitalInfo?.apiCountry],
     queryFn: () => costOfLivingApi.getCostOfLiving(capitalInfo!.city, capitalInfo!.apiCountry),
     enabled: !!capitalInfo,
-    staleTime: 30 * 60 * 1000, // 30 min cache
+    staleTime: 30 * 60 * 1000,
     retry: 1,
   })
 
-  // Use live API data if available, fallback to static JSON
   const liveCurrency = liveColData?.currency?.code || countryData?.costOfLiving?.currency || countryData?.currency || 'EUR'
   const liveRent1 = liveColData?.categories?.housing?.rent?.oneBedroom?.cityCenter?.avg
   const liveRent3 = liveColData?.categories?.housing?.rent?.threeBedroom?.cityCenter?.avg
@@ -129,7 +125,6 @@ export default function BudgetTrackerWidget({
       onResize={onResize}
       currentSize={currentSize}
     >
-      {/* Budget display in origin currency */}
       <div className="mb-6">
         <div className="flex items-baseline gap-2">
           <span className="text-3xl font-bold text-gray-900">{budget.toLocaleString()}</span>
@@ -137,7 +132,6 @@ export default function BudgetTrackerWidget({
         </div>
         <p className="text-sm text-gray-500">{t('dashboard.personalized.widgets.budgetTracker.monthlyBudget')}</p>
         
-        {/* Converted amount if different currencies */}
         {!sameCurrency && budgetInDest && (
           <div className="flex items-center gap-1.5 mt-2 text-sm text-blue-600">
             <ArrowRightLeft className="w-3.5 h-3.5" />
@@ -148,7 +142,6 @@ export default function BudgetTrackerWidget({
 
       {countryData?.costOfLiving ? (
         <div className="space-y-4">
-          {/* One bedroom */}
           <div>
             <div className="flex justify-between text-sm mb-1">
               <span className="text-gray-600">
@@ -173,7 +166,6 @@ export default function BudgetTrackerWidget({
             </div>
           </div>
 
-          {/* Three bedrooms */}
           <div>
             <div className="flex justify-between text-sm mb-1">
               <span className="text-gray-600">
@@ -198,7 +190,6 @@ export default function BudgetTrackerWidget({
             </div>
           </div>
 
-          {/* Advice */}
           <div className="mt-4 p-3 bg-blue-50 rounded-lg flex items-start gap-2">
             <TrendingUp className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
             <p className="text-xs text-blue-800 leading-relaxed">
@@ -212,7 +203,6 @@ export default function BudgetTrackerWidget({
             </p>
           </div>
 
-          {/* Average salary context */}
           {liveAvgSalary > 0 && (
             <div className="mt-3 p-3 bg-gray-50 rounded-lg">
               <p className="text-xs text-gray-500 mb-1">
@@ -225,7 +215,6 @@ export default function BudgetTrackerWidget({
             </div>
           )}
 
-          {/* Data source */}
           <p className="text-[10px] text-gray-400 text-right mt-2">
             {isLiveData
               ? t('dashboard.personalized.widgets.budgetTracker.sourceLive', { city: capitalInfo?.city || '' })

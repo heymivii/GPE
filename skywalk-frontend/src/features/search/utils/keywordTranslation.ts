@@ -6,11 +6,6 @@ interface TranslationMap {
   it?: string;
 }
 
-/**
- * Bidirectional job term dictionary.
- * Keyed by the French term for backward-compatibility.
- * Each entry contains the French + English + optional other language translations.
- */
 const commonJobTerms: Record<string, TranslationMap> = {
   'développeur': { fr: 'développeur', en: 'developer', de: 'entwickler', es: 'desarrollador', it: 'sviluppatore' },
   'developpeur': { fr: 'developpeur', en: 'developer', de: 'entwickler', es: 'desarrollador', it: 'sviluppatore' },
@@ -90,10 +85,6 @@ const commonJobTerms: Record<string, TranslationMap> = {
   'barmaid': { fr: 'barmaid', en: 'bartender', de: 'barkeeper', es: 'bartender' },
 }
 
-/**
- * Reverse index: English term → French key in commonJobTerms.
- * Built once at module load so look-ups are O(1).
- */
 const englishToFrenchKey: Record<string, string> = {};
 for (const [frKey, tr] of Object.entries(commonJobTerms)) {
   const enLower = tr.en.toLowerCase();
@@ -124,7 +115,6 @@ export function enhanceSearchKeyword(keyword: string, country?: string, locale: 
   const lowerKeyword = keyword.toLowerCase().trim();
   const targetLanguages = country ? (countryLanguages[country] || ['en']) : ['en'];
 
-  // ── User typed in French → look up French key directly ──
   if (locale === 'fr') {
     if (commonJobTerms[lowerKeyword]) {
       const translations = commonJobTerms[lowerKeyword];
@@ -140,21 +130,18 @@ export function enhanceSearchKeyword(keyword: string, country?: string, locale: 
     return keyword;
   }
 
-  // ── User typed in English (or another language) → reverse-look-up ──
   if (englishToFrenchKey[lowerKeyword]) {
     const frKey = englishToFrenchKey[lowerKeyword];
     const translations = commonJobTerms[frKey];
     return buildSearchQuery(keyword, translations, targetLanguages, locale);
   }
 
-  // Partial match in English values
   for (const [, translations] of Object.entries(commonJobTerms)) {
     if (lowerKeyword.includes(translations.en.toLowerCase())) {
       return buildSearchQuery(keyword, translations, targetLanguages, locale);
     }
   }
 
-  // No match found – return as-is (user typed a non-translated English term)
   return keyword;
 }
 
@@ -168,7 +155,6 @@ function buildSearchQuery(
   terms.add(original);
   
   for (const lang of targetLanguages) {
-    // Skip the user's own locale – the original keyword already covers it
     if (lang === locale) continue;
     
     if (lang === 'fr' && translations.fr) {

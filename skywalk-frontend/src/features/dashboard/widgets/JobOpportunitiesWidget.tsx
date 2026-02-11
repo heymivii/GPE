@@ -21,7 +21,6 @@ interface JobOpportunitiesWidgetProps {
   currentSize?: WidgetSize
 }
 
-/** ISO-2 → Adzuna lowercase country code */
 const ISO_TO_ADZUNA: Record<string, string> = {
   FR: 'fr', GB: 'gb', US: 'us', CA: 'ca', DE: 'de',
   AU: 'au', BE: 'be', CH: 'ch', IT: 'it', NL: 'nl',
@@ -29,7 +28,6 @@ const ISO_TO_ADZUNA: Record<string, string> = {
   SE: 'se', PT: 'pt', JP: 'jp',
 }
 
-// Country-specific programs for expatriates
 const COUNTRY_PROGRAMS: Record<string, Array<{ name: string; descKey: string; url?: string; icon: 'globe' | 'graduation' | 'users' }>> = {
   JP: [
     { name: 'JET Programme', descKey: 'dashboard.personalized.widgets.jobOpportunities.programs.jet', url: 'https://jetprogramme.org', icon: 'graduation' },
@@ -83,28 +81,24 @@ export default function JobOpportunitiesWidget({
   const currency = countryData?.currency || 'EUR'
   const adzunaCode = ISO_TO_ADZUNA[countryCode]
 
-  // Fetch REAL job data from Adzuna API via backend
   const { data: adzunaData, isLoading: adzunaLoading } = useQuery<AdzunaSearchResponse>({
     queryKey: ['dashboard-jobs', adzunaCode],
     queryFn: () => searchJobs({ country: adzunaCode, resultsPerPage: 5, page: 1 }),
     enabled: !!adzunaCode,
-    staleTime: 15 * 60 * 1000, // 15 min cache
+    staleTime: 15 * 60 * 1000,
     retry: 1,
   })
 
   const totalJobsCount = adzunaData?.total || 0
   const recentJobs = adzunaData?.results?.slice(0, 3) || []
 
-  // Get profile-based info
   const age = userProfile?.age || 25
   const status = userProfile?.status || ''
   const statusLabel = status ? t(`onboarding.constants.status.${status}`, status) : ''
 
-  // Determine top 3 relevant sectors based on user profile
   const getRelevantSectors = () => {
     if (!jobMarket?.topSectors) return []
     const sectors = [...jobMarket.topSectors]
-    // Prioritize based on objective
     if (userProfile?.mainObjective === 'study') {
       const teaching = sectors.find(s => s.toLowerCase().includes('enseign') || s.toLowerCase().includes('teach') || s.toLowerCase().includes('education'))
       if (teaching) {
@@ -131,7 +125,6 @@ export default function JobOpportunitiesWidget({
       currentSize={currentSize}
     >
       <div className="space-y-5">
-        {/* User profile badge + live job count */}
         <div className="flex items-center justify-between gap-2 px-3 py-2 bg-indigo-50 rounded-lg">
           <div className="flex items-center gap-2">
             <Users className="w-4 h-4 text-indigo-600 flex-shrink-0" />
@@ -146,7 +139,6 @@ export default function JobOpportunitiesWidget({
           )}
         </div>
 
-        {/* Relevant sectors */}
         {relevantSectors.length > 0 && (
           <div>
             <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
@@ -166,7 +158,6 @@ export default function JobOpportunitiesWidget({
           </div>
         )}
 
-        {/* Salary info */}
         {jobMarket?.averageSalary && (
           <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4">
             <p className="text-xs text-gray-500 mb-1">{t('dashboard.personalized.widgets.jobOpportunities.avgSalary')}</p>
@@ -191,7 +182,6 @@ export default function JobOpportunitiesWidget({
           </div>
         )}
 
-        {/* Programs */}
         {programs.length > 0 && (
           <div>
             <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
@@ -223,7 +213,6 @@ export default function JobOpportunitiesWidget({
           </div>
         )}
 
-        {/* Recent live job offers from Adzuna */}
         {recentJobs.length > 0 && (
           <div>
             <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
@@ -267,7 +256,6 @@ export default function JobOpportunitiesWidget({
           </div>
         )}
 
-        {/* Job sites */}
         {jobMarket?.keyJobSites && jobMarket.keyJobSites.length > 0 && (
           <div>
             <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
@@ -290,7 +278,6 @@ export default function JobOpportunitiesWidget({
           </div>
         )}
 
-        {/* Empty state */}
         {!jobMarket && (
           <div className="text-center text-gray-500 py-6">
             <Briefcase className="w-10 h-10 mx-auto mb-3 text-gray-300" />

@@ -54,7 +54,7 @@ const CurrencyConverterWidget: React.FC<CurrencyConverterWidgetProps> = ({
       };
     },
     enabled: !!API_KEY,
-    staleTime: 3600000, // 1 hour cache — replaces manual rateCache ref
+    staleTime: 3600000,
     retry: 1,
   });
 

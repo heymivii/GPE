@@ -20,7 +20,7 @@ interface CostOfLivingContextType {
 const CostOfLivingContext = createContext<CostOfLivingContextType | undefined>(undefined);
 
 export function CostOfLivingProvider({ children }: { children: ReactNode }) {
-    const [city, setCity] = useState<string | null>(null); // Initial state can be null or a default
+    const [city, setCity] = useState<string | null>(null);
     const [country, setCountry] = useState<string | null>(null);
 
     const { data, isLoading, isError, error } = useQuery<CleanedCostOfLivingData>({
@@ -31,7 +31,7 @@ export function CostOfLivingProvider({ children }: { children: ReactNode }) {
         },
         enabled: !!city && !!country,
         retry: false,
-        staleTime: 1000 * 60 * 60 * 24, // 24 hours stale time (since cached on backend for 30 days)
+        staleTime: 1000 * 60 * 60 * 24,
     });
 
     const setTarget = (newCity: string, newCountry: string) => {

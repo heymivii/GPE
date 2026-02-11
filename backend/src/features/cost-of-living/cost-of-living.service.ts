@@ -15,17 +15,14 @@ export class CostOfLivingService {
   private readonly RAPIDAPI_HOST = process.env.RAPIDAPI_HOST;
   private readonly BASE_URL = `https://${process.env.RAPIDAPI_HOST}`;
 
-  // 30 days DB cache TTL
   private readonly CACHE_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 
-  // In-memory cache (6 h TTL) — avoids even a DB hit on repeated requests
   private readonly memCache = new Map<
     string,
     { data: CleanedCostOfLivingData; expiresAt: number }
   >();
   private readonly MEM_TTL_MS = 6 * 60 * 60 * 1000;
 
-  // Allowed countries with their normalized names
   private readonly ALLOWED_COUNTRIES = new Map<string, string>([
     ['france', 'France'],
     ['fr', 'France'],
@@ -49,9 +46,6 @@ export class CostOfLivingService {
     private readonly countryRepository: Repository<Country>,
   ) {}
 
-  /* ------------------------------------------------------------------ */
-  /*  Memory-cache helpers                                               */
-  /* ------------------------------------------------------------------ */
 
   private memKey(city: string, country: string): string {
     return `${city.toLowerCase().trim()}::${country.toLowerCase().trim()}`;
@@ -71,10 +65,6 @@ export class CostOfLivingService {
     this.memCache.set(key, { data, expiresAt: Date.now() + this.MEM_TTL_MS });
   }
 
-  /* ------------------------------------------------------------------ */
-  /*  Public: GET /api/cost-of-living/search?city=…&country=…            */
-  /*  Priority: memory → DB cache → external API (last resort)          */
-  /* ------------------------------------------------------------------ */
 
   async getCostOfLiving(city: string, country: string) {
     const normalizedCountry = this.validateCountry(country);
@@ -87,11 +77,9 @@ export class CostOfLivingService {
 
     const key = this.memKey(city, normalizedCountry);
 
-    // 1) Memory cache
     const mem = this.memGet(key);
     if (mem) return mem;
 
-    // 2) Try to resolve via City entity → cityId → cache (fast path)
     const cityEntity = await this.cityRepository
       .createQueryBuilder('c')
       .innerJoinAndSelect('c.country', 'co')
@@ -116,7 +104,6 @@ export class CostOfLivingService {
       }
     }
 
-    // 3) Fallback: search cache by JSON data fields (city not in city table)
     const cachedByJson = await this.cacheRepository
       .createQueryBuilder('cache')
       .where("LOWER(cache.data -> 'city' ->> 'name') = LOWER(:cityName)", {
@@ -138,7 +125,6 @@ export class CostOfLivingService {
       return result;
     }
 
-    // 4) Last resort: external API (only when absolutely no cache exists)
     if (!this.RAPIDAPI_KEY || !this.RAPIDAPI_HOST) {
       throw new HttpException(
         'No cached data and RapidAPI credentials not configured',
@@ -152,7 +138,6 @@ export class CostOfLivingService {
     const data = await this.fetchFromApi(city, normalizedCountry);
     this.memSet(key, data);
 
-    // Persist to DB — resolve or create city if needed
     const resolvedCityId = cityEntity
       ? cityEntity.city_id
       : await this.resolveOrCreateCity(city, normalizedCountry).catch((e) => {
@@ -169,9 +154,6 @@ export class CostOfLivingService {
     return data;
   }
 
-  /* ------------------------------------------------------------------ */
-  /*  Used by other modules (destinations, etc.) with a known cityId    */
-  /* ------------------------------------------------------------------ */
 
   async getCachedDataByCityId(
     cityId: number,
@@ -208,9 +190,6 @@ export class CostOfLivingService {
     return cleanedData;
   }
 
-  /* ------------------------------------------------------------------ */
-  /*  Private helpers                                                    */
-  /* ------------------------------------------------------------------ */
 
   private async persistToDb(
     cityId: number,
@@ -257,7 +236,7 @@ export class CostOfLivingService {
       } catch (error: any) {
         const status = error?.response?.status;
         if (status === 429 && attempt < maxRetries) {
-          const delay = 2000 * attempt; // 2s, 4s
+          const delay = 2000 * attempt;
           this.logger.warn(
             `⏳ Rate-limited (429) for ${cityName} — retrying in ${delay}ms…`,
           );
@@ -294,9 +273,6 @@ export class CostOfLivingService {
     return count;
   }
 
-  /* ------------------------------------------------------------------ */
-  /*  Seed: pre-populate DB cache for all supported cities              */
-  /* ------------------------------------------------------------------ */
 
   private readonly SUPPORTED_CITIES = [
     { city: 'Paris', country: 'France' },
@@ -313,14 +289,12 @@ export class CostOfLivingService {
     for (const { city, country } of this.SUPPORTED_CITIES) {
       const key = this.memKey(city, country);
 
-      // Check if already cached (memory or DB)
       const mem = this.memGet(key);
       if (mem) {
         skipped.push(`${city}, ${country} (memory cache)`);
         continue;
       }
 
-      // Check DB cache by JSON fields
       const existing = await this.cacheRepository
         .createQueryBuilder('cache')
         .where("LOWER(cache.data -> 'city' ->> 'name') = LOWER(:cityName)", {
@@ -339,13 +313,11 @@ export class CostOfLivingService {
         continue;
       }
 
-      // Need to fetch from API
       try {
         this.logger.log(`🌱 Seeding ${city}, ${country}…`);
         const data = await this.fetchFromApi(city, country);
         this.memSet(key, data);
 
-        // Resolve or create City entity
         const cityId = await this.resolveOrCreateCity(city, country);
         await this.persistToDb(cityId, data);
 
@@ -354,7 +326,6 @@ export class CostOfLivingService {
         errors.push(`${city}, ${country}: ${e.message}`);
       }
 
-      // Wait 4s between API calls to avoid rate-limiting
       await new Promise((r) => setTimeout(r, 4000));
     }
 
@@ -364,11 +335,7 @@ export class CostOfLivingService {
     return { seeded, skipped, errors };
   }
 
-  /**
-   * Find the City entity by name + country, or create it if it doesn't exist.
-   */
   private async resolveOrCreateCity(cityName: string, countryName: string): Promise<number> {
-    // Try to find existing
     const existing = await this.cityRepository
       .createQueryBuilder('c')
       .innerJoinAndSelect('c.country', 'co')
@@ -378,20 +345,17 @@ export class CostOfLivingService {
 
     if (existing) return existing.city_id;
 
-    // Find the country
     let countryEntity = await this.countryRepository.findOne({
       where: { countryName },
     });
 
     if (!countryEntity) {
-      // Create country
       countryEntity = await this.countryRepository.save(
         this.countryRepository.create({ countryName, idContinent: 1 }),
       );
       this.logger.log(`🌍 Created country: ${countryName} (id=${countryEntity.idCountry})`);
     }
 
-    // Create city
     const newCity = await this.cityRepository.save(
       this.cityRepository.create({
         name: cityName,

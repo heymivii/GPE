@@ -19,7 +19,6 @@ export class ForumMessageService {
   ) {}
 
   async create(createForumMessageDto: CreateForumMessageDto): Promise<ForumMessage> {
-    // Content filter — block profanity/spam
     const sanitized = this.contentFilter.sanitize(createForumMessageDto.content);
     const check = await this.contentFilter.validate(sanitized);
     if (!check.ok) {
@@ -58,7 +57,6 @@ export class ForumMessageService {
   async update(id: number, updateForumMessageDto: UpdateForumMessageDto): Promise<ForumMessage> {
     const message = await this.findOne(id);
 
-    // Content filter on update too
     if (updateForumMessageDto.content) {
       const sanitized = this.contentFilter.sanitize(updateForumMessageDto.content);
       const check = await this.contentFilter.validate(sanitized);
@@ -81,9 +79,6 @@ export class ForumMessageService {
     }
   }
 
-  /**
-   * Admin/moderator delete — can remove any message regardless of ownership.
-   */
   async moderatorRemove(id: number): Promise<void> {
     const message = await this.findOne(id);
     if (!message) {
@@ -100,10 +95,8 @@ export class ForumMessageService {
     });
   }
 
-  /* ────────────────── Reports ────────────────── */
 
   async createReport(dto: CreateReportDto): Promise<ForumReport> {
-    // Prevent duplicate reports from the same user on the same item
     const existing = await this.forumReportRepository.findOne({
       where: {
         reporter: { idUser: dto.idReporter },

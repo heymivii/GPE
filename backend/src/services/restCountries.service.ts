@@ -22,18 +22,14 @@ interface CountryInfo {
         png: string;
         svg: string;
     };
-    cca2: string; // 2-letter country code (FR, CH, US)
+    cca2: string;
 }
 
 class RestCountriesService {
     private baseURL = 'https://restcountries.com/v3.1';
-    private cache = new NodeCache({ stdTTL: 86400 }); // 24h cache
+    private cache = new NodeCache({ stdTTL: 86400 });
 
-    /**
-     * Get country info by code (FR, CH, US, etc.)
-     */
     async getCountryByCode(countryCode: string): Promise<CountryInfo | null> {
-        // Check cache
         const cacheKey = `country:${countryCode}`;
         const cached = this.cache.get<CountryInfo>(cacheKey);
 
@@ -45,7 +41,6 @@ class RestCountriesService {
             const response = await axios.get(`${this.baseURL}/alpha/${countryCode}`);
             const country = response.data[0];
 
-            // Update cache
             this.cache.set(cacheKey, country);
 
             return country;
@@ -55,9 +50,6 @@ class RestCountriesService {
         }
     }
 
-    /**
-     * Extract essential info from country data
-     */
     extractEssentialInfo(country: CountryInfo) {
         return {
             code: country.cca2,

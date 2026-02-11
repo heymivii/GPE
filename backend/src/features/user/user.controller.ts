@@ -21,7 +21,7 @@ export class UserController {
   @Get('me')
   async getProfile(@Request() req) {
     const user = await this.userService.findOne(req.user.userId);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
     const { passwordHash, ...result } = user;
     return result;
   }
@@ -33,7 +33,7 @@ export class UserController {
       req.user.userId,
       updateUserDto,
     );
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
     const { passwordHash, ...result } = updatedUser;
     return result;
   }

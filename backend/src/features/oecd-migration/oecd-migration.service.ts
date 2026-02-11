@@ -1,20 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import axios from 'axios';
 
-/**
- * OECD SDMX Migration Database
- * Dataflow: OECD.ELS.IMD,DSD_MIG@DF_MIG,1.0
- *
- * Measures:
- *  B11 – Inflows of foreign population
- *  B12 – Outflows of foreign population
- *  B13 – Inflows of asylum seekers
- *  B15 – Stocks of foreign population
- *  B16 – Acquisitions of nationality
- */
 
 export interface MigrationIndicator {
-  /** ISO-3 country code (e.g. "FRA") */
   countryCode: string;
   measure: 'B11' | 'B12' | 'B13' | 'B15' | 'B16';
   year: number;
@@ -39,7 +27,6 @@ const MEASURE_LABELS: Record<string, string> = {
   B16: 'Acquisitions of nationality',
 };
 
-/** ISO-2 → ISO-3 mapping for our supported countries */
 const ISO2_TO_ISO3: Record<string, string> = {
   FR: 'FRA',
   CH: 'CHE',
@@ -56,20 +43,15 @@ const ISO3_TO_NAME: Record<string, string> = {
 
 const SUPPORTED_ISO3 = ['FRA', 'CHE', 'JPN', 'USA'];
 const MEASURES = ['B11', 'B12', 'B13', 'B15', 'B16'];
-const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 
 @Injectable()
 export class OecdMigrationService {
   private readonly logger = new Logger(OecdMigrationService.name);
 
-  /** In-memory cache */
   private cache: CountryMigrationData[] | null = null;
   private cacheTimestamp = 0;
 
-  /**
-   * Return migration data for all supported countries.
-   * Cached for 24 h.
-   */
   async getMigrationData(): Promise<CountryMigrationData[]> {
     if (this.cache && Date.now() - this.cacheTimestamp < CACHE_TTL_MS) {
       return this.cache;
@@ -82,7 +64,6 @@ export class OecdMigrationService {
       return data;
     } catch (error) {
       this.logger.error('Failed to fetch OECD migration data', error);
-      // Return stale cache if available
       if (this.cache) return this.cache;
       return SUPPORTED_ISO3.map(code => ({
         countryCode: code,
@@ -91,9 +72,6 @@ export class OecdMigrationService {
     }
   }
 
-  /**
-   * Return migration data for a specific country (ISO-2 or ISO-3 code).
-   */
   async getByCountry(code: string): Promise<CountryMigrationData | null> {
     const iso3 = code.length === 2 ? ISO2_TO_ISO3[code.toUpperCase()] : code.toUpperCase();
     if (!iso3) return null;
@@ -102,13 +80,11 @@ export class OecdMigrationService {
     return all.find(d => d.countryCode === iso3) || null;
   }
 
-  /* ──────────────────────── Private ──────────────────────── */
 
   private async fetchFromOecd(): Promise<CountryMigrationData[]> {
     const countriesParam = SUPPORTED_ISO3.join('+');
     const measuresParam = MEASURES.join('+');
 
-    // Use "W" (World total) as citizenship, _T=total sex, _Z=not applicable for birthplace & education
     const url =
       `https://sdmx.oecd.org/public/rest/data/OECD.ELS.IMD,DSD_MIG@DF_MIG,1.0/` +
       `${countriesParam}.W.A.${measuresParam}._T._Z._Z..` +
@@ -133,13 +109,11 @@ export class OecdMigrationService {
     const measures: string[] = dimsSeries.find((d: any) => d.id === 'MEASURE')?.values.map((v: any) => v.id) || [];
     const years: string[] = dimsObs.find((d: any) => d.id === 'TIME_PERIOD')?.values.map((v: any) => v.id) || [];
 
-    // Find position indices for REF_AREA and MEASURE in the series key
     const refAreaIdx = dimsSeries.findIndex((d: any) => d.id === 'REF_AREA');
     const measureIdx = dimsSeries.findIndex((d: any) => d.id === 'MEASURE');
 
     const ds = raw.data.dataSets[0];
 
-    // Collect most recent non-zero value per country+measure
     const latest: Record<string, MigrationIndicator> = {};
 
     for (const [seriesKey, seriesVal] of Object.entries(ds.series) as any) {
@@ -167,7 +141,6 @@ export class OecdMigrationService {
       }
     }
 
-    // Build per-country result
     return SUPPORTED_ISO3.map(iso3 => {
       const get = (m: string) => latest[`${iso3}|${m}`];
       const toEntry = (m: string) => {

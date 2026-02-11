@@ -15,11 +15,10 @@ async function seedCities() {
         const cityRepo = AppDataSource.getRepository(City);
         const countryRepo = AppDataSource.getRepository(Country);
 
-        // List of cities to enrich (MVP)
         const targetCities = [
             { name: 'Paris', countryCode: 'FR', priority: 1, description: 'The City of Light, known for its cafe culture, Eiffel Tower, and art.' },
             { name: 'Lyon', countryCode: 'FR', priority: 2, description: 'Capital of Gaul, famous for its gastronomy and historical landmarks.' },
-            { name: 'New York City', countryCode: 'US', priority: 1, description: 'The Big Apple, a global hub for finance, culture, and entertainment.' }, // GeoDB often lists as "New York City"
+            { name: 'New York City', countryCode: 'US', priority: 1, description: 'The Big Apple, a global hub for finance, culture, and entertainment.' },
             { name: 'Tokyo', countryCode: 'JP', priority: 1, description: 'A bustling metropolis mixing ultramodern neon with traditional temples.' },
             { name: 'Zurich', countryCode: 'CH', priority: 1, description: 'Global center for banking and finance, located at the north end of Lake Zurich.' }
         ];
@@ -27,15 +26,12 @@ async function seedCities() {
         for (const target of targetCities) {
             console.log(`\nProcessing ${target.name} (${target.countryCode})...`);
 
-            // 1. Fetch Country Info from REST Countries
             const countryInfo = await restCountriesService.getCountryByCode(target.countryCode);
             if (!countryInfo) {
                 console.warn(`⚠️ Country data not found for ${target.countryCode}`);
                 continue;
             }
 
-            // 2. Fetch City Info from GeoDB
-            // Note: GeoDB search is sensitive. We search by name prefix & country.
             const cityData = await geoDBService.searchCity(target.name, target.countryCode);
 
             if (!cityData) {
@@ -43,23 +39,19 @@ async function seedCities() {
                 continue;
             }
 
-            // 3. Find or Create Country in DB
             let country = await countryRepo.findOne({ where: { isoCode: target.countryCode } });
 
             if (country) {
-                // Update country details if needed, e.g. flag
                 country.flagUrl = countryInfo.flags.svg;
-                country.currency = Object.keys(countryInfo.currencies)[0]; // safely get first currency key
+                country.currency = Object.keys(countryInfo.currencies)[0];
                 country.language = Object.values(countryInfo.languages)[0];
                 await countryRepo.save(country);
                 console.log(`Updated country: ${country.countryName}`);
             } else {
                 console.warn(`Country ${target.countryCode} does not exist in DB yet. Skipping city.`);
-                // ideally we would create it, but for now we assume countries exist from previous seeds
                 continue;
             }
 
-            // 4. Find or Create City
             let city = await cityRepo.findOne({
                 where: { name: target.name, country: { idCountry: country.idCountry } }
             });
@@ -67,23 +59,21 @@ async function seedCities() {
             if (!city) {
                 console.log(`Creating new city: ${target.name}`);
                 city = new City();
-                city.name = cityData.name; // Use official name from GeoDB
+                city.name = cityData.name;
                 city.country = country;
             } else {
                 console.log(`Updating existing city: ${city.name}`);
             }
 
-            // 5. Enrich City Data
             city.slug = slugify(city.name, { lower: true, strict: true });
             city.latitude = cityData.latitude.toString();
             city.longitude = cityData.longitude.toString();
             city.population = cityData.population;
             city.timezone = cityData.timezone || countryInfo.timezones[0];
-            city.isCapital = countryInfo.capital.includes(cityData.name); // Simple check
+            city.isCapital = countryInfo.capital.includes(cityData.name);
             city.priority = target.priority;
             city.description = target.description;
 
-            // 6. Set Image URL (using high-quality static Unsplash images)
             const cityImages: Record<string, string> = {
                 'Paris': 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=800&q=80',
                 'Lyon': 'https://images.unsplash.com/photo-1621847468516-1ed5d0df56fe?auto=format&fit=crop&w=800&q=80',
@@ -92,12 +82,11 @@ async function seedCities() {
                 'Zurich': 'https://images.unsplash.com/photo-1515488764276-beab7607c1e6?auto=format&fit=crop&w=800&q=80',
             };
 
-            city.imageUrl = cityImages[target.name] || 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=800&q=80'; // Default city image
+            city.imageUrl = cityImages[target.name] || 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=800&q=80';
 
             await cityRepo.save(city);
             console.log(`✅ Successfully enriched ${city.name}`);
 
-            // Respect rate limits slightly
             await new Promise(resolve => setTimeout(resolve, 1500));
         }
 

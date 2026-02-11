@@ -122,12 +122,12 @@ export interface TransportationData {
     };
     personal: {
         gasoline1L: PriceRange;
-        newCar: PriceRange; // Volkswagen Golf equivalent
+        newCar: PriceRange;
     };
 }
 
 export interface UtilitiesData {
-    basic85m2: PriceRange; // Électricité, chauffage, eau, ordures
+    basic85m2: PriceRange;
     internet: PriceRange;
     mobileMinute: PriceRange;
 }
@@ -150,8 +150,8 @@ export interface ClothingData {
 }
 
 export interface ChildcareData {
-    preschool: PriceRange; // Par mois
-    primarySchool: PriceRange; // Par an
+    preschool: PriceRange;
+    primarySchool: PriceRange;
 }
 
 export interface SportsData {

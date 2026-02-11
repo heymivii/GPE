@@ -22,7 +22,6 @@ export interface DestinationStats {
   resourcesCount: number;
 }
 
-/* ── Cost of Living types (from JSONB cache) ── */
 
 export interface PriceRange {
   avg: number;
@@ -85,9 +84,8 @@ export interface CostOfLivingData {
   };
 }
 
-// Rename the old "Destination" (which was a City) to CityDestination
 export interface CityDestination {
-  city_id?: number; // Backend uses city_id or id
+  city_id?: number;
   id?: number;
   name: string;
   slug: string;
@@ -102,17 +100,14 @@ export interface CityDestination {
   country: Country;
   costOfLiving?: CostOfLivingData | null;
 
-  // Computed fields for UI compatibility
   stats?: DestinationStats;
   highlights?: string[];
 }
 
-// New type for the Country Card on the main page
 export interface CountryDestination extends Country {
   stats?: DestinationStats;
 }
 
-// New type for the Country Detail page
 export interface CountryDetail extends CountryDestination {
   cities: CityDestination[];
   costOfLiving?: {

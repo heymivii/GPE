@@ -49,7 +49,7 @@ export default function WeatherWidget({
         temperature: Math.round(data.main.temp),
         description: data.weather[0].description,
         humidity: data.main.humidity,
-        windSpeed: Math.round(data.wind.speed * 3.6), // m/s vers km/h
+        windSpeed: Math.round(data.wind.speed * 3.6),
         icon: data.weather[0].icon,
         feelsLike: Math.round(data.main.feels_like),
       } as WeatherData;

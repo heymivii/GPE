@@ -4,11 +4,9 @@ import { useCostOfLiving } from '../../../contexts/CostOfLivingContext';
 export default function CostOfLivingTestPage() {
     const { data, isLoading, isError, error, city: ctxCity, country: ctxCountry, setTarget } = useCostOfLiving();
 
-    // Local state for input fields interaction
     const [cityInput, setCityInput] = useState('Paris');
     const [countryInput, setCountryInput] = useState('France');
 
-    // Sync local inputs with context if needed (optional, but good for UX on revisit)
     useEffect(() => {
         if (ctxCity) setCityInput(ctxCity);
         if (ctxCountry) setCountryInput(ctxCountry);

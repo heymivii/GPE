@@ -9,7 +9,6 @@ interface CountryCardProps {
 
 export function CountryCard({ country }: CountryCardProps) {
   const { t } = useTranslation();
-  // Real stats from backend (no more random fallback)
   const stats = country.stats || {
     memberCount: 0,
     jobOffersCount: 0,
@@ -17,9 +16,6 @@ export function CountryCard({ country }: CountryCardProps) {
     resourcesCount: 0,
   };
 
-  // We need a slug for the country URL. 
-  // Assuming the backend returns 'isoCode' or we can slugify the name.
-  // Ideally backend should return a 'slug' for the country too, but isoCode works as ID.
   const name = country.countryName || 'Unknown';
   const countrySlug = country.isoCode || name.toLowerCase();
 
@@ -28,7 +24,6 @@ export function CountryCard({ country }: CountryCardProps) {
       to={`/destinations/${countrySlug}`}
       className="group bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all duration-300 flex flex-col h-full"
     >
-      {/* Image Container */}
       <div className="relative h-48 overflow-hidden">
         <img
           src={country.imageUrl || 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80'}
@@ -49,7 +44,6 @@ export function CountryCard({ country }: CountryCardProps) {
         </div>
       </div>
 
-      {/* Content */}
       <div className="p-5 flex flex-col flex-1">
         <div className="flex items-start justify-between mb-3">
           <div>
@@ -67,7 +61,6 @@ export function CountryCard({ country }: CountryCardProps) {
           {country.description || t('destinationsPage.card.defaultDescription', { country: country.countryName })}
         </p>
 
-        {/* Stats Grid */}
         <div className="grid grid-cols-2 gap-3 mt-auto pt-4 border-t border-gray-50">
           <div className="flex items-center text-gray-600">
             <Users className="w-4 h-4 mr-2 text-blue-500 flex-shrink-0" />

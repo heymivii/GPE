@@ -40,7 +40,6 @@ export class ForumTopicController {
     return this.forumTopicService.remove(+id);
   }
 
-  // ─── Moderation endpoints ──────────────────────────────────────────
 
   @Patch(':id/lock')
   @UseGuards(JwtAuthGuard, RolesGuard)

@@ -13,6 +13,7 @@ import HealthStats from '../components/HealthStats';
 import TransportStats from '../components/TransportStats';
 import LogementStats from '../components/LogementStats';
 import EmploiStats from '../components/EmploiStats';
+import VisaStats from '../components/VisaStats';
 import { useServiceContent } from '../hooks/useServiceContent';
 import { useTranslation } from 'react-i18next';
 
@@ -58,6 +59,9 @@ export default function ServicePage() {
       </div>
     );
   }
+
+  const categoriesWithTools = ['emploi', 'logement', 'transport', 'sante'];
+  const hasSidebarTools = categoriesWithTools.includes(category || '');
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -152,7 +156,7 @@ export default function ServicePage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
-          {isAuthenticated && (
+          {isAuthenticated && hasSidebarTools && (
             <aside className={`flex-shrink-0 transition-all duration-300 ${
               isToolsExpanded ? 'lg:w-96' : 'lg:w-80'
             }`}>
@@ -176,6 +180,8 @@ export default function ServicePage() {
               <HealthStats countryName={selectedCountry} />
             ) : selectedCountry && category === 'transport' ? (
               <TransportStats countryName={selectedCountry} />
+            ) : category === 'visa' ? (
+              <VisaStats countryName={selectedCountry || 'general'} />
             ) : content.stats && content.stats.length > 0 ? (
               <ServiceStats stats={content.stats} color={service.color} />
             ) : null}

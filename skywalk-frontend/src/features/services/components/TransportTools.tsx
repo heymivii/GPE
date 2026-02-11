@@ -12,7 +12,7 @@ export function TransportCostTool({ countryName }: { countryName?: string }) {
   const { t } = useTranslation();
   const [transportType, setTransportType] = useState<'car' | 'public'>('car');
   const [distance, setDistance] = useState('');
-  const [fuelConsumption, setFuelConsumption] = useState('7'); // L/100km
+  const [fuelConsumption, setFuelConsumption] = useState('7');
 
   const mapping = getCountryMapping(countryName);
   const { formatPrice } = useCurrency();
@@ -41,7 +41,7 @@ export function TransportCostTool({ countryName }: { countryName?: string }) {
     if (isNaN(dist)) return 0;
     
     const consumption = parseFloat(fuelConsumption);
-    const monthlyKm = dist * 2 * 22; // Aller-retour, 22 jours/mois
+    const monthlyKm = dist * 2 * 22;
     const fuelCost = (monthlyKm / 100) * consumption * fuelPrice;
     return Math.round(fuelCost);
   };

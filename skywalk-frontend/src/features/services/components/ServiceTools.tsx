@@ -250,7 +250,6 @@ function RentCalculatorTool({ countryName }: { countryName?: string }) {
   const [period, setPeriod] = useState<'month' | 'year'>('month');
   const [inputCurrency, setInputCurrency] = useState<string>('EUR');
 
-  // Fetch exchange rates from cost-of-living data for this country
   const mapping = getCountryMapping(countryName);
 
   const { data: colData } = useQuery({
@@ -268,12 +267,10 @@ function RentCalculatorTool({ countryName }: { countryName?: string }) {
     const monthlySalary = period === 'year' ? numSalary / 12 : numSalary;
     const budget33 = monthlySalary * 0.33;
 
-    // Convert from input currency to the display currency used on the page
     if (inputCurrency === displayCurrency) {
       return Math.round(budget33);
     }
 
-    // Use exchange rates to convert: inputCurrency → USD → displayCurrency
     const converted = convert(budget33, inputCurrency, rates);
     return converted != null ? Math.round(converted) : Math.round(budget33);
   };
@@ -297,33 +294,33 @@ function RentCalculatorTool({ countryName }: { countryName?: string }) {
           <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wide">
             {t('services.tools.rentCalculator.netIncome')}
           </label>
-          <div className="flex gap-3">
-            <div className="relative flex-1">
-              <input
-                type="number"
-                value={salary}
-                onChange={(e) => setSalary(e.target.value)}
-                placeholder="Ex: 2500"
-                className="w-full pl-4 pr-4 py-2.5 rounded-lg border border-gray-300 focus:border-gray-900 focus:ring-0 transition-colors text-gray-900 placeholder-gray-400"
-              />
+          <div className="space-y-3">
+            <input
+              type="number"
+              value={salary}
+              onChange={(e) => setSalary(e.target.value)}
+              placeholder="Ex: 2500"
+              className="w-full pl-4 pr-4 py-3 rounded-lg border border-gray-300 focus:border-gray-900 focus:ring-0 transition-colors text-gray-900 text-lg placeholder-gray-400"
+            />
+            <div className="flex gap-3">
+              <select
+                value={inputCurrency}
+                onChange={(e) => setInputCurrency(e.target.value)}
+                className="flex-1 px-3 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-700 focus:border-gray-900 focus:ring-0 cursor-pointer hover:bg-gray-100 transition-colors text-sm"
+              >
+                {DISPLAY_CURRENCIES.map(c => (
+                  <option key={c.code} value={c.code}>{c.symbol} {c.code}</option>
+                ))}
+              </select>
+              <select
+                value={period}
+                onChange={(e) => setPeriod(e.target.value as 'month' | 'year')}
+                className="flex-1 px-3 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-700 focus:border-gray-900 focus:ring-0 cursor-pointer hover:bg-gray-100 transition-colors text-sm"
+              >
+                <option value="month">{t('services.tools.rentCalculator.perMonth')}</option>
+                <option value="year">{t('services.tools.rentCalculator.perYear')}</option>
+              </select>
             </div>
-            <select
-              value={inputCurrency}
-              onChange={(e) => setInputCurrency(e.target.value)}
-              className="px-3 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-700 focus:border-gray-900 focus:ring-0 cursor-pointer hover:bg-gray-100 transition-colors text-sm"
-            >
-              {DISPLAY_CURRENCIES.map(c => (
-                <option key={c.code} value={c.code}>{c.symbol} {c.code}</option>
-              ))}
-            </select>
-            <select
-              value={period}
-              onChange={(e) => setPeriod(e.target.value as 'month' | 'year')}
-              className="px-4 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-700 focus:border-gray-900 focus:ring-0 cursor-pointer hover:bg-gray-100 transition-colors text-sm"
-            >
-              <option value="month">{t('services.tools.rentCalculator.perMonth')}</option>
-              <option value="year">{t('services.tools.rentCalculator.perYear')}</option>
-            </select>
           </div>
         </div>
 

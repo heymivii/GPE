@@ -24,7 +24,6 @@ apiClient.interceptors.request.use(
   }
 );
 
-// Track whether a refresh is already in progress to avoid parallel refresh calls
 let isRefreshing = false;
 let refreshSubscribers: Array<(token: string) => void> = [];
 
@@ -42,7 +41,6 @@ apiClient.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // Don't try to refresh for auth endpoints themselves
     const isAuthEndpoint =
       originalRequest.url?.includes('/auth/login') ||
       originalRequest.url?.includes('/auth/register') ||
@@ -52,7 +50,6 @@ apiClient.interceptors.response.use(
       const refreshToken = localStorage.getItem('refresh_token');
 
       if (!refreshToken) {
-        // No refresh token — redirect to login
         localStorage.removeItem('access_token');
         if (!window.location.pathname.startsWith('/auth')) {
           window.location.href = '/auth/login';
@@ -61,7 +58,6 @@ apiClient.interceptors.response.use(
       }
 
       if (isRefreshing) {
-        // Another refresh is already in progress — queue this request
         return new Promise((resolve) => {
           addRefreshSubscriber((newToken: string) => {
             originalRequest.headers.Authorization = `Bearer ${newToken}`;
@@ -89,7 +85,6 @@ apiClient.interceptors.response.use(
         isRefreshing = false;
         onTokenRefreshed(newAccessToken);
 
-        // Retry the original request with the new token
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return apiClient(originalRequest);
       } catch {

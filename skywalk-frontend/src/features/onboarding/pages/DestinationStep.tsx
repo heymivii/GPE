@@ -31,7 +31,6 @@ export default function DestinationStep({ data, onNext, onBack }: DestinationSte
     departureYear: data?.departureYear || ''
   })
 
-  // Removed direct useQuery for countries, using context instead
 
   const countryOptions = supportedCountries.map(c => ({
     value: c.code,

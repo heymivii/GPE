@@ -9,7 +9,6 @@ import { Resource } from '../resource/entities/resource.entity';
 import { CostOfLivingService } from '../cost-of-living/cost-of-living.service';
 import { AdzunaService } from '../job-offer/adzuna.service';
 
-/** Curated Unsplash images for each seeded country (French names matching DB) */
 const COUNTRY_IMAGES: Record<string, string> = {
     'France': 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=800&q=80',
     'Canada': 'https://images.unsplash.com/photo-1517935706615-2717063c2225?auto=format&fit=crop&w=800&q=80',
@@ -35,10 +34,6 @@ const COUNTRY_IMAGES: Record<string, string> = {
 
 const DEFAULT_IMAGE = 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80';
 
-/**
- * Mapping ISO 3166-1 alpha-2 (uppercase) → Adzuna country code (lowercase).
- * Only countries supported by the Adzuna API are listed here.
- */
 const ISO_TO_ADZUNA: Record<string, string> = {
     FR: 'fr',
     GB: 'gb',
@@ -81,15 +76,10 @@ export class DestinationsService {
         private readonly adzunaService: AdzunaService,
     ) {}
 
-    // ... findAll and findAllEnriched methods ...
 
     async findAll() {
-        // We only want cities that have been enriched (e.g. have a slug)
-        // and probably sort by priority
         return this.cityRepository.find({
             where: {
-                // In TypeORM, checking if column is not null
-                // We can check if slug is not null
             },
             relations: ['country'],
             order: {
@@ -114,9 +104,7 @@ export class DestinationsService {
             .orderBy('country.countryName', 'ASC')
             .getMany();
 
-        // Fetch DB-based stats in parallel
         const [forumCounts, projectCounts, resourceCounts] = await Promise.all([
-            // Forum topics per country
             this.forumTopicRepository.createQueryBuilder('ft')
                 .innerJoin('ft.country', 'c')
                 .select('c.id_country', 'countryId')
@@ -124,14 +112,12 @@ export class DestinationsService {
                 .groupBy('c.id_country')
                 .getRawMany<{ countryId: number; count: string }>(),
 
-            // Expatriation projects per destination country (= "members" interested)
             this.expatriationProjectRepository.createQueryBuilder('ep')
                 .select('ep.id_destination_country', 'countryId')
                 .addSelect('COUNT(*)', 'count')
                 .groupBy('ep.id_destination_country')
                 .getRawMany<{ countryId: number; count: string }>(),
 
-            // Resources per country
             this.resourceRepository.createQueryBuilder('r')
                 .innerJoin('r.country', 'c2')
                 .select('c2.id_country', 'countryId')
@@ -140,10 +126,8 @@ export class DestinationsService {
                 .getRawMany<{ countryId: number; count: string }>(),
         ]);
 
-        // Fetch Adzuna job counts for every country that has an ISO code
         const adzunaJobCounts = await this.getAdzunaJobCountsForCountries(countries);
 
-        // Build lookup maps for O(1) access
         const forumMap = new Map(forumCounts.map(r => [Number(r.countryId), Number(r.count)]));
         const projectMap = new Map(projectCounts.map(r => [Number(r.countryId), Number(r.count)]));
         const resourceMap = new Map(resourceCounts.map(r => [Number(r.countryId), Number(r.count)]));
@@ -160,11 +144,6 @@ export class DestinationsService {
         }));
     }
 
-    /**
-     * Fetch total job count from the Adzuna API for each country (in parallel).
-     * Uses resultsPerPage=1 so we only get the count, not the actual listings.
-     * Falls back to 0 for countries not supported by Adzuna.
-     */
     private async getAdzunaJobCountsForCountries(
         countries: Country[],
     ): Promise<Map<number, number>> {
@@ -196,19 +175,16 @@ export class DestinationsService {
     }
 
     async findOneCountryBySlug(slug: string) {
-        // Try to find by isoCode first (2 chars)
         let country;
         if (slug.length === 2) {
             country = await this.countryRepository.findOne({
                 where: { isoCode: slug.toUpperCase() },
             });
         } else {
-            // Or by name (case insensitive) - simulating slug match
             country = await this.countryRepository.findOne({
-                where: { countryName: slug }, // Ideally we should have a slug column on Country or use ILIKE
+                where: { countryName: slug },
             });
 
-            // Fallback: iterate (not efficient but okay for few countries)
             if (!country) {
                 const allCountries = await this.countryRepository.find();
                 country = allCountries.find(c => c.countryName.toLowerCase() === slug.toLowerCase() || c.countryName.toLowerCase().replace(/ /g, '-') === slug.toLowerCase());
@@ -219,13 +195,11 @@ export class DestinationsService {
             throw new NotFoundException(`Country with slug "${slug}" not found`);
         }
 
-        // Fetch cities for this country
         const cities = await this.cityRepository.find({
             where: { country: { idCountry: country.idCountry } },
             order: { priority: 'ASC', name: 'ASC' }
         });
 
-        // Fetch Cost of Living from cache for each city
         const citiesWithCost = await Promise.all(cities.map(async city => {
             const cachedCostData = await this.costOfLivingService.getCachedDataByCityId(city.city_id);
             return {
@@ -235,7 +209,6 @@ export class DestinationsService {
             };
         }));
 
-        // Calculate average rent from cached data
         let totalRent = 0;
         let count = 0;
         citiesWithCost.forEach(c => {
@@ -247,7 +220,6 @@ export class DestinationsService {
         });
         const averageHousingCost = count > 0 ? (totalRent / count).toFixed(2) : null;
 
-        // Compute real stats for this country
         const adzunaCode = country.isoCode ? ISO_TO_ADZUNA[country.isoCode.toUpperCase()] : undefined;
 
         const [forumTopicsCount, memberCount, jobOffersCount, resourcesCount] = await Promise.all([
@@ -278,9 +250,6 @@ export class DestinationsService {
         };
     }
 
-    /**
-     * Get a specific destination by slug
-     */
     async findOneBySlug(slug: string) {
         const destination = await this.cityRepository.findOne({
             where: { slug },

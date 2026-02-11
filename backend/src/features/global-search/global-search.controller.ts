@@ -8,19 +8,11 @@ import { GlobalSearchDto } from './dto/global-search.dto';
 export class GlobalSearchController {
   constructor(private readonly globalSearchService: GlobalSearchService) {}
 
-  /**
-   * GET /api/global-search?q=paris&category=country&limit=10
-   * Public endpoint — no auth required.
-   */
   @Get()
   search(@Query() dto: GlobalSearchDto) {
     return this.globalSearchService.search(dto);
   }
 
-  /**
-   * POST /api/global-search/refresh
-   * Manually refresh the materialized view (admin use).
-   */
   @Post('refresh')
   @HttpCode(200)
   refresh() {

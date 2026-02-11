@@ -18,14 +18,12 @@ import {
 import type { CityDestination, CostOfLivingData } from '../types';
 import { getLocale } from '../../../data/supportedCountries';
 
-/* ── Helpers ── */
 
 const fmtPrice = (v: number | undefined | null, locale: string, decimals = 0): string =>
   v != null && v !== 0
     ? v.toLocaleString(getLocale(locale), { minimumFractionDigits: decimals, maximumFractionDigits: decimals })
     : '—';
 
-/** Petit composant ligne prix */
 function PriceRow({ label, value, currency, decimals = 2, locale = 'fr' }: { label: string; value?: number; currency: string; decimals?: number; locale?: string }) {
   return (
     <div className="flex justify-between py-2 border-b border-gray-50 last:border-0">
@@ -37,7 +35,6 @@ function PriceRow({ label, value, currency, decimals = 2, locale = 'fr' }: { lab
   );
 }
 
-/** Ligne prix avec min/max */
 function PriceRowRange({ label, avg, min, max, currency, locale = 'fr' }: { label: string; avg?: number; min?: number; max?: number; currency: string; locale?: string }) {
   return (
     <div className="py-2 border-b border-gray-50 last:border-0">
@@ -55,7 +52,6 @@ function PriceRowRange({ label, avg, min, max, currency, locale = 'fr' }: { labe
   );
 }
 
-/* ── Catégories avec leur config ── */
 
 interface CategoryConfig {
   id: string;
@@ -77,7 +73,6 @@ const CATEGORIES: CategoryConfig[] = [
   { id: 'sports',         labelKey: 'costOfLivingTab.categories.sports',         icon: Dumbbell,        color: 'text-indigo-600', bgColor: 'bg-indigo-50' },
 ];
 
-/* Market item keys for translation lookup */
 const MARKET_KEYS = [
   'milk1L', 'bread500g', 'eggs12', 'rice1kg', 'cheese1kg',
   'chicken1kg', 'beef1kg', 'apple1kg', 'banana1kg', 'orange1kg',
@@ -85,7 +80,6 @@ const MARKET_KEYS = [
   'wine', 'domesticBeer', 'importedBeer', 'cigarettes',
 ];
 
-/* ── Rendu par catégorie pour UNE ville ── */
 
 function renderCategory(categoryId: string, col: CostOfLivingData, cur: string, t: (key: string) => string, locale: string) {
   const cats = col?.categories;
@@ -209,7 +203,6 @@ function renderCategory(categoryId: string, col: CostOfLivingData, cur: string, 
   }
 }
 
-/* ── Composant principal ── */
 
 interface CostOfLivingTabProps {
   cities: CityDestination[];
@@ -244,7 +237,6 @@ export default function CostOfLivingTab({ cities, countryCurrency, averageHousin
 
   return (
     <div className="space-y-6">
-      {/* Résumé national */}
       {averageHousing && (
         <div className="bg-gradient-to-r from-[#5EA3C0]/10 to-[#5EA3C0]/5 rounded-xl p-5 border border-[#5EA3C0]/20">
           <div className="flex items-center gap-3 mb-1">
@@ -261,7 +253,6 @@ export default function CostOfLivingTab({ cities, countryCurrency, averageHousin
         </div>
       )}
 
-      {/* Sélecteur de catégorie */}
       <div className="flex flex-wrap gap-2">
         {CATEGORIES.map((cat) => {
           const Icon = cat.icon;
@@ -283,17 +274,15 @@ export default function CostOfLivingTab({ cities, countryCurrency, averageHousin
         })}
       </div>
 
-      {/* Contenu par ville pour la catégorie sélectionnée */}
       <div className="space-y-4">
         {citiesWithData.map((city) => {
           const col = city.costOfLiving!;
           const cur = col.currency?.code || countryCurrency || '€';
           const cityId = city.city_id || city.id || 0;
-          const isExpanded = expandedCities[cityId] !== false; // ouvert par défaut
+          const isExpanded = expandedCities[cityId] !== false;
 
           return (
             <div key={cityId} className="border border-gray-200 rounded-xl overflow-hidden">
-              {/* Header ville */}
               <button
                 onClick={() => toggleCity(cityId)}
                 className="w-full bg-gray-50 px-5 py-3 flex items-center justify-between hover:bg-gray-100 transition-colors"
@@ -316,7 +305,6 @@ export default function CostOfLivingTab({ cities, countryCurrency, averageHousin
                 </div>
               </button>
 
-              {/* Contenu */}
               {isExpanded && (
                 <div className="px-5 py-4">
                   {renderCategory(activeCategory, col, cur, t, locale)}

@@ -1,12 +1,12 @@
 
 export interface LogementPrices {
-  avgRentStudio: number; // Loyer moyen studio en €/mois
-  avgRent2Rooms: number; // Loyer moyen T2 en €/mois
-  avgRent3Rooms: number; // Loyer moyen T3 en €/mois
-  depositMonths: number; // Nombre de mois de loyer pour dépôt de garantie
-  utilitiesAvg: number; // Charges mensuelles moyennes en €
-  agencyFeesPercent?: number; // Frais d'agence (% du loyer annuel HT)
-  tenantInsurance: number; // Assurance habitation mensuelle en €
+  avgRentStudio: number;
+  avgRent2Rooms: number;
+  avgRent3Rooms: number;
+  depositMonths: number;
+  utilitiesAvg: number;
+  agencyFeesPercent?: number;
+  tenantInsurance: number;
 }
 
 export interface CityRentPrices {
@@ -18,31 +18,31 @@ export interface CityRentPrices {
 
 export const logementPricesByCountry: Record<string, LogementPrices> = {
   france: {
-    avgRentStudio: 750, // Moyenne nationale hors Paris
-    avgRent2Rooms: 1100, // T2 moyenne nationale
-    avgRent3Rooms: 1500, // T3 moyenne nationale
-    depositMonths: 1, // 1 mois pour non meublé, 2 pour meublé
-    utilitiesAvg: 150, // Électricité + eau + internet
-    agencyFeesPercent: 10, // Max 10% du loyer annuel HT + 25€/m²
-    tenantInsurance: 15, // Assurance habitation obligatoire
+    avgRentStudio: 750,
+    avgRent2Rooms: 1100,
+    avgRent3Rooms: 1500,
+    depositMonths: 1,
+    utilitiesAvg: 150,
+    agencyFeesPercent: 10,
+    tenantInsurance: 15,
   },
   'royaume-uni': {
-    avgRentStudio: 1624, // £1400 × 1.16 (moyenne nationale)
-    avgRent2Rooms: 2784, // £2400 × 1.16 (moyenne nationale)
-    avgRent3Rooms: 3480, // £3000 × 1.16 (moyenne nationale)
-    depositMonths: 1.2, // Max 5 semaines de loyer (≈ 1.15 mois)
-    utilitiesAvg: 284, // £245 × 1.16 (électricité + eau + internet + Council Tax)
-    agencyFeesPercent: 0, // Tenant Fees Act 2019 : frais interdits depuis 2019
-    tenantInsurance: 23, // £20 × 1.16 (contents insurance recommandé, non obligatoire)
+    avgRentStudio: 1624,
+    avgRent2Rooms: 2784,
+    avgRent3Rooms: 3480,
+    depositMonths: 1.2,
+    utilitiesAvg: 284,
+    agencyFeesPercent: 0,
+    tenantInsurance: 23,
   },
   suisse: {
-    avgRentStudio: 1470, // 1400 CHF × 1.05 (moyenne nationale)
-    avgRent2Rooms: 2625, // 2500 CHF × 1.05 (moyenne nationale)
-    avgRent3Rooms: 3360, // 3200 CHF × 1.05 (moyenne nationale)
-    depositMonths: 3, // Généralement 3 mois en Suisse (compte bloqué)
-    utilitiesAvg: 239, // 228 CHF × 1.05 (charges + électricité + Serafe)
-    agencyFeesPercent: 0, // Pas de frais d'agence pour le locataire en Suisse (propriétaire paie)
-    tenantInsurance: 158, // 150 CHF × 1.05 (RC obligatoire/an ÷ 12 = ~13€/mois)
+    avgRentStudio: 1470,
+    avgRent2Rooms: 2625,
+    avgRent3Rooms: 3360,
+    depositMonths: 3,
+    utilitiesAvg: 239,
+    agencyFeesPercent: 0,
+    tenantInsurance: 158,
   },
 };
 
@@ -56,20 +56,20 @@ export const cityRentPrices: Record<string, CityRentPrices[]> = {
     { name: 'Lille', studio: 600, t2: 850, t3: 1150 },
   ],
   'royaume-uni': [
-    { name: 'London', studio: 1740, t2: 2668, t3: 3480 }, // £1500/£2300/£3000 × 1.16
-    { name: 'Manchester', studio: 1044, t2: 1508, t3: 2088 }, // £900/£1300/£1800 × 1.16
-    { name: 'Birmingham', studio: 928, t2: 1392, t3: 1972 }, // £800/£1200/£1700 × 1.16
-    { name: 'Edinburgh', studio: 1102, t2: 1624, t3: 2204 }, // £950/£1400/£1900 × 1.16
-    { name: 'Bristol', studio: 1102, t2: 1566, t3: 2146 }, // £950/£1350/£1850 × 1.16
-    { name: 'Leeds', studio: 870, t2: 1276, t3: 1740 }, // £750/£1100/£1500 × 1.16
+    { name: 'London', studio: 1740, t2: 2668, t3: 3480 },
+    { name: 'Manchester', studio: 1044, t2: 1508, t3: 2088 },
+    { name: 'Birmingham', studio: 928, t2: 1392, t3: 1972 },
+    { name: 'Edinburgh', studio: 1102, t2: 1624, t3: 2204 },
+    { name: 'Bristol', studio: 1102, t2: 1566, t3: 2146 },
+    { name: 'Leeds', studio: 870, t2: 1276, t3: 1740 },
   ],
   suisse: [
-    { name: 'Zurich', studio: 1785, t2: 2625, t3: 3675 }, // 1700/2500/3500 CHF × 1.05
-    { name: 'Geneva', studio: 1890, t2: 2730, t3: 3990 }, // 1800/2600/3800 CHF × 1.05
-    { name: 'Lausanne', studio: 1680, t2: 2415, t3: 3255 }, // 1600/2300/3100 CHF × 1.05
-    { name: 'Basel', studio: 1575, t2: 2310, t3: 3150 }, // 1500/2200/3000 CHF × 1.05
-    { name: 'Bern', studio: 1470, t2: 2205, t3: 2940 }, // 1400/2100/2800 CHF × 1.05
-    { name: 'Lucerne', studio: 1365, t2: 1995, t3: 2730 }, // 1300/1900/2600 CHF × 1.05
+    { name: 'Zurich', studio: 1785, t2: 2625, t3: 3675 },
+    { name: 'Geneva', studio: 1890, t2: 2730, t3: 3990 },
+    { name: 'Lausanne', studio: 1680, t2: 2415, t3: 3255 },
+    { name: 'Basel', studio: 1575, t2: 2310, t3: 3150 },
+    { name: 'Bern', studio: 1470, t2: 2205, t3: 2940 },
+    { name: 'Lucerne', studio: 1365, t2: 1995, t3: 2730 },
   ],
 };
 

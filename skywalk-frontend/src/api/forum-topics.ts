@@ -31,21 +31,17 @@ export const forumTopicsApi = {
     await apiClient.delete(`/forum-topic/${id}`);
   },
 
-  // ─── Moderation endpoints ──────────────────────────────────────────
 
-  /** Moderator: toggle lock on a topic */
   lockTopic: async (id: number): Promise<ForumTopic> => {
     const response = await apiClient.patch<ForumTopic>(`/forum-topic/${id}/lock`);
     return response.data;
   },
 
-  /** Moderator: toggle pin on a topic */
   pinTopic: async (id: number): Promise<ForumTopic> => {
     const response = await apiClient.patch<ForumTopic>(`/forum-topic/${id}/pin`);
     return response.data;
   },
 
-  /** Moderator: delete any topic */
   moderatorRemove: async (id: number): Promise<void> => {
     await apiClient.delete(`/forum-topic/moderate/${id}`);
   },

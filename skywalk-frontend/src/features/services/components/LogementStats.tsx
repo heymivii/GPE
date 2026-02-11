@@ -91,13 +91,11 @@ export default function LogementStats({ countryName }: LogementStatsProps) {
   const same = isSameCurrency(localCur);
   const fp = (v?: number) => formatPrice(v, localCur, rates);
 
-  // Key headline figures
   const rent1BCenter = housing.rent.oneBedroom.cityCenter.avg;
   const rent1BOutside = housing.rent.oneBedroom.outsideCenter.avg;
   const rent3BCenter = housing.rent.threeBedroom.cityCenter.avg;
   const utilitiesAvg = utilities.basic85m2.avg;
 
-  /** Render a headline card value: converted price + local in parentheses if different */
   const HeadlinePrice = ({ value, prefix }: { value?: number; prefix?: string }) => (
     <>
       <p className="text-2xl font-bold text-gray-900">

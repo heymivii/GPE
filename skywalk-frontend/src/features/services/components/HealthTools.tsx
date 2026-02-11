@@ -7,7 +7,6 @@ import type { CleanedCostOfLivingData } from '../../../api/costOfLiving';
 import { useCurrency } from '../../../contexts/CurrencyContext';
 import { getCountryMapping } from '../../../data/supportedCountries';
 
-/* Static health-system monthly costs in LOCAL currency */
 const HEALTH_COSTS: Record<string, { publicMonthly: number; privateMonthly: number }> = {
   france:       { publicMonthly: 0,     privateMonthly: 70 },
   'etats-unis': { publicMonthly: 450,   privateMonthly: 0 },
@@ -213,11 +212,10 @@ export function HealthBudgetTool({ countryName }: { countryName?: string }) {
   const rates = data?.currency?.exchangeRates ?? null;
   const fp = (v: number) => formatPrice(v, localCur, rates);
 
-  // Profile multipliers for annual estimates (insurance base × 12)
   const multipliers: Record<string, { insurance: number; extra: number }> = {
-    young: { insurance: 0.8, extra: 300 },   // lower premiums, few extra costs
-    adult: { insurance: 1.0, extra: 600 },   // average
-    senior: { insurance: 1.5, extra: 1200 }, // higher premiums + more care
+    young: { insurance: 0.8, extra: 300 },
+    adult: { insurance: 1.0, extra: 600 },
+    senior: { insurance: 1.5, extra: 1200 },
   };
   const mult = multipliers[profile];
   const monthlyInsurance = Math.round((costs.publicMonthly + costs.privateMonthly) * mult.insurance);

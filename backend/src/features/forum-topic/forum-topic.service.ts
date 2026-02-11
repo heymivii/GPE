@@ -18,13 +18,11 @@ export class ForumTopicService {
   ) {}
 
   async create(createForumTopicDto: CreateForumTopicDto): Promise<ForumTopic> {
-    // Content filter on title
     const titleFilter = await this.contentFilterService.validate(createForumTopicDto.title);
     if (!titleFilter.ok) {
       throw new BadRequestException(`Topic title rejected: ${titleFilter.reason}`);
     }
 
-    // Content filter on initial message content
     const contentFilter = await this.contentFilterService.validate(createForumTopicDto.content);
     if (!contentFilter.ok) {
       throw new BadRequestException(`Topic content rejected: ${contentFilter.reason}`);
@@ -84,7 +82,6 @@ export class ForumTopicService {
   async update(id: number, updateForumTopicDto: UpdateForumTopicDto): Promise<ForumTopic> {
     const topic = await this.findOne(id);
 
-    // Content filter on title if provided
     if (updateForumTopicDto.title) {
       const titleFilter = await this.contentFilterService.validate(updateForumTopicDto.title);
       if (!titleFilter.ok) {
@@ -97,7 +94,6 @@ export class ForumTopicService {
     const updatedTopic = await this.forumTopicRepository.save(topic);
 
     if (updateForumTopicDto.content !== undefined) {
-      // Content filter on content if provided
       if (updateForumTopicDto.content.trim()) {
         const contentFilter = await this.contentFilterService.validate(updateForumTopicDto.content);
         if (!contentFilter.ok) {
@@ -135,7 +131,6 @@ export class ForumTopicService {
     return updatedTopic;
   }
 
-  // ─── Moderation methods ───────────────────────────────────────────
 
   async lockTopic(id: number): Promise<ForumTopic> {
     const topic = await this.findOne(id);

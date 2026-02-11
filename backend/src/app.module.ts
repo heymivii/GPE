@@ -35,7 +35,6 @@ import { OecdMigrationModule } from './features/oecd-migration/oecd-migration.mo
       envFilePath: ['.env', '../.env'],
     }),
 
-    // Rate limiting: 60 requests per minute globally
     ThrottlerModule.forRoot([
       { ttl: 60_000, limit: 60 },
     ]),
@@ -66,7 +65,6 @@ import { OecdMigrationModule } from './features/oecd-migration/oecd-migration.mo
     OecdMigrationModule,
   ],
   providers: [
-    // Apply rate limiting globally
     { provide: APP_GUARD, useClass: ThrottlerGuard },
   ],
 })

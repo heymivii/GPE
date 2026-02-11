@@ -77,11 +77,9 @@ export default function PersonalizedDashboard() {
   useEffect(() => {
     if (projects && projects.length > 0) {
       if (selectedProjectId === null) {
-        // No project selected — pick the most recent one
         const mostRecentProject = projects[projects.length - 1]
         setSelectedProjectId(mostRecentProject.idProject)
       } else {
-        // Validate that the selected project belongs to the user
         const exists = projects.some(p => p.idProject === selectedProjectId)
         if (!exists) {
           setSelectedProjectId(projects[projects.length - 1].idProject)
@@ -106,8 +104,6 @@ export default function PersonalizedDashboard() {
   const countryData = useCountryData(activeProject?.idDestinationCountry)
   const originCountryData = useCountryData(activeProject?.idOriginCountry)
 
-  // Widget size is now user-configurable via useDashboardPreferences
-  // Grid is 4 columns so: small=1, medium=2, large=4 (full width)
   const getWidgetColSpan = (widgetId: string) => {
     const size = getWidgetSize(widgetId)
     switch (size) {
@@ -150,7 +146,6 @@ export default function PersonalizedDashboard() {
     )
   }
 
-  // Reverse mapping: backend objective values → frontend onboarding keys
   const objectiveReverseMap: Record<string, string> = {
     'study': 'studies',
     'work': 'work',
@@ -225,7 +220,7 @@ export default function PersonalizedDashboard() {
       <div 
         ref={setNodeRef} 
         style={style} 
-        className={`relative h-full ${extraClass} ${editMode ? 'hover:ring-2 hover:ring-purple-300 rounded-xl transition-all' : ''}`}
+        className={`relative ${extraClass} ${editMode ? 'hover:ring-2 hover:ring-purple-300 rounded-xl transition-all' : ''}`}
       >
         {editMode && (
           <div
@@ -237,7 +232,7 @@ export default function PersonalizedDashboard() {
             <GripVertical className="w-4 h-4 text-white" />
           </div>
         )}
-        <div className={`h-full ${editMode ? 'pl-4' : ''}`}>
+        <div className={`${editMode ? 'pl-4' : ''}`}>
           {children}
         </div>
       </div>
@@ -287,6 +282,7 @@ export default function PersonalizedDashboard() {
             key={widgetId}
             countryId={activeProject?.idDestinationCountry}
             countryIsoCode={countryData?.code}
+            activeProject={activeProject}
             {...commonProps}
           />
         )
@@ -421,7 +417,6 @@ export default function PersonalizedDashboard() {
       </div>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Quick Stats - Compact row */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow">
             <div className="flex items-center gap-3 mb-3">
@@ -545,7 +540,7 @@ export default function PersonalizedDashboard() {
             items={visibleWidgets}
             strategy={rectSortingStrategy}
           >
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 auto-rows-auto">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 auto-rows-auto items-start">
               {visibleWidgets.map((widgetId) => (
                 <SortableWidget key={widgetId} id={widgetId} className={getWidgetColSpan(widgetId)}>
                   {renderWidget(widgetId)}
@@ -621,10 +616,8 @@ export default function PersonalizedDashboard() {
                       onClick={() => {
                         if (isAdded) return
                         if (isHidden) {
-                          // Widget is in layout but hidden → un-hide it
                           toggleWidgetVisibility(widget.id)
                         } else if (!isInLayout) {
-                          // Widget is not in layout at all → add it
                           const newLayout = [...dashboardLayout, widget.id]
                           setDashboardLayout(newLayout)
                           updateWidgetOrder(newLayout)

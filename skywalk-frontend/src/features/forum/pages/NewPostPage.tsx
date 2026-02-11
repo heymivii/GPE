@@ -28,7 +28,6 @@ export default function NewPostPage() {
   const { user } = useAuth();
   const createTopic = useCreateForumTopic();
   
-  // Fetch countries for the country selector
   const { data: countries = [] } = useQuery({
     queryKey: ['destinations-list'],
     queryFn: destinationsApi.getAll,
@@ -42,7 +41,6 @@ export default function NewPostPage() {
     countryId: undefined as number | undefined
   });
 
-  // Feedback banners
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
   const [feedbackType, setFeedbackType] = useState<'error' | 'success'>('error');
 
@@ -151,7 +149,6 @@ export default function NewPostPage() {
           <p className="text-gray-600">{t('forum.newTopic.subtitle')}</p>
         </div>
 
-        {/* Feedback banner */}
         {feedbackMessage && (
           <div
             className={`mb-6 flex items-center gap-3 px-4 py-3 rounded-lg border text-sm font-medium ${
@@ -178,7 +175,6 @@ export default function NewPostPage() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6 relative">
-          {/* Loading overlay */}
           {createTopic.isPending && (
             <div className="absolute inset-0 bg-white/60 backdrop-blur-sm z-10 flex items-center justify-center rounded-lg">
               <div className="flex flex-col items-center gap-3">
@@ -246,7 +242,6 @@ export default function NewPostPage() {
             </div>
           </div>
 
-          {/* Country Selector */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
             <label className="block text-sm font-medium text-gray-900 mb-2">
               <Globe className="w-4 h-4 inline mr-1.5 text-blue-500" />

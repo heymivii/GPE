@@ -23,7 +23,6 @@ interface EmploiStatsProps {
   countryName?: string;
 }
 
-/** Slug (lowercase French) → Adzuna 2-letter country code */
 const SLUG_TO_ADZUNA: Record<string, string> = {
   france: 'fr',
   'royaume-uni': 'gb',
@@ -67,7 +66,6 @@ export default function EmploiStats({ countryName }: EmploiStatsProps) {
     || countryName?.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('-')
     || 'France';
 
-  // ──── Adzuna: total job count + sample offers ────
   const {
     data: adzunaData,
     isLoading: isAdzunaLoading,
@@ -79,7 +77,6 @@ export default function EmploiStats({ countryName }: EmploiStatsProps) {
     retry: 1,
   });
 
-  // ──── Cost of living API: real salary data ────
   const {
     data: colData,
     isLoading: isColLoading,
@@ -91,7 +88,6 @@ export default function EmploiStats({ countryName }: EmploiStatsProps) {
     retry: 1,
   });
 
-  // ──── Static data (fallback + structural info) ────
   const staticData = emploiDataByCountry[countryKey] || emploiDataByCountry['france'];
   const sectors = inDemandSectorsByCountry[countryKey] || inDemandSectorsByCountry['france'] || [];
   const contracts = contractTypesByCountry[countryKey] || contractTypesByCountry['france'] || [];
@@ -101,7 +97,6 @@ export default function EmploiStats({ countryName }: EmploiStatsProps) {
 
   const isLoading = isAdzunaLoading || isColLoading;
 
-  // Resolve real values — prefer API data, fall back to static
   const realSalaryAvg = colData?.categories?.salary?.averageMonthly?.avg;
   const realSalaryMin = colData?.categories?.salary?.averageMonthly?.min;
   const realSalaryMax = colData?.categories?.salary?.averageMonthly?.max;

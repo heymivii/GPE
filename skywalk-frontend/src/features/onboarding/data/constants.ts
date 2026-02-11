@@ -7,8 +7,7 @@ export const COUNTRIES = SUPPORTED_COUNTRIES.map(c => ({
   i18nKey: c.i18nKey
 }));
 
-// IDs for translation lookup - labels resolved dynamically via t()
-export const LANGUAGE_LEVEL_IDS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'] as const;
+export const LANGUAGE_LEVEL_IDS = ['none', 'A1', 'A2', 'B1', 'B2', 'C1', 'C2'] as const;
 export const STATUS_IDS = ['student', 'employee', 'self_employed', 'unemployed', 'retired', 'other'] as const;
 export const TRAVEL_PARTY_IDS = ['alone', 'couple', 'family', 'friends'] as const;
 export const GOAL_IDS = ['studies', 'work', 'discovery', 'family', 'internship', 'other'] as const;
@@ -17,9 +16,8 @@ export const STEPS_DONE_IDS = ['school_registration', 'housing_search', 'job_sea
 export const PRIORITY_IDS = ['housing', 'employment', 'transport', 'admin_help', 'health', 'social_integration'] as const;
 export const ONBOARDING_STEP_IDS = ['destination', 'profile', 'objective', 'preparation', 'needs', 'summary'] as const;
 
-// Legacy exports for backward compatibility (used by SummaryStep getOptionLabel)
-// Labels are now i18n keys — resolve with t(item.labelKey) at render time
 export const LANGUAGE_LEVELS = [
+  { value: 'none', labelKey: 'onboardingLegacy.languageLevels.none' },
   { value: 'A1', labelKey: 'onboardingLegacy.languageLevels.A1' },
   { value: 'A2', labelKey: 'onboardingLegacy.languageLevels.A2' },
   { value: 'B1', labelKey: 'onboardingLegacy.languageLevels.B1' },

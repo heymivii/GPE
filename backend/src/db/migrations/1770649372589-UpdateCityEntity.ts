@@ -4,8 +4,6 @@ export class UpdateCityEntity1770649372589 implements MigrationInterface {
     name = 'UpdateCityEntity1770649372589'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        // Only add the new columns mandated by the feature requirements
-        // We skip dropping/renaming other columns to prevent data loss due to schema drift
         await queryRunner.query(`ALTER TABLE "city" ADD "slug" character varying(150)`);
         await queryRunner.query(`ALTER TABLE "city" ADD CONSTRAINT "UQ_city_slug" UNIQUE ("slug")`);
         await queryRunner.query(`ALTER TABLE "city" ADD "timezone" character varying(100)`);
