@@ -1,0 +1,56 @@
+services:
+  - type: web
+    name: skywalk-backend
+    runtime: node
+    region: frankfurt
+    rootDir: backend
+    buildCommand: npm install && npm run build
+    startCommand: node dist/main
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "3000"
+      - key: DB_HOST
+        value: db.wchvgimbdojeycxddzhb.supabase.co
+      - key: DB_PORT
+        value: "5432"
+      - key: DB_USER
+        value: postgres
+      - key: DB_PASS
+        sync: false
+      - key: DB_NAME
+        value: postgres
+      - key: DB_SSL
+        value: "true"
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: FRONTEND_URL
+        sync: false
+      - key: ADZUNA_APP_ID
+        sync: false
+      - key: ADZUNA_APP_KEY
+        sync: false
+      - key: RAPIDAPI_KEY
+        sync: false
+      - key: RAPIDAPI_HOST
+        value: cost-of-living-and-prices.p.rapidapi.com
+      - key: NODE_OPTIONS
+        value: "--experimental-global-webcrypto"
+
+  - type: web
+    name: skywalk-frontend
+    runtime: static
+    rootDir: skywalk-frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: SAMEORIGIN
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

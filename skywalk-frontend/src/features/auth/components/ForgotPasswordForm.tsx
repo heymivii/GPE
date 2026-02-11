@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { useMutation } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import api from "../../../lib/api";
+import { authApi } from "../../../api/auth";
 
 export default function ForgotPasswordForm() {
   const [email, setEmail] = useState("");
@@ -11,7 +11,7 @@ export default function ForgotPasswordForm() {
   const { t } = useTranslation();
 
   const forgotMutation = useMutation({
-    mutationFn: (emailAddr: string) => api.post("/auth/forgot-password", { email: emailAddr }),
+    mutationFn: (emailAddr: string) => authApi.forgotPassword({ email: emailAddr }),
     onSuccess: () => {
       setIsSuccess(true);
       toast.success(t("auth.forgotPassword.emailSent"));

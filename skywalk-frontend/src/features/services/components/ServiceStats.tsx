@@ -10,7 +10,7 @@ interface ServiceStatsProps {
   color: string;
 }
 
-export default function ServiceStats({ stats, color }: ServiceStatsProps) {
+export default function ServiceStats({ stats }: ServiceStatsProps) {
   const { t } = useTranslation();
   return (
     <section>

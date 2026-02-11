@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, CheckCircle, Lightbulb, HelpCircle } from 'lucide-react';
+import { ChevronDown, Lightbulb } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { ServiceGuide } from '../../../data/services-config';
 

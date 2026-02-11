@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, type ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { costOfLivingApi } from '../api/costOfLiving';
 import type { CleanedCostOfLivingData } from '../api/costOfLiving';

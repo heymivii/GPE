@@ -3,7 +3,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import api from "../../../lib/api";
+import { authApi } from "../../../api/auth";
 
 const calculatePasswordStrength = (password: string) => {
   let strength = 0;
@@ -59,7 +59,7 @@ export default function ResetPasswordForm() {
 
   const resetMutation = useMutation({
     mutationFn: (data: { token: string; newPassword: string }) =>
-      api.post("/auth/reset-password", data),
+      authApi.resetPassword(data),
     onSuccess: () => {
       toast.success(t("auth.resetPassword.success"));
       navigate("/auth/login");
