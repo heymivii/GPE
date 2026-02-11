@@ -6,6 +6,7 @@
     "comparison": "Comparison",
     "search": "Search",
     "forum": "Forum",
+    "visa": "Visa",
     "dashboard": "Dashboard",
     "projects": "My Projects",
     "explore": "Explore",
@@ -14,7 +15,8 @@
     "register": "Sign Up",
     "logout": "Logout",
     "profile": "My Profile",
-    "myDashboard": "My Dashboard"
+    "myDashboard": "My Dashboard",
+    "blog": "Blog"
   },
   "countries": {
     "france": "France",
@@ -1118,7 +1120,71 @@
       "login": "Log in",
       "footer": "No credit card required • Sign up in 30 seconds"
     },
-    "bestOption": "Best option"
+    "bestOption": "Best option",
+    "data": {
+      "continents": {
+        "Europe": "Europe",
+        "Asie": "Asia",
+        "Amérique du Nord": "North America"
+      },
+      "capitals": {
+        "Paris": "Paris",
+        "Berne": "Bern",
+        "Tokyo": "Tokyo",
+        "Washington D.C.": "Washington D.C."
+      },
+      "languages": {
+        "Français": "French",
+        "Allemand": "German",
+        "Italien": "Italian",
+        "Japonais": "Japanese",
+        "Anglais": "English",
+        "Romanche": "Romansh"
+      },
+      "workLifeBalance": {
+        "Excellent": "Excellent",
+        "Bon": "Good",
+        "Moyen": "Average",
+        "Moyen (culture du travail intense)": "Average (intense work culture)"
+      },
+      "visaDifficulty": {
+        "Moyenne": "Moderate",
+        "Élevée": "High",
+        "Facile": "Easy"
+      },
+      "bestFor": {
+        "Étudiants": "Students",
+        "Travailleurs qualifiés": "Skilled workers",
+        "Familles": "Families",
+        "Professionnels": "Professionals",
+        "Familles aisées": "Wealthy families",
+        "Indépendants": "Freelancers",
+        "Professionnels IT": "IT Professionals",
+        "Enseignants de langues": "Language teachers",
+        "Passionnés de culture japonaise": "Japanese culture enthusiasts",
+        "Travailleurs qualifiés tech": "Tech skilled workers",
+        "Entrepreneurs": "Entrepreneurs",
+        "Professionnels finance et santé": "Finance & healthcare professionals"
+      },
+      "languageRequired": {
+        "Français requis": "French required",
+        "Français, Allemand ou Italien selon canton": "French, German or Italian depending on canton",
+        "Japonais fortement recommandé": "Japanese highly recommended",
+        "Anglais indispensable": "English essential"
+      },
+      "healthcareSystem": {
+        "FR": "Universal public system (Social Security) with partial reimbursements",
+        "CH": "Mandatory private health insurance system (LAMal)",
+        "JP": "Universal health insurance system (Kokumin Kenko Hoken)",
+        "US": "Private insurance-based system, no universal coverage"
+      },
+      "climateType": {
+        "FR": "Temperate oceanic, continental and Mediterranean depending on region",
+        "CH": "Temperate continental, alpine in mountains",
+        "JP": "Temperate with four distinct seasons, subtropical in the south",
+        "US": "Highly variable by region: humid continental, subtropical, arid, Mediterranean"
+      }
+    }
   },
   "dashboard": {
     "dragToReorder": "Drag to reorder",
@@ -1238,7 +1304,17 @@
           "completed": "{{completed}}/{{total}} ({{percentage}}%)",
           "hide": "Hide",
           "show": "{{count}} substeps",
-          "optional": "(optional)"
+          "optional": "optional",
+          "categories": {
+            "visa": "Visa",
+            "preDeparture": "Pre-departure",
+            "admin": "Administrative",
+            "housing": "Housing",
+            "health": "Health",
+            "finance": "Finance",
+            "arrival": "Arrival",
+            "integration": "Integration"
+          }
         },
         "budgetTracker": {
           "title": "Budget Analysis",
@@ -1693,6 +1769,7 @@
     },
     "constants": {
       "languageLevels": {
+        "none": "Not proficient",
         "A1": "A1 - Beginner",
         "A2": "A2 - Elementary",
         "B1": "B1 - Intermediate",
@@ -1885,6 +1962,7 @@
     "otherLanguages": "Other spoken languages",
     "editPreferences": "Preferences & Security",
     "selectLanguageLevel": "Select",
+    "languageLevelNone": "Not proficient",
     "languageLevelA1": "A1 - Beginner",
     "languageLevelA2": "A2 - Elementary",
     "languageLevelB1": "B1 - Intermediate",
@@ -2020,6 +2098,98 @@
     "cancelledDate": "Cancellation date",
     "cancelledReasonInfo": "Reason",
     "cancelledDetailsInfo": "Details"
+  },
+  "projectRecommendations": {
+    "title": "Personalized Recommendations",
+    "subtitle": "Based on your project analysis",
+    "recommendedVisa": "Recommended Visa",
+    "seeDetails": "See details",
+    "alsoConsider": "Also consider:",
+    "servicesTitle": "Recommended Services",
+    "confidence": {
+      "high": "High confidence",
+      "medium": "Medium confidence",
+      "low": "Suggestion"
+    },
+    "visaReason": {
+      "default": "Based on your profile for {{country}}",
+      "workLong": "You plan to work long-term — a work visa is essential",
+      "workShort": "Even for a short work period, a work visa is required",
+      "study": "For studying abroad, a student visa is necessary",
+      "family": "Family reunification requires a specific visa",
+      "retirement": "For a long-term retirement stay, a residence visa is recommended",
+      "alternative": "Alternative option based on your situation"
+    },
+    "serviceReason": {
+      "employment": "Priority in your project — find a job",
+      "housing": "Priority in your project — find housing",
+      "health": "Priority in your project — prepare your health coverage",
+      "transport": "Priority in your project — organize your transportation",
+      "admin_help": "Priority in your project — simplify your procedures",
+      "social_integration": "Priority in your project — integrate easily",
+      "education": "Priority in your project — get trained",
+      "language": "Priority in your project — learn the local language",
+      "business": "Priority in your project — start your business",
+      "finance": "Priority in your project — manage your finances",
+      "visaAuto": "Essential — prepare your immigration documents",
+      "workAuto": "Recommended because your goal is to work",
+      "studyAuto": "Recommended because your goal is to study"
+    },
+    "serviceNames": {
+      "visa": "Visa & Immigration",
+      "emploi": "Employment",
+      "logement": "Housing",
+      "sante": "Health",
+      "transport": "Transport",
+      "demarches": "Procedures",
+      "culture": "Social Integration",
+      "education": "Education",
+      "business": "Business",
+      "banque": "Banking & Finance"
+    },
+    "actionPlan": {
+      "title": "Your Action Plan",
+      "visa": {
+        "title": "Prepare your visa",
+        "description": "Gather documents and start the visa application",
+        "timeline": "4-12 weeks"
+      },
+      "job": {
+        "title": "Find a job",
+        "description": "Search for offers and prepare your applications",
+        "timeline": "1-6 months"
+      },
+      "study": {
+        "title": "University enrollment",
+        "description": "Apply to institutions and prepare your file",
+        "timeline": "3-9 months"
+      },
+      "housing": {
+        "title": "Find housing",
+        "description": "Search and book your housing at the destination",
+        "timeline": "2-8 weeks"
+      },
+      "health": {
+        "title": "Health coverage",
+        "description": "Subscribe to health insurance suited to the country",
+        "timeline": "1-4 weeks"
+      },
+      "admin": {
+        "title": "Administrative procedures",
+        "description": "Complete mandatory procedures (registration, permits...)",
+        "timeline": "2-6 weeks"
+      },
+      "integration": {
+        "title": "Social integration",
+        "description": "Join communities and local events",
+        "timeline": "Upon arrival"
+      },
+      "transport": {
+        "title": "Organize transport",
+        "description": "Driver's license, subscriptions, vehicle...",
+        "timeline": "1-4 weeks"
+      }
+    }
   },
   "categoryGrid": {
     "title": "Explore our services",
@@ -2179,7 +2349,8 @@
       "forum": "Forum",
       "procedure": "Procedures",
       "service": "Services",
-      "faq": "Frequently asked questions"
+      "faq": "Frequently asked questions",
+      "blog": "Blog"
     },
     "footer": {
       "navigate": "navigate",
@@ -2291,6 +2462,7 @@
   },
   "onboardingLegacy": {
     "languageLevels": {
+      "none": "Not proficient",
       "A1": "A1 - Beginner",
       "A2": "A2 - Elementary",
       "B1": "B1 - Intermediate",
@@ -2683,6 +2855,378 @@
           "rentZurich": "Average rent Zurich",
           "rentGeneva": "Average rent Geneva"
         }
+      }
+    }
+  },
+  "visa": {
+    "title": "🛂 Visa & Immigration",
+    "description": "Complete guides on visas, residence permits and immigration procedures for each country.",
+    "selectCountry": "Destination:",
+    "visaTypes": "Visa Types",
+    "duration": "Duration",
+    "cost": "Cost",
+    "processing": "Processing",
+    "learnMore": "Learn more",
+    "workVisaGuide": "Work Visa Guide",
+    "stepByStep": "Step by step",
+    "costsBreakdown": "Costs Breakdown",
+    "totalEstimated": "Total estimated",
+    "importantWarnings": "Important Warnings",
+    "officialResources": "Official Resources",
+    "visaChecker": "Visa Checker",
+    "visaCheckerDesc": "Check visa requirements for your stay.",
+    "checkRequirements": "Check Requirements",
+    "checklist": "Visa Checklist",
+    "checklistDesc": "Make sure you have all documents ready.",
+    "progress": "Progress",
+    "saveProgress": "Create an account to save your progress",
+    "createAccount": "Create account",
+    "goToProjectChecklist": "View my project checklist",
+    "projectChecklistHint_one": "You have {{count}} project for this country",
+    "projectChecklistHint_other": "You have {{count}} projects for this country",
+    "projectChecklistHint": "You have {{count}} project(s) for this country",
+    "noProjectForCountry": "Create a project to track your progress in detail",
+    "createProject": "Create an expatriation project",
+    "practicalTips": "Practical Tips",
+    "types": {
+      "shortStay": "Short-stay visa (< 90 days)",
+      "workVisa": "Work visa (long-stay)",
+      "studentVisa": "Student visa",
+      "familyReunification": "Family reunification",
+      "shortStayDesc": "Tourist / Business",
+      "shortStayDescUS": "B1/B2 Visa — Tourism and business",
+      "shortStayDescCH": "Schengen Visa — Tourism and business",
+      "shortStayDescJP": "Temporary visitor visa — Exempt for many nationalities",
+      "workVisaDescFR": "\"Passeport Talent\" / \"Salarié\"",
+      "workVisaDescUS": "H-1B Visa — Specialty occupations",
+      "workVisaDescCH": "L/B Permit — Foreign worker",
+      "workVisaDescJP": "Engineer / Specialist / Humanities visa",
+      "studentVisaDesc": "For studies in France",
+      "studentVisaDescUS": "F-1 Visa — Academic studies",
+      "studentVisaDescCH": "Swiss student permit",
+      "studentVisaDescJP": "Student visa — Language schools and universities",
+      "familyReunificationDesc": "Join a family member in France",
+      "familyReunificationDescUS": "Green Card — Permanent residence through family",
+      "familyReunificationDescCH": "Family reunification in Switzerland",
+      "familyReunificationDescJP": "Spouse of Japanese national visa"
+    },
+    "durations": {
+      "90days": "Up to 90 days",
+      "180days": "Up to 180 days",
+      "1to4years": "1 to 4 years",
+      "1to5years": "1 to 5 years",
+      "3to6years": "3 to 6 years",
+      "1yearRenewable": "1 year (renewable)",
+      "2yearsMax": "2 years max",
+      "1to3years": "1 to 3 years",
+      "studyDuration": "Duration of studies",
+      "variable": "Variable",
+      "permanent": "Permanent"
+    },
+    "timelines": {
+      "15days": "15 days",
+      "5to10days": "5 to 10 days",
+      "1to2months": "1 to 2 months",
+      "2to3months": "2 to 3 months",
+      "1to3months": "1 to 3 months",
+      "2to4months": "2 to 4 months",
+      "3to6months": "3 to 6 months",
+      "3to8months": "3 to 8 months",
+      "4to6months": "4 to 6 months",
+      "4to8weeks": "4 to 8 weeks",
+      "6to8weeks": "6 to 8 weeks",
+      "2to4weeks": "2 to 4 weeks",
+      "1to2weeks": "1 to 2 weeks",
+      "1to2weeksAfterArrival": "1 to 2 weeks after arrival",
+      "2to4weeksAfterArrival": "2 to 4 weeks after arrival",
+      "3monthsAfterArrival": "Within 3 months of arrival",
+      "14daysAfterArrival": "Within 14 days of arrival",
+      "uponArrival": "Upon arrival",
+      "variable": "Variable",
+      "marchApril": "March-April (annual lottery)"
+    },
+    "steps": {
+      "step1ObtainJobOffer": "Obtain a job offer",
+      "step1DescFR": "Find employment in France",
+      "step1Detail1FR": "Search on job platforms (Indeed, LinkedIn, APEC)",
+      "step1Detail2FR": "Employer must justify hiring from abroad",
+      "step2EmployerApplies": "Employer applies for work permit",
+      "step2DescFR": "Employer submits to DIRECCTE",
+      "step3VisaApplication": "Visa application",
+      "step3DescFR": "Apply at French consulate",
+      "step3Detail1": "Work permit approval",
+      "step3Detail2": "Employment contract",
+      "step3Detail3": "Proof of accommodation",
+      "step4MedicalExam": "Medical examination",
+      "step4DescFR": "OFII medical check (mandatory)",
+      "step5ResidencePermit": "Residence permit",
+      "step5DescFR": "Validate visa at local prefecture",
+      "step1ObtainJobOfferUS": "Obtain a sponsored job offer",
+      "step1DescUS": "Find an employer willing to sponsor H-1B",
+      "step1Detail1US": "Position must require a Bachelor's degree minimum",
+      "step1Detail2US": "Employer must file the LCA (Labor Condition Application)",
+      "step2H1BLottery": "H-1B lottery registration",
+      "step2DescUS": "Registration in March, results in April",
+      "step3USCISPetition": "USCIS Petition",
+      "step3DescUS": "Employer files I-129 petition with USCIS",
+      "step4ConsularInterview": "Consular interview",
+      "step4DescUS": "Appointment at US embassy with all documents",
+      "step5EntryAndSSN": "Entry to US and SSN",
+      "step5DescUS": "Get SSN card and activate visa status",
+      "step1ObtainJobOfferCH": "Obtain a job offer in Switzerland",
+      "step1DescCH": "Find a Swiss employer",
+      "step1Detail1CH": "Priority given to Swiss and EU residents",
+      "step1Detail2CH": "Annual quotas apply for non-EU workers",
+      "step2EmployerAppliesCH": "Employer applies for permit",
+      "step2DescCH": "Filing with cantonal migration office",
+      "step3CantonalApproval": "Cantonal approval",
+      "step3DescCH": "Canton approves the work permit",
+      "step4VisaCollectionCH": "Visa collection",
+      "step4DescCH": "Collect your visa at the Swiss embassy",
+      "step5RegisterMunicipality": "Register at municipality",
+      "step5DescCH": "Register within 14 days of arrival",
+      "step1ObtainJobOfferJP": "Obtain a job offer in Japan",
+      "step1DescJP": "Find a Japanese employer or school",
+      "step1Detail1JP": "Visa must match a residence status category",
+      "step1Detail2JP": "Employer or school acts as sponsor",
+      "step2COEApplication": "Certificate of Eligibility (COE) application",
+      "step2DescJP": "Sponsor files application with Immigration",
+      "step3VisaApplicationJP": "Visa application at consulate",
+      "step3DescJP": "Submit COE at Japanese consulate",
+      "step4ResidenceCard": "Residence card",
+      "step4DescJP": "Issued at airport upon arrival in Japan",
+      "step5CityRegistration": "City registration",
+      "step5DescJP": "Register at your local city hall"
+    },
+    "costs": {
+      "visaApplicationFee": "Visa application fee",
+      "documentTranslations": "Document translations",
+      "medicalExamination": "Medical examination",
+      "residencePermit": "Residence permit",
+      "h1bRegistrationFee": "H-1B registration fee",
+      "h1bPetitionFee": "H-1B petition fee",
+      "premiumProcessing": "Premium processing (optional)",
+      "healthInsuranceCH": "Health insurance (monthly)",
+      "coeCertificate": "Certificate of Eligibility (COE)",
+      "residenceCard": "Residence card",
+      "healthInsuranceJP": "Health insurance (monthly)"
+    },
+    "warnings": {
+      "warningProcessingFR": "Processing times have increased in 2026 — allow 3-4 months minimum",
+      "warningBrexit": "Post-Brexit: UK citizens now need a visa",
+      "warningHealthInsurance": "Health insurance is MANDATORY from day 1",
+      "warningH1BLottery": "H-1B lottery: only ~25% chance of selection",
+      "warningUSProcessing": "USCIS processing times vary greatly — plan for 6+ months",
+      "warningUSHealthInsurance": "No universal healthcare — private insurance essential",
+      "warningCHQuotas": "Strict annual quotas for non-EU workers",
+      "warningCHInsurance": "Health insurance mandatory within 3 months",
+      "warningCHLanguage": "Local language (FR/DE/IT) strongly recommended",
+      "warningJPCOE": "COE is essential — do not arrive without it",
+      "warningJPLanguage": "Japanese is nearly mandatory for daily life",
+      "warningJPInsurance": "Mandatory enrollment in national health insurance"
+    },
+    "checklistItems": {
+      "checkPassport": "Valid passport (6+ months)",
+      "checkContract": "Signed employment contract",
+      "checkAccommodation": "Proof of accommodation",
+      "checkBankStatements": "Bank statements (3 months)",
+      "checkHealthInsurance": "Health insurance certificate",
+      "checkPassportPhotos": "Passport photos (3)",
+      "checkApplicationForm": "Completed application form",
+      "checkDS160": "Completed DS-160 form",
+      "checkI797": "I-797 approval notice",
+      "checkContractUS": "Job offer letter from sponsor",
+      "checkPassportPhotosUS": "US format photo (5x5 cm)",
+      "checkConsularInterview": "Consular appointment booked",
+      "checkContractCH": "Signed Swiss employment contract",
+      "checkDiplomasCH": "Recognized diplomas/equivalencies",
+      "checkInsuranceCH": "Proof of Swiss health insurance",
+      "checkCVCH": "Swiss format CV with photo",
+      "checkCOE": "Certificate of Eligibility (COE) original",
+      "checkContractJP": "Employment contract or admission letter",
+      "checkDiplomasJP": "Translated diplomas and certificates",
+      "checkPassportPhotosJP": "Japanese format photos (4.5x3.5 cm)",
+      "checkInsuranceJP": "Health insurance enrollment plan",
+      "checkFlightPlan": "Flight ticket or travel itinerary"
+    },
+    "tipsList": {
+      "tipStartEarly": "✅ Start the process 6 months before your move",
+      "tipApostille": "✅ Get all documents apostilled",
+      "tipLearnFrench": "✅ Learn basic French (it helps!)",
+      "tipJoinExpats": "✅ Join expat groups for support",
+      "tipDontQuit": "❌ Don't quit your job before visa is approved",
+      "tipStartEarlyUS": "✅ Start the process 12 months ahead",
+      "tipH1BLawyer": "✅ Hire an immigration lawyer",
+      "tipPremiumProcessing": "✅ Consider premium processing ($2,805)",
+      "tipLearnLanguageCH": "✅ Learn the local language (FR/DE/IT depending on canton)",
+      "tipCHInsuranceDeadline": "✅ Get health insurance immediately upon arrival",
+      "tipLearnJapanese": "✅ Learn basic Japanese (hiragana/katakana)",
+      "tipHankoSeal": "✅ Get your hanko (personal seal) made upon arrival"
+    },
+    "general": {
+      "heroTitle": "General Guide — Visa & Immigration",
+      "heroSubtitle": "Universal tips to prepare your expatriation, regardless of the country",
+      "heroDesc": "Getting a visa is often the most critical step of an expatriation project. Anticipation, thoroughness and patience are key. This guide gives you the best practices to follow to maximize your chances,",
+      "heroHighlight": "regardless of your destination country",
+      "timelineTitle": "When to start the process?",
+      "timelineSubtitle": "Timing is essential to avoid missing your departure",
+      "timeline1Month": "6-12 months before",
+      "timeline1Title": "Research & planning",
+      "timeline1Desc": "Identify the right visa type, research eligibility conditions and annual quotas.",
+      "timeline2Month": "4-6 months before",
+      "timeline2Title": "Document preparation",
+      "timeline2Desc": "Gather all documents: valid passport, certified diplomas, financial proof, health insurance.",
+      "timeline3Month": "3-4 months before",
+      "timeline3Title": "Application submission",
+      "timeline3Desc": "Submit your visa application. Processing times range from 2 weeks to 6 months depending on the country.",
+      "timeline4Month": "1-2 months before",
+      "timeline4Title": "Follow-up & supplements",
+      "timeline4Desc": "Track progress, respond quickly to requests for additional documents.",
+      "timeline5Month": "2 weeks before",
+      "timeline5Title": "Departure preparation",
+      "timeline5Desc": "Validate your visa, book your flights, prepare documents to have on arrival.",
+      "docsTitle": "Essential documents",
+      "docsSubtitle": "The common base for almost all visa applications",
+      "doc1": "Valid passport (6+ months)",
+      "doc1Note": "Check the expiration date well in advance",
+      "doc2": "Compliant ID photos",
+      "doc2Note": "Country-specific format — check requirements",
+      "doc3": "Proof of financial resources",
+      "doc3Note": "Bank statements for the last 3-6 months",
+      "doc4": "International health insurance",
+      "doc4Note": "Mandatory in most countries",
+      "doc5": "Motivation letter / project",
+      "doc5Note": "Clearly explain your purpose of stay",
+      "doc6": "Employment contract or offer",
+      "doc6Note": "For work visas — employer sponsorship",
+      "doc7": "Translated & certified diplomas",
+      "doc7Note": "Sworn translation often required",
+      "doc8": "Clean criminal record",
+      "doc8Note": "Apostille or legalization depending on country",
+      "tipsTitle": "The 8 golden tips",
+      "tipsSubtitle": "What experienced expats wish they had known",
+      "tip1Title": "Start as early as possible",
+      "tip1Detail": "Delays are always longer than expected. Start 6 to 12 months before your planned date.",
+      "tip2Title": "Never make false declarations",
+      "tip2Detail": "A refusal for fraud can result in a 5 to 10 year territory ban.",
+      "tip3Title": "Keep copies of EVERYTHING",
+      "tip3Detail": "Digitize every document, keep physical and digital copies. In case of loss, you'll save weeks.",
+      "tip4Title": "Check required translations",
+      "tip4Detail": "Some countries require sworn translations by specific approved translators.",
+      "tip5Title": "Prepare your finances in advance",
+      "tip5Detail": "Many countries require proof of funds for 3 to 6 months. Stabilize your accounts early.",
+      "tip6Title": "Consult the country's consulate, not just the internet",
+      "tip6Detail": "Online information can be outdated. The consulate always has the latest official version.",
+      "tip7Title": "Book a consular appointment as early as possible",
+      "tip7Detail": "In some cities, slots are booked months in advance (e.g., US visa, Japan visa).",
+      "tip8Title": "Get repatriation insurance",
+      "tip8Detail": "In addition to health insurance, repatriation insurance is often valued by immigration services.",
+      "errorsTitle": "Most common mistakes",
+      "errorsSubtitle": "Pitfalls to absolutely avoid",
+      "error1": "Passport expiring within 6 months — the application is automatically rejected in most countries.",
+      "error2": "Photos not compliant with country standards — a silly but very common reason for refusal.",
+      "error3": "Incomplete file submitted in a rush — you delay your departure by several months.",
+      "error4": "Forgetting to check transit visa requirements — some airports require it even for layovers.",
+      "error5": "Not keeping copies of submitted documents — if the consulate loses them, you start from scratch.",
+      "visaTypesTitle": "Main visa categories",
+      "visaTypesSubtitle": "Common categories you'll find in almost every country",
+      "typeShortStay": "Short-stay / Tourist visa",
+      "typeShortStayDesc": "Less than 90 days. Perfect for scouting or on-site interviews.",
+      "typeWork": "Work visa",
+      "typeWorkDesc": "Usually requires a sponsor (employer). The most complex to obtain.",
+      "typeStudent": "Student visa",
+      "typeStudentDesc": "Enrollment in a recognized institution required. Part-time work may be allowed.",
+      "typeFamily": "Family reunification",
+      "typeFamilyDesc": "To join a spouse or parent already residing. Family relationship proof required.",
+      "ctaTitle": "Select a country to go further",
+      "ctaDesc": "Use the destination selector above to access detailed guides, interactive checklists, precise costs and country-specific official resources."
+    }
+  },
+  "blog": {
+    "page": {
+      "title": "Resources & Blog",
+      "description": "Practical guides, expert advice and testimonials to prepare and succeed in your expatriation abroad.",
+      "featured": "Featured articles",
+      "allCategories": "All",
+      "searchPlaceholder": "Search an article...",
+      "readMore": "Read",
+      "noResults": "No articles match your search."
+    },
+    "categories": {
+      "preparation": "Preparation",
+      "administrative": "Administrative",
+      "finance": "Finance",
+      "culture": "Culture",
+      "career": "Career",
+      "housing": "Housing",
+      "health": "Health",
+      "testimonial": "Testimonial"
+    },
+    "article": {
+      "readTime": "read",
+      "backToList": "Back to articles",
+      "relatedArticles": "Related articles"
+    },
+    "articles": {
+      "checklist-avant-depart": {
+        "title": "The complete checklist before your move abroad",
+        "excerpt": "From cancelling your contracts to preparing your documents, everything you need to do before expatriating.",
+        "content": "## Why a checklist is essential\n\nExpatriating is a major life project involving dozens of administrative, logistical and personal steps. Without rigorous organization, it's easy to forget a crucial step that could delay your departure or complicate your settlement.\n\n## 6 months before departure\n\nStart with the longest procedures: visa application, diploma recognition, and job search if you don't have one yet. This is also the time to evaluate your budget and start saving to cover the first months.\n\n## 3 months before departure\n\nNotify your employer if you are employed. Start the process of cancelling your contracts (rent, insurance, subscriptions). Make an appointment with your doctor for a health check-up and update your vaccinations.\n\n## 1 month before departure\n\nFinalize your temporary accommodation at your destination. Pack your bags by checking luggage restrictions. Make certified copies of all your important documents. Inform your bank of your departure.\n\n## The week of departure\n\nCheck that your passport and visa are in order. Keep essential documents with you: tickets, insurance, accommodation address. Say goodbye to your loved ones and enjoy this moment of transition.\n\n## Essential documents\n\n- Valid passport (check expiration date)\n- Visa or residence permit\n- Employment or study contract\n- International health insurance certificate\n- Recent bank statements\n- Certified translations of your diplomas\n- Apostilled birth certificate\n- International driving licence"
+      },
+      "budget-expatriation": {
+        "title": "How to estimate and manage your expatriation budget",
+        "excerpt": "Hidden costs, expense items to anticipate and tips for managing your finances abroad.",
+        "content": "## Budget, the cornerstone of your expatriation\n\nThe financial aspect is often the primary source of stress for expatriates. Between moving costs, first rents, visa fees and settling in, the bill can quickly add up if not anticipated.\n\n## Pre-departure costs\n\nBefore even leaving your country, plan a budget for visa fees (€150-500 depending on the country), certified translations (€30-80 per document), medical check-up (€100-300), and potentially an international move (€2,000-8,000 depending on volume).\n\n## Settlement budget\n\nThe first three months are usually the most expensive. You need to account for the housing deposit (1-3 months rent), essential furniture, opening bank accounts, and subscribing to local insurance. Plan a financial cushion of 3 to 6 months of running expenses.\n\n## Managing exchange rates\n\nIf you keep income in your original currency, exchange rate fluctuations can significantly impact your purchasing power. Use services like Wise or Revolut to minimize conversion fees.\n\n## Tip: the monthly tracking spreadsheet\n\nCreate a simple table with your fixed expense items (rent, insurance, transport) and variable ones (food, leisure, contingencies). Compare each month to identify areas where you can optimize."
+      },
+      "demarches-visa": {
+        "title": "Understanding visa procedures in 2026",
+        "excerpt": "Visa types, timelines, required documents and mistakes to avoid for each visa category.",
+        "content": "## The visa, your key to expatriation\n\nThe visa is the most important administrative document of your expatriation project. Understanding the different types and procedures will save you precious time and avoid rejections.\n\n## Main visa types\n\nThere are generally tourist visas (short stay), work visas (sponsored by an employer), student visas, entrepreneur/investor visas, and family reunification. Each category has its own criteria and timelines.\n\n## Expected timelines\n\nTimelines vary considerably depending on the country and visa type. Allow 2-4 weeks for a tourist visa, 2-6 months for a work visa, and up to 12 months for certain investor visas. Always start your procedures as early as possible.\n\n## Most common mistakes\n\n- Incomplete file or untranslated documents\n- Photos not conforming to required standards\n- Form filled with errors or inconsistencies\n- Underestimated processing time\n- Passport expiring within less than 6 months\n\n## Tip: the bulletproof file\n\nPrepare an organized file with dividers, copies of each document, and a clear cover letter explaining your project. Consulates appreciate well-structured files, it speeds up processing."
+      },
+      "choc-culturel": {
+        "title": "Overcoming culture shock: the 4 phases of adaptation",
+        "excerpt": "Understanding the psychological stages of cultural adaptation to better experience your expatriation.",
+        "content": "## Culture shock, a universal reality\n\nRegardless of your level of preparation, culture shock affects all expatriates. Understanding this phenomenon and its phases will help you get through it with serenity.\n\n## Phase 1: The honeymoon\n\nThe first weeks are often euphoric. Everything is new, exciting, different. You are fascinated by the local culture, food, landscapes. This phase usually lasts 1 to 3 months.\n\n## Phase 2: Frustration\n\nDaily reality sets in. The cultural differences that amused you become sources of irritation. The language barrier weighs heavily, homesickness sets in. This phase is the most difficult but it is normal and temporary.\n\n## Phase 3: Adjustment\n\nGradually, you develop coping strategies. You better understand cultural codes, you create routines, you make local friends. Daily life becomes smoother.\n\n## Phase 4: Acceptance\n\nYou have found your balance between your culture of origin and your host culture. You no longer seek to compare but to appreciate both. You have become bicultural.\n\n## Tips for getting through culture shock\n\n- Join expat groups to share your experiences\n- Learn the local language, even the basics\n- Keep in touch with loved ones back home\n- Actively explore your new neighbourhood and city\n- Be patient and kind to yourself"
+      },
+      "trouver-emploi-etranger": {
+        "title": "Finding a job abroad: complete guide 2026",
+        "excerpt": "Search strategies, CV adaptation, platforms to use and sectors recruiting expatriates.",
+        "content": "## The international job market in 2026\n\nThe international job market has evolved considerably in recent years. Remote work, digital nomad visas and talent shortages in certain sectors are opening new opportunities for expatriates.\n\n## Adapting your CV to local standards\n\nEach country has its own CV conventions. In the United States, no photo or age. In Japan, the Rirekisho format is standard. In Switzerland, a detailed 2-3 page CV is appreciated. Research the standards of your target country.\n\n## Essential platforms\n\nLinkedIn remains the universal platform, but each country has its local champions. Use specialized expat job boards like SkyWalk, and don't hesitate to contact companies directly.\n\n## Sectors that are hiring\n\nIT and digital, healthcare, engineering, language teaching and hospitality are sectors where international demand remains strong in 2026.\n\n## Networking, your best asset\n\nOver 70% of international positions are filled through networking. Attend professional events, join expat associations, and activate your existing network."
+      },
+      "logement-premier-mois": {
+        "title": "Finding housing for your first months of expatriation",
+        "excerpt": "Temporary solutions, pitfalls to avoid and tips for securing accommodation remotely.",
+        "content": "## Don't rush\n\nThe biggest mistake is wanting to sign a long-term lease before arriving. Opt for a temporary solution (Airbnb, flatshare, furnished residence) for your first 1-3 months. This gives you time to discover neighbourhoods and search calmly.\n\n## Temporary solutions\n\nPlatforms like Airbnb, Spotahome or HousingAnywhere offer furnished accommodation for medium durations. Student residences or international flatshares are also excellent options to start with.\n\n## Watch out for scams\n\nNever send money before visiting a property (in person or by video). Beware of offers that seem too good, landlords who won't show the property, and requests for international wire transfers.\n\n## Commonly requested documents\n\n- ID or passport\n- Employment contract or proof of income\n- Local guarantor (sometimes required for foreigners)\n- Bank statements for the last 3 months\n- Home insurance certificate"
+      },
+      "assurance-sante-expatrie": {
+        "title": "Health insurance abroad: the essential guide",
+        "excerpt": "CFE, international private insurance or local system: how to choose the right coverage for your situation.",
+        "content": "## Health, an absolute priority\n\nHealth coverage is a crucial issue for every expatriate. An accident or illness abroad without adequate insurance can have devastating financial consequences.\n\n## The three main options\n\nThe CFE (Caisse des Français de l'Étranger) offers coverage similar to French Social Security. International private insurance (Allianz, AXA, Cigna) offers more comprehensive but more expensive plans. The local health system is often mandatory and may be sufficient in some countries.\n\n## Choosing the right coverage\n\nAssess your needs: do you have ongoing treatments? Medical history? Do you practice a risky sport? Is your family accompanying you? These criteria determine the level of coverage needed.\n\n## Pitfalls to avoid\n\n- Unanticipated waiting periods\n- Exclusions on pre-existing conditions\n- Reimbursement caps too low\n- Repatriation not included\n- Geographic area not covered\n\n## Practical tip\n\nTake out your insurance BEFORE your departure. Always carry your insurance card and emergency numbers. Keep all medical expense receipts to facilitate reimbursements."
+      },
+      "temoignage-suisse": {
+        "title": "Testimonial: my expatriation in Switzerland after 2 years",
+        "excerpt": "Feedback on daily life, cost of living and integration in French-speaking Switzerland.",
+        "content": "## Why Switzerland?\n\nI moved to Switzerland two years ago for an engineering position in Geneva. The quality of life, attractive salaries and proximity to France were my main motivations.\n\n## The settlement: more complex than expected\n\nThe B permit (foreign worker) was obtained fairly easily thanks to my employer. However, finding accommodation in Geneva was a real obstacle course. Prices are very high and demand far exceeds supply. I ended up settling in Annemasse, on the French side, for my first months.\n\n## The cost of living: the shock\n\nEven with a Swiss salary, the cost of living is surprising. A coffee at 5 CHF, a restaurant meal at 35-50 CHF, health insurance (LAMal) at 430 CHF per month. You have to completely recalibrate your price perception.\n\n## Social integration\n\nThe Swiss are welcoming but relationships build slowly. Sports clubs and associations are the best places to create bonds. The French-speaking expat community is also very active and supportive.\n\n## My assessment after 2 years\n\nI don't regret my choice. The quality of life is exceptional, public transport is perfect, nature is everywhere. The salary more than compensates for the cost of living if you manage your budget well."
+      },
+      "banque-etranger": {
+        "title": "Opening a bank account abroad: how-to guide",
+        "excerpt": "Procedures, required documents and digital alternatives for managing your finances as an expat.",
+        "content": "## Why a local account is essential\n\nA local bank account is essential for receiving your salary, paying your rent and managing your daily expenses. In some countries, it's even a requirement for obtaining a residence permit.\n\n## Generally required documents\n\n- Passport or ID\n- Local proof of address\n- Visa or residence permit\n- Employment contract\n- Local tax number (if applicable)\n\n## Digital alternatives\n\nWhile waiting for your local account, services like Wise, Revolut or N26 allow you to have a European IBAN and make international transfers at low cost. These solutions are also ideal for managing multiple currencies.\n\n## Keep your home country account\n\nIt's recommended to keep an account in your home country for recurring debits (taxes, insurance, subscriptions) and as a backup solution in case of problems with your local account."
+      },
+      "apprendre-langue": {
+        "title": "Learning the local language: methods and resources",
+        "excerpt": "Apps, immersion courses and daily tips to progress quickly in a new language.",
+        "content": "## Language, the key to integration\n\nSpeaking the local language radically transforms your expatriation experience. Beyond daily communication, it's a sign of respect towards your host country and an integration accelerator.\n\n## Before departure: the basics\n\nStart learning the basics 3-6 months before your departure. Apps like Duolingo, Babbel or Busuu are excellent starting points. Aim for A2 level (basic communication) before arrival.\n\n## On site: immersion\n\nImmersion is the most effective way to progress. Sign up for local courses, find a language tandem, watch local TV, read newspapers. Every interaction is a learning opportunity.\n\n## Free resources\n\n- Podcasts in the target language\n- Dedicated YouTube channels\n- Tandem apps (HelloTalk, Tandem)\n- Municipal libraries (free courses)\n- Conversation groups in cafés\n\n## Tip: the vocabulary notebook\n\nWrite down 5 new words or expressions heard in your daily life every day. Re-read them in the evening. In one month, you'll have 150 additional words in your active vocabulary."
+      },
+      "enfants-expatriation": {
+        "title": "Expatriation with children: how to prepare the move",
+        "excerpt": "Schooling, psychological adaptation and practical tips for a smooth family expatriation.",
+        "content": "## Family expatriation, a shared challenge\n\nExpatriating with children adds an extra dimension to the project. Schooling choices, psychological adaptation and daily management require specific preparation.\n\n## Choosing a school\n\nThree main options are available: local school (total immersion), international school (international curriculum, often in English), and French lycée abroad (continuity of the French system). Each option has advantages depending on the children's age and the planned duration of expatriation.\n\n## Preparing children for departure\n\nInvolve your children in the project as early as possible. Show them photos and videos of the country, learn some words of the local language together, read books about the country's culture. The more they feel like active participants in the change, the better they'll accept it.\n\n## Adaptation on site\n\nChildren generally adapt faster than adults, especially younger ones. Maintain family rituals that remind them of home (typical meals, video calls with grandparents) while encouraging new friendships and local activities.\n\n## Signs to watch for\n\n- Withdrawal or unusual aggression\n- Sudden academic difficulties\n- Sleep or eating disorders\n- Refusal to go out or participate in activities\n\nIf these signs persist beyond a few weeks, don't hesitate to consult a psychologist specializing in international mobility."
+      },
+      "temoignage-japon": {
+        "title": "Testimonial: living and working in Japan",
+        "excerpt": "Corporate culture, daily life and surprises: story of an expatriation in the land of the rising sun.",
+        "content": "## Japan, a dream come true\n\nI had dreamed of Japan since my teenage years. When a professional opportunity presented itself in Tokyo, I didn't hesitate. Here's my feedback after 18 months there.\n\n## Japanese corporate culture\n\nRespect for hierarchy, absolute punctuality and teamwork are the pillars of Japanese professional culture. Meetings are numerous and consensus is sought before any decision. You need to adapt to a different rhythm but it's very enriching.\n\n## Daily life\n\nTokyo is an incredibly organized and safe city. Public transport is exemplarily punctual, food is excellent and affordable (a bento for 500-800¥), and conveniences are everywhere. The only major challenge: apartment sizes. My 25m² studio costs ¥130,000 per month.\n\n## The language barrier\n\nContrary to what you might think, English is not widely spoken in everyday Japan. Learning hiragana and katakana is essential for daily life. Kanji will come gradually. Japanese people greatly appreciate efforts to speak their language.\n\n## Daily surprises\n\n- Konbini (24/7 convenience stores) quickly become indispensable\n- Waste sorting is an art in itself\n- Onsen (hot springs) are an absolute delight\n- Politeness is ubiquitous and contagious\n- Local festivals (matsuri) are magical moments"
       }
     }
   }

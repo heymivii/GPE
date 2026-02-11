@@ -2,15 +2,12 @@ import { useState, useCallback, useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { globalSearchApi, type GlobalSearchResult, type SearchCategory } from '../api/globalSearch';
 import { getServicesConfig } from '../data/services-config';
+import { BLOG_ARTICLES, getArticleTranslation, getCategoryTranslation } from '../data/blog-data';
 
-/**
- * Static FAQ entries — searched client-side then merged with DB results.
- * Each entry has keys that map to i18n translation keys.
- */
 const FAQ_ENTRIES: Array<{
   questionKey: string;
   answerKey: string;
-  tags: string[]; // raw search terms (both FR + EN for bilingual matching)
+  tags: string[];
 }> = [
   {
     questionKey: 'globalSearch.faq.visa.question',
@@ -72,7 +69,6 @@ export function useGlobalSearch(): UseGlobalSearchReturn {
   const [error, setError] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
 
-  // Build static service entries from the translated config
   const serviceEntries = useMemo(() => {
     const cfg = getServicesConfig(t);
     return Object.values(cfg).map((svc) => ({
@@ -88,7 +84,6 @@ export function useGlobalSearch(): UseGlobalSearchReturn {
     }));
   }, [t]);
 
-  // Build static FAQ entries
   const faqEntries = useMemo(
     () =>
       FAQ_ENTRIES.map((f) => ({
@@ -106,9 +101,22 @@ export function useGlobalSearch(): UseGlobalSearchReturn {
     [t],
   );
 
-  /**
-   * Local text match for static entries (services + FAQ).
-   */
+  const blogEntries = useMemo(
+    () =>
+      BLOG_ARTICLES.map((article) => ({
+        category: 'blog' as SearchCategory,
+        entityId: article.id,
+        title: getArticleTranslation(article.id, 'title', t),
+        description: getArticleTranslation(article.id, 'excerpt', t),
+        extra: getCategoryTranslation(article.category, t),
+        url: `/blog/${article.id}`,
+        countryName: '',
+        imageUrl: article.coverImage,
+        rank: 0,
+      })),
+    [t],
+  );
+
   const searchStatic = useCallback(
     (q: string, category?: SearchCategory): GlobalSearchResult[] => {
       const lower = q.toLowerCase();
@@ -116,7 +124,6 @@ export function useGlobalSearch(): UseGlobalSearchReturn {
 
       const matched: GlobalSearchResult[] = [];
 
-      // Services
       if (!category || category === 'service') {
         for (const svc of serviceEntries) {
           const haystack = `${svc.title} ${svc.description} ${svc.extra}`.toLowerCase();
@@ -126,12 +133,20 @@ export function useGlobalSearch(): UseGlobalSearchReturn {
         }
       }
 
-      // FAQ
+      if (!category || category === 'blog') {
+        for (const blog of blogEntries) {
+          const haystack = `${blog.title} ${blog.description} ${blog.extra}`.toLowerCase();
+          if (words.some((w) => haystack.includes(w))) {
+            matched.push({ ...blog, rank: 0.75 });
+          }
+        }
+      }
+
       if (!category || category === 'faq') {
         for (const faq of faqEntries) {
           const haystack = `${faq.title} ${faq.description} ${faq._tags.join(' ')}`.toLowerCase();
           if (words.some((w) => haystack.includes(w))) {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
             const { _tags, ...rest } = faq;
             matched.push({ ...rest, rank: 0.7 });
           }
@@ -140,7 +155,7 @@ export function useGlobalSearch(): UseGlobalSearchReturn {
 
       return matched;
     },
-    [serviceEntries, faqEntries],
+    [serviceEntries, blogEntries, faqEntries],
   );
 
   const search = useCallback(
@@ -151,7 +166,6 @@ export function useGlobalSearch(): UseGlobalSearchReturn {
         return;
       }
 
-      // Abort previous request
       abortRef.current?.abort();
       abortRef.current = new AbortController();
 
@@ -159,8 +173,7 @@ export function useGlobalSearch(): UseGlobalSearchReturn {
       setError(null);
 
       try {
-        // Run DB search + static search in parallel
-        const isStaticOnly = category === 'service' || category === 'faq';
+        const isStaticOnly = category === 'service' || category === 'faq' || category === 'blog';
 
         const [dbResponse, staticResults] = await Promise.all([
           isStaticOnly
@@ -169,11 +182,9 @@ export function useGlobalSearch(): UseGlobalSearchReturn {
           Promise.resolve(searchStatic(trimmed, category)),
         ]);
 
-        // Merge & deduplicate by category+entityId
         const seen = new Set<string>();
         const merged: GlobalSearchResult[] = [];
 
-        // DB results first (higher rank from FTS)
         for (const r of dbResponse.results) {
           const key = `${r.category}:${r.entityId}`;
           if (!seen.has(key)) {
@@ -181,7 +192,6 @@ export function useGlobalSearch(): UseGlobalSearchReturn {
             merged.push(r);
           }
         }
-        // Then static results
         for (const r of staticResults) {
           const key = `${r.category}:${r.entityId}`;
           if (!seen.has(key)) {
@@ -190,7 +200,6 @@ export function useGlobalSearch(): UseGlobalSearchReturn {
           }
         }
 
-        // Sort by rank descending
         merged.sort((a, b) => (Number(b.rank) || 0) - (Number(a.rank) || 0));
 
         setResults(merged.slice(0, 20));
@@ -198,7 +207,6 @@ export function useGlobalSearch(): UseGlobalSearchReturn {
         if ((err as Error).name !== 'AbortError') {
           console.error('Global search error:', err);
           setError(t('globalSearch.error'));
-          // Still show static results on API failure
           setResults(searchStatic(trimmed, category));
         }
       } finally {

@@ -16,11 +16,11 @@ import {
   Loader2,
   ArrowRight,
   Command,
+  Newspaper,
 } from 'lucide-react';
 import { useGlobalSearch } from '../hooks/useGlobalSearch';
 import type { GlobalSearchResult, SearchCategory } from '../api/globalSearch';
 
-/* ── Category metadata (icon + color + label key) ── */
 const CATEGORY_META: Record<
   string,
   { icon: React.ElementType; color: string; labelKey: string }
@@ -34,9 +34,9 @@ const CATEGORY_META: Record<
   procedure: { icon: ClipboardList, color: 'text-amber-600 bg-amber-50', labelKey: 'globalSearch.categories.procedure' },
   service: { icon: Briefcase, color: 'text-indigo-600 bg-indigo-50', labelKey: 'globalSearch.categories.service' },
   faq: { icon: HelpCircle, color: 'text-teal-600 bg-teal-50', labelKey: 'globalSearch.categories.faq' },
+  blog: { icon: Newspaper, color: 'text-violet-600 bg-violet-50', labelKey: 'globalSearch.categories.blog' },
 };
 
-/* ── Quick action links shown when the input is empty ── */
 const QUICK_LINKS: Array<{ labelKey: string; path: string; icon: React.ElementType }> = [
   { labelKey: 'globalSearch.quick.destinations', path: '/destinations', icon: Globe },
   { labelKey: 'globalSearch.quick.services', path: '/services', icon: Briefcase },
@@ -61,7 +61,6 @@ export default function GlobalSearchModal({ isOpen, onClose }: Props) {
 
   const selectedIndexRef = useRef(-1);
 
-  // Focus input when opened
   useEffect(() => {
     if (isOpen) {
       setTimeout(() => inputRef.current?.focus(), 50);
@@ -71,7 +70,6 @@ export default function GlobalSearchModal({ isOpen, onClose }: Props) {
     }
   }, [isOpen, clear]);
 
-  // Debounced search
   const handleChange = useCallback(
     (value: string) => {
       setQuery(value);
@@ -83,19 +81,16 @@ export default function GlobalSearchModal({ isOpen, onClose }: Props) {
     [setQuery, search],
   );
 
-  // Navigate to result
   const navigateToResult = useCallback(
     (result: GlobalSearchResult) => {
       onClose();
       switch (result.category) {
         case 'country':
-          // Build slug from country name
           navigate(
             `/destinations/${result.title.toLowerCase().replace(/\s+/g, '-').replace(/[éèê]/g, 'e').replace(/[àâ]/g, 'a').replace(/[ùû]/g, 'u').replace(/[ïî]/g, 'i').replace(/[ôö]/g, 'o').replace(/[ç]/g, 'c')}`,
           );
           break;
         case 'city':
-          // Navigate to the country page (city is under country)
           navigate(
             `/destinations/${result.countryName.toLowerCase().replace(/\s+/g, '-').replace(/[éèê]/g, 'e').replace(/[àâ]/g, 'a').replace(/[ùû]/g, 'u').replace(/[ïî]/g, 'i').replace(/[ôö]/g, 'o').replace(/[ç]/g, 'c')}`,
           );
@@ -103,7 +98,6 @@ export default function GlobalSearchModal({ isOpen, onClose }: Props) {
         case 'guide':
         case 'checklist':
         case 'resource':
-          // Navigate to the destination page for the country
           if (result.countryName) {
             navigate(
               `/destinations/${result.countryName.toLowerCase().replace(/\s+/g, '-').replace(/[éèê]/g, 'e').replace(/[àâ]/g, 'a').replace(/[ùû]/g, 'u').replace(/[ïî]/g, 'i').replace(/[ôö]/g, 'o').replace(/[ç]/g, 'c')}`,
@@ -119,8 +113,10 @@ export default function GlobalSearchModal({ isOpen, onClose }: Props) {
         case 'service':
           navigate(result.url || `/services/${result.entityId}`);
           break;
+        case 'blog':
+          navigate(`/blog/${result.entityId}`);
+          break;
         case 'faq':
-          // Navigate to the most relevant service page
           navigate('/services');
           break;
         default:
@@ -130,7 +126,6 @@ export default function GlobalSearchModal({ isOpen, onClose }: Props) {
     [navigate, onClose],
   );
 
-  // Keyboard navigation
   useEffect(() => {
     if (!isOpen) return;
 
@@ -169,7 +164,6 @@ export default function GlobalSearchModal({ isOpen, onClose }: Props) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, results]);
 
-  // Close on Escape
   useEffect(() => {
     if (!isOpen) return;
     const handleEsc = (e: KeyboardEvent) => {
@@ -181,7 +175,6 @@ export default function GlobalSearchModal({ isOpen, onClose }: Props) {
 
   if (!isOpen) return null;
 
-  // Group results by category
   const grouped = results.reduce<Record<string, GlobalSearchResult[]>>(
     (acc, r) => {
       if (!acc[r.category]) acc[r.category] = [];
@@ -195,6 +188,7 @@ export default function GlobalSearchModal({ isOpen, onClose }: Props) {
     'country',
     'city',
     'service',
+    'blog',
     'guide',
     'checklist',
     'resource',
@@ -205,16 +199,13 @@ export default function GlobalSearchModal({ isOpen, onClose }: Props) {
 
   return (
     <Fragment>
-      {/* Backdrop */}
       <div
         className="fixed inset-0 z-[100] bg-black/40 backdrop-blur-sm"
         onClick={onClose}
       />
 
-      {/* Modal */}
       <div className="fixed inset-x-0 top-[12vh] z-[101] mx-auto w-full max-w-2xl px-4">
         <div className="overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-gray-200">
-          {/* Search input */}
           <div className="flex items-center gap-3 border-b border-gray-100 px-4 py-3">
             <Search className="h-5 w-5 shrink-0 text-gray-400" />
             <input
@@ -241,12 +232,10 @@ export default function GlobalSearchModal({ isOpen, onClose }: Props) {
             </kbd>
           </div>
 
-          {/* Results area */}
           <div
             ref={listRef}
             className="max-h-[60vh] overflow-y-auto overscroll-contain"
           >
-            {/* Empty state — quick links */}
             {!query && (
               <div className="p-4">
                 <p className="mb-3 text-xs font-medium uppercase tracking-wider text-gray-400">
@@ -275,14 +264,12 @@ export default function GlobalSearchModal({ isOpen, onClose }: Props) {
               </div>
             )}
 
-            {/* Error */}
             {error && (
               <div className="px-4 py-6 text-center text-sm text-red-500">
                 {error}
               </div>
             )}
 
-            {/* No results */}
             {query && !isLoading && results.length === 0 && !error && (
               <div className="px-4 py-10 text-center">
                 <Search className="mx-auto mb-3 h-8 w-8 text-gray-300" />
@@ -292,7 +279,6 @@ export default function GlobalSearchModal({ isOpen, onClose }: Props) {
               </div>
             )}
 
-            {/* Grouped results */}
             {categoryOrder.map((cat) => {
               const items = grouped[cat];
               if (!items?.length) return null;
@@ -326,7 +312,6 @@ export default function GlobalSearchModal({ isOpen, onClose }: Props) {
             })}
           </div>
 
-          {/* Footer */}
           <div className="flex items-center justify-between border-t border-gray-100 px-4 py-2.5 text-[11px] text-gray-400">
             <div className="flex items-center gap-3">
               <span className="flex items-center gap-1">
@@ -353,7 +338,6 @@ export default function GlobalSearchModal({ isOpen, onClose }: Props) {
   );
 }
 
-/* ── Single result row ── */
 function ResultItem({
   result,
   meta,
@@ -368,7 +352,6 @@ function ResultItem({
   const Icon = meta.icon;
   const [iconColor, iconBg] = meta.color.split(' ');
 
-  // Highlight matching text
   const highlight = (text: string) => {
     if (!query || !text) return text;
     const regex = new RegExp(

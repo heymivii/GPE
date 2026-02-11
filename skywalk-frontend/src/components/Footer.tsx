@@ -114,7 +114,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/guides" className="hover:text-[#5EA3C0] transition-colors">
+                <Link to="/blog" className="hover:text-[#5EA3C0] transition-colors">
                   {t('footer.practicalGuides')}
                 </Link>
               </li>

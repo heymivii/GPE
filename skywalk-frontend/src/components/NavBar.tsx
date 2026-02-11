@@ -1,7 +1,7 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Search, Menu, X, ChevronDown, Globe, LogOut, User, LayoutDashboard, FolderKanban, Compass, BarChart3, MapPin, Briefcase } from 'lucide-react';
+import { Search, Menu, X, ChevronDown, Globe, LogOut, User, LayoutDashboard, FolderKanban, Compass, BarChart3, MapPin, Briefcase, BookOpen } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import GlobalSearchModal from './GlobalSearchModal';
 
@@ -26,7 +26,6 @@ export default function NavBar() {
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
 
-  // ⌘K / Ctrl+K global shortcut
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
@@ -38,7 +37,6 @@ export default function NavBar() {
     return () => window.removeEventListener('keydown', handler);
   }, []);
 
-  // Close dropdowns on click outside
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (exploreRef.current && !exploreRef.current.contains(e.target as Node)) setExploreOpen(false);
@@ -49,7 +47,6 @@ export default function NavBar() {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  // Close mobile menu on route change
   useEffect(() => {
     setMobileOpen(false);
   }, [location.pathname]);
@@ -103,6 +100,7 @@ export default function NavBar() {
                   <Link to="/destinations" className={linkClass('/destinations')}>{t('nav.destinations')}</Link>
                   <Link to="/comparison" className={linkClass('/comparison')}>{t('nav.comparison')}</Link>
                   <Link to="/services" className={linkClass('/services')}>{t('nav.services')}</Link>
+                  <Link to="/blog" className={linkClass('/blog')}>{t('nav.blog')}</Link>
                   <Link to="/forum" className={linkClass('/forum')}>{t('nav.forum')}</Link>
                 </>
               ) : (
@@ -140,6 +138,10 @@ export default function NavBar() {
                         <Link to="/search" onClick={() => setExploreOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-gray-700 text-sm">
                           <Compass className="w-4 h-4 text-[#5EA3C0]" />
                           {t('nav.search')}
+                        </Link>
+                        <Link to="/blog" onClick={() => setExploreOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-gray-700 text-sm">
+                          <BookOpen className="w-4 h-4 text-[#5EA3C0]" />
+                          {t('nav.blog')}
                         </Link>
                       </div>
                     )}
@@ -272,6 +274,7 @@ export default function NavBar() {
                 <MobileLink to="/destinations" label={t('nav.destinations')} active={isActive('/destinations')} />
                 <MobileLink to="/comparison" label={t('nav.comparison')} active={isActive('/comparison')} />
                 <MobileLink to="/services" label={t('nav.services')} active={isActive('/services')} />
+                <MobileLink to="/blog" label={t('nav.blog')} active={isActive('/blog')} />
                 <MobileLink to="/forum" label={t('nav.forum')} active={isActive('/forum')} />
               </>
             ) : (
@@ -282,6 +285,7 @@ export default function NavBar() {
                 <MobileLink to="/comparison" label={t('nav.comparison')} active={isActive('/comparison')} />
                 <MobileLink to="/services" label={t('nav.services')} active={isActive('/services')} />
                 <MobileLink to="/search" label={t('nav.search')} active={isActive('/search')} />
+                <MobileLink to="/blog" label={t('nav.blog')} active={isActive('/blog')} />
                 <MobileLink to="/forum" label={t('nav.forum')} active={isActive('/forum')} />
               </>
             )}
@@ -339,7 +343,6 @@ export default function NavBar() {
   );
 }
 
-/* ── Mobile nav link component ── */
 function MobileLink({ to, label, active }: { to: string; label: string; active: boolean }) {
   return (
     <Link

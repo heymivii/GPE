@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
 import LoginPage from '../features/auth/pages/LoginPage';
 import RegisterPage from '../features/auth/pages/RegisterPage';
 import AuthLayout from '../layouts/AuthLayout';
@@ -25,6 +25,8 @@ import CountryComparison from '../features/comparison/pages/CountryComparison';
 import ServicePage from '../features/services/pages/ServicePage';
 import ServicesIndexPage from '../features/services/pages/ServicesIndexPage';
 import CostOfLivingTestPage from '../features/cost-of-living/pages/CostOfLivingTestPage';
+import BlogPage from '../features/blog/pages/BlogPage';
+import BlogArticlePage from '../features/blog/pages/BlogArticlePage';
 
 export const router = createBrowserRouter([
   {
@@ -60,6 +62,9 @@ export const router = createBrowserRouter([
       { path: 'destinations', element: <DestinationsPage /> },
       { path: 'destinations/:countrySlug', element: <DestinationDetailPage /> },
       { path: 'comparison', element: <CountryComparison /> },
+      { path: 'blog', element: <BlogPage /> },
+      { path: 'blog/:id', element: <BlogArticlePage /> },
+      { path: 'visa', element: <Navigate to="/services/visa" replace /> },
       { path: 'test/cost-of-living', element: <CostOfLivingTestPage /> },
     ],
   },

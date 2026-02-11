@@ -9,7 +9,8 @@ export type SearchCategory =
   | 'forum'
   | 'procedure'
   | 'service'
-  | 'faq';
+  | 'faq'
+  | 'blog';
 
 export interface GlobalSearchResult {
   category: SearchCategory;
