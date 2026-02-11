@@ -1,30 +1,30 @@
 export class AdzunaJobDto {
-  id: string; // ID Adzuna
-  title: string; // Titre du poste
-  company: string; // Nom de l'entreprise
+  id: string;
+  title: string;
+  company: string;
   location: {
     city?: string;
     country: string;
-    displayName: string; // Localisation formatée
+    displayName: string;
   };
-  description: string; // Description du poste
+  description: string;
   salary?: {
     min?: number;
     max?: number;
     currency?: string;
   };
-  contract_type?: string; // Type de contrat (permanent, contract, etc.)
-  remote?: boolean; // Télétravail
-  redirect_url: string; // URL vers l'offre complète
-  created_at: Date; // Date de publication
-  category?: string; // Catégorie d'emploi
-  company_logo?: string; // Logo de l'entreprise (si disponible)
+  contract_type?: string;
+  remote?: boolean;
+  redirect_url: string;
+  created_at: Date;
+  category?: string;
+  company_logo?: string;
 }
 
 export class AdzunaSearchResponseDto {
-  results: AdzunaJobDto[]; // Liste des offres
-  total: number; // Nombre total de résultats
-  page: number; // Page actuelle
-  perPage: number; // Résultats par page
-  totalPages: number; // Nombre total de pages
+  results: AdzunaJobDto[];
+  total: number;
+  page: number;
+  perPage: number;
+  totalPages: number;
 }

@@ -20,6 +20,10 @@ export class AdzunaService {
   private readonly APP_ID = process.env.ADZUNA_APP_ID;
   private readonly APP_KEY = process.env.ADZUNA_APP_KEY;
   private readonly BASE_URL = 'https://api.adzuna.com/v1/api/jobs';
+  private readonly SUPPORTED_COUNTRIES = new Set([
+    'gb', 'us', 'au', 'br', 'ca', 'de', 'fr', 'in', 'it',
+    'nl', 'nz', 'pl', 'sg', 'za', 'at', 'be', 'ch', 'mx', 'es',
+  ]);
 
   async searchJobs(
     searchDto: SearchJobDto,
@@ -29,6 +33,20 @@ export class AdzunaService {
         'Adzuna API credentials not configured',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
+    }
+
+    const countryCode = (searchDto.country || 'fr').toLowerCase();
+    if (!this.SUPPORTED_COUNTRIES.has(countryCode)) {
+      this.logger.warn(
+        `Country "${countryCode}" is not supported by Adzuna. Returning empty results.`,
+      );
+      return {
+        results: [],
+        total: 0,
+        page: searchDto.page || 1,
+        perPage: searchDto.resultsPerPage || 20,
+        totalPages: 0,
+      };
     }
 
     const cacheKey = this.generateCacheKey(searchDto);

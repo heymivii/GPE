@@ -12,15 +12,6 @@ export class GlobalSearchService {
 
   constructor(private readonly dataSource: DataSource) {}
 
-  /**
-   * Full-text search across the materialized view.
-   *
-   * Supports:
-   * - Multi-word queries  (each word becomes a prefix match)
-   * - Category filtering
-   * - Ranked results      (ts_rank_cd)
-   * - Fallback to ILIKE when the matview is empty / not yet created
-   */
   async search(dto: GlobalSearchDto): Promise<GlobalSearchResponse> {
     const { q, category, limit = 10 } = dto;
     const trimmed = q.trim();
@@ -39,9 +30,6 @@ export class GlobalSearchService {
     }
   }
 
-  /**
-   * Refresh the materialized view. Call via CRON or manually.
-   */
   async refreshIndex(): Promise<void> {
     await this.dataSource.query(
       'REFRESH MATERIALIZED VIEW global_search_index',
@@ -49,12 +37,6 @@ export class GlobalSearchService {
     this.logger.log('global_search_index materialized view refreshed');
   }
 
-  // ────────────────────── private helpers ──────────────────────
-
-  /**
-   * Build a tsquery from the user input.
-   * "salaire moyen france" → "salaire:* & moyen:* & france:*"
-   */
   private buildTsQuery(raw: string): string {
     return raw
       .split(/\s+/)
@@ -107,10 +89,6 @@ export class GlobalSearchService {
     };
   }
 
-  /**
-   * Simple ILIKE fallback when the matview doesn't exist yet.
-   * Queries country + city tables directly.
-   */
   private async fallbackSearch(
     q: string,
     category: string | undefined,
@@ -168,10 +146,10 @@ export class GlobalSearchService {
 
     if (!category || category === 'guide') {
       const guides = await this.dataSource.query(
-        `SELECT g.id_guide::text AS "entityId", g.title,
+        `SELECT g.guide_id::text AS "entityId", g.title,
                 COALESCE(LEFT(g.content, 200),'') AS description,
                 co.country_name AS "countryName"
-         FROM guide g JOIN country co ON co.id_country = g.id_country
+         FROM guide g JOIN country co ON co.id_country = g.country_id
          WHERE g.title ILIKE $1 OR g.content ILIKE $1
          LIMIT $2`,
         [like, limit],
