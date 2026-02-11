@@ -45,11 +45,8 @@ export interface EnrichedCountry {
   flagEmoji?: string
   capital?: string
   continent?: string
-  /** Display label for the currency, e.g. "EUR", "USD" */
   currency?: string
-  /** ISO currency code used as source for conversion (from cost-of-living API) */
   sourceCurrencyCode?: string
-  /** Exchange rates map from the cost-of-living API (relative to USD) */
   exchangeRates?: Record<string, number>
   languages?: string
   costOfLiving?: {
@@ -65,7 +62,6 @@ export interface EnrichedCountry {
     utilities?: number
     transportMonthly?: number
     internetMonthly?: number
-    /** Full JSONB data from cost_of_living_cache (capital city) */
     capitalCityData?: CostOfLivingData | null
   }
   healthcare?: {
@@ -108,10 +104,6 @@ export interface EnrichedCountry {
   }
 }
 
-/**
- * Extract cost of living comparison data from the real JSONB cache data.
- * Uses the capital city (or first city with data) as representative.
- */
 function extractCostOfLivingFromCache(
   capitalData: CostOfLivingData | null | undefined,
 ): EnrichedCountry['costOfLiving'] | undefined {
@@ -122,7 +114,6 @@ function extractCostOfLivingFromCache(
   const food = capitalData.categories.food
   const salary = capitalData.categories.salary
 
-  // Weekly groceries estimate from market basket
   const m = food?.markets
   const weeklyGroceries = m
     ? Math.round(
@@ -168,13 +159,11 @@ function extractCostOfLivingFromCache(
 }
 
 export function useCountriesWithData() {
-  // Step 1: load all countries from /api/country
   const { data: apiCountries, isLoading: isLoadingCountries, error } = useQuery({
     queryKey: ['countries'],
     queryFn: countryApi.getAll,
   })
 
-  // Step 2: load destination details (with cost of living) for each supported country
   const { data: destinationDetails, isLoading: isLoadingDetails } = useQuery({
     queryKey: ['country-destinations-details'],
     queryFn: async () => {
@@ -183,7 +172,6 @@ export function useCountriesWithData() {
         SUPPORTED_COUNTRY_CODES.map(async (code) => {
           try {
             const detail = await destinationsApi.getBySlug(code)
-            // Find capital city or first city with costOfLiving data
             const capitalCity =
               detail.cities.find(c => c.isCapital && c.costOfLiving) ||
               detail.cities.find(c => c.costOfLiving)
@@ -200,7 +188,7 @@ export function useCountriesWithData() {
       return results
     },
     enabled: !!apiCountries && apiCountries.length > 0,
-    staleTime: 5 * 60 * 1000, // cache 5 min
+    staleTime: 5 * 60 * 1000,
   })
 
   const isLoading = isLoadingCountries || isLoadingDetails
@@ -209,7 +197,6 @@ export function useCountriesWithData() {
     ?.map((country: Country): EnrichedCountry | undefined => {
       const countryCode = country.isoCode
 
-      // Filter to keep only MVP countries
       if (!countryCode || !SUPPORTED_COUNTRY_CODES.includes(countryCode)) {
         return undefined
       }
@@ -218,13 +205,11 @@ export function useCountriesWithData() {
         c => c.code === countryCode,
       ) as CountryDataFromJson | undefined
 
-      // Get real cost of living data from the API cache
       const detailData = destinationDetails?.[countryCode]
       const realCostOfLiving = detailData?.capitalData
         ? extractCostOfLivingFromCache(detailData.capitalData)
         : undefined
 
-      // Fallback to JSON static data if API data not yet available
       const costOfLiving = realCostOfLiving || jsonData?.costOfLiving
 
       return {

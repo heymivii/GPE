@@ -8,18 +8,16 @@ import type { EnrichedCountry } from '../hooks/useCountriesWithData'
 import { useTranslation } from 'react-i18next'
 import { useCurrency, DISPLAY_CURRENCIES } from '../../../contexts/CurrencyContext'
 import { useMigrationData } from '../hooks/useMigrationData'
-import { getLocale } from '../../../data/supportedCountries'
+import { getLocale, SUPPORTED_COUNTRIES } from '../../../data/supportedCountries'
 
 interface ComparisonTableProps {
   countries: EnrichedCountry[]
   isAuthenticated?: boolean
 }
 
-/* ─────────────── Radar / Spider chart (SVG) ─────────────── */
 
 interface RadarDataPoint {
   label: string
-  /** 0–100 normalised score */
   values: number[]
 }
 
@@ -115,7 +113,6 @@ function RadarChart({ data, countryNames, colors }: {
   )
 }
 
-/* ─────────────── Visual Bar ─────────────── */
 
 function ValueBar({ value, max, color = '#5EA3C0' }: { value: number; max: number; color?: string }) {
   const pct = max > 0 ? Math.min((value / max) * 100, 100) : 0
@@ -129,7 +126,6 @@ function ValueBar({ value, max, color = '#5EA3C0' }: { value: number; max: numbe
   )
 }
 
-/* ─────────────── Score Badge ─────────────── */
 
 function ScoreBadge({ score }: { score: string }) {
   const m = score.match(/(\d+)/)
@@ -145,7 +141,6 @@ function ScoreBadge({ score }: { score: string }) {
   )
 }
 
-/* ─────────────── Main Table Component ─────────────── */
 
 export default function ComparisonTable({ countries, isAuthenticated = true }: ComparisonTableProps) {
   const { t, i18n } = useTranslation()
@@ -154,7 +149,45 @@ export default function ComparisonTable({ countries, isAuthenticated = true }: C
   const colClass = countries.length === 2 ? 'grid-cols-2' : 'grid-cols-3'
   const locale = getLocale(i18n.language)
 
-  /** Convert an amount from a country's source currency to the user's display currency */
+  const td = useCallback((category: string, value: string | undefined): string => {
+    if (!value) return t('comparison.fields.notSpecified')
+    const key = `comparison.data.${category}.${value}`
+    const result = t(key, { defaultValue: '' })
+    return result || value
+  }, [t])
+
+  const tdLangs = useCallback((raw: string | undefined): string => {
+    if (!raw) return t('comparison.fields.notSpecified')
+    return raw.split(', ').map(lang => {
+      const key = `comparison.data.languages.${lang.trim()}`
+      const result = t(key, { defaultValue: '' })
+      return result || lang.trim()
+    }).join(', ')
+  }, [t])
+
+  const tdBestFor = useCallback((items: string[] | undefined): string => {
+    if (!items || items.length === 0) return t('comparison.fields.notSpecified')
+    return items.map(item => {
+      const key = `comparison.data.bestFor.${item}`
+      const result = t(key, { defaultValue: '' })
+      return result || item
+    }).join(', ')
+  }, [t])
+
+  const tdByCode = useCallback((category: string, code: string | undefined): string => {
+    if (!code) return t('comparison.fields.notSpecified')
+    const key = `comparison.data.${category}.${code}`
+    const result = t(key, { defaultValue: '' })
+    return result || t('comparison.fields.notSpecified')
+  }, [t])
+
+  const tdCountryName = useCallback((country: EnrichedCountry): string => {
+    if (!country.isoCode) return country.countryName
+    const sc = SUPPORTED_COUNTRIES.find(c => c.code === country.isoCode)
+    if (!sc) return country.countryName
+    return t(sc.i18nKey, { defaultValue: country.countryName })
+  }, [t])
+
   const convertAmount = useCallback((amount: number | undefined | null, country: EnrichedCountry): number | null => {
     if (amount == null) return null
     const src = country.sourceCurrencyCode || country.currency || 'EUR'
@@ -162,24 +195,20 @@ export default function ComparisonTable({ countries, isAuthenticated = true }: C
     return convert(amount, src, rates)
   }, [convert])
 
-  /** Format a converted price with the global display symbol */
   const fmt = useCallback((amount: number | undefined | null, country: EnrichedCountry): string => {
     if (amount == null) return t('comparison.fields.notSpecified')
     const converted = convertAmount(amount, country)
     if (converted == null) {
-      // Fallback: show raw with original currency
       return `${amount.toLocaleString(locale)} ${country.currency || ''}`
     }
     return `${Math.round(converted).toLocaleString(locale)} ${displaySymbol}`
   }, [convertAmount, displaySymbol, locale, t])
 
-  /** Format large numbers with locale (e.g. 1 176 050) */
   const fmtNum = useCallback((value: number | undefined | null): string => {
     if (value == null) return t('comparison.fields.notSpecified')
     return value.toLocaleString(locale)
   }, [locale, t])
 
-  // Build radar chart data (using CONVERTED values for fair comparison)
   const radarData = useMemo<RadarDataPoint[]>(() => {
     const convertedSalaries = countries.map(c => convertAmount(c.costOfLiving?.averageSalary, c) ?? 0)
     const convertedRents = countries.map(c => convertAmount(c.costOfLiving?.averageRent?.oneBedroom, c) ?? 0)
@@ -253,10 +282,10 @@ export default function ComparisonTable({ countries, isAuthenticated = true }: C
                 </div>
                 <div>
                   <h3 className="font-bold text-xl text-gray-900 tracking-tight leading-none mb-1">
-                    {country.countryName}
+                    {tdCountryName(country)}
                   </h3>
                   <span className="text-sm text-gray-500 font-medium">
-                    {country.continent}
+                    {td('continents', country.continent)}
                   </span>
                 </div>
               </div>
@@ -296,7 +325,7 @@ export default function ComparisonTable({ countries, isAuthenticated = true }: C
         </div>
         <RadarChart
           data={radarData}
-          countryNames={countries.map(c => c.countryName)}
+          countryNames={countries.map(c => tdCountryName(c))}
           colors={RADAR_COLORS.slice(0, countries.length)}
         />
       </div>
@@ -307,17 +336,17 @@ export default function ComparisonTable({ countries, isAuthenticated = true }: C
       >
         <ComparisonRow
           label={t('comparison.fields.continent')}
-          values={countries.map(c => c.continent || t('comparison.fields.notSpecified'))}
+          values={countries.map(c => td('continents', c.continent))}
           colClass={colClass}
         />
         <ComparisonRow
           label={t('comparison.fields.capital')}
-          values={countries.map(c => c.capital || t('comparison.fields.notSpecifiedFeminine'))}
+          values={countries.map(c => td('capitals', c.capital))}
           colClass={colClass}
         />
         <ComparisonRow
           label={t('comparison.fields.languages')}
-          values={countries.map(c => c.languages || t('comparison.fields.notSpecified'))}
+          values={countries.map(c => tdLangs(c.languages))}
           colClass={colClass}
         />
         <ComparisonRow
@@ -422,14 +451,14 @@ export default function ComparisonTable({ countries, isAuthenticated = true }: C
         <ComparisonRow
           label={t('comparison.fields.healthcareSystem')}
           values={countries.map(c => {
-            const text = c.healthcare?.system || ''
-            return text.length > 80 ? text.slice(0, 77) + '…' : text || t('comparison.fields.notSpecified')
+            const text = tdByCode('healthcareSystem', c.isoCode)
+            return text.length > 80 ? text.slice(0, 77) + '…' : text
           })}
           colClass={colClass}
         />
         <ComparisonRow
           label={t('comparison.fields.workLifeBalance')}
-          values={countries.map(c => c.lifestyle?.workLifeBalance || t('comparison.fields.notSpecified'))}
+          values={countries.map(c => td('workLifeBalance', c.lifestyle?.workLifeBalance))}
           colClass={colClass}
         />
       </ComparisonSection>
@@ -441,8 +470,8 @@ export default function ComparisonTable({ countries, isAuthenticated = true }: C
         <ComparisonRow
           label={t('comparison.fields.climateType')}
           values={countries.map(c => {
-            const text = c.climate?.type || ''
-            return text.length > 60 ? text.slice(0, 57) + '…' : text || t('comparison.fields.notSpecified')
+            const text = tdByCode('climateType', c.isoCode)
+            return text.length > 60 ? text.slice(0, 57) + '…' : text
           })}
           colClass={colClass}
         />
@@ -568,14 +597,14 @@ export default function ComparisonTable({ countries, isAuthenticated = true }: C
             <ComparisonRow
               label={t('comparison.fields.difficulty')}
               values={countries.map(c => 
-                c.recommendations?.visaDifficulty || t('comparison.fields.notSpecified')
+                td('visaDifficulty', c.recommendations?.visaDifficulty)
               )}
               colClass={colClass}
             />
             <ComparisonRow
               label={t('comparison.fields.languageRequired')}
               values={countries.map(c => 
-                c.recommendations?.language || t('comparison.fields.notSpecified')
+                td('languageRequired', c.recommendations?.language)
               )}
               colClass={colClass}
             />
@@ -595,7 +624,7 @@ export default function ComparisonTable({ countries, isAuthenticated = true }: C
             <ComparisonRow
               label={t('comparison.fields.recommendedProfiles')}
               values={countries.map(c => 
-                c.recommendations?.bestFor?.join(', ') || t('comparison.fields.notSpecified')
+                tdBestFor(c.recommendations?.bestFor)
               )}
               colClass={colClass}
             />
@@ -608,7 +637,6 @@ export default function ComparisonTable({ countries, isAuthenticated = true }: C
   )
 }
 
-/* ═══════════════ Sub-components ═══════════════ */
 
 function PremiumGate() {
   const { t } = useTranslation()
@@ -697,7 +725,6 @@ function ComparisonSection({
   )
 }
 
-/* ─── Text-only row ─── */
 
 function ComparisonRow({ 
   label, 
@@ -724,7 +751,6 @@ function ComparisonRow({
   )
 }
 
-/* ─── Numeric row with visual bar + trophy ─── */
 
 interface BarValue {
   raw: number | undefined | null
@@ -794,7 +820,6 @@ function ComparisonRowWithBar({
   )
 }
 
-/* ─── Score row (X/10 badge) ─── */
 
 function ComparisonRowScore({
   label,

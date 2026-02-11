@@ -1,6 +1,7 @@
 import { Check } from 'lucide-react'
 import type { EnrichedCountry } from '../hooks/useCountriesWithData'
 import { useTranslation } from 'react-i18next'
+import { SUPPORTED_COUNTRIES } from '../../../data/supportedCountries'
 
 interface CountrySelectorProps {
   countries: EnrichedCountry[]
@@ -16,6 +17,13 @@ export default function CountrySelector({
   maxSelection
 }: CountrySelectorProps) {
   const { t } = useTranslation()
+
+  const getCountryName = (country: EnrichedCountry): string => {
+    const sc = SUPPORTED_COUNTRIES.find(c => c.code === country.isoCode)
+    if (!sc) return country.countryName
+    return t(sc.i18nKey, { defaultValue: country.countryName })
+  }
+
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
       {countries.map((country) => {
@@ -58,10 +66,10 @@ export default function CountrySelector({
               <span className={`block font-bold text-base mb-0.5 ${
                 isSelected ? 'text-gray-900' : 'text-gray-700 group-hover:text-gray-900'
               }`}>
-                {country.countryName}
+                {getCountryName(country)}
               </span>
               <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">
-                {country.continent || t('comparison.fields.destination')}
+                {t(`comparison.data.continents.${country.continent}`, { defaultValue: country.continent || t('comparison.fields.destination') })}
               </span>
             </div>
 

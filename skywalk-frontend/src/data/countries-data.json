@@ -101,7 +101,7 @@
               },
               {
                 "id": "3.4",
-                "label": "Payer la taxe OFII (200€)",
+                "label": "Payer la taxe OFII (225€)",
                 "isOptional": false
               }
             ]
@@ -281,8 +281,8 @@
           "Finance et assurance",
           "Commerce et vente"
         ],
-        "averageSalary": 2500,
-        "unemploymentRate": "7.3%",
+        "averageSalary": 2680,
+        "unemploymentRate": "7.5%",
         "keyJobSites": [
           {
             "name": "Pôle emploi",
@@ -307,43 +307,43 @@
         ],
         "workingHoursPerWeek": 35,
         "salaryByCity": {
-          "Paris": 3200,
-          "Lyon": 2600,
-          "Marseille": 2400
+          "Paris": 3400,
+          "Lyon": 2750,
+          "Marseille": 2550
         }
       },
       "costOfLiving": {
         "averageRent": {
-          "oneBedroom": 900,
-          "threeBedroom": 1600
+          "oneBedroom": 950,
+          "threeBedroom": 1700
         },
-        "averageSalary": 2500,
+        "averageSalary": 2680,
         "food": {
-          "restaurantMeal": 15,
-          "groceriesWeekly": 70
+          "restaurantMeal": 16,
+          "groceriesWeekly": 75
         },
-        "utilities": 150,
-        "transportMonthly": 75,
+        "utilities": 160,
+        "transportMonthly": 80,
         "internetMonthly": 30,
-        "gymMembership": 35,
+        "gymMembership": 38,
         "byCity": {
           "Paris": {
-            "oneBedroom": 1300,
-            "threeBedroom": 2500,
-            "utilities": 180,
-            "transportMonthly": 84
+            "oneBedroom": 1400,
+            "threeBedroom": 2700,
+            "utilities": 190,
+            "transportMonthly": 86.6
           },
           "Lyon": {
-            "oneBedroom": 800,
-            "threeBedroom": 1400,
-            "utilities": 140,
-            "transportMonthly": 65
+            "oneBedroom": 850,
+            "threeBedroom": 1500,
+            "utilities": 145,
+            "transportMonthly": 69
           },
           "Marseille": {
-            "oneBedroom": 750,
-            "threeBedroom": 1300,
-            "utilities": 135,
-            "transportMonthly": 60
+            "oneBedroom": 780,
+            "threeBedroom": 1350,
+            "utilities": 140,
+            "transportMonthly": 63
           }
         }
       },
@@ -375,9 +375,9 @@
         "coverage": "Couverture à hauteur de 70% des frais médicaux, mutuelles complémentaires recommandées",
         "qualityRating": "9/10",
         "averageCosts": {
-          "doctorVisit": 25,
+          "doctorVisit": 30,
           "emergency": 0,
-          "insurance": 50
+          "insurance": 55
         },
         "accessibility": "Excellente"
       },
@@ -992,7 +992,8 @@
       "languages": [
         "Français",
         "Allemand",
-        "Italien"
+        "Italien",
+        "Romanche"
       ],
       "flagUrl": "https://flagcdn.com/ch.svg",
       "flagEmoji": "🇨🇭",
@@ -1231,8 +1232,8 @@
           "Horlogerie et précision",
           "Ingénierie"
         ],
-        "averageSalary": 6500,
-        "unemploymentRate": "2.1%",
+        "averageSalary": 6700,
+        "unemploymentRate": "2.3%",
         "keyJobSites": [
           {
             "name": "JobUp.ch",
@@ -1257,43 +1258,43 @@
         ],
         "workingHoursPerWeek": 42,
         "salaryByCity": {
-          "Zurich": 7500,
-          "Genève": 7200,
-          "Berne": 6800
+          "Zurich": 7800,
+          "Genève": 7400,
+          "Berne": 7000
         }
       },
       "costOfLiving": {
         "averageRent": {
-          "oneBedroom": 1800,
-          "threeBedroom": 3200
+          "oneBedroom": 1900,
+          "threeBedroom": 3400
         },
-        "averageSalary": 6500,
+        "averageSalary": 6700,
         "food": {
-          "restaurantMeal": 25,
-          "groceriesWeekly": 100
+          "restaurantMeal": 27,
+          "groceriesWeekly": 110
         },
-        "utilities": 220,
-        "transportMonthly": 90,
+        "utilities": 230,
+        "transportMonthly": 95,
         "internetMonthly": 50,
-        "gymMembership": 80,
+        "gymMembership": 85,
         "byCity": {
           "Zurich": {
+            "oneBedroom": 2400,
+            "threeBedroom": 4300,
+            "utilities": 260,
+            "transportMonthly": 100
+          },
+          "Genève": {
             "oneBedroom": 2200,
             "threeBedroom": 4000,
             "utilities": 250,
-            "transportMonthly": 95
-          },
-          "Genève": {
-            "oneBedroom": 2100,
-            "threeBedroom": 3800,
-            "utilities": 240,
-            "transportMonthly": 85
+            "transportMonthly": 90
           },
           "Berne": {
-            "oneBedroom": 1700,
-            "threeBedroom": 3000,
-            "utilities": 210,
-            "transportMonthly": 90
+            "oneBedroom": 1800,
+            "threeBedroom": 3100,
+            "utilities": 220,
+            "transportMonthly": 92
           }
         }
       },
@@ -1325,16 +1326,16 @@
         "coverage": "Couverture complète des soins de base, assurances complémentaires disponibles",
         "qualityRating": "10/10",
         "averageCosts": {
-          "doctorVisit": 50,
-          "emergency": 100,
-          "insurance": 400
+          "doctorVisit": 55,
+          "emergency": 110,
+          "insurance": 430
         },
         "accessibility": "Excellente"
       },
       "taxation": {
         "incomeTaxRange": "0% - 40%",
         "corporateTax": "12% - 21%",
-        "vat": "7.7%",
+        "vat": "8.1%",
         "socialContributions": "6% - 12%",
         "taxResidencyRules": "Résidence fiscale dès l'installation en Suisse, imposition fédérale + cantonale + communale"
       },
@@ -4610,7 +4611,7 @@
               },
               {
                 "id": "6.3",
-                "label": "Payer cotisation (16 520 JPY/mois)",
+                "label": "Payer cotisation (16 980 JPY/mois)",
                 "isOptional": false
               },
               {
@@ -4760,8 +4761,8 @@
           "Finance et assurance",
           "Services et hospitalité"
         ],
-        "averageSalary": 350000,
-        "unemploymentRate": "2.5%",
+        "averageSalary": 360000,
+        "unemploymentRate": "2.4%",
         "keyJobSites": [
           {
             "name": "GaijinPot Jobs",
@@ -4786,50 +4787,50 @@
         ],
         "workingHoursPerWeek": 40,
         "salaryByCity": {
-          "Tokyo": 400000,
-          "Osaka": 340000,
-          "Yokohama": 370000
+          "Tokyo": 420000,
+          "Osaka": 355000,
+          "Yokohama": 385000
         },
         "salaryBySector": {
-          "IT": 450000,
-          "Ingénierie": 420000,
-          "Enseignement": 280000,
-          "Finance": 480000,
-          "Manufacturing": 380000
+          "IT": 480000,
+          "Ingénierie": 440000,
+          "Enseignement": 290000,
+          "Finance": 510000,
+          "Manufacturing": 395000
         }
       },
       "costOfLiving": {
         "averageRent": {
-          "oneBedroom": 90000,
-          "threeBedroom": 180000
+          "oneBedroom": 95000,
+          "threeBedroom": 190000
         },
-        "averageSalary": 350000,
+        "averageSalary": 360000,
         "food": {
-          "restaurantMeal": 900,
-          "groceriesWeekly": 6000
+          "restaurantMeal": 1000,
+          "groceriesWeekly": 6500
         },
-        "utilities": 15000,
-        "transportMonthly": 12000,
-        "internetMonthly": 4500,
-        "gymMembership": 8000,
+        "utilities": 16000,
+        "transportMonthly": 13000,
+        "internetMonthly": 4800,
+        "gymMembership": 8500,
         "byCity": {
           "Tokyo": {
-            "oneBedroom": 120000,
-            "threeBedroom": 250000,
-            "utilities": 18000,
-            "transportMonthly": 15000
+            "oneBedroom": 130000,
+            "threeBedroom": 270000,
+            "utilities": 19000,
+            "transportMonthly": 16000
           },
           "Osaka": {
-            "oneBedroom": 80000,
-            "threeBedroom": 160000,
-            "utilities": 14000,
-            "transportMonthly": 10000
+            "oneBedroom": 85000,
+            "threeBedroom": 170000,
+            "utilities": 15000,
+            "transportMonthly": 11000
           },
           "Yokohama": {
-            "oneBedroom": 95000,
-            "threeBedroom": 190000,
-            "utilities": 16000,
-            "transportMonthly": 13000
+            "oneBedroom": 100000,
+            "threeBedroom": 200000,
+            "utilities": 17000,
+            "transportMonthly": 14000
           }
         }
       },
@@ -4861,9 +4862,9 @@
         "coverage": "Couverture à 70%, patient paie 30% des frais médicaux",
         "qualityRating": "9/10",
         "averageCosts": {
-          "doctorVisit": 2000,
-          "emergency": 10000,
-          "insurance": 20000
+          "doctorVisit": 2500,
+          "emergency": 12000,
+          "insurance": 22000
         },
         "accessibility": "Excellente"
       },
@@ -5979,7 +5980,7 @@
               },
               {
                 "id": "2.2",
-                "label": "Payer les frais de visa (185-205 USD)",
+                "label": "Payer les frais de visa (185-315 USD)",
                 "isOptional": false
               },
               {
@@ -6054,7 +6055,7 @@
               },
               {
                 "id": "4.4",
-                "label": "Payer la prime mensuelle (300-600 USD)",
+                "label": "Payer la prime mensuelle (350-650 USD)",
                 "isOptional": false
               }
             ]
@@ -6229,8 +6230,8 @@
           "Ingénierie",
           "Commerce et retail"
         ],
-        "averageSalary": 5500,
-        "unemploymentRate": "3.7%",
+        "averageSalary": 5800,
+        "unemploymentRate": "4.1%",
         "keyJobSites": [
           {
             "name": "LinkedIn",
@@ -6255,50 +6256,50 @@
         ],
         "workingHoursPerWeek": 40,
         "salaryByCity": {
-          "New York": 6800,
-          "Los Angeles": 5800,
-          "San Francisco": 7500
+          "New York": 7200,
+          "Los Angeles": 6100,
+          "San Francisco": 7800
         },
         "salaryBySector": {
-          "IT": 7500,
-          "Finance": 8000,
-          "Santé": 6000,
-          "Ingénierie": 6800,
-          "Commerce": 4200
+          "IT": 8000,
+          "Finance": 8500,
+          "Santé": 6400,
+          "Ingénierie": 7200,
+          "Commerce": 4500
         }
       },
       "costOfLiving": {
         "averageRent": {
-          "oneBedroom": 2500,
-          "threeBedroom": 3800
+          "oneBedroom": 2600,
+          "threeBedroom": 4000
         },
-        "averageSalary": 5500,
+        "averageSalary": 5800,
         "food": {
-          "restaurantMeal": 18,
-          "groceriesWeekly": 85
+          "restaurantMeal": 20,
+          "groceriesWeekly": 90
         },
-        "utilities": 180,
-        "transportMonthly": 100,
-        "internetMonthly": 65,
-        "gymMembership": 50,
+        "utilities": 190,
+        "transportMonthly": 105,
+        "internetMonthly": 70,
+        "gymMembership": 55,
         "byCity": {
           "New York": {
-            "oneBedroom": 3500,
-            "threeBedroom": 5500,
-            "utilities": 200,
-            "transportMonthly": 127
+            "oneBedroom": 3700,
+            "threeBedroom": 5800,
+            "utilities": 210,
+            "transportMonthly": 132
           },
           "Los Angeles": {
-            "oneBedroom": 2500,
-            "threeBedroom": 3800,
-            "utilities": 170,
-            "transportMonthly": 80
+            "oneBedroom": 2700,
+            "threeBedroom": 4100,
+            "utilities": 180,
+            "transportMonthly": 85
           },
           "San Francisco": {
-            "oneBedroom": 3200,
-            "threeBedroom": 5000,
-            "utilities": 185,
-            "transportMonthly": 90
+            "oneBedroom": 3400,
+            "threeBedroom": 5300,
+            "utilities": 195,
+            "transportMonthly": 98
           }
         }
       },
@@ -6328,11 +6329,11 @@
       "healthcare": {
         "system": "Système privé basé sur les assurances, pas de couverture universelle",
         "coverage": "Couverture via assurance privée obligatoire, remboursements selon le plan souscrit",
-        "qualityRating": "9/10",
+        "qualityRating": "8/10",
         "averageCosts": {
-          "doctorVisit": 150,
-          "emergency": 1500,
-          "insurance": 450
+          "doctorVisit": 180,
+          "emergency": 1800,
+          "insurance": 500
         },
         "accessibility": "Bonne avec assurance, coûteuse sans"
       },
@@ -6369,7 +6370,7 @@
         ],
         "cuisine": "BBQ, burgers, cuisine tex-mex, fusion multiculturelle, food trucks, diversité culinaire mondiale",
         "workLifeBalance": "Moyen",
-        "safetyRating": "7/10"
+        "safetyRating": "6/10"
       },
       "expatCommunity": {
         "size": "Très grande",
