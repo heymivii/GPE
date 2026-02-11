@@ -15,6 +15,8 @@ import { ExpatriationProjectService } from './expatriation-project.service';
 import { CreateExpatriationProjectDto } from './dto/create-expatriation-project.dto';
 import { UpdateExpatriationProjectDto } from './dto/update-expatriation-project.dto';
 import { UpdateChecklistProgressDto } from './dto/update-checklist-progress.dto';
+import { CompleteProjectDto } from './dto/complete-project.dto';
+import { CancelProjectDto } from './dto/cancel-project.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -22,9 +24,7 @@ import { ApiTags } from '@nestjs/swagger';
 @Controller('expatriation-project')
 @UseGuards(JwtAuthGuard)
 export class ExpatriationProjectController {
-  constructor(
-    private readonly projectService: ExpatriationProjectService,
-  ) {}
+  constructor(private readonly projectService: ExpatriationProjectService) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -57,17 +57,36 @@ export class ExpatriationProjectController {
     @Param('id') id: string,
     @Body() updateDto: UpdateExpatriationProjectDto,
   ) {
-    return await this.projectService.update(
-      +id,
-      req.user.userId,
-      updateDto,
-    );
+    return await this.projectService.update(+id, req.user.userId, updateDto);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Request() req, @Param('id') id: string) {
     await this.projectService.remove(+id, req.user.userId);
+  }
+
+  @Post(':id/complete')
+  async completeProject(
+    @Request() req,
+    @Param('id') id: string,
+    @Body() dto: CompleteProjectDto,
+  ) {
+    return await this.projectService.completeProject(+id, req.user.userId, dto);
+  }
+
+  @Post(':id/cancel')
+  async cancelProject(
+    @Request() req,
+    @Param('id') id: string,
+    @Body() dto: CancelProjectDto,
+  ) {
+    return await this.projectService.cancelProject(+id, req.user.userId, dto);
+  }
+
+  @Post(':id/reactivate')
+  async reactivateProject(@Request() req, @Param('id') id: string) {
+    return await this.projectService.reactivateProject(+id, req.user.userId);
   }
 
   @Post(':id/checklist')

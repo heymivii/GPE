@@ -1,5 +1,5 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { useProject, useDeleteProject } from '../hooks/useProjectMutations';
+import { useProject, useDeleteProject, useCompleteProject, useCancelProject, useReactivateProject } from '../hooks/useProjectMutations';
 import { useQuery } from '@tanstack/react-query';
 import { countryApi } from '../../../api/country';
 import { useState } from 'react';
@@ -9,15 +9,15 @@ import {
   ArrowLeft, Calendar, MapPin, Clock, Wallet, 
   Briefcase, GraduationCap, Heart, Globe, User, Users,
   CheckCircle2, AlertCircle, Trash2, Edit, Plane,
-  Target, Flag
+  Target, Flag, XCircle, RotateCcw, PartyPopper
 } from 'lucide-react';
 
 const STATUS_STYLES = {
-  planning: { color: 'bg-blue-50 text-blue-700 border-blue-200', icon: Calendar },
-  active: { color: 'bg-green-50 text-green-700 border-green-200', icon: Plane },
+  planning: { color: 'bg-gray-50 text-gray-700 border-gray-200', icon: Calendar },
+  active: { color: 'bg-gray-50 text-gray-700 border-gray-200', icon: Plane },
   completed: { color: 'bg-gray-50 text-gray-700 border-gray-200', icon: CheckCircle2 },
-  cancelled: { color: 'bg-red-50 text-red-700 border-red-200', icon: AlertCircle },
-  on_hold: { color: 'bg-amber-50 text-amber-700 border-amber-200', icon: Clock },
+  cancelled: { color: 'bg-gray-50 text-gray-700 border-gray-200', icon: AlertCircle },
+  on_hold: { color: 'bg-gray-50 text-gray-700 border-gray-200', icon: Clock },
 };
 
 const STATUS_LABEL_KEYS: Record<string, string> = {
@@ -51,7 +51,18 @@ export default function ProjectDetailPage() {
   const { t, i18n } = useTranslation();
   const { data: project, isLoading, isError } = useProject(Number(id));
   const { mutate: deleteProject } = useDeleteProject();
+  const { mutate: completeProject, isPending: isCompleting } = useCompleteProject();
+  const { mutate: cancelProject, isPending: isCancelling } = useCancelProject();
+  const { mutate: reactivateProject, isPending: isReactivating } = useReactivateProject();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showCompleteModal, setShowCompleteModal] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [showReactivateModal, setShowReactivateModal] = useState(false);
+  const [completeReason, setCompleteReason] = useState('');
+  const [completeFeedback, setCompleteFeedback] = useState('');
+  const [cancelReason, setCancelReason] = useState('');
+  const [cancelDetails, setCancelDetails] = useState('');
+  const [deleteReason, setDeleteReason] = useState('');
 
   const { data: country } = useQuery({
     queryKey: ['country', project?.idDestinationCountry],
@@ -62,7 +73,7 @@ export default function ProjectDetailPage() {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-gray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-600"></div>
       </div>
     );
   }
@@ -71,14 +82,14 @@ export default function ProjectDetailPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl shadow-lg p-8 text-center max-w-md w-full">
-          <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
-            <AlertCircle className="w-8 h-8 text-red-500" />
+          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <AlertCircle className="w-8 h-8 text-gray-500" />
           </div>
           <h2 className="text-xl font-bold text-gray-900 mb-2">{t('projectDetail.notFound')}</h2>
           <p className="text-gray-600 mb-6">{t('projectDetail.notFoundDesc')}</p>
           <button
             onClick={() => navigate('/projects')}
-            className="w-full px-4 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium"
+            className="w-full px-4 py-2.5 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors font-medium"
           >
             {t('projectDetail.backToProjects')}
           </button>
@@ -151,16 +162,43 @@ export default function ProjectDetailPage() {
             </div>
 
             <div className="flex items-center gap-3">
-              <button
-                onClick={() => navigate(`/onboarding/${project.idProject}`)}
-                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
-              >
-                <Edit className="w-4 h-4" />
-                {t('projectDetail.edit')}
-              </button>
+              {project.projectStatus !== 'completed' && project.projectStatus !== 'cancelled' && (
+                <>
+                  <button
+                    onClick={() => setShowCompleteModal(true)}
+                    className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
+                  >
+                    <CheckCircle2 className="w-4 h-4" />
+                    {t('projectDetail.completeProject')}
+                  </button>
+                  <button
+                    onClick={() => navigate(`/onboarding/${project.idProject}`)}
+                    className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
+                  >
+                    <Edit className="w-4 h-4" />
+                    {t('projectDetail.edit')}
+                  </button>
+                  <button
+                    onClick={() => setShowCancelModal(true)}
+                    className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
+                  >
+                    <XCircle className="w-4 h-4" />
+                    {t('projectDetail.cancelProject')}
+                  </button>
+                </>
+              )}
+              {(project.projectStatus === 'completed' || project.projectStatus === 'cancelled') && (
+                <button
+                  onClick={() => setShowReactivateModal(true)}
+                  className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
+                >
+                  <RotateCcw className="w-4 h-4" />
+                  {t('projectDetail.reactivate')}
+                </button>
+              )}
               <button
                 onClick={() => setShowDeleteConfirm(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 border border-red-100 rounded-lg hover:bg-red-100 transition-colors text-sm font-medium"
+                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-red-600 rounded-lg hover:bg-red-50 transition-colors text-sm font-medium"
               >
                 <Trash2 className="w-4 h-4" />
                 {t('projectDetail.delete')}
@@ -175,7 +213,7 @@ export default function ProjectDetailPage() {
           <div className="lg:col-span-2 space-y-6">
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <MapPin className="w-5 h-5 text-blue-600" />
+                <MapPin className="w-5 h-5 text-gray-500" />
                 {t('projectDetail.destination')}
               </h2>
               <div className="space-y-4">
@@ -194,13 +232,13 @@ export default function ProjectDetailPage() {
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
-                <Target className="w-5 h-5 text-blue-600" />
+                <Target className="w-5 h-5 text-gray-500" />
                 {t('projectDetail.generalInfo')}
               </h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="flex items-start gap-3">
-                  <div className="p-2 bg-blue-50 rounded-lg text-blue-600">
+                  <div className="p-2 bg-gray-100 rounded-lg text-gray-500">
                     {getObjectiveIcon(project.mainObjective)}
                   </div>
                   <div>
@@ -214,7 +252,7 @@ export default function ProjectDetailPage() {
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <div className="p-2 bg-indigo-50 rounded-lg text-indigo-600">
+                  <div className="p-2 bg-gray-100 rounded-lg text-gray-500">
                     {getTravelTypeIcon(project.travelType)}
                   </div>
                   <div>
@@ -228,7 +266,7 @@ export default function ProjectDetailPage() {
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <div className="p-2 bg-emerald-50 rounded-lg text-emerald-600">
+                  <div className="p-2 bg-gray-100 rounded-lg text-gray-500">
                     <Calendar className="w-5 h-5" />
                   </div>
                   <div>
@@ -242,7 +280,7 @@ export default function ProjectDetailPage() {
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <div className="p-2 bg-amber-50 rounded-lg text-amber-600">
+                  <div className="p-2 bg-gray-100 rounded-lg text-gray-500">
                     <Clock className="w-5 h-5" />
                   </div>
                   <div>
@@ -266,7 +304,7 @@ export default function ProjectDetailPage() {
             {project.priorities && (
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
-                  <Flag className="w-5 h-5 text-blue-600" />
+                  <Flag className="w-5 h-5 text-gray-500" />
                   {t('projectDetail.priorities')}
                 </h2>
                 <div className="flex flex-wrap gap-2">
@@ -292,9 +330,63 @@ export default function ProjectDetailPage() {
               </div>
             </div>
 
+            {project.projectStatus === 'completed' && project.completedAt && (
+              <div className="bg-gray-50 rounded-xl border border-gray-200 p-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <PartyPopper className="w-5 h-5 text-gray-500" />
+                  <h3 className="font-semibold text-gray-800">{t('projectDetail.completedInfoTitle')}</h3>
+                </div>
+                <div className="space-y-2 text-sm">
+                  <div>
+                    <span className="text-gray-600 font-medium">{t('projectDetail.completedDate')}:</span>{' '}
+                    <span className="text-gray-900">{new Date(project.completedAt).toLocaleDateString(dateLocale, { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                  </div>
+                  {project.completedReason && (
+                    <div>
+                      <span className="text-gray-600 font-medium">{t('projectDetail.completedReasonInfo')}:</span>{' '}
+                      <span className="text-gray-900">{project.completedReason}</span>
+                    </div>
+                  )}
+                  {project.completedFeedback && (
+                    <div>
+                      <span className="text-gray-600 font-medium">{t('projectDetail.completedFeedbackInfo')}:</span>{' '}
+                      <span className="text-gray-900">{project.completedFeedback}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {project.projectStatus === 'cancelled' && project.cancelledAt && (
+              <div className="bg-gray-50 rounded-xl border border-gray-200 p-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <XCircle className="w-5 h-5 text-gray-500" />
+                  <h3 className="font-semibold text-gray-800">{t('projectDetail.cancelledInfoTitle')}</h3>
+                </div>
+                <div className="space-y-2 text-sm">
+                  <div>
+                    <span className="text-gray-600 font-medium">{t('projectDetail.cancelledDate')}:</span>{' '}
+                    <span className="text-gray-900">{new Date(project.cancelledAt).toLocaleDateString(dateLocale, { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                  </div>
+                  {project.cancellationReason && (
+                    <div>
+                      <span className="text-gray-600 font-medium">{t('projectDetail.cancelledReasonInfo')}:</span>{' '}
+                      <span className="text-gray-900">{project.cancellationReason}</span>
+                    </div>
+                  )}
+                  {project.cancellationDetails && (
+                    <div>
+                      <span className="text-gray-600 font-medium">{t('projectDetail.cancelledDetailsInfo')}:</span>{' '}
+                      <span className="text-gray-900">{project.cancellationDetails}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <Wallet className="w-5 h-5 text-blue-600" />
+                <Wallet className="w-5 h-5 text-gray-500" />
                 {t('projectDetail.housingBudget')}
               </h2>
               <div className="text-3xl font-bold text-gray-900 mb-1">
@@ -304,14 +396,14 @@ export default function ProjectDetailPage() {
             </div>
 
             {project.needsSupport && (
-              <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg p-6 text-white">
+              <div className="bg-gray-800 rounded-xl shadow-sm p-6 text-white">
                 <div className="flex items-start gap-4">
-                  <div className="p-3 bg-white/20 rounded-lg backdrop-blur-sm">
+                  <div className="p-3 bg-white/10 rounded-lg">
                     <Users className="w-6 h-6 text-white" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg mb-2">{t('projectDetail.support')}</h3>
-                    <p className="text-blue-50 text-sm leading-relaxed">
+                    <p className="text-gray-300 text-sm leading-relaxed">
                       {t('projectDetail.supportDesc')}
                     </p>
                   </div>
@@ -325,27 +417,214 @@ export default function ProjectDetailPage() {
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setShowDeleteConfirm(false)}>
           <div className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl" onClick={(e) => e.stopPropagation()}>
-            <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4">
-              <Trash2 className="w-6 h-6 text-red-600" />
+            <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+              <Trash2 className="w-6 h-6 text-gray-600" />
             </div>
             <h3 className="text-2xl font-bold text-gray-900 mb-2">
               {t('projectDetail.deleteTitle')}
             </h3>
-            <p className="text-gray-600 mb-8">
+            <p className="text-gray-600 mb-6">
               {t('projectDetail.deleteDesc')}
             </p>
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {t('projectDetail.deleteReasonLabel')}
+              </label>
+              <select
+                value={deleteReason}
+                onChange={(e) => setDeleteReason(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-400 focus:border-gray-400"
+              >
+                <option value="">{t('projectDetail.selectReason')}</option>
+                <option value="completed">{t('projectDetail.deleteReasonCompleted')}</option>
+                <option value="abandoned">{t('projectDetail.deleteReasonAbandoned')}</option>
+                <option value="duplicate">{t('projectDetail.deleteReasonDuplicate')}</option>
+                <option value="test">{t('projectDetail.deleteReasonTest')}</option>
+                <option value="other">{t('projectDetail.deleteReasonOther')}</option>
+              </select>
+            </div>
             <div className="flex gap-3 justify-end">
               <button
-                onClick={() => setShowDeleteConfirm(false)}
+                onClick={() => { setShowDeleteConfirm(false); setDeleteReason(''); }}
                 className="px-5 py-2.5 text-gray-700 hover:bg-gray-100 rounded-xl transition-colors font-medium"
               >
                 {t('projectDetail.cancel')}
               </button>
               <button
                 onClick={handleDelete}
-                className="px-5 py-2.5 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors font-medium shadow-lg shadow-red-600/20"
+                disabled={!deleteReason}
+                className="px-5 py-2.5 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {t('projectDetail.deleteForever')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showCompleteModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setShowCompleteModal(false)}>
+          <div className="bg-white rounded-2xl p-8 max-w-lg w-full shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+              <PartyPopper className="w-6 h-6 text-gray-600" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">
+              {t('projectDetail.completeTitle')}
+            </h3>
+            <p className="text-gray-600 mb-6">
+              {t('projectDetail.completeDesc')}
+            </p>
+            <div className="space-y-4 mb-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t('projectDetail.completeReasonLabel')} *
+                </label>
+                <select
+                  value={completeReason}
+                  onChange={(e) => setCompleteReason(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-400 focus:border-gray-400"
+                >
+                  <option value="">{t('projectDetail.selectReason')}</option>
+                  <option value="successful">{t('projectDetail.completeReasonSuccessful')}</option>
+                  <option value="partial">{t('projectDetail.completeReasonPartial')}</option>
+                  <option value="returned">{t('projectDetail.completeReasonReturned')}</option>
+                  <option value="other">{t('projectDetail.completeReasonOther')}</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t('projectDetail.completeFeedbackLabel')}
+                </label>
+                <textarea
+                  value={completeFeedback}
+                  onChange={(e) => setCompleteFeedback(e.target.value)}
+                  placeholder={t('projectDetail.completeFeedbackPlaceholder')}
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-400 focus:border-gray-400 resize-none"
+                />
+              </div>
+            </div>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => { setShowCompleteModal(false); setCompleteReason(''); setCompleteFeedback(''); }}
+                className="px-5 py-2.5 text-gray-700 hover:bg-gray-100 rounded-xl transition-colors font-medium"
+              >
+                {t('projectDetail.cancel')}
+              </button>
+              <button
+                onClick={() => {
+                  completeProject(
+                    { projectId: project.idProject, data: { reason: completeReason, feedback: completeFeedback || undefined } },
+                    { onSuccess: () => { setShowCompleteModal(false); setCompleteReason(''); setCompleteFeedback(''); } },
+                  );
+                }}
+                disabled={!completeReason || isCompleting}
+                className="px-5 py-2.5 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isCompleting ? '...' : t('projectDetail.completeConfirm')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showCancelModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setShowCancelModal(false)}>
+          <div className="bg-white rounded-2xl p-8 max-w-lg w-full shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+              <XCircle className="w-6 h-6 text-gray-600" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">
+              {t('projectDetail.cancelTitle')}
+            </h3>
+            <p className="text-gray-600 mb-6">
+              {t('projectDetail.cancelDesc')}
+            </p>
+            <div className="space-y-4 mb-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t('projectDetail.cancelReasonLabel')} *
+                </label>
+                <select
+                  value={cancelReason}
+                  onChange={(e) => setCancelReason(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-400 focus:border-gray-400"
+                >
+                  <option value="">{t('projectDetail.selectReason')}</option>
+                  <option value="financial">{t('projectDetail.cancelReasonFinancial')}</option>
+                  <option value="personal">{t('projectDetail.cancelReasonPersonal')}</option>
+                  <option value="professional">{t('projectDetail.cancelReasonProfessional')}</option>
+                  <option value="destination">{t('projectDetail.cancelReasonDestination')}</option>
+                  <option value="timing">{t('projectDetail.cancelReasonTiming')}</option>
+                  <option value="other">{t('projectDetail.cancelReasonOther')}</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t('projectDetail.cancelDetailsLabel')}
+                </label>
+                <textarea
+                  value={cancelDetails}
+                  onChange={(e) => setCancelDetails(e.target.value)}
+                  placeholder={t('projectDetail.cancelDetailsPlaceholder')}
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-400 focus:border-gray-400 resize-none"
+                />
+              </div>
+            </div>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => { setShowCancelModal(false); setCancelReason(''); setCancelDetails(''); }}
+                className="px-5 py-2.5 text-gray-700 hover:bg-gray-100 rounded-xl transition-colors font-medium"
+              >
+                {t('projectDetail.cancel')}
+              </button>
+              <button
+                onClick={() => {
+                  cancelProject(
+                    { projectId: project.idProject, data: { reason: cancelReason, details: cancelDetails || undefined } },
+                    { onSuccess: () => { setShowCancelModal(false); setCancelReason(''); setCancelDetails(''); } },
+                  );
+                }}
+                disabled={!cancelReason || isCancelling}
+                className="px-5 py-2.5 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isCancelling ? '...' : t('projectDetail.cancelConfirm')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showReactivateModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setShowReactivateModal(false)}>
+          <div className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+              <RotateCcw className="w-6 h-6 text-gray-600" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">
+              {t('projectDetail.reactivateTitle')}
+            </h3>
+            <p className="text-gray-600 mb-8">
+              {t('projectDetail.reactivateDesc')}
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setShowReactivateModal(false)}
+                className="px-5 py-2.5 text-gray-700 hover:bg-gray-100 rounded-xl transition-colors font-medium"
+              >
+                {t('projectDetail.cancel')}
+              </button>
+              <button
+                onClick={() => {
+                  reactivateProject(project.idProject, {
+                    onSuccess: () => setShowReactivateModal(false),
+                  });
+                }}
+                disabled={isReactivating}
+                className="px-5 py-2.5 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors font-medium disabled:opacity-50"
+              >
+                {isReactivating ? '...' : t('projectDetail.reactivateConfirm')}
               </button>
             </div>
           </div>

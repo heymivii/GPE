@@ -107,3 +107,59 @@ export function useDeleteProject() {
     },
   });
 }
+
+export function useCompleteProject() {
+  const queryClient = useQueryClient();
+  const { t } = useTranslation();
+
+  return useMutation({
+    mutationFn: ({ projectId, data }: { projectId: number; data: { reason: string; feedback?: string } }) =>
+      expatriationProjectApi.complete(projectId, data),
+    onSuccess: (updatedProject) => {
+      queryClient.setQueryData(['expatriation-project', updatedProject.idProject], updatedProject);
+      queryClient.invalidateQueries({ queryKey: ['expatriation-projects'] });
+      toast.success(t('projectDetail.completeSuccess'));
+    },
+    onError: (error: ApiError) => {
+      const message = error.response?.data?.message || t('projectDetail.completeError');
+      toast.error(message);
+    },
+  });
+}
+
+export function useCancelProject() {
+  const queryClient = useQueryClient();
+  const { t } = useTranslation();
+
+  return useMutation({
+    mutationFn: ({ projectId, data }: { projectId: number; data: { reason: string; details?: string } }) =>
+      expatriationProjectApi.cancel(projectId, data),
+    onSuccess: (updatedProject) => {
+      queryClient.setQueryData(['expatriation-project', updatedProject.idProject], updatedProject);
+      queryClient.invalidateQueries({ queryKey: ['expatriation-projects'] });
+      toast.success(t('projectDetail.cancelSuccess'));
+    },
+    onError: (error: ApiError) => {
+      const message = error.response?.data?.message || t('projectDetail.cancelError');
+      toast.error(message);
+    },
+  });
+}
+
+export function useReactivateProject() {
+  const queryClient = useQueryClient();
+  const { t } = useTranslation();
+
+  return useMutation({
+    mutationFn: (projectId: number) => expatriationProjectApi.reactivate(projectId),
+    onSuccess: (updatedProject) => {
+      queryClient.setQueryData(['expatriation-project', updatedProject.idProject], updatedProject);
+      queryClient.invalidateQueries({ queryKey: ['expatriation-projects'] });
+      toast.success(t('projectDetail.reactivateSuccess'));
+    },
+    onError: (error: ApiError) => {
+      const message = error.response?.data?.message || t('projectDetail.reactivateError');
+      toast.error(message);
+    },
+  });
+}

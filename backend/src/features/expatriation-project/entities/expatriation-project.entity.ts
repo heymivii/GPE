@@ -78,6 +78,24 @@ export class ExpatriationProject {
   @Column({ name: 'id_origin_country', nullable: true })
   idOriginCountry: number;
 
+  @Column({ name: 'completed_at', type: 'timestamp', nullable: true })
+  completedAt: Date;
+
+  @Column({ name: 'completed_reason', type: 'text', nullable: true })
+  completedReason: string;
+
+  @Column({ name: 'completed_feedback', type: 'text', nullable: true })
+  completedFeedback: string;
+
+  @Column({ name: 'cancelled_at', type: 'timestamp', nullable: true })
+  cancelledAt: Date;
+
+  @Column({ name: 'cancellation_reason', length: 100, nullable: true })
+  cancellationReason: string;
+
+  @Column({ name: 'cancellation_details', type: 'text', nullable: true })
+  cancellationDetails: string;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 

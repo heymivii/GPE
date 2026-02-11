@@ -229,15 +229,32 @@ export function DestinationDetailPage() {
                 )}
 
                 {activeTab === 'cost-of-living' && (
-                  <CostOfLivingTab
-                    cities={country.cities}
-                    countryCurrency={country.currency || 'EUR'}
-                    averageHousing={country.costOfLiving?.averageHousing}
-                    costCurrency={country.costOfLiving?.currency}
-                  />
+                  isAuthenticated ? (
+                    <CostOfLivingTab
+                      cities={country.cities}
+                      countryCurrency={country.currency || 'EUR'}
+                      averageHousing={country.costOfLiving?.averageHousing}
+                      costCurrency={country.costOfLiving?.currency}
+                    />
+                  ) : (
+                    <div className="text-center py-12">
+                      <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-5">
+                        <Sparkles className="w-8 h-8 text-gray-400" />
+                      </div>
+                      <h3 className="text-xl font-bold text-gray-900 mb-2">{t('services.destinationDetail.premiumContent')}</h3>
+                      <p className="text-gray-500 mb-6 max-w-md mx-auto">{t('services.destinationDetail.premiumCostOfLiving', { country: country.countryName })}</p>
+                      <Link
+                        to="/auth/register"
+                        className="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white font-medium rounded-xl hover:bg-gray-800 transition-colors"
+                      >
+                        {t('services.destinationDetail.createFreeAccount')}
+                      </Link>
+                    </div>
+                  )
                 )}
 
                 {activeTab === 'opportunities' && (
+                  isAuthenticated ? (
                   <div className="space-y-6">
                     <div className="flex items-center justify-between">
                       <h3 className="text-xl font-bold text-gray-900">{t('services.destinationDetail.professionalOpportunities')}</h3>
@@ -309,6 +326,21 @@ export function DestinationDetailPage() {
                       </div>
                     )}
                   </div>
+                  ) : (
+                    <div className="text-center py-12">
+                      <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-5">
+                        <Briefcase className="w-8 h-8 text-gray-400" />
+                      </div>
+                      <h3 className="text-xl font-bold text-gray-900 mb-2">{t('services.destinationDetail.premiumContent')}</h3>
+                      <p className="text-gray-500 mb-6 max-w-md mx-auto">{t('services.destinationDetail.premiumOpportunities', { country: country.countryName })}</p>
+                      <Link
+                        to="/auth/register"
+                        className="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white font-medium rounded-xl hover:bg-gray-800 transition-colors"
+                      >
+                        {t('services.destinationDetail.createFreeAccount')}
+                      </Link>
+                    </div>
+                  )
                 )}
 
                 {activeTab === 'forum' && (
@@ -406,14 +438,30 @@ export function DestinationDetailPage() {
                 )}
 
                 {activeTab === 'resources' && (
-                  <div className="text-center py-8">
-                    <BookOpen className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">{t('services.destinationDetail.guidesAndResources')}</h3>
-                    <p className="text-gray-500 mb-6">{t('services.destinationDetail.guidesDescription', { count: country.stats?.resourcesCount || 0, country: country.countryName })}</p>
-                    <Link to={`/resources?country=${country.isoCode}`} className="text-[#5EA3C0] font-medium hover:underline">
-                      {t('services.destinationDetail.viewResources')} &rarr;
-                    </Link>
-                  </div>
+                  isAuthenticated ? (
+                    <div className="text-center py-8">
+                      <BookOpen className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">{t('services.destinationDetail.guidesAndResources')}</h3>
+                      <p className="text-gray-500 mb-6">{t('services.destinationDetail.guidesDescription', { count: country.stats?.resourcesCount || 0, country: country.countryName })}</p>
+                      <Link to={`/resources?country=${country.isoCode}`} className="text-[#5EA3C0] font-medium hover:underline">
+                        {t('services.destinationDetail.viewResources')} &rarr;
+                      </Link>
+                    </div>
+                  ) : (
+                    <div className="text-center py-12">
+                      <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-5">
+                        <BookOpen className="w-8 h-8 text-gray-400" />
+                      </div>
+                      <h3 className="text-xl font-bold text-gray-900 mb-2">{t('services.destinationDetail.premiumContent')}</h3>
+                      <p className="text-gray-500 mb-6 max-w-md mx-auto">{t('services.destinationDetail.premiumResources', { country: country.countryName })}</p>
+                      <Link
+                        to="/auth/register"
+                        className="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white font-medium rounded-xl hover:bg-gray-800 transition-colors"
+                      >
+                        {t('services.destinationDetail.createFreeAccount')}
+                      </Link>
+                    </div>
+                  )
                 )}
               </div>
             </div>
@@ -451,6 +499,7 @@ export function DestinationDetailPage() {
 
             {/* Migration Statistics (OECD) */}
             {migrationData && (
+              isAuthenticated ? (
               <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                 <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-6 flex items-center gap-2">
                   <Globe className="w-4 h-4 text-[#5EA3C0]" />
@@ -537,6 +586,26 @@ export function DestinationDetailPage() {
                   {t('services.destinationDetail.migrationStats.source')}
                 </p>
               </div>
+              ) : (
+              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 text-center">
+                <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4 flex items-center gap-2">
+                  <Globe className="w-4 h-4 text-[#5EA3C0]" />
+                  {t('services.destinationDetail.migrationStats.title')}
+                </h3>
+                <div className="py-4">
+                  <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <Globe className="w-6 h-6 text-gray-400" />
+                  </div>
+                  <p className="text-sm text-gray-500 mb-4">{t('services.destinationDetail.premiumMigration')}</p>
+                  <Link
+                    to="/auth/register"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors"
+                  >
+                    {t('services.destinationDetail.createFreeAccount')}
+                  </Link>
+                </div>
+              </div>
+              )
             )}
 
             {!isAuthenticated && (

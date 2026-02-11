@@ -1,0 +1,116 @@
+{
+  "expatSteps": {
+    "certificate-eligibility": {
+      "title": "Obtenir le Certificate of Eligibility",
+      "description": "COE délivré par l'Immigration japonaise",
+      "substeps": {
+        "1.1": "L'employeur soumet demande au Bureau d'Immigration",
+        "1.2": "Préparer documents (diplômes, CV, contrat)",
+        "1.3": "Attendre approbation (1-3 mois)",
+        "1.4": "Recevoir COE original par courrier"
+      }
+    },
+    "demande-visa": {
+      "title": "Demander le visa de travail",
+      "description": "Visa auprès de l'ambassade/consulat",
+      "substeps": {
+        "2.1": "Prendre RDV à l'ambassade du Japon",
+        "2.2": "Remplir formulaire de demande de visa",
+        "2.3": "Fournir COE, passeport, photo, documents",
+        "2.4": "Payer frais de visa (gratuit ou 30 EUR selon nationalité)",
+        "2.5": "Récupérer passeport avec visa (3-5 jours)"
+      }
+    },
+    "enregistrement-residence": {
+      "title": "Enregistrement de résidence",
+      "description": "S'enregistrer au bureau municipal dans les 14 jours",
+      "substeps": {
+        "3.1": "Localiser le bureau municipal (kuyakusho/shiyakusho)",
+        "3.2": "Apporter passeport et adresse de résidence",
+        "3.3": "Remplir formulaire d'enregistrement",
+        "3.4": "Recevoir certificat de résidence (Juminhyo)"
+      }
+    },
+    "my-number": {
+      "title": "Obtenir la carte My Number",
+      "description": "Numéro d'identification personnel",
+      "substeps": {
+        "4.1": "Recevoir notification My Number par courrier (2-3 semaines)",
+        "4.2": "Demander carte My Number au bureau municipal",
+        "4.3": "Fournir photo et pièce d'identité",
+        "4.4": "Récupérer carte (1 mois)"
+      }
+    },
+    "assurance-sante": {
+      "title": "S'inscrire à l'assurance santé",
+      "description": "National Health Insurance obligatoire",
+      "substeps": {
+        "5.1": "Vérifier si employeur propose Shakai Hoken",
+        "5.2": "Sinon, souscrire Kokumin Kenko Hoken au bureau municipal",
+        "5.3": "Payer cotisation mensuelle (15 000-30 000 JPY)",
+        "5.4": "Recevoir carte d'assurance santé"
+      }
+    },
+    "pension": {
+      "title": "Inscription au système de pension",
+      "description": "National Pension obligatoire",
+      "substeps": {
+        "6.1": "S'inscrire au Nenkin (pension) au bureau municipal",
+        "6.2": "Fournir My Number et carte de résidence",
+        "6.3": "Payer cotisation (16 520 JPY/mois)",
+        "6.4": "Recevoir livret de pension (Nenkin Techo)"
+      }
+    },
+    "compte-bancaire": {
+      "title": "Ouvrir un compte bancaire",
+      "description": "Compte bancaire japonais",
+      "substeps": {
+        "7.1": "Choisir banque (MUFG, Mizuho, Japan Post Bank)",
+        "7.2": "Prendre RDV ou se présenter en agence",
+        "7.3": "Apporter carte de résidence, sceau (inkan) et My Number",
+        "7.4": "Recevoir carte bancaire et livret"
+      }
+    },
+    "logement": {
+      "title": "Trouver un logement permanent",
+      "description": "Location d'appartement",
+      "substeps": {
+        "8.1": "Rechercher sur Suumo, Homes, GaijinPot Apartments",
+        "8.2": "Préparer garant japonais ou guarantor company",
+        "8.3": "Visiter appartements avec agent immobilier",
+        "8.4": "Signer contrat (2 ans)",
+        "8.5": "Payer frais initiaux (reikin, shikikin, 4-6 mois de loyer)"
+      }
+    },
+    "utilities": {
+      "title": "Souscrire aux services essentiels",
+      "description": "Électricité, gaz, eau, Internet",
+      "substeps": {
+        "9.1": "Souscrire électricité (TEPCO, Kansai Electric)",
+        "9.2": "Souscrire gaz et eau via proprio ou fournisseurs",
+        "9.3": "Installer Internet (NTT, SoftBank, au)",
+        "9.4": "Obtenir forfait mobile (Docomo, au, SoftBank, MVNO)"
+      }
+    },
+    "permis-conduire": {
+      "title": "Obtenir permis de conduire japonais",
+      "description": "Conversion ou nouveau permis",
+      "substeps": {
+        "10.1": "Vérifier si permis étranger convertible",
+        "10.2": "Se rendre au Centre de permis (運転免許センター)",
+        "10.3": "Passer test de conduite japonais si nécessaire",
+        "10.4": "Payer frais (2 400-4 800 JPY)",
+        "10.5": "Recevoir permis japonais"
+      }
+    }
+  },
+  "jobMarket": {
+    "topSectors": [
+      "Technologies de l'information",
+      "Ingénierie et manufacturing",
+      "Enseignement des langues",
+      "Finance et assurance",
+      "Services et hospitalité"
+    ]
+  }
+}

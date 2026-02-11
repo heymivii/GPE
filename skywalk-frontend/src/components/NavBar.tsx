@@ -109,7 +109,6 @@ export default function NavBar() {
                 <>
                   <Link to="/dashboard" className={linkClass('/dashboard')}>{t('nav.dashboard')}</Link>
                   <Link to="/projects" className={linkClass('/projects')}>{t('nav.projects')}</Link>
-                  <Link to="/onboarding" className={linkClass('/onboarding')}>{t('nav.myProject')}</Link>
 
                   <div className="relative" ref={exploreRef}>
                     <button 
@@ -279,7 +278,6 @@ export default function NavBar() {
               <>
                 <MobileLink to="/dashboard" label={t('nav.dashboard')} active={isActive('/dashboard')} />
                 <MobileLink to="/projects" label={t('nav.projects')} active={isActive('/projects')} />
-                <MobileLink to="/onboarding" label={t('nav.myProject')} active={isActive('/onboarding')} />
                 <MobileLink to="/destinations" label={t('nav.destinations')} active={isActive('/destinations')} />
                 <MobileLink to="/comparison" label={t('nav.comparison')} active={isActive('/comparison')} />
                 <MobileLink to="/services" label={t('nav.services')} active={isActive('/services')} />

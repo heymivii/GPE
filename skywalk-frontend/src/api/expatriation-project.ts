@@ -40,6 +40,35 @@ export const expatriationProjectApi = {
   delete: async (projectId: number): Promise<void> => {
     await apiClient.delete(`/expatriation-project/${projectId}`);
   },
+
+  complete: async (
+    projectId: number,
+    data: { reason: string; feedback?: string },
+  ): Promise<ExpatriationProject> => {
+    const response = await apiClient.post<ExpatriationProject>(
+      `/expatriation-project/${projectId}/complete`,
+      data,
+    );
+    return response.data;
+  },
+
+  cancel: async (
+    projectId: number,
+    data: { reason: string; details?: string },
+  ): Promise<ExpatriationProject> => {
+    const response = await apiClient.post<ExpatriationProject>(
+      `/expatriation-project/${projectId}/cancel`,
+      data,
+    );
+    return response.data;
+  },
+
+  reactivate: async (projectId: number): Promise<ExpatriationProject> => {
+    const response = await apiClient.post<ExpatriationProject>(
+      `/expatriation-project/${projectId}/reactivate`,
+    );
+    return response.data;
+  },
 };
 
 export default expatriationProjectApi;

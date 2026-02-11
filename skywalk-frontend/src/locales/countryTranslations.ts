@@ -4,8 +4,13 @@ import ukFr from './countries/uk.fr.json';
 import ukEn from './countries/uk.en.json';
 import switzerlandFr from './countries/switzerland.fr.json';
 import switzerlandEn from './countries/switzerland.en.json';
+import japanFr from './countries/japan.fr.json';
+import japanEn from './countries/japan.en.json';
+import usaFr from './countries/usa.fr.json';
+import usaEn from './countries/usa.en.json';
 
 export interface CountryTranslations {
+  name?: string;
   expatSteps: {
     [stepSlug: string]: {
       title: string;
@@ -17,6 +22,7 @@ export interface CountryTranslations {
   };
   jobMarket?: {
     topSectors: string[];
+    salaryBySector?: Record<string, number>;
   };
 }
 
@@ -32,6 +38,14 @@ export const countryTranslations: Record<string, Record<string, CountryTranslati
   CH: {
     fr: switzerlandFr as CountryTranslations,
     en: switzerlandEn as CountryTranslations,
+  },
+  JP: {
+    fr: japanFr as CountryTranslations,
+    en: japanEn as CountryTranslations,
+  },
+  US: {
+    fr: usaFr as CountryTranslations,
+    en: usaEn as CountryTranslations,
   },
 };
 
