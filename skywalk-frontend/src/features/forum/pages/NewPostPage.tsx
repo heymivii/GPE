@@ -107,12 +107,29 @@ export default function NewPostPage() {
   if (!user) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
-            <h2 className="text-yellow-800 font-semibold mb-2">{t('forum.newTopic.loginRequired')}</h2>
-            <button onClick={() => navigate('/auth/login')} className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700">
-              {t('forum.newTopic.loginButton')}
-            </button>
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="bg-white border border-gray-200 rounded-2xl p-8 text-center shadow-sm">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-5">
+              <ShieldAlert className="w-8 h-8 text-gray-500" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-3">{t('forum.newTopic.loginRequired')}</h2>
+            <p className="text-gray-500 mb-8 max-w-md mx-auto">
+              {t('forum.newTopic.loginDesc')}
+            </p>
+            <div className="flex items-center justify-center gap-4">
+              <button
+                onClick={() => navigate('/forum')}
+                className="px-5 py-2.5 text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors font-medium"
+              >
+                {t('forum.newTopic.backToForum')}
+              </button>
+              <button
+                onClick={() => navigate('/auth/login')}
+                className="px-5 py-2.5 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors font-medium"
+              >
+                {t('forum.newTopic.loginButton')}
+              </button>
+            </div>
           </div>
         </div>
       </div>

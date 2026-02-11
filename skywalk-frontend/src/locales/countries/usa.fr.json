@@ -1,0 +1,105 @@
+{
+  "expatSteps": {
+    "determiner-visa": {
+      "title": "Déterminer le type de visa",
+      "description": "Identifier le visa adapté à votre situation",
+      "substeps": {
+        "1.1": "Évaluer votre éligibilité (H-1B, L-1, E-2, O-1, etc.)",
+        "1.2": "Consulter le site travel.state.gov",
+        "1.3": "Rassembler les documents requis"
+      }
+    },
+    "demande-visa": {
+      "title": "Demander le visa de travail",
+      "description": "Procédure de demande de visa américain",
+      "substeps": {
+        "2.1": "Remplir le formulaire DS-160 en ligne",
+        "2.2": "Payer les frais de visa (185-205 USD)",
+        "2.3": "Prendre rendez-vous à l'ambassade/consulat",
+        "2.4": "Passer l'entretien consulaire",
+        "2.5": "Recevoir le visa dans votre passeport"
+      }
+    },
+    "numero-securite-sociale": {
+      "title": "Obtenir le numéro de sécurité sociale",
+      "description": "Social Security Number (SSN)",
+      "substeps": {
+        "3.1": "Localiser le bureau SSA le plus proche",
+        "3.2": "Remplir le formulaire SS-5",
+        "3.3": "Fournir documents (passeport, visa, I-94)",
+        "3.4": "Recevoir la carte SSN par courrier (2-4 semaines)"
+      }
+    },
+    "assurance-sante": {
+      "title": "Souscrire une assurance santé",
+      "description": "Couverture médicale obligatoire",
+      "substeps": {
+        "4.1": "Vérifier si l'employeur propose une assurance",
+        "4.2": "Comparer les plans sur Healthcare.gov ou assureurs privés",
+        "4.3": "Souscrire un plan adapté à vos besoins",
+        "4.4": "Payer la prime mensuelle (300-600 USD)"
+      }
+    },
+    "logement": {
+      "title": "Trouver un logement",
+      "description": "Location d'appartement ou maison",
+      "substeps": {
+        "5.1": "Rechercher sur Zillow, Apartments.com, Craigslist",
+        "5.2": "Préparer dossier (SSN, preuve revenus, références)",
+        "5.3": "Visiter les logements et vérifier le quartier",
+        "5.4": "Signer le bail (lease)",
+        "5.5": "Payer dépôt de garantie et premier mois"
+      }
+    },
+    "permis-conduire": {
+      "title": "Obtenir le permis de conduire",
+      "description": "Driver's license américain",
+      "substeps": {
+        "6.1": "Localiser le DMV (Department of Motor Vehicles)",
+        "6.2": "Passer le test théorique",
+        "6.3": "Passer le test pratique de conduite",
+        "6.4": "Payer les frais (20-90 USD selon l'État)",
+        "6.5": "Recevoir le permis par courrier"
+      }
+    },
+    "compte-bancaire": {
+      "title": "Ouvrir un compte bancaire",
+      "description": "Compte courant américain",
+      "substeps": {
+        "7.1": "Choisir une banque (Chase, Bank of America, Wells Fargo)",
+        "7.2": "Prendre RDV avec SSN et pièce d'identité",
+        "7.3": "Ouvrir compte courant et épargne",
+        "7.4": "Recevoir carte de débit et chéquier"
+      }
+    },
+    "declaration-fiscale": {
+      "title": "Comprendre les obligations fiscales",
+      "description": "Système fiscal américain",
+      "substeps": {
+        "8.1": "S'inscrire sur IRS.gov",
+        "8.2": "Comprendre les taxes fédérales et d'État",
+        "8.3": "Consulter un fiscaliste si nécessaire",
+        "8.4": "Préparer documents pour déclaration annuelle (avril)"
+      }
+    },
+    "installation": {
+      "title": "Installation quotidienne",
+      "description": "Services essentiels et utilités",
+      "substeps": {
+        "9.1": "Souscrire électricité/gaz avec fournisseur local",
+        "9.2": "Installer Internet/câble (Comcast, Verizon, AT&T)",
+        "9.3": "Obtenir forfait mobile (T-Mobile, Verizon, AT&T)",
+        "9.4": "Commander carte de crédit pour bâtir credit score"
+      }
+    }
+  },
+  "jobMarket": {
+    "topSectors": [
+      "Technologies de l'information",
+      "Finance et banque",
+      "Santé et biotechnologie",
+      "Ingénierie",
+      "Commerce et retail"
+    ]
+  }
+}

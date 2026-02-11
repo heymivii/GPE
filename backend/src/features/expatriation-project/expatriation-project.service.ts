@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   ForbiddenException,
+  BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -12,6 +13,8 @@ import {
 import { CreateExpatriationProjectDto } from './dto/create-expatriation-project.dto';
 import { UpdateExpatriationProjectDto } from './dto/update-expatriation-project.dto';
 import { UpdateChecklistProgressDto } from './dto/update-checklist-progress.dto';
+import { CompleteProjectDto } from './dto/complete-project.dto';
+import { CancelProjectDto } from './dto/cancel-project.dto';
 
 @Injectable()
 export class ExpatriationProjectService {
@@ -38,15 +41,16 @@ export class ExpatriationProjectService {
     });
   }
 
-  async findOne(projectId: number, userId: number): Promise<ExpatriationProject> {
+  async findOne(
+    projectId: number,
+    userId: number,
+  ): Promise<ExpatriationProject> {
     const project = await this.projectRepository.findOne({
       where: { idProject: projectId },
     });
 
     if (!project) {
-      throw new NotFoundException(
-        `Projet avec l'ID ${projectId} introuvable`,
-      );
+      throw new NotFoundException(`Projet avec l'ID ${projectId} introuvable`);
     }
 
     if (project.idUser !== userId) {
@@ -70,6 +74,69 @@ export class ExpatriationProjectService {
   async remove(projectId: number, userId: number): Promise<void> {
     const project = await this.findOne(projectId, userId);
     await this.projectRepository.remove(project);
+  }
+
+  async completeProject(
+    projectId: number,
+    userId: number,
+    dto: CompleteProjectDto,
+  ): Promise<ExpatriationProject> {
+    const project = await this.findOne(projectId, userId);
+
+    if (project.projectStatus === 'completed') {
+      throw new BadRequestException('Ce projet est déjà terminé');
+    }
+    if (project.projectStatus === 'cancelled') {
+      throw new BadRequestException('Impossible de terminer un projet annulé');
+    }
+
+    project.projectStatus = 'completed';
+    project.completedAt = new Date();
+    project.completedReason = dto.reason;
+    project.completedFeedback = dto.feedback || null;
+
+    return await this.projectRepository.save(project);
+  }
+
+  async cancelProject(
+    projectId: number,
+    userId: number,
+    dto: CancelProjectDto,
+  ): Promise<ExpatriationProject> {
+    const project = await this.findOne(projectId, userId);
+
+    if (project.projectStatus === 'cancelled') {
+      throw new BadRequestException('Ce projet est déjà annulé');
+    }
+    if (project.projectStatus === 'completed') {
+      throw new BadRequestException("Impossible d'annuler un projet terminé");
+    }
+
+    project.projectStatus = 'cancelled';
+    project.cancelledAt = new Date();
+    project.cancellationReason = dto.reason;
+    project.cancellationDetails = dto.details || null;
+
+    return await this.projectRepository.save(project);
+  }
+
+  async reactivateProject(
+    projectId: number,
+    userId: number,
+  ): Promise<ExpatriationProject> {
+    const project = await this.findOne(projectId, userId);
+
+    if (
+      project.projectStatus !== 'completed' &&
+      project.projectStatus !== 'cancelled'
+    ) {
+      throw new BadRequestException(
+        'Seul un projet terminé ou annulé peut être réactivé',
+      );
+    }
+
+    project.projectStatus = 'active';
+    return await this.projectRepository.save(project);
   }
 
   async countByUser(userId: number): Promise<number> {

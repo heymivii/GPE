@@ -1,0 +1,113 @@
+{
+  "name": "United States",
+  "expatSteps": {
+    "determiner-visa": {
+      "title": "Determine visa type",
+      "description": "Identify the visa suited to your situation",
+      "substeps": {
+        "1.1": "Assess your eligibility (H-1B, L-1, E-2, O-1, etc.)",
+        "1.2": "Consult travel.state.gov",
+        "1.3": "Gather required documents"
+      }
+    },
+    "demande-visa": {
+      "title": "Apply for work visa",
+      "description": "US visa application process",
+      "substeps": {
+        "2.1": "Complete the DS-160 form online",
+        "2.2": "Pay visa fees ($185-205)",
+        "2.3": "Schedule appointment at embassy/consulate",
+        "2.4": "Attend consular interview",
+        "2.5": "Receive visa in your passport"
+      }
+    },
+    "numero-securite-sociale": {
+      "title": "Obtain Social Security Number",
+      "description": "Social Security Number (SSN)",
+      "substeps": {
+        "3.1": "Locate the nearest SSA office",
+        "3.2": "Fill out form SS-5",
+        "3.3": "Provide documents (passport, visa, I-94)",
+        "3.4": "Receive SSN card by mail (2-4 weeks)"
+      }
+    },
+    "assurance-sante": {
+      "title": "Get health insurance",
+      "description": "Mandatory medical coverage",
+      "substeps": {
+        "4.1": "Check if employer offers insurance",
+        "4.2": "Compare plans on Healthcare.gov or private insurers",
+        "4.3": "Subscribe to a plan suited to your needs",
+        "4.4": "Pay monthly premium ($300-600)"
+      }
+    },
+    "logement": {
+      "title": "Find housing",
+      "description": "Apartment or house rental",
+      "substeps": {
+        "5.1": "Search on Zillow, Apartments.com, Craigslist",
+        "5.2": "Prepare application (SSN, proof of income, references)",
+        "5.3": "Visit properties and check the neighborhood",
+        "5.4": "Sign the lease",
+        "5.5": "Pay security deposit and first month"
+      }
+    },
+    "permis-conduire": {
+      "title": "Obtain driver's license",
+      "description": "US driver's license",
+      "substeps": {
+        "6.1": "Locate the DMV (Department of Motor Vehicles)",
+        "6.2": "Pass the written test",
+        "6.3": "Pass the road test",
+        "6.4": "Pay fees ($20-90 depending on state)",
+        "6.5": "Receive license by mail"
+      }
+    },
+    "compte-bancaire": {
+      "title": "Open a bank account",
+      "description": "US checking account",
+      "substeps": {
+        "7.1": "Choose a bank (Chase, Bank of America, Wells Fargo)",
+        "7.2": "Schedule appointment with SSN and ID",
+        "7.3": "Open checking and savings accounts",
+        "7.4": "Receive debit card and checkbook"
+      }
+    },
+    "declaration-fiscale": {
+      "title": "Understand tax obligations",
+      "description": "US tax system",
+      "substeps": {
+        "8.1": "Register on IRS.gov",
+        "8.2": "Understand federal and state taxes",
+        "8.3": "Consult a tax advisor if needed",
+        "8.4": "Prepare documents for annual filing (April)"
+      }
+    },
+    "installation": {
+      "title": "Daily setup",
+      "description": "Essential services and utilities",
+      "substeps": {
+        "9.1": "Subscribe to electricity/gas with local provider",
+        "9.2": "Set up Internet/cable (Comcast, Verizon, AT&T)",
+        "9.3": "Get mobile plan (T-Mobile, Verizon, AT&T)",
+        "9.4": "Apply for credit card to build credit score"
+      }
+    }
+  },
+  "jobMarket": {
+    "topSectors": [
+      "Information Technology",
+      "Finance and Banking",
+      "Healthcare and Biotechnology",
+      "Engineering",
+      "Commerce and Retail"
+    ],
+    "salaryBySector": {
+      "IT": 7500,
+      "Finance": 8000,
+      "Healthcare": 6000,
+      "Engineering": 6800,
+      "Commerce": 4200
+    }
+  }
+}

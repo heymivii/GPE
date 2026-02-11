@@ -327,6 +327,8 @@ export default function ComparisonTable({ countries, isAuthenticated = true }: C
         />
       </ComparisonSection>
 
+      {isAuthenticated ? (
+        <>
       <ComparisonSection
         title={t('comparison.sections.costOfLiving')}
         icon={<DollarSign className="w-5 h-5" />}
@@ -472,8 +474,6 @@ export default function ComparisonTable({ countries, isAuthenticated = true }: C
         />
       </ComparisonSection>
 
-      {isAuthenticated ? (
-        <>
           <ComparisonSection
             title={t('comparison.sections.immigration')}
             icon={<MapPin className="w-5 h-5" />}

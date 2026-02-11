@@ -1,0 +1,124 @@
+{
+  "name": "Japan",
+  "expatSteps": {
+    "certificate-eligibility": {
+      "title": "Obtain Certificate of Eligibility",
+      "description": "COE issued by Japanese Immigration",
+      "substeps": {
+        "1.1": "Employer submits application to Immigration Bureau",
+        "1.2": "Prepare documents (diplomas, CV, contract)",
+        "1.3": "Wait for approval (1-3 months)",
+        "1.4": "Receive original COE by mail"
+      }
+    },
+    "demande-visa": {
+      "title": "Apply for work visa",
+      "description": "Visa at the embassy/consulate",
+      "substeps": {
+        "2.1": "Schedule appointment at Japanese embassy",
+        "2.2": "Fill out visa application form",
+        "2.3": "Provide COE, passport, photo, documents",
+        "2.4": "Pay visa fees (free or €30 depending on nationality)",
+        "2.5": "Collect passport with visa (3-5 days)"
+      }
+    },
+    "enregistrement-residence": {
+      "title": "Residence registration",
+      "description": "Register at municipal office within 14 days",
+      "substeps": {
+        "3.1": "Locate the municipal office (kuyakusho/shiyakusho)",
+        "3.2": "Bring passport and residence address",
+        "3.3": "Fill out registration form",
+        "3.4": "Receive residence certificate (Juminhyo)"
+      }
+    },
+    "my-number": {
+      "title": "Obtain My Number card",
+      "description": "Personal identification number",
+      "substeps": {
+        "4.1": "Receive My Number notification by mail (2-3 weeks)",
+        "4.2": "Apply for My Number card at municipal office",
+        "4.3": "Provide photo and ID",
+        "4.4": "Collect card (1 month)"
+      }
+    },
+    "assurance-sante": {
+      "title": "Register for health insurance",
+      "description": "National Health Insurance mandatory",
+      "substeps": {
+        "5.1": "Check if employer provides Shakai Hoken",
+        "5.2": "Otherwise, subscribe to Kokumin Kenko Hoken at municipal office",
+        "5.3": "Pay monthly contribution (15,000-30,000 JPY)",
+        "5.4": "Receive health insurance card"
+      }
+    },
+    "pension": {
+      "title": "Register for pension system",
+      "description": "National Pension mandatory",
+      "substeps": {
+        "6.1": "Register for Nenkin (pension) at municipal office",
+        "6.2": "Provide My Number and residence card",
+        "6.3": "Pay contribution (16,520 JPY/month)",
+        "6.4": "Receive pension booklet (Nenkin Techo)"
+      }
+    },
+    "compte-bancaire": {
+      "title": "Open a bank account",
+      "description": "Japanese bank account",
+      "substeps": {
+        "7.1": "Choose bank (MUFG, Mizuho, Japan Post Bank)",
+        "7.2": "Schedule appointment or visit branch",
+        "7.3": "Bring residence card, seal (inkan) and My Number",
+        "7.4": "Receive bank card and passbook"
+      }
+    },
+    "logement": {
+      "title": "Find permanent housing",
+      "description": "Apartment rental",
+      "substeps": {
+        "8.1": "Search on Suumo, Homes, GaijinPot Apartments",
+        "8.2": "Arrange Japanese guarantor or guarantor company",
+        "8.3": "Visit apartments with real estate agent",
+        "8.4": "Sign contract (2 years)",
+        "8.5": "Pay initial fees (reikin, shikikin, 4-6 months rent)"
+      }
+    },
+    "utilities": {
+      "title": "Subscribe to essential services",
+      "description": "Electricity, gas, water, Internet",
+      "substeps": {
+        "9.1": "Subscribe to electricity (TEPCO, Kansai Electric)",
+        "9.2": "Subscribe to gas and water via landlord or suppliers",
+        "9.3": "Set up Internet (NTT, SoftBank, au)",
+        "9.4": "Get mobile plan (Docomo, au, SoftBank, MVNO)"
+      }
+    },
+    "permis-conduire": {
+      "title": "Obtain Japanese driving license",
+      "description": "Conversion or new license",
+      "substeps": {
+        "10.1": "Check if foreign license is convertible",
+        "10.2": "Visit the License Center (運転免許センター)",
+        "10.3": "Take Japanese driving test if needed",
+        "10.4": "Pay fees (2,400-4,800 JPY)",
+        "10.5": "Receive Japanese license"
+      }
+    }
+  },
+  "jobMarket": {
+    "topSectors": [
+      "Information Technology",
+      "Engineering and Manufacturing",
+      "Language Teaching",
+      "Finance and Insurance",
+      "Services and Hospitality"
+    ],
+    "salaryBySector": {
+      "IT": 450000,
+      "Engineering": 420000,
+      "Teaching": 280000,
+      "Finance": 480000,
+      "Manufacturing": 380000
+    }
+  }
+}

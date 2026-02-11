@@ -28,6 +28,12 @@ export interface ExpatriationProject {
   projectStatus: 'planning' | 'active' | 'completed' | 'cancelled' | 'on_hold';
   expectedDepartureDate?: string;
   checklistProgress?: ChecklistProgress;
+  completedAt?: string;
+  completedReason?: string;
+  completedFeedback?: string;
+  cancelledAt?: string;
+  cancellationReason?: string;
+  cancellationDetails?: string;
   createdAt: string;
   updatedAt: string;
 }

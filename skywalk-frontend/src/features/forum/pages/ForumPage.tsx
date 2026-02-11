@@ -187,13 +187,22 @@ export default function ForumPage() {
           </div>
           
           <div className="flex items-center gap-4 w-full sm:w-auto">
-            <Link
-              to="/forum/new"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-black text-white rounded-xl hover:bg-gray-800 transition-colors font-medium shadow-sm"
-            >
-              <Plus className="w-5 h-5" />
-              {t('forum.newPost')}
-            </Link>
+            {user ? (
+              <Link
+                to="/forum/new"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-black text-white rounded-xl hover:bg-gray-800 transition-colors font-medium shadow-sm"
+              >
+                <Plus className="w-5 h-5" />
+                {t('forum.newPost')}
+              </Link>
+            ) : (
+              <Link
+                to="/auth/login"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors font-medium"
+              >
+                {t('forum.loginToPost')}
+              </Link>
+            )}
           </div>
         </div>
       </PageSearch>
@@ -445,13 +454,23 @@ export default function ForumPage() {
                 <h3 className="font-semibold text-gray-900">{t('forum.quickActions')}</h3>
               </div>
               <div className="p-4 space-y-2">
-                <Link
-                  to="/forum/new"
-                  className="flex items-center gap-2 p-3 text-sm text-white bg-black hover:bg-gray-800 rounded-lg transition-all font-medium shadow-sm"
-                >
-                  <Plus className="w-4 h-4" />
-                  {t('forum.createTopic')}
-                </Link>
+                {user ? (
+                  <Link
+                    to="/forum/new"
+                    className="flex items-center gap-2 p-3 text-sm text-white bg-black hover:bg-gray-800 rounded-lg transition-all font-medium shadow-sm"
+                  >
+                    <Plus className="w-4 h-4" />
+                    {t('forum.createTopic')}
+                  </Link>
+                ) : (
+                  <Link
+                    to="/auth/login"
+                    className="flex items-center gap-2 p-3 text-sm text-gray-700 bg-gray-50 hover:bg-gray-100 rounded-lg transition-all font-medium border border-gray-200"
+                  >
+                    <Plus className="w-4 h-4" />
+                    {t('forum.loginToPost')}
+                  </Link>
+                )}
 
                 {user ? (
                   <>

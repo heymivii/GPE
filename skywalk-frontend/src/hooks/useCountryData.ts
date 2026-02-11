@@ -98,6 +98,7 @@ export function useCountryData(countryId?: number | null) {
     if (translation && rawCountry.expatProjectTemplate) {
       return {
         ...rawCountry,
+        name: translation.name || rawCountry.name,
         expatProjectTemplate: {
           ...rawCountry.expatProjectTemplate,
           steps: rawCountry.expatProjectTemplate.steps.map(step => {
@@ -118,6 +119,7 @@ export function useCountryData(countryId?: number | null) {
         jobMarket: rawCountry.jobMarket ? {
           ...rawCountry.jobMarket,
           topSectors: translation.jobMarket?.topSectors || rawCountry.jobMarket.topSectors,
+          salaryBySector: translation.jobMarket?.salaryBySector || rawCountry.jobMarket.salaryBySector,
         } : undefined,
       };
     }
@@ -143,6 +145,7 @@ export function useCountryDataByCode(countryCode?: string) {
     if (translation && rawCountry.expatProjectTemplate) {
       return {
         ...rawCountry,
+        name: translation.name || rawCountry.name,
         expatProjectTemplate: {
           ...rawCountry.expatProjectTemplate,
           steps: rawCountry.expatProjectTemplate.steps.map(step => {
@@ -163,6 +166,7 @@ export function useCountryDataByCode(countryCode?: string) {
         jobMarket: rawCountry.jobMarket ? {
           ...rawCountry.jobMarket,
           topSectors: translation.jobMarket?.topSectors || rawCountry.jobMarket.topSectors,
+          salaryBySector: translation.jobMarket?.salaryBySector || rawCountry.jobMarket.salaryBySector,
         } : undefined,
       };
     }

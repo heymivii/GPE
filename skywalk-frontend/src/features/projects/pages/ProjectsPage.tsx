@@ -155,6 +155,7 @@ function ProjectCard({ project, countryName, countryFlag }: { project: Expatriat
   const { mutate: deleteProject } = useDeleteProject();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+  const [deleteReason, setDeleteReason] = useState('');
   
   const statusLabel = t(STATUS_LABEL_KEYS[project.projectStatus] || STATUS_LABEL_KEYS.planning);
   const statusStyle = PROJECT_STATUS_STYLES[project.projectStatus];
@@ -316,19 +317,37 @@ function ProjectCard({ project, countryName, countryFlag }: { project: Expatriat
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
               {t('projectsPage.deleteTitle')}
             </h3>
-            <p className="text-sm text-gray-500 mb-6">
+            <p className="text-sm text-gray-500 mb-4">
               {t('projectsPage.deleteDesc')}
             </p>
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {t('projectDetail.deleteReasonLabel')}
+              </label>
+              <select
+                value={deleteReason}
+                onChange={(e) => setDeleteReason(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500"
+              >
+                <option value="">{t('projectDetail.selectReason')}</option>
+                <option value="completed">{t('projectDetail.deleteReasonCompleted')}</option>
+                <option value="abandoned">{t('projectDetail.deleteReasonAbandoned')}</option>
+                <option value="duplicate">{t('projectDetail.deleteReasonDuplicate')}</option>
+                <option value="test">{t('projectDetail.deleteReasonTest')}</option>
+                <option value="other">{t('projectDetail.deleteReasonOther')}</option>
+              </select>
+            </div>
             <div className="flex gap-3 justify-end">
               <button
-                onClick={() => setShowDeleteConfirm(false)}
+                onClick={() => { setShowDeleteConfirm(false); setDeleteReason(''); }}
                 className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
               >
                 {t('projectsPage.cancel')}
               </button>
               <button
                 onClick={handleDelete}
-                className="px-4 py-2 text-sm font-medium bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors shadow-sm"
+                disabled={!deleteReason}
+                className="px-4 py-2 text-sm font-medium bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {t('projectsPage.delete')}
               </button>
