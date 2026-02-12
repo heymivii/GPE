@@ -25,6 +25,28 @@ export class AdzunaService {
     'nl', 'nz', 'pl', 'sg', 'za', 'at', 'be', 'ch', 'mx', 'es',
   ]);
 
+  private readonly COUNTRY_CURRENCY: Record<string, string> = {
+    gb: 'GBP',
+    us: 'USD',
+    au: 'AUD',
+    br: 'BRL',
+    ca: 'CAD',
+    de: 'EUR',
+    fr: 'EUR',
+    in: 'INR',
+    it: 'EUR',
+    nl: 'EUR',
+    nz: 'NZD',
+    pl: 'PLN',
+    sg: 'SGD',
+    za: 'ZAR',
+    at: 'EUR',
+    be: 'EUR',
+    ch: 'CHF',
+    mx: 'MXN',
+    es: 'EUR',
+  };
+
   async searchJobs(
     searchDto: SearchJobDto,
   ): Promise<AdzunaSearchResponseDto> {
@@ -153,45 +175,80 @@ export class AdzunaService {
       url += `&sort_by=salary`;
     }
 
-    if (full_time) url += `&full_time=1`;
-    if (part_time) url += `&part_time=1`;
-    if (contract) url += `&contract=1`;
-    if (permanent) url += `&permanent=1`;
+    const contractFilters = [
+      full_time && 'full_time',
+      part_time && 'part_time',
+      contract && 'contract',
+      permanent && 'permanent',
+    ].filter(Boolean);
+
+    if (contractFilters.length === 1) {
+      url += `&${contractFilters[0]}=1`;
+    }
+
     if (max_days_old) url += `&max_days_old=${max_days_old}`;
 
     return url;
+  }
+
+  private readonly MONTHLY_SALARY_THRESHOLD: Record<string, number> = {
+    EUR: 10000,
+    GBP: 8500,
+    CHF: 12000,
+    USD: 12000,
+    CAD: 12000,
+    AUD: 12000,
+    NZD: 10000,
+    PLN: 40000,
+    SGD: 15000,
+    ZAR: 150000,
+    BRL: 50000,
+    MXN: 200000,
+    INR: 500000,
+  };
+
+  private detectSalaryPeriod(salary: number, currency: string): 'month' | 'year' {
+    const threshold = this.MONTHLY_SALARY_THRESHOLD[currency] || 10000;
+    return salary < threshold ? 'month' : 'year';
   }
 
   private normalizeResponse(
     data: any,
     searchDto: SearchJobDto,
   ): AdzunaSearchResponseDto {
-    const results: AdzunaJobDto[] = data.results.map((job: any) => ({
-      id: job.id,
-      title: job.title,
-      company: job.company?.display_name || 'Non spécifié',
-      location: {
-        city: job.location?.display_name?.split(',')[0],
-        country: searchDto.country || 'fr',
-        displayName: job.location?.display_name || 'Non spécifié',
-      },
-      description: job.description,
-      salary: job.salary_min || job.salary_max
-        ? {
-          min: job.salary_min,
-          max: job.salary_max,
-          currency: 'EUR',
-        }
-        : undefined,
-      contract_type: job.contract_type || job.contract_time,
-      remote: this.detectRemote(job.title, job.description),
-      redirect_url: job.redirect_url,
-      created_at: new Date(job.created),
-      category: job.category?.label,
-      company_logo: job.company?.display_name
-        ? `https://logo.clearbit.com/${job.company.display_name.replace(/\s+/g, '')}.com`
-        : undefined,
-    }));
+    const countryCode = (searchDto.country || 'fr').toLowerCase();
+    const currency = this.COUNTRY_CURRENCY[countryCode] || 'EUR';
+
+    const results: AdzunaJobDto[] = data.results.map((job: any) => {
+      const salaryValue = job.salary_min || job.salary_max;
+      const period = salaryValue ? this.detectSalaryPeriod(salaryValue, currency) : undefined;
+
+      return {
+        id: job.id,
+        title: job.title,
+        company: job.company?.display_name || 'Non spécifié',
+        location: {
+          city: job.location?.display_name?.split(',')[0],
+          country: searchDto.country || 'fr',
+          displayName: job.location?.display_name || 'Non spécifié',
+        },
+        description: job.description,
+        salary: salaryValue
+          ? {
+            min: job.salary_min,
+            max: job.salary_max,
+            currency,
+            period,
+          }
+          : undefined,
+        contract_type: job.contract_type || job.contract_time,
+        remote: this.detectRemote(job.title, job.description),
+        redirect_url: job.redirect_url,
+        created_at: new Date(job.created),
+        category: job.category?.label,
+        company_logo: undefined,
+      };
+    });
 
     const total = data.count || 0;
     const perPage = searchDto.resultsPerPage || 20;

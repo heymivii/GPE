@@ -20,6 +20,7 @@ export interface SearchResult {
   city: string
   price?: number
   currency?: string
+  salaryPeriod?: 'month' | 'year'
   date: string
   image?: string
   link: string

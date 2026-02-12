@@ -2,13 +2,14 @@ import { Link } from 'react-router-dom';
 import { Users, Briefcase, MessageSquare, BookOpen, MapPin } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { CountryDestination } from '../types';
+import { getArticlesCountByCountry } from '../../../data/blog-data';
 
 interface CountryCardProps {
   country: CountryDestination;
 }
 
 export function CountryCard({ country }: CountryCardProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const stats = country.stats || {
     memberCount: 0,
     jobOffersCount: 0,
@@ -16,8 +17,15 @@ export function CountryCard({ country }: CountryCardProps) {
     resourcesCount: 0,
   };
 
+  const fmtCompact = (n: number): string => {
+    if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1).replace(/\.0$/, '')}M`;
+    if (n >= 1_000) return `${(n / 1_000).toFixed(n >= 10_000 ? 0 : 1).replace(/\.0$/, '')}k`;
+    return n.toLocaleString(i18n.language === 'fr' ? 'fr-FR' : 'en-US');
+  };
+
   const name = country.countryName || 'Unknown';
   const countrySlug = country.isoCode || name.toLowerCase();
+  const blogCount = getArticlesCountByCountry(country.isoCode || '');
 
   return (
     <Link
@@ -64,19 +72,19 @@ export function CountryCard({ country }: CountryCardProps) {
         <div className="grid grid-cols-2 gap-3 mt-auto pt-4 border-t border-gray-50">
           <div className="flex items-center text-gray-600">
             <Users className="w-4 h-4 mr-2 text-blue-500 flex-shrink-0" />
-            <span className="text-sm"><span className="font-semibold">{stats.memberCount}</span> <span className="text-gray-400">{t('destinationsPage.card.projects')}</span></span>
+            <span className="text-sm"><span className="font-semibold">{fmtCompact(stats.memberCount)}</span> <span className="text-gray-400">{t('destinationsPage.card.projects')}</span></span>
           </div>
           <div className="flex items-center text-gray-600">
             <Briefcase className="w-4 h-4 mr-2 text-green-500 flex-shrink-0" />
-            <span className="text-sm"><span className="font-semibold">{stats.jobOffersCount}</span> <span className="text-gray-400">{t('destinationsPage.card.jobs')}</span></span>
+            <span className="text-sm"><span className="font-semibold">{fmtCompact(stats.jobOffersCount)}</span> <span className="text-gray-400">{t('destinationsPage.card.jobs')}</span></span>
           </div>
           <div className="flex items-center text-gray-600">
             <MessageSquare className="w-4 h-4 mr-2 text-purple-500 flex-shrink-0" />
-            <span className="text-sm"><span className="font-semibold">{stats.forumTopicsCount}</span> <span className="text-gray-400">{t('destinationsPage.card.topics')}</span></span>
+            <span className="text-sm"><span className="font-semibold">{fmtCompact(stats.forumTopicsCount)}</span> <span className="text-gray-400">{t('destinationsPage.card.topics')}</span></span>
           </div>
           <div className="flex items-center text-gray-600">
             <BookOpen className="w-4 h-4 mr-2 text-orange-500 flex-shrink-0" />
-            <span className="text-sm"><span className="font-semibold">{stats.resourcesCount}</span> <span className="text-gray-400">{t('destinationsPage.card.resources')}</span></span>
+            <span className="text-sm"><span className="font-semibold">{blogCount}</span> <span className="text-gray-400">{t('destinationsPage.card.resources')}</span></span>
           </div>
         </div>
       </div>

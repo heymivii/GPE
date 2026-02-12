@@ -9,9 +9,10 @@ interface ResultsSectionProps {
   isLoading: boolean
   viewMode: 'grid' | 'list'
   onLoadMore: () => void
+  showLoadMore?: boolean
 }
 
-const categoryColors = {
+const categoryColors: Record<string, string> = {
   emploi: 'bg-[#5EA3C0]/10 text-[#5EA3C0]',
   logement: 'bg-green-100 text-green-800',
   transport: 'bg-purple-100 text-purple-800',
@@ -226,7 +227,7 @@ function ResultCard({ result, viewMode }: { result: SearchResult; viewMode: 'gri
   )
 }
 
-export default function ResultsSection({ results, isLoading, viewMode, onLoadMore }: ResultsSectionProps) {
+export default function ResultsSection({ results, isLoading, viewMode, onLoadMore, showLoadMore = true }: ResultsSectionProps) {
   const { t } = useTranslation()
 
   if (isLoading && results.length === 0) {
@@ -273,7 +274,7 @@ export default function ResultsSection({ results, isLoading, viewMode, onLoadMor
         ))}
       </div>
 
-      {results.length > 0 && (
+      {showLoadMore && results.length > 0 && (
         <div className="text-center pt-8">
           <button
             onClick={onLoadMore}

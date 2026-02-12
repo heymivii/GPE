@@ -54,7 +54,7 @@ export default function PersonalizedDashboard() {
     'weather',
     'recommendations',
     'budget-tracker',
-    'currency-converter'
+    'currency-converter',
   ]
   
   const [dashboardLayout, setDashboardLayout] = useState<string[]>(
@@ -107,10 +107,10 @@ export default function PersonalizedDashboard() {
   const getWidgetColSpan = (widgetId: string) => {
     const size = getWidgetSize(widgetId)
     switch (size) {
-      case 'small': return 'md:col-span-1'
-      case 'medium': return 'md:col-span-2'
-      case 'large': return 'md:col-span-4'
-      default: return 'md:col-span-2'
+      case 'small': return 'lg:col-span-1'
+      case 'medium': return 'lg:col-span-1'
+      case 'large': return 'lg:col-span-2'
+      default: return 'lg:col-span-1'
     }
   }
 
@@ -220,7 +220,7 @@ export default function PersonalizedDashboard() {
       <div 
         ref={setNodeRef} 
         style={style} 
-        className={`relative ${extraClass} ${editMode ? 'hover:ring-2 hover:ring-purple-300 rounded-xl transition-all' : ''}`}
+        className={`relative h-full ${extraClass} ${editMode ? 'hover:ring-2 hover:ring-purple-300 rounded-xl transition-all' : ''}`}
       >
         {editMode && (
           <div
@@ -232,7 +232,7 @@ export default function PersonalizedDashboard() {
             <GripVertical className="w-4 h-4 text-white" />
           </div>
         )}
-        <div className={`${editMode ? 'pl-4' : ''}`}>
+        <div className={`h-full ${editMode ? 'pl-4' : ''}`}>
           {children}
         </div>
       </div>
@@ -416,109 +416,102 @@ export default function PersonalizedDashboard() {
         </div>
       </div>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="p-2.5 bg-blue-50 rounded-lg">
-                <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                </svg>
-              </div>
-              {activeProject?.projectStatus === 'planning' && (
-                <span className="px-2.5 py-0.5 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">
-                  {t('dashboard.personalized.stats.projectStatus.ongoing')}
-                </span>
-              )}
-              {activeProject?.projectStatus === 'active' && (
-                <span className="px-2.5 py-0.5 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
-                  {t('dashboard.personalized.stats.projectStatus.active')}
-                </span>
-              )}
-              {activeProject?.projectStatus === 'completed' && (
-                <span className="px-2.5 py-0.5 bg-purple-100 text-purple-700 text-xs font-semibold rounded-full">
-                  {t('dashboard.personalized.stats.projectStatus.completed')}
-                </span>
-              )}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+          <div className="bg-white rounded-xl border border-gray-100 p-4 flex items-center gap-3">
+            <div className="p-2 bg-blue-50 rounded-lg shrink-0">
+              <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
             </div>
-            <p className="text-xs text-gray-500 mb-0.5">{t('dashboard.personalized.stats.projectStatus.label')}</p>
-            <p className="text-xl font-bold text-gray-900">
-              {activeProject?.projectStatus === 'planning' && t('dashboard.personalized.stats.projectStatus.planning')}
-              {activeProject?.projectStatus === 'active' && t('dashboard.personalized.stats.projectStatus.active')}
-              {activeProject?.projectStatus === 'completed' && t('dashboard.personalized.stats.projectStatus.completed')}
-            </p>
+            <div className="min-w-0">
+              <p className="text-[11px] text-gray-400 uppercase tracking-wide">{t('dashboard.personalized.stats.projectStatus.label')}</p>
+              <div className="flex items-center gap-2">
+                <p className="text-sm font-bold text-gray-900 truncate">
+                  {activeProject?.projectStatus === 'planning' && t('dashboard.personalized.stats.projectStatus.planning')}
+                  {activeProject?.projectStatus === 'active' && t('dashboard.personalized.stats.projectStatus.active')}
+                  {activeProject?.projectStatus === 'completed' && t('dashboard.personalized.stats.projectStatus.completed')}
+                </p>
+                {activeProject?.projectStatus === 'planning' && (
+                  <span className="px-1.5 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-semibold rounded-full shrink-0">
+                    {t('dashboard.personalized.stats.projectStatus.ongoing')}
+                  </span>
+                )}
+                {activeProject?.projectStatus === 'active' && (
+                  <span className="px-1.5 py-0.5 bg-green-100 text-green-700 text-[10px] font-semibold rounded-full shrink-0">
+                    {t('dashboard.personalized.stats.projectStatus.active')}
+                  </span>
+                )}
+              </div>
+            </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="p-2.5 bg-green-50 rounded-lg">
-                <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-              </div>
-              {activeProject?.expectedDepartureDate && (
-                <span className="text-xs text-emerald-600 font-semibold bg-emerald-50 px-2 py-0.5 rounded-full">
-                  {t('dashboard.personalized.stats.departureDate.days', { 
-                    count: Math.max(0, Math.ceil((new Date(activeProject.expectedDepartureDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
-                  })}
-                </span>
-              )}
+          <div className="bg-white rounded-xl border border-gray-100 p-4 flex items-center gap-3">
+            <div className="p-2 bg-emerald-50 rounded-lg shrink-0">
+              <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
             </div>
-            <p className="text-xs text-gray-500 mb-0.5">{t('dashboard.personalized.stats.departureDate.label')}</p>
-            <p className="text-xl font-bold text-gray-900">
-              {activeProject?.expectedDepartureDate
-                ? new Date(activeProject.expectedDepartureDate).toLocaleDateString(getLocale(i18n.language), { 
-                    day: 'numeric',
-                    month: 'short', 
-                    year: 'numeric' 
-                  })
-                : t('dashboard.personalized.stats.departureDate.undefined')}
-            </p>
+            <div className="min-w-0">
+              <p className="text-[11px] text-gray-400 uppercase tracking-wide">{t('dashboard.personalized.stats.departureDate.label')}</p>
+              <div className="flex items-center gap-2">
+                <p className="text-sm font-bold text-gray-900 truncate">
+                  {activeProject?.expectedDepartureDate
+                    ? new Date(activeProject.expectedDepartureDate).toLocaleDateString(getLocale(i18n.language), { day: 'numeric', month: 'short', year: 'numeric' })
+                    : t('dashboard.personalized.stats.departureDate.undefined')}
+                </p>
+                {activeProject?.expectedDepartureDate && (
+                  <span className="text-[10px] text-emerald-600 font-semibold bg-emerald-50 px-1.5 py-0.5 rounded-full shrink-0">
+                    {t('dashboard.personalized.stats.departureDate.days', { 
+                      count: Math.max(0, Math.ceil((new Date(activeProject.expectedDepartureDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
+                    })}
+                  </span>
+                )}
+              </div>
+            </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="p-2.5 bg-purple-50 rounded-lg">
-                <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                </svg>
-              </div>
-              <span className="text-xs text-gray-400 font-medium">{t('dashboard.personalized.stats.housingBudget.perMonth')}</span>
+          <div className="bg-white rounded-xl border border-gray-100 p-4 flex items-center gap-3">
+            <div className="p-2 bg-purple-50 rounded-lg shrink-0">
+              <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+              </svg>
             </div>
-            <p className="text-xs text-gray-500 mb-0.5">{t('dashboard.personalized.stats.housingBudget.label')}</p>
-            <p className="text-xl font-bold text-gray-900">
-              {activeProject?.housingBudget
-                ? `${activeProject.housingBudget} ${originCountryData?.currency || '€'}`
-                : t('dashboard.personalized.stats.housingBudget.undefined')}
-            </p>
+            <div className="min-w-0">
+              <p className="text-[11px] text-gray-400 uppercase tracking-wide">{t('dashboard.personalized.stats.housingBudget.label')}</p>
+              <p className="text-sm font-bold text-gray-900 truncate">
+                {activeProject?.housingBudget
+                  ? `${Number(activeProject.housingBudget).toLocaleString()} ${originCountryData?.currency || 'EUR'}`
+                  : t('dashboard.personalized.stats.housingBudget.undefined')}
+              </p>
+            </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="p-2.5 bg-orange-50 rounded-lg">
-                <svg className="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <span className="text-xs text-gray-400 font-medium">{t('dashboard.personalized.stats.duration.estimated')}</span>
+          <div className="bg-white rounded-xl border border-gray-100 p-4 flex items-center gap-3">
+            <div className="p-2 bg-orange-50 rounded-lg shrink-0">
+              <svg className="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
             </div>
-            <p className="text-xs text-gray-500 mb-0.5">{t('dashboard.personalized.stats.duration.label')}</p>
-            <p className="text-xl font-bold text-gray-900">
-              {activeProject?.expectedDuration 
-                ? (() => {
-                    const months = activeProject.expectedDuration
-                    if (months <= 6) return t('dashboard.personalized.stats.duration.less6months')
-                    if (months <= 12) return t('dashboard.personalized.stats.duration.6to12months')
-                    if (months <= 36) return t('dashboard.personalized.stats.duration.1to3years')
-                    return t('dashboard.personalized.stats.duration.more3years')
-                  })()
-                : t('dashboard.personalized.stats.duration.undefined')}
-            </p>
+            <div className="min-w-0">
+              <p className="text-[11px] text-gray-400 uppercase tracking-wide">{t('dashboard.personalized.stats.duration.label')}</p>
+              <p className="text-sm font-bold text-gray-900 truncate">
+                {activeProject?.expectedDuration 
+                  ? (() => {
+                      const months = activeProject.expectedDuration
+                      if (months <= 6) return t('dashboard.personalized.stats.duration.less6months')
+                      if (months <= 12) return t('dashboard.personalized.stats.duration.6to12months')
+                      if (months <= 36) return t('dashboard.personalized.stats.duration.1to3years')
+                      return t('dashboard.personalized.stats.duration.more3years')
+                    })()
+                  : t('dashboard.personalized.stats.duration.undefined')}
+              </p>
+            </div>
           </div>
         </div>
 
         {editMode && (
-          <div className="mb-6 bg-purple-50 border border-purple-200 rounded-lg p-4 flex items-start space-x-3">
+          <div className="mb-5 bg-purple-50 border border-purple-200 rounded-lg p-3 flex items-center space-x-3">
             <GripVertical className="w-5 h-5 text-purple-600 mt-0.5 flex-shrink-0" />
             <div>
               <p className="text-sm font-medium text-purple-900">
@@ -540,7 +533,7 @@ export default function PersonalizedDashboard() {
             items={visibleWidgets}
             strategy={rectSortingStrategy}
           >
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 auto-rows-auto items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-start">
               {visibleWidgets.map((widgetId) => (
                 <SortableWidget key={widgetId} id={widgetId} className={getWidgetColSpan(widgetId)}>
                   {renderWidget(widgetId)}
@@ -550,7 +543,7 @@ export default function PersonalizedDashboard() {
               {editMode && (
                 <button
                   onClick={() => setShowAddWidget(true)}
-                  className="border-2 border-dashed border-gray-300 rounded-xl p-8 flex flex-col items-center justify-center text-gray-500 hover:border-purple-400 hover:text-purple-600 hover:bg-purple-50/50 cursor-pointer transition-all min-h-[200px]"
+                  className="border-2 border-dashed border-gray-300 rounded-xl p-8 flex flex-col items-center justify-center text-gray-500 hover:border-purple-400 hover:text-purple-600 hover:bg-purple-50/50 cursor-pointer transition-all min-h-[160px]"
                 >
                   <Plus className="w-8 h-8 mb-2" />
                   <span className="text-sm font-medium">{t('dashboard.personalized.widgets.addWidget')}</span>

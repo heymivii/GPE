@@ -22,10 +22,8 @@ export default function LoginForm() {
       navigate(redirect);
     },
     onError: (err: unknown) => {
-      const errorMessage = err instanceof Error 
-        ? err.message 
-        : (err as { response?: { data?: { message?: string } } })?.response?.data?.message || t("auth.login.error");
-      toast.error(errorMessage);
+      const axiosMsg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
+      toast.error(axiosMsg || t("auth.login.error"));
     },
   });
 

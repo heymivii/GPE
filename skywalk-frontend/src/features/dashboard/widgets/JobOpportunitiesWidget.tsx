@@ -134,7 +134,7 @@ export default function JobOpportunitiesWidget({
           </div>
           {totalJobsCount > 0 && (
             <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-bold rounded-full whitespace-nowrap">
-              {totalJobsCount.toLocaleString()} {t('dashboard.personalized.widgets.jobOpportunities.offersAvailable')}
+              {totalJobsCount >= 1_000_000 ? `${(totalJobsCount / 1_000_000).toFixed(1).replace(/\.0$/, '')}M` : totalJobsCount >= 1_000 ? `${(totalJobsCount / 1_000).toFixed(totalJobsCount >= 10_000 ? 0 : 1).replace(/\.0$/, '')}k` : totalJobsCount.toLocaleString()} {t('dashboard.personalized.widgets.jobOpportunities.offersAvailable')}
             </span>
           )}
         </div>

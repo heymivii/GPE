@@ -31,6 +31,10 @@ export default function SearchBar({ initialQuery = '', onSearch, placeholder }: 
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
+    setQuery(initialQuery)
+  }, [initialQuery])
+
+  useEffect(() => {
     if (query.length > 2) {
       const filtered = [...recentSearches, ...popularSearches].filter(item =>
         item.toLowerCase().includes(query.toLowerCase())

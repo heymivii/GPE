@@ -12,6 +12,7 @@ export interface AdzunaJobDto {
     min: number;
     max: number;
     currency: string;
+    period?: 'month' | 'year';
   };
   contract_type?: string;
   remote: boolean;

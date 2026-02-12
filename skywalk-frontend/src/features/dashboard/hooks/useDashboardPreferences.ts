@@ -6,19 +6,21 @@ interface DashboardPreferences {
   hiddenWidgets: string[];
   layout?: string[];
   widgetSizes?: Record<string, WidgetSize>;
+  version?: number;
 }
 
 const STORAGE_KEY = 'skywalk-dashboard-preferences';
+const PREFS_VERSION = 2;
 
 const DEFAULT_WIDGET_SIZES: Record<string, WidgetSize> = {
-  'profile-summary': 'medium',
-  'local-time': 'small',
-  'weather': 'small',
   'checklist': 'large',
-  'budget-tracker': 'medium',
-  'recommendations': 'large',
-  'currency-converter': 'medium',
+  'profile-summary': 'medium',
   'job-opportunities': 'medium',
+  'local-time': 'medium',
+  'weather': 'medium',
+  'recommendations': 'large',
+  'budget-tracker': 'medium',
+  'currency-converter': 'medium',
 };
 
 export function useDashboardPreferences() {
@@ -26,13 +28,17 @@ export function useDashboardPreferences() {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved) as DashboardPreferences;
+        if ((parsed.version || 0) < PREFS_VERSION) {
+          return { hiddenWidgets: parsed.hiddenWidgets || [], version: PREFS_VERSION };
+        }
+        return parsed;
       } catch (error) {
         console.error('Error parsing dashboard preferences:', error);
-        return { hiddenWidgets: [] };
+        return { hiddenWidgets: [], version: PREFS_VERSION };
       }
     }
-    return { hiddenWidgets: [] };
+    return { hiddenWidgets: [], version: PREFS_VERSION };
   });
 
   useEffect(() => {

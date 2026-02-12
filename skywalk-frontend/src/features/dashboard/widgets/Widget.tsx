@@ -54,11 +54,11 @@ export default function Widget({
   return (
     <div className={`
       bg-white rounded-xl shadow-sm border border-gray-100
-      transition-shadow duration-200 p-6 flex flex-col
+      transition-shadow duration-200 hover:shadow-md p-5 flex flex-col h-full
       ${getSizeClasses()}
       ${className}
     `}>
-      <div className="flex justify-between items-start mb-6">
+      <div className="flex justify-between items-start mb-4">
         <div className="flex items-center gap-3">
           {Icon && (
             <div className={`p-2 ${getIconBgColor()} rounded-lg ${iconColor}`}>

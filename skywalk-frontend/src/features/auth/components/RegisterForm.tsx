@@ -52,10 +52,8 @@ export default function RegisterForm() {
       navigate(redirect);
     },
     onError: (err: unknown) => {
-      const errorMessage = err instanceof Error 
-        ? err.message 
-        : (err as { response?: { data?: { message?: string } } })?.response?.data?.message || t("auth.register.error");
-      setError(errorMessage);
+      const axiosMsg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
+      setError(axiosMsg || t("auth.register.error"));
     },
   });
   

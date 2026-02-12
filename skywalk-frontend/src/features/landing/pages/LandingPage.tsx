@@ -4,6 +4,9 @@ import { useTranslation } from 'react-i18next';
 import Dropdown from '../components/Dropdown';
 import DestinationCard from '../../dashboard/components/DestinationCard';
 import LandingToolsSection from '../components/LandingToolsSection';
+import HowItWorks from '../components/HowItWorks';
+import Testimonials from '../components/Testimonials';
+import FAQ from '../components/FAQ';
 import { useAuth } from '../../../hooks/useAuth';
 
 export default function LandingPage() {
@@ -84,6 +87,8 @@ export default function LandingPage() {
         </div>
       </section>
 
+      <HowItWorks />
+
       <LandingToolsSection />
 
       <section className="mt-16 px-8 w-full max-w-7xl mx-auto pb-16">
@@ -145,6 +150,9 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+      <Testimonials />
+      <FAQ />
     </>
   );
 }

@@ -6,6 +6,7 @@ import { destinationsApi } from '../../../api/destinations';
 import { searchJobs } from '../../../api/jobOffers';
 import { forumTopicsApi } from '../../../api/forum-topics';
 import { migrationApi, type CountryMigrationData } from '../../../api/migration';
+import { getArticlesByCountry, getArticleTranslation, getCategoryTranslation } from '../../../data/blog-data';
 import type { CountryDetail } from '../types';
 import type { AdzunaJobDto } from '../../search/types/job';
 import type { ForumTopic } from '../../../types/forum';
@@ -39,9 +40,16 @@ export function DestinationDetailPage() {
   const { isAuthenticated } = useAuth();
   const { t, i18n } = useTranslation();
   const dateLocale = getLocale(i18n.language);
+  const locale = i18n.language === 'fr' ? 'fr-FR' : 'en-US';
   const [activeTab, setActiveTab] = useState<
     'overview' | 'cities' | 'cost-of-living' | 'opportunities' | 'forum' | 'resources'
   >('overview');
+
+  const fmtCompact = (n: number): string => {
+    if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1).replace(/\.0$/, '')}M`;
+    if (n >= 1_000) return `${(n / 1_000).toFixed(n >= 10_000 ? 0 : 1).replace(/\.0$/, '')}k`;
+    return n.toLocaleString(locale);
+  };
 
   const { data: country, isLoading: loading, isError } = useQuery<CountryDetail>({
     queryKey: ['destination-detail', countrySlug],
@@ -431,32 +439,90 @@ export function DestinationDetailPage() {
                   </div>
                 )}
 
-                {activeTab === 'resources' && (
-                  isAuthenticated ? (
-                    <div className="text-center py-8">
-                      <BookOpen className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium text-gray-900 mb-2">{t('services.destinationDetail.guidesAndResources')}</h3>
-                      <p className="text-gray-500 mb-6">{t('services.destinationDetail.guidesDescription', { count: country.stats?.resourcesCount || 0, country: country.countryName })}</p>
-                      <Link to={`/resources?country=${country.isoCode}`} className="text-[#5EA3C0] font-medium hover:underline">
-                        {t('services.destinationDetail.viewResources')} &rarr;
-                      </Link>
-                    </div>
-                  ) : (
-                    <div className="text-center py-12">
-                      <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-5">
-                        <BookOpen className="w-8 h-8 text-gray-400" />
+                {activeTab === 'resources' && (() => {
+                  const countryArticles = getArticlesByCountry(country.isoCode || '');
+
+                  if (!isAuthenticated) {
+                    return (
+                      <div className="text-center py-12">
+                        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-5">
+                          <BookOpen className="w-8 h-8 text-gray-400" />
+                        </div>
+                        <h3 className="text-xl font-bold text-gray-900 mb-2">{t('services.destinationDetail.premiumContent')}</h3>
+                        <p className="text-gray-500 mb-6 max-w-md mx-auto">{t('services.destinationDetail.premiumResources', { country: country.countryName })}</p>
+                        <Link
+                          to="/auth/register"
+                          className="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white font-medium rounded-xl hover:bg-gray-800 transition-colors"
+                        >
+                          {t('services.destinationDetail.createFreeAccount')}
+                        </Link>
                       </div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-2">{t('services.destinationDetail.premiumContent')}</h3>
-                      <p className="text-gray-500 mb-6 max-w-md mx-auto">{t('services.destinationDetail.premiumResources', { country: country.countryName })}</p>
-                      <Link
-                        to="/auth/register"
-                        className="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white font-medium rounded-xl hover:bg-gray-800 transition-colors"
-                      >
-                        {t('services.destinationDetail.createFreeAccount')}
-                      </Link>
+                    );
+                  }
+
+                  if (countryArticles.length === 0) {
+                    return (
+                      <div className="text-center py-8">
+                        <BookOpen className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                        <p className="text-gray-500 mb-4">{t('services.destinationDetail.noResources', { country: country.countryName })}</p>
+                        <Link
+                          to="/blog"
+                          className="inline-flex items-center gap-2 text-[#5EA3C0] font-medium hover:underline"
+                        >
+                          {t('services.destinationDetail.viewAllBlog')} <ArrowRight className="w-4 h-4" />
+                        </Link>
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <div>
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">{t('services.destinationDetail.guidesAndResources')}</h3>
+                      <p className="text-gray-500 mb-6">{t('services.destinationDetail.guidesDescription', { count: countryArticles.length, country: country.countryName })}</p>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {countryArticles.map((article) => (
+                          <Link
+                            key={article.id}
+                            to={`/blog/${article.id}`}
+                            className="group flex gap-4 p-4 rounded-xl border border-gray-200 hover:border-[#5EA3C0] transition-all duration-300"
+                          >
+                            <div className="relative w-28 h-20 flex-shrink-0 rounded-lg overflow-hidden">
+                              <img
+                                src={article.coverImage}
+                                alt={getArticleTranslation(article.id, 'title', t)}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                              />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <span className="inline-block px-2 py-0.5 bg-gray-100 text-xs font-medium text-gray-600 rounded-full mb-1.5">
+                                {getCategoryTranslation(article.category, t)}
+                              </span>
+                              <h4 className="text-sm font-semibold text-gray-900 group-hover:text-[#5EA3C0] transition-colors line-clamp-2 mb-1">
+                                {getArticleTranslation(article.id, 'title', t)}
+                              </h4>
+                              <div className="flex items-center gap-3 text-xs text-gray-400">
+                                <span>{new Date(article.date).toLocaleDateString(i18n.language === 'fr' ? 'fr-FR' : 'en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
+                                <span className="flex items-center gap-1">
+                                  <Clock className="w-3 h-3" />
+                                  {article.readTime} min
+                                </span>
+                              </div>
+                            </div>
+                            <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-[#5EA3C0] transition-colors flex-shrink-0 mt-2" />
+                          </Link>
+                        ))}
+                      </div>
+                      <div className="text-center mt-6">
+                        <Link
+                          to="/blog"
+                          className="inline-flex items-center gap-2 text-[#5EA3C0] font-medium hover:underline"
+                        >
+                          {t('services.destinationDetail.viewAllBlog')} <ArrowRight className="w-4 h-4" />
+                        </Link>
+                      </div>
                     </div>
-                  )
-                )}
+                  );
+                })()}
               </div>
             </div>
           </div>
@@ -470,7 +536,7 @@ export function DestinationDetailPage() {
                     <Users className="w-5 h-5" />
                     <span>{t('services.destinationDetail.members')}</span>
                   </div>
-                  <span className="font-semibold text-gray-900">{(country.stats?.memberCount || 0).toLocaleString(getCurrentLocale())}</span>
+                  <span className="font-semibold text-gray-900">{fmtCompact(country.stats?.memberCount || 0)}</span>
                 </div>
                 <div className="w-full bg-gray-100 h-px"></div>
                 <div className="flex items-center justify-between">
@@ -478,7 +544,7 @@ export function DestinationDetailPage() {
                     <Briefcase className="w-5 h-5" />
                     <span>{t('services.destinationDetail.jobOffers')}</span>
                   </div>
-                  <span className="font-semibold text-gray-900">{country.stats?.jobOffersCount || 0}</span>
+                  <span className="font-semibold text-gray-900">{fmtCompact(country.stats?.jobOffersCount || 0)}</span>
                 </div>
                 <div className="w-full bg-gray-100 h-px"></div>
                 <div className="flex items-center justify-between">
@@ -486,7 +552,7 @@ export function DestinationDetailPage() {
                     <MessageSquare className="w-5 h-5" />
                     <span>{t('services.destinationDetail.forumTopics')}</span>
                   </div>
-                  <span className="font-semibold text-gray-900">{country.stats?.forumTopicsCount || 0}</span>
+                  <span className="font-semibold text-gray-900">{fmtCompact(country.stats?.forumTopicsCount || 0)}</span>
                 </div>
               </div>
             </div>

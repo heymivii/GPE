@@ -44,6 +44,12 @@ const SLUG_TO_ADZUNA: Record<string, string> = {
 const fmtNum = (n: number): string =>
   n.toLocaleString(getCurrentLocale());
 
+const fmtCompact = (n: number): string => {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1).replace(/\.0$/, '')}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(n >= 10_000 ? 0 : 1).replace(/\.0$/, '')}k`;
+  return n.toLocaleString(getCurrentLocale());
+};
+
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
   const days = Math.floor(diff / 86400000);
@@ -150,7 +156,7 @@ export default function EmploiStats({ countryName }: EmploiStatsProps) {
             {t('services.stats.emploi.availableOffers')}
           </p>
           <p className="text-3xl font-bold text-blue-700 tracking-tight mb-1">
-            {totalJobs > 0 ? fmtNum(totalJobs) : '—'}
+            {totalJobs > 0 ? fmtCompact(totalJobs) : '—'}
           </p>
           <p className="text-xs text-gray-500">
             {adzunaCode ? t('services.stats.emploi.viaAdzuna') : t('services.stats.emploi.unavailableCountry')}
@@ -222,7 +228,7 @@ export default function EmploiStats({ countryName }: EmploiStatsProps) {
           <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
             <Briefcase className="w-5 h-5 text-blue-600" />
             {t('services.stats.emploi.recentOffers')}
-            <span className="text-xs font-normal text-gray-400 ml-auto">{t('services.stats.emploi.totalOffers', { count: String(fmtNum(totalJobs)) } as Record<string, string>)}</span>
+            <span className="text-xs font-normal text-gray-400 ml-auto">{t('services.stats.emploi.totalOffers', { count: String(fmtCompact(totalJobs)) } as Record<string, string>)}</span>
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {sampleJobs.map((job: AdzunaJobDto) => (

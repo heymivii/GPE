@@ -1,4 +1,5 @@
 import { Outlet, Link } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 import ScrollToTop from "../components/ScrollToTop";
 import { useTranslation } from "react-i18next";
 
@@ -6,6 +7,7 @@ export default function AuthLayout() {
   const { t } = useTranslation();
   return (
     <div className="min-h-screen grid grid-cols-1 md:grid-cols-[1.5fr_1.9fr]">
+      <Toaster position="top-right" />
       <ScrollToTop />
       <div className="hidden md:block bg-cover bg-center round" style={{ backgroundImage: "url('/img.png')" }}>
         <div className="h-full w-full flex items-center justify-between p-8 flex-col">

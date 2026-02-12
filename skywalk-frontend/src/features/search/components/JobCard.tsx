@@ -1,4 +1,4 @@
-import { MapPin, DollarSign, Calendar, ExternalLink, Building2 } from 'lucide-react';
+import { MapPin, Calendar, ExternalLink, Building2, Banknote } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { SearchResult } from '../types';
 
@@ -8,25 +8,30 @@ interface JobCardProps {
 }
 
 export default function JobCard({ job, viewMode }: JobCardProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
-  const formatSalary = (price?: number, currency?: string) => {
+  const formatSalary = (price?: number, currency?: string, period?: 'month' | 'year') => {
     if (!price) return t('searchPage.job.salaryNotSpecified');
     
+    const locale = i18n.language === 'fr' ? 'fr-FR' : 'en-US';
+    const periodLabel = period === 'month'
+      ? t('searchPage.job.perMonth')
+      : t('searchPage.job.perYear');
+
     if (!currency) {
-      return `${price.toLocaleString()}+${t('searchPage.job.perYear')}`;
+      return `${price.toLocaleString(locale)}+${periodLabel}`;
     }
     
     try {
-      const formatter = new Intl.NumberFormat(undefined, {
+      const formatter = new Intl.NumberFormat(locale, {
         style: 'currency',
         currency: currency.toUpperCase(),
         maximumFractionDigits: 0,
       });
       
-      return `${formatter.format(price)}+${t('searchPage.job.perYear')}`;
+      return `${formatter.format(price)}+${periodLabel}`;
     } catch {
-      return `${price.toLocaleString()} ${currency}${t('searchPage.job.perYear')}`;
+      return `${price.toLocaleString(locale)} ${currency}+${periodLabel}`;
     }
   };
 
@@ -52,14 +57,14 @@ export default function JobCard({ job, viewMode }: JobCardProps) {
                 <h3 className="text-lg font-semibold text-gray-900 mb-1 line-clamp-1">
                   {job.title}
                 </h3>
-                <p className="text-sm text-gray-600 mb-2 flex items-center gap-1">
-                  <Building2 className="w-4 h-4" />
+                <p className="text-sm text-gray-600 mb-2 flex items-center gap-2">
+                  <Building2 className="w-5 h-5 text-gray-400 flex-shrink-0" />
                   {job.tags[0] || t('searchPage.job.company')}
                 </p>
               </div>
               <div className="flex-shrink-0 text-right">
                 <div className="text-lg font-bold text-blue-600 mb-1">
-                  {formatSalary(job.price, job.currency)}
+                  {formatSalary(job.price, job.currency, job.salaryPeriod)}
                 </div>
                 <div className="text-xs text-gray-500">
                   {formatDate(job.date)}
@@ -109,8 +114,8 @@ export default function JobCard({ job, viewMode }: JobCardProps) {
           {job.title}
         </h3>
 
-        <p className="text-sm text-gray-600 mb-3 flex items-center gap-1">
-          <Building2 className="w-4 h-4 flex-shrink-0" />
+        <p className="text-sm text-gray-600 mb-3 flex items-center gap-2">
+          <Building2 className="w-5 h-5 text-gray-400 flex-shrink-0" />
           <span className="truncate">{job.tags[0] || t('searchPage.job.company')}</span>
         </p>
 
@@ -120,8 +125,8 @@ export default function JobCard({ job, viewMode }: JobCardProps) {
         </div>
 
         <div className="flex items-center gap-1 text-lg font-bold text-blue-600 mb-3">
-          <DollarSign className="w-5 h-5" />
-          {formatSalary(job.price, job.currency)}
+          <Banknote className="w-5 h-5" />
+          {formatSalary(job.price, job.currency, job.salaryPeriod)}
         </div>
 
         <p className="text-sm text-gray-700 mb-4 line-clamp-3 min-h-[3.75rem]">

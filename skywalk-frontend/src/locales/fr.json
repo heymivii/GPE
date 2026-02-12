@@ -41,6 +41,7 @@
     "loadingError": "Erreur lors du chargement des données",
     "destination": "Destination",
     "comingSoon": "Bientôt disponible",
+    "loginRequired": "Connexion requise",
     "noOptions": "Aucune option disponible",
     "edit": "Éditer",
     "select": "Sélectionner...",
@@ -630,6 +631,8 @@
       "guidesAndResources": "Guides et ressources",
       "guidesDescription": "Consultez nos {{count}} guides pour votre installation en {{country}}.",
       "viewResources": "Voir les ressources",
+      "noResources": "Aucune ressource disponible pour {{country}} pour le moment.",
+      "viewAllBlog": "Voir tous les articles du blog",
       "statistics": "Statistiques",
       "members": "Membres",
       "jobOffers": "Offres d'emploi",
@@ -822,6 +825,76 @@
       },
       "suisse": {
         "description": "Découvrez les opportunités professionnelles dans un cadre alpin exceptionnel. Salaires attractifs et qualité de vie incomparable."
+      }
+    },
+    "howItWorks": {
+      "title": "Comment ça marche ?",
+      "subtitle": "Trois étapes simples pour préparer votre nouvelle vie à l'étranger.",
+      "stepLabel": "Étape {{number}}",
+      "steps": {
+        "choose": {
+          "title": "Choisis ta destination",
+          "description": "Explore nos fiches pays détaillées, compare le coût de la vie et trouve la destination qui te correspond."
+        },
+        "compare": {
+          "title": "Compare les démarches",
+          "description": "Visa, logement, emploi — accède à toutes les infos administratives et pratiques pour chaque pays."
+        },
+        "go": {
+          "title": "Lance-toi !",
+          "description": "Utilise nos outils, échange avec la communauté et prépare ton départ en toute confiance."
+        }
+      }
+    },
+    "testimonials": {
+      "title": "Ils ont sauté le pas",
+      "subtitle": "Découvrez les retours d'expatriés qui ont utilisé SkyWalk pour préparer leur départ.",
+      "items": {
+        "1": {
+          "quote": "Grâce à SkyWalk, j'ai pu comparer le coût de la vie entre Paris et Tokyo en quelques clics. Le simulateur m'a vraiment aidé à me projeter financièrement.",
+          "name": "Lucas M.",
+          "role": "Développeur web — expatrié au Japon"
+        },
+        "2": {
+          "quote": "J'étais perdue dans les démarches pour la Suisse. SkyWalk m'a donné une checklist claire et j'ai pu tout organiser sereinement en 3 mois.",
+          "name": "Sarah K.",
+          "role": "Ingénieure — expatriée en Suisse"
+        },
+        "3": {
+          "quote": "Le forum m'a permis d'échanger avec des expatriés déjà sur place aux USA. Leurs conseils m'ont évité pas mal d'erreurs à mon arrivée.",
+          "name": "Youssef B.",
+          "role": "Chef de projet — expatrié aux États-Unis"
+        }
+      }
+    },
+    "faq": {
+      "title": "Questions fréquentes",
+      "subtitle": "Tout ce que vous devez savoir avant de vous lancer dans l'expatriation.",
+      "items": {
+        "1": {
+          "question": "SkyWalk est-il gratuit ?",
+          "answer": "Oui, l'inscription et l'accès aux fonctionnalités principales sont entièrement gratuits. Nous proposons des outils de comparaison, un forum communautaire et des fiches pays accessibles à tous."
+        },
+        "2": {
+          "question": "Quels pays sont couverts par la plateforme ?",
+          "answer": "Nous couvrons actuellement plus de 20 pays populaires pour l'expatriation, dont le Japon, les États-Unis, la Suisse, le Canada, l'Australie et bien d'autres. De nouvelles destinations sont ajoutées régulièrement."
+        },
+        "3": {
+          "question": "Comment fonctionne le comparateur de coût de la vie ?",
+          "answer": "Notre comparateur utilise des données actualisées pour comparer les prix du logement, de l'alimentation, des transports et d'autres catégories entre votre ville actuelle et votre destination."
+        },
+        "4": {
+          "question": "Est-ce que SkyWalk m'aide à trouver un emploi ?",
+          "answer": "Oui ! Notre moteur de recherche agrège des milliers d'offres d'emploi à l'international via l'API Adzuna. Vous pouvez filtrer par pays, ville, type de contrat et salaire."
+        },
+        "5": {
+          "question": "Comment puis-je échanger avec d'autres expatriés ?",
+          "answer": "Notre forum communautaire vous permet de poser des questions, partager des témoignages et recevoir des conseils d'expatriés déjà installés dans votre pays cible."
+        },
+        "6": {
+          "question": "Quelles démarches administratives sont couvertes ?",
+          "answer": "Nous fournissons des guides détaillés sur les visas, permis de travail, assurance santé, ouverture de compte bancaire et toutes les étapes clés pour chaque pays."
+        }
       }
     }
   },
@@ -1068,7 +1141,7 @@
       "safety": "Sécurité",
       "healthcare": "Santé",
       "affordability": "Accessibilité",
-      "workLife": "Vie pro/perso"
+      "workLife": "Équilibre"
     },
     "fields": {
       "continent": "Continent",
@@ -1587,6 +1660,7 @@
     "job": {
       "salaryNotSpecified": "Salaire non spécifié",
       "perYear": "/an",
+      "perMonth": "/mois",
       "today": "Aujourd'hui",
       "yesterday": "Hier",
       "daysAgo": "Il y a {{count}} jours",

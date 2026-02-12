@@ -12,9 +12,9 @@ export default function Dropdown() {
 
   const [formData, setFormData] = useState({
     origin: 'France',
-    destination: 'Canada',
+    destination: '',
     category: 'emploi',
-    position: 'developer'
+    position: ''
   });
 
   const { data: countries = [] } = useQuery({
@@ -30,11 +30,10 @@ export default function Dropdown() {
     .sort((a, b) => a.label.localeCompare(b.label));
 
   const categoryOptions = [
-    { value: 'emploi', label: t('landing.search.options.job') },
-    { value: 'logement', label: t('landing.search.options.housing') },
-    { value: 'education', label: t('landing.search.options.studies') },
-    { value: 'sante', label: t('landing.search.options.health') },
-    { value: 'demarches', label: t('landing.search.options.other') },
+    { value: 'emploi', label: t('landing.search.options.job'), disabled: false },
+    { value: 'logement', label: t('landing.search.options.housing'), disabled: true },
+    { value: 'sante', label: t('landing.search.options.health'), disabled: true },
+    { value: 'demarches', label: t('landing.search.options.other'), disabled: true },
   ];
 
   const [activeField, setActiveField] = useState<string | null>(null);
@@ -81,11 +80,12 @@ export default function Dropdown() {
     label: string;
     value: string;
     field: string;
-    options?: { label: string; value: string }[];
+    options?: { label: string; value: string; disabled?: boolean; requiresAuth?: boolean }[];
     isHighlighted?: boolean;
   }) => {
     const selectedOption = options.find(opt => opt.value === value);
     const displayValue = selectedOption ? selectedOption.label : value;
+    const isEmpty = !value;
 
     return (
       <div className="relative w-full min-w-[400px]">
@@ -101,9 +101,8 @@ export default function Dropdown() {
           </div>
           <div className="flex-1">
             <div className="text-sm text-gray-500">{label}</div>
-            <div className={`text-base font-medium ${isHighlighted ? 'text-[#5EA3C0]' : 'text-gray-900'
-              }`}>
-              {displayValue}
+            <div className={`text-base font-medium ${isEmpty ? 'text-gray-400' : isHighlighted ? 'text-[#5EA3C0]' : 'text-gray-900'}`}>
+              {isEmpty ? t('common.select') : displayValue}
             </div>
           </div>
           <div className="flex-shrink-0">
@@ -119,14 +118,24 @@ export default function Dropdown() {
                 {options.map((option) => (
                   <div
                     key={option.value}
-                    className={`px-4 py-2 hover:bg-gray-50 cursor-pointer text-gray-700 ${value === option.value ? 'bg-gray-50 font-medium' : ''
-                      }`}
+                    className={`px-4 py-2 text-gray-700 ${
+                      option.disabled
+                        ? 'opacity-40 cursor-not-allowed'
+                        : 'hover:bg-gray-50 cursor-pointer'
+                    } ${value === option.value ? 'bg-gray-50 font-medium' : ''}`}
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleSelect(field, option.value);
+                      if (!option.disabled) {
+                        handleSelect(field, option.value);
+                      }
                     }}
                   >
                     {option.label}
+                    {option.disabled && (
+                      <span className="ml-2 text-xs text-gray-400 italic">
+                        {t('common.comingSoon')}
+                      </span>
+                    )}
                   </div>
                 ))}
               </div>

@@ -14,7 +14,7 @@ import { PageSearch } from '../../../components/PageSearch'
 
 export default function SearchPage() {
   const { isAuthenticated } = useAuth();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { t } = useTranslation();
   const {
     filters,
@@ -33,6 +33,15 @@ export default function SearchPage() {
 
   const displayedResults = !isAuthenticated ? results.slice(0, 10) : results;
   const hasMoreResults = !isAuthenticated && results.length > 10;
+
+  useEffect(() => {
+    const params = new URLSearchParams()
+    if (filters.query) params.set('query', filters.query)
+    if (filters.country) params.set('country', filters.country)
+    if (filters.category) params.set('category', filters.category)
+    if (filters.city) params.set('city', filters.city)
+    setSearchParams(params, { replace: true })
+  }, [filters.query, filters.country, filters.category, filters.city, setSearchParams])
 
   useEffect(() => {
     if (hasInitialized.current) return;
@@ -81,7 +90,8 @@ export default function SearchPage() {
     
     search()
     hasInitialized.current = true;
-  }, [searchParams, updateFilters, search])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const handleSearch = (searchQuery: string) => {
     updateFilters({ query: searchQuery })
@@ -174,9 +184,8 @@ export default function SearchPage() {
               <option value="relevance-desc">{t('searchPage.relevance')}</option>
               <option value="date-desc">{t('searchPage.mostRecent')}</option>
               <option value="date-asc">{t('searchPage.oldest')}</option>
-              <option value="price-asc">{t('searchPage.priceAsc')}</option>
-              <option value="price-desc">{t('searchPage.priceDesc')}</option>
-              <option value="rating-desc">{t('searchPage.bestRated')}</option>
+              <option value="salary-asc">{t('searchPage.priceAsc')}</option>
+              <option value="salary-desc">{t('searchPage.priceDesc')}</option>
             </select>
           </div>
         </div>
@@ -231,6 +240,7 @@ export default function SearchPage() {
           isLoading={isLoading}
           viewMode={viewMode}
           onLoadMore={loadMore}
+          showLoadMore={isAuthenticated}
         />
 
         {isAuthenticated && filters.category === 'emploi' && (

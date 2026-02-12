@@ -41,6 +41,7 @@
     "loadingError": "Error loading data",
     "destination": "Destination",
     "comingSoon": "Coming soon",
+    "loginRequired": "Login required",
     "noOptions": "No options available",
     "edit": "Edit",
     "select": "Select...",
@@ -630,6 +631,8 @@
       "guidesAndResources": "Guides and resources",
       "guidesDescription": "Check our {{count}} guides for your settlement in {{country}}.",
       "viewResources": "View resources",
+      "noResources": "No resources available for {{country}} at this time.",
+      "viewAllBlog": "View all blog articles",
       "statistics": "Statistics",
       "members": "Members",
       "jobOffers": "Job offers",
@@ -822,6 +825,76 @@
       },
       "suisse": {
         "description": "Discover professional opportunities in an exceptional alpine setting. Attractive salaries and incomparable quality of life."
+      }
+    },
+    "howItWorks": {
+      "title": "How does it work?",
+      "subtitle": "Three simple steps to prepare your new life abroad.",
+      "stepLabel": "Step {{number}}",
+      "steps": {
+        "choose": {
+          "title": "Choose your destination",
+          "description": "Explore our detailed country guides, compare the cost of living and find the destination that suits you."
+        },
+        "compare": {
+          "title": "Compare the process",
+          "description": "Visa, housing, employment — access all the administrative and practical information for each country."
+        },
+        "go": {
+          "title": "Go for it!",
+          "description": "Use our tools, connect with the community and prepare your departure with confidence."
+        }
+      }
+    },
+    "testimonials": {
+      "title": "They took the leap",
+      "subtitle": "Discover feedback from expats who used SkyWalk to prepare their move.",
+      "items": {
+        "1": {
+          "quote": "Thanks to SkyWalk, I was able to compare the cost of living between Paris and Tokyo in just a few clicks. The simulator really helped me plan financially.",
+          "name": "Lucas M.",
+          "role": "Web developer — expat in Japan"
+        },
+        "2": {
+          "quote": "I was lost in the paperwork for Switzerland. SkyWalk gave me a clear checklist and I was able to organize everything smoothly in 3 months.",
+          "name": "Sarah K.",
+          "role": "Engineer — expat in Switzerland"
+        },
+        "3": {
+          "quote": "The forum allowed me to connect with expats already living in the US. Their advice saved me from many mistakes upon arrival.",
+          "name": "Youssef B.",
+          "role": "Project manager — expat in the United States"
+        }
+      }
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "subtitle": "Everything you need to know before starting your expatriation.",
+      "items": {
+        "1": {
+          "question": "Is SkyWalk free?",
+          "answer": "Yes, registration and access to the main features are completely free. We offer comparison tools, a community forum and country guides accessible to everyone."
+        },
+        "2": {
+          "question": "Which countries are covered by the platform?",
+          "answer": "We currently cover more than 20 popular countries for expatriation, including Japan, the United States, Switzerland, Canada, Australia and many more. New destinations are added regularly."
+        },
+        "3": {
+          "question": "How does the cost of living comparator work?",
+          "answer": "Our comparator uses up-to-date data to compare housing, food, transportation and other category prices between your current city and your destination."
+        },
+        "4": {
+          "question": "Does SkyWalk help me find a job?",
+          "answer": "Yes! Our search engine aggregates thousands of international job offers via the Adzuna API. You can filter by country, city, contract type and salary."
+        },
+        "5": {
+          "question": "How can I connect with other expats?",
+          "answer": "Our community forum allows you to ask questions, share testimonials and receive advice from expats already settled in your target country."
+        },
+        "6": {
+          "question": "What administrative procedures are covered?",
+          "answer": "We provide detailed guides on visas, work permits, health insurance, bank account opening and all the key steps for each country."
+        }
       }
     }
   },
@@ -1587,6 +1660,7 @@
     "job": {
       "salaryNotSpecified": "Salary not specified",
       "perYear": "/yr",
+      "perMonth": "/mo",
       "today": "Today",
       "yesterday": "Yesterday",
       "daysAgo": "{{count}} days ago",

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import { MapPin, Calendar, DollarSign, Tag, X, Briefcase } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { SearchFilters } from '../types'
@@ -9,6 +9,14 @@ interface FilterSectionProps {
 }
 
 const categoryIds = ['emploi', 'logement', 'transport', 'administration', 'sante'] as const
+
+const categoryAvailable: Record<string, boolean> = {
+  emploi: true,
+  logement: false,
+  transport: false,
+  administration: false,
+  sante: false,
+}
 
 const categoryColors: Record<string, string> = {
   emploi: 'bg-blue-100 text-blue-800',
@@ -33,11 +41,22 @@ export default function FilterSection({ filters, onFiltersChange }: FilterSectio
   const { t } = useTranslation()
   const [isPriceExpanded, setIsPriceExpanded] = useState(false)
   const [isDateExpanded, setIsDateExpanded] = useState(false)
+  const [cityInput, setCityInput] = useState(filters.city || '')
+  const cityDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const handleCityChange = useCallback((value: string) => {
+    setCityInput(value)
+    if (cityDebounceRef.current) clearTimeout(cityDebounceRef.current)
+    cityDebounceRef.current = setTimeout(() => {
+      onFiltersChange({ city: value.trim() })
+    }, 600)
+  }, [onFiltersChange])
 
   const categories = categoryIds.map(id => ({
     id,
     name: t(`searchPage.filter.categories.${id}`),
-    color: categoryColors[id]
+    color: categoryColors[id],
+    disabled: !categoryAvailable[id],
   }))
 
   const contractTypes = contractTypeIds.map(id => ({
@@ -68,6 +87,7 @@ export default function FilterSection({ filters, onFiltersChange }: FilterSectio
   }
 
   const clearAllFilters = () => {
+    setCityInput('')
     onFiltersChange({
       category: '',
       country: '',
@@ -114,13 +134,21 @@ export default function FilterSection({ filters, onFiltersChange }: FilterSectio
             {categories.map((category) => (
               <button
                 key={category.id}
-                onClick={() => handleCategoryToggle(category.id)}
-                className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-all ${filters.category === category.id
-                  ? category.color
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
+                onClick={() => !category.disabled && handleCategoryToggle(category.id)}
+                className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                  category.disabled
+                    ? 'bg-gray-50 text-gray-300 cursor-not-allowed'
+                    : filters.category === category.id
+                      ? category.color
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
               >
-                {category.name}
+                <span className="flex items-center justify-between">
+                  {category.name}
+                  {category.disabled && (
+                    <span className="text-[10px] text-gray-400 italic">{t('common.comingSoon')}</span>
+                  )}
+                </span>
               </button>
             ))}
           </div>
@@ -289,8 +317,8 @@ export default function FilterSection({ filters, onFiltersChange }: FilterSectio
           <label className="font-medium text-gray-700">{t('searchPage.filter.city')}</label>
           <input
             type="text"
-            value={filters.city}
-            onChange={(e) => onFiltersChange({ city: e.target.value })}
+            value={cityInput}
+            onChange={(e) => handleCityChange(e.target.value)}
             placeholder={t('searchPage.filter.cityPlaceholder')}
             className="flex-1 max-w-xs px-3 py-2 border border-gray-300 rounded-lg text-sm"
           />
