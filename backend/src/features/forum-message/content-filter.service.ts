@@ -58,6 +58,19 @@ export class ContentFilterService {
     /\bputain\b/i,
     /\bfdp\b/i,
     /\bntm\b/i,
+    /\b(kill|murder|slaughter|massacre|exterminate|destroy)\s+(everyone|everybody|them\s+all|all|people|you)\b/i,
+    /\b(i\s+will|i'?m\s+gonna?|going\s+to)\s+(kill|murder|shoot|stab|bomb|attack)\b/i,
+    /\b(je\s+vais|on\s+va)\s+(tuer|massacrer|égorger|buter|crever|exploser|frapper)\b/i,
+    /\b(die|mort|mourir|crever)\s+(tous|all)\b/i,
+    /\bburn\s+(everything|it\s+all|them|you)\s+down\b/i,
+    /\bshoot\s+(up|everyone|them)\b/i,
+    /\bstupid\s+(people|race|n[i1]g|black|white|arab|jew)\b/i,
+    /\b(rape|viol[eé]r)\b/i,
+    /\bsuicid/i,
+    /\b(fils\s+de\s+pute|suce\s+ma)\b/i,
+    /\b(merde|bordel|salope|sal[o0]p|pétasse|pet+asse|con+asse|conasse|batard|bâtard|b[aâ]t[aâ]r)\b/i,
+    /\b(fuck\s*you|fuck\s*off|motherfuck|stfu|asshole|a+ss+hole|bitch|b[i1]tch|shit|sh[i1]t)\b/i,
+    /\b(con+ard|conard)\b/i,
   ];
 
   private readonly spamPatterns: RegExp[] = [
@@ -76,18 +89,17 @@ export class ContentFilterService {
       this.logger.log('✅ OpenAI Moderation API enabled');
     } else {
       this.openai = null;
-      this.logger.warn(
-        '⚠️ OPENAI_API_KEY not set — using local blocklist fallback only',
-      );
+      this.logger.warn('⚠️ OPENAI_API_KEY not set — using local blocklist fallback only');
     }
   }
 
-  async validate(
-    content: string,
-  ): Promise<{ ok: boolean; reason?: string }> {
+  async validate(content: string): Promise<{ ok: boolean; reason?: string }> {
     if (!content || content.trim().length === 0) {
       return { ok: false, reason: 'Content is empty' };
     }
+
+    const localCheck = this.validateLocal(content);
+    if (!localCheck.ok) return localCheck;
 
     if (this.openai) {
       try {
@@ -103,30 +115,22 @@ export class ContentFilterService {
             (cat) =>
               (result.categories as unknown as Record<string, boolean>)[cat],
           );
-
           const labels = flaggedCategories.map(
             (cat) => this.categoryLabels[cat] || cat,
           );
-
           this.logger.warn(
             `🚫 OpenAI flagged content: [${labels.join(', ')}] — "${content.slice(0, 80)}..."`,
           );
-
-          return {
-            ok: false,
-            reason: `Content flagged for: ${labels.join(', ')}`,
-          };
+          return { ok: false, reason: `Content flagged for: ${labels.join(', ')}` };
         }
 
         return { ok: true };
       } catch (error) {
-        this.logger.error(
-          `OpenAI Moderation API error, falling back to local filter: ${error}`,
-        );
+        this.logger.error(`OpenAI Moderation API error, falling back to local filter: ${error}`);
       }
     }
 
-    return this.validateLocal(content);
+    return { ok: true };
   }
 
   private validateLocal(content: string): { ok: boolean; reason?: string } {
