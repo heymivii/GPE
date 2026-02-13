@@ -31,12 +31,6 @@ export function useServiceContent({ service, category }: UseServiceContentParams
     enabled: isAuthenticated,
   });
 
-  useEffect(() => {
-    const countryParam = searchParams.get('country');
-    if (!countryParam && projects && projects.length > 0 && !selectedCountry) {
-    }
-  }, [projects, selectedCountry, searchParams]);
-
   const enrichedContent = useMemo(() => {
     if (!selectedCountry) {
       return {

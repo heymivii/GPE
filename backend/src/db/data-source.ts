@@ -18,4 +18,3 @@ export const AppDataSource = new DataSource({
   ssl: useSsl ? { rejectUnauthorized: false } : false,
   extra: useSsl ? { ssl: { rejectUnauthorized: false } } : undefined,
 });
-

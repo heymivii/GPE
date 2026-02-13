@@ -13,13 +13,21 @@ import { DestinationsController } from './destinations.controller';
 import { DestinationsService } from './destinations.service';
 
 @Module({
-    imports: [
-        TypeOrmModule.forFeature([City, Country, AdminProcedure, ForumTopic, ExpatriationProject, JobOffer, Resource]),
-        CostOfLivingModule,
-        JobOfferModule,
-    ],
-    controllers: [DestinationsController],
-    providers: [DestinationsService],
-    exports: [DestinationsService],
+  imports: [
+    TypeOrmModule.forFeature([
+      City,
+      Country,
+      AdminProcedure,
+      ForumTopic,
+      ExpatriationProject,
+      JobOffer,
+      Resource,
+    ]),
+    CostOfLivingModule,
+    JobOfferModule,
+  ],
+  controllers: [DestinationsController],
+  providers: [DestinationsService],
+  exports: [DestinationsService],
 })
 export class DestinationsModule {}

@@ -1,4 +1,10 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Country } from '../../country/entities/country.entity';
 
 @Entity({ name: 'admin_procedure' })
@@ -19,7 +25,6 @@ export class AdminProcedure {
   average_delay_days?: number;
 
   @ManyToOne(() => Country, { nullable: false })
-  @JoinColumn({ name: 'country_id'})
+  @JoinColumn({ name: 'country_id' })
   country: Country;
 }
-

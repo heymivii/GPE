@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ForumTopicService } from './forum-topic.service';
 import { CreateForumTopicDto } from './dto/create-forum-topic.dto';
@@ -30,7 +39,10 @@ export class ForumTopicController {
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
-  update(@Param('id') id: string, @Body() updateForumTopicDto: UpdateForumTopicDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateForumTopicDto: UpdateForumTopicDto,
+  ) {
     return this.forumTopicService.update(+id, updateForumTopicDto);
   }
 
@@ -39,7 +51,6 @@ export class ForumTopicController {
   remove(@Param('id') id: string) {
     return this.forumTopicService.remove(+id);
   }
-
 
   @Patch(':id/lock')
   @UseGuards(JwtAuthGuard, RolesGuard)

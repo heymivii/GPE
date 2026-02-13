@@ -4,7 +4,7 @@ import { UpdateCityComparisonDto } from './dto/update-city-comparison.dto';
 
 @Injectable()
 export class CityComparisonService {
-  create(createCityComparisonDto: CreateCityComparisonDto) {
+  create(_createCityComparisonDto: CreateCityComparisonDto) {
     return 'This action adds a new cityComparison';
   }
 
@@ -16,7 +16,7 @@ export class CityComparisonService {
     return `This action returns a #${id} cityComparison`;
   }
 
-  update(id: number, updateCityComparisonDto: UpdateCityComparisonDto) {
+  update(id: number, _updateCityComparisonDto: UpdateCityComparisonDto) {
     return `This action updates a #${id} cityComparison`;
   }
 

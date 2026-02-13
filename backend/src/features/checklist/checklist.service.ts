@@ -4,7 +4,7 @@ import { UpdateChecklistDto } from './dto/update-checklist.dto';
 
 @Injectable()
 export class ChecklistService {
-  create(createChecklistDto: CreateChecklistDto) {
+  create(_createChecklistDto: CreateChecklistDto) {
     return 'This action adds a new checklist';
   }
 
@@ -16,7 +16,7 @@ export class ChecklistService {
     return `This action returns a #${id} checklist`;
   }
 
-  update(id: number, updateChecklistDto: UpdateChecklistDto) {
+  update(id: number, _updateChecklistDto: UpdateChecklistDto) {
     return `This action updates a #${id} checklist`;
   }
 

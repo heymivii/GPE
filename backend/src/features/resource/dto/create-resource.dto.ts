@@ -1,4 +1,11 @@
-import { IsNotEmpty, IsOptional, IsString, IsNumber, IsEnum, IsUrl } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsNumber,
+  IsEnum,
+  IsUrl,
+} from 'class-validator';
 
 enum ResourceType {
   ARTICLE = 'article',

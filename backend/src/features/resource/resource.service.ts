@@ -4,7 +4,7 @@ import { UpdateResourceDto } from './dto/update-resource.dto';
 
 @Injectable()
 export class ResourceService {
-  create(createResourceDto: CreateResourceDto) {
+  create(_createResourceDto: CreateResourceDto) {
     return 'This action adds a new resource';
   }
 
@@ -16,7 +16,7 @@ export class ResourceService {
     return `This action returns a #${id} resource`;
   }
 
-  update(id: number, updateResourceDto: UpdateResourceDto) {
+  update(id: number, _updateResourceDto: UpdateResourceDto) {
     return `This action updates a #${id} resource`;
   }
 

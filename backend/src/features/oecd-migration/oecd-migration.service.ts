@@ -1,7 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import axios from 'axios';
 
-
 export interface MigrationIndicator {
   countryCode: string;
   measure: 'B11' | 'B12' | 'B13' | 'B15' | 'B16';
@@ -19,7 +18,7 @@ export interface CountryMigrationData {
   nationalityAcquisitions?: { value: number; year: number };
 }
 
-const MEASURE_LABELS: Record<string, string> = {
+const _MEASURE_LABELS: Record<string, string> = {
   B11: 'Inflows of foreign population',
   B12: 'Outflows of foreign population',
   B13: 'Inflows of asylum seekers',
@@ -65,7 +64,7 @@ export class OecdMigrationService {
     } catch (error) {
       this.logger.error('Failed to fetch OECD migration data', error);
       if (this.cache) return this.cache;
-      return SUPPORTED_ISO3.map(code => ({
+      return SUPPORTED_ISO3.map((code) => ({
         countryCode: code,
         countryName: ISO3_TO_NAME[code] || code,
       }));
@@ -73,13 +72,13 @@ export class OecdMigrationService {
   }
 
   async getByCountry(code: string): Promise<CountryMigrationData | null> {
-    const iso3 = code.length === 2 ? ISO2_TO_ISO3[code.toUpperCase()] : code.toUpperCase();
+    const iso3 =
+      code.length === 2 ? ISO2_TO_ISO3[code.toUpperCase()] : code.toUpperCase();
     if (!iso3) return null;
 
     const all = await this.getMigrationData();
-    return all.find(d => d.countryCode === iso3) || null;
+    return all.find((d) => d.countryCode === iso3) || null;
   }
-
 
   private async fetchFromOecd(): Promise<CountryMigrationData[]> {
     const countriesParam = SUPPORTED_ISO3.join('+');
@@ -105,9 +104,18 @@ export class OecdMigrationService {
     const dimsSeries = struct.dimensions.series;
     const dimsObs = struct.dimensions.observation;
 
-    const countries: string[] = dimsSeries.find((d: any) => d.id === 'REF_AREA')?.values.map((v: any) => v.id) || [];
-    const measures: string[] = dimsSeries.find((d: any) => d.id === 'MEASURE')?.values.map((v: any) => v.id) || [];
-    const years: string[] = dimsObs.find((d: any) => d.id === 'TIME_PERIOD')?.values.map((v: any) => v.id) || [];
+    const countries: string[] =
+      dimsSeries
+        .find((d: any) => d.id === 'REF_AREA')
+        ?.values.map((v: any) => v.id) || [];
+    const measures: string[] =
+      dimsSeries
+        .find((d: any) => d.id === 'MEASURE')
+        ?.values.map((v: any) => v.id) || [];
+    const years: string[] =
+      dimsObs
+        .find((d: any) => d.id === 'TIME_PERIOD')
+        ?.values.map((v: any) => v.id) || [];
 
     const refAreaIdx = dimsSeries.findIndex((d: any) => d.id === 'REF_AREA');
     const measureIdx = dimsSeries.findIndex((d: any) => d.id === 'MEASURE');
@@ -123,7 +131,9 @@ export class OecdMigrationService {
 
       if (!countryCode || !measure) continue;
 
-      for (const [timeIdx, obs] of Object.entries((seriesVal as any).observations) as any) {
+      for (const [timeIdx, obs] of Object.entries(
+        (seriesVal as any).observations,
+      ) as any) {
         const year = parseInt(years[parseInt(timeIdx)], 10);
         const value = obs[0];
 
@@ -141,7 +151,7 @@ export class OecdMigrationService {
       }
     }
 
-    return SUPPORTED_ISO3.map(iso3 => {
+    return SUPPORTED_ISO3.map((iso3) => {
       const get = (m: string) => latest[`${iso3}|${m}`];
       const toEntry = (m: string) => {
         const d = get(m);

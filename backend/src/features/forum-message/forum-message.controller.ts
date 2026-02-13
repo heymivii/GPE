@@ -58,14 +58,12 @@ export class ForumMessageController {
     return this.forumMessageService.remove(+id);
   }
 
-
   @Delete('moderate/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin', 'moderator')
   moderateRemove(@Param('id') id: string) {
     return this.forumMessageService.moderatorRemove(+id);
   }
-
 
   @Post('report')
   @UseGuards(JwtAuthGuard)

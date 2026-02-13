@@ -33,7 +33,14 @@ export class CreateUserDto {
   age?: number;
 
   @IsOptional()
-  @IsEnum(['student', 'employee', 'self_employed', 'retired', 'unemployed', 'other'])
+  @IsEnum([
+    'student',
+    'employee',
+    'self_employed',
+    'retired',
+    'unemployed',
+    'other',
+  ])
   status?: string;
 
   @IsOptional()

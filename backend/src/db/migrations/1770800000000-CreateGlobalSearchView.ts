@@ -152,6 +152,8 @@ export class CreateGlobalSearchView1770800000000 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`DROP MATERIALIZED VIEW IF EXISTS global_search_index;`);
+    await queryRunner.query(
+      `DROP MATERIALIZED VIEW IF EXISTS global_search_index;`,
+    );
   }
 }

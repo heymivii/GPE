@@ -4,7 +4,7 @@ import { UpdateGuideDto } from './dto/update-guide.dto';
 
 @Injectable()
 export class GuideService {
-  create(createGuideDto: CreateGuideDto) {
+  create(_createGuideDto: CreateGuideDto) {
     return 'This action adds a new guide';
   }
 
@@ -16,7 +16,7 @@ export class GuideService {
     return `This action returns a #${id} guide`;
   }
 
-  update(id: number, updateGuideDto: UpdateGuideDto) {
+  update(id: number, _updateGuideDto: UpdateGuideDto) {
     return `This action updates a #${id} guide`;
   }
 

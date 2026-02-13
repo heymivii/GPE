@@ -52,7 +52,10 @@ describe('ContinentService', () => {
 
   describe('findOne()', () => {
     it('should return a continent', async () => {
-      repo.findOne.mockResolvedValue({ idContinent: 1, continentName: 'Europe' });
+      repo.findOne.mockResolvedValue({
+        idContinent: 1,
+        continentName: 'Europe',
+      });
       const result = await service.findOne(1);
       expect(result.continentName).toBe('Europe');
     });

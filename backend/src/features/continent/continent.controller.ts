@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ContinentService } from './continent.service';
 import { CreateContinentDto } from './dto/create-continent.dto';
@@ -32,7 +41,10 @@ export class ContinentController {
   @Patch(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
-  update(@Param('id') id: string, @Body() updateContinentDto: UpdateContinentDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateContinentDto: UpdateContinentDto,
+  ) {
     return this.continentService.update(+id, updateContinentDto);
   }
 

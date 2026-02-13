@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsOptional, IsString, IsNumber, IsEnum } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsNumber,
+  IsEnum,
+} from 'class-validator';
 
 enum TopicCategory {
   QUESTION = 'question',
@@ -16,7 +22,7 @@ export class CreateForumTopicDto {
 
   @IsNotEmpty()
   @IsString()
-  content: string; 
+  content: string;
 
   @IsOptional()
   @IsEnum(TopicCategory)

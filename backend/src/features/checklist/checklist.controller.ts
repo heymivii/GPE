@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ChecklistService } from './checklist.service';
 import { CreateChecklistDto } from './dto/create-checklist.dto';
@@ -28,7 +37,10 @@ export class ChecklistController {
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
-  update(@Param('id') id: string, @Body() updateChecklistDto: UpdateChecklistDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateChecklistDto: UpdateChecklistDto,
+  ) {
     return this.checklistService.update(+id, updateChecklistDto);
   }
 

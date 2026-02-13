@@ -33,7 +33,10 @@ export class BusinessSectorService {
     return sector;
   }
 
-  async update(id: number, updateDto: UpdateBusinessSectorDto): Promise<BusinessSector> {
+  async update(
+    id: number,
+    updateDto: UpdateBusinessSectorDto,
+  ): Promise<BusinessSector> {
     const sector = await this.findOne(id);
     Object.assign(sector, updateDto);
     return await this.sectorRepository.save(sector);

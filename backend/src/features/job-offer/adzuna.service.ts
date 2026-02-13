@@ -2,10 +2,7 @@ import { Injectable, Logger, HttpException, HttpStatus } from '@nestjs/common';
 import axios from 'axios';
 import * as https from 'https';
 import { SearchJobDto } from './dto/search-job.dto';
-import {
-  AdzunaJobDto,
-  AdzunaSearchResponseDto,
-} from './dto/adzuna-job.dto';
+import { AdzunaJobDto, AdzunaSearchResponseDto } from './dto/adzuna-job.dto';
 
 interface CacheEntry {
   data: AdzunaSearchResponseDto;
@@ -21,8 +18,25 @@ export class AdzunaService {
   private readonly APP_KEY = process.env.ADZUNA_APP_KEY;
   private readonly BASE_URL = 'https://api.adzuna.com/v1/api/jobs';
   private readonly SUPPORTED_COUNTRIES = new Set([
-    'gb', 'us', 'au', 'br', 'ca', 'de', 'fr', 'in', 'it',
-    'nl', 'nz', 'pl', 'sg', 'za', 'at', 'be', 'ch', 'mx', 'es',
+    'gb',
+    'us',
+    'au',
+    'br',
+    'ca',
+    'de',
+    'fr',
+    'in',
+    'it',
+    'nl',
+    'nz',
+    'pl',
+    'sg',
+    'za',
+    'at',
+    'be',
+    'ch',
+    'mx',
+    'es',
   ]);
 
   private readonly COUNTRY_CURRENCY: Record<string, string> = {
@@ -47,9 +61,7 @@ export class AdzunaService {
     es: 'EUR',
   };
 
-  async searchJobs(
-    searchDto: SearchJobDto,
-  ): Promise<AdzunaSearchResponseDto> {
+  async searchJobs(searchDto: SearchJobDto): Promise<AdzunaSearchResponseDto> {
     if (!this.APP_ID || !this.APP_KEY) {
       throw new HttpException(
         'Adzuna API credentials not configured',
@@ -115,7 +127,8 @@ export class AdzunaService {
         );
       }
 
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       throw new HttpException(
         `Failed to fetch jobs from Adzuna: ${errorMessage}`,
         HttpStatus.BAD_GATEWAY,
@@ -207,7 +220,10 @@ export class AdzunaService {
     INR: 500000,
   };
 
-  private detectSalaryPeriod(salary: number, currency: string): 'month' | 'year' {
+  private detectSalaryPeriod(
+    salary: number,
+    currency: string,
+  ): 'month' | 'year' {
     const threshold = this.MONTHLY_SALARY_THRESHOLD[currency] || 10000;
     return salary < threshold ? 'month' : 'year';
   }
@@ -221,7 +237,9 @@ export class AdzunaService {
 
     const results: AdzunaJobDto[] = data.results.map((job: any) => {
       const salaryValue = job.salary_min || job.salary_max;
-      const period = salaryValue ? this.detectSalaryPeriod(salaryValue, currency) : undefined;
+      const period = salaryValue
+        ? this.detectSalaryPeriod(salaryValue, currency)
+        : undefined;
 
       return {
         id: job.id,
@@ -235,11 +253,11 @@ export class AdzunaService {
         description: job.description,
         salary: salaryValue
           ? {
-            min: job.salary_min,
-            max: job.salary_max,
-            currency,
-            period,
-          }
+              min: job.salary_min,
+              max: job.salary_max,
+              currency,
+              period,
+            }
           : undefined,
         contract_type: job.contract_type || job.contract_time,
         remote: this.detectRemote(job.title, job.description),

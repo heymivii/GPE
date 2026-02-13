@@ -4,7 +4,7 @@ import { UpdateCityDto } from './dto/update-city.dto';
 
 @Injectable()
 export class CityService {
-  create(createCityDto: CreateCityDto) {
+  create(_createCityDto: CreateCityDto) {
     return 'This action adds a new city';
   }
 
@@ -16,7 +16,7 @@ export class CityService {
     return `This action returns a #${id} city`;
   }
 
-  update(id: number, updateCityDto: UpdateCityDto) {
+  update(id: number, _updateCityDto: UpdateCityDto) {
     return `This action updates a #${id} city`;
   }
 

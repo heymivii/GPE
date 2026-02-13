@@ -5,15 +5,15 @@ import { DestinationsService } from './destinations.service';
 @ApiTags('Destinations')
 @Controller('destinations')
 export class DestinationsController {
-    constructor(private readonly destinationsService: DestinationsService) { }
+  constructor(private readonly destinationsService: DestinationsService) {}
 
-    @Get()
-    findAll() {
-        return this.destinationsService.findAllCountries();
-    }
+  @Get()
+  findAll() {
+    return this.destinationsService.findAllCountries();
+  }
 
-    @Get(':slug')
-    findOne(@Param('slug') slug: string) {
-        return this.destinationsService.findOneCountryBySlug(slug);
-    }
+  @Get(':slug')
+  findOne(@Param('slug') slug: string) {
+    return this.destinationsService.findOneCountryBySlug(slug);
+  }
 }

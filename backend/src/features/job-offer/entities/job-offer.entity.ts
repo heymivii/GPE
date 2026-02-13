@@ -17,16 +17,31 @@ export class JobOffer {
   @Column({ name: 'job_title', type: 'varchar', length: 255 })
   jobTitle: string;
 
-  @Column({ name: 'company_name', type: 'varchar', length: 255, nullable: true })
+  @Column({
+    name: 'company_name',
+    type: 'varchar',
+    length: 255,
+    nullable: true,
+  })
   companyName?: string;
 
-  @Column({ name: 'average_salary', type: 'decimal', precision: 10, scale: 2, nullable: true })
+  @Column({
+    name: 'average_salary',
+    type: 'decimal',
+    precision: 10,
+    scale: 2,
+    nullable: true,
+  })
   averageSalary?: number;
 
   @Column({ name: 'description', type: 'text', nullable: true })
   description?: string;
 
-  @Column({ name: 'publication_date', type: 'date', default: () => 'CURRENT_DATE' })
+  @Column({
+    name: 'publication_date',
+    type: 'date',
+    default: () => 'CURRENT_DATE',
+  })
   publicationDate: Date;
 
   @Column({ name: 'id_city' })

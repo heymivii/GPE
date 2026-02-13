@@ -4,7 +4,7 @@ import { UpdateExperienceDto } from './dto/update-experience.dto';
 
 @Injectable()
 export class ExperienceService {
-  create(createExperienceDto: CreateExperienceDto) {
+  create(_createExperienceDto: CreateExperienceDto) {
     return 'This action adds a new experience';
   }
 
@@ -16,7 +16,7 @@ export class ExperienceService {
     return `This action returns a #${id} experience`;
   }
 
-  update(id: number, updateExperienceDto: UpdateExperienceDto) {
+  update(id: number, _updateExperienceDto: UpdateExperienceDto) {
     return `This action updates a #${id} experience`;
   }
 

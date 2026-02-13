@@ -1,19 +1,33 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { ForumTopic } from '../../forum-topic/entities/forum-topic.entity';
 import { User } from '../../user/entities/user.entity';
 
 @Entity({ name: 'forum_message' })
 export class ForumMessage {
   @PrimaryGeneratedColumn({ name: 'id_message' })
-  message_id: number; 
+  message_id: number;
 
   @Column({ name: 'content', type: 'text' })
   content: string;
 
-  @Column({ name: 'created_at', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({
+    name: 'created_at',
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
   sent_at: Date;
 
-  @Column({ name: 'updated_at', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({
+    name: 'updated_at',
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
   updated_at: Date;
 
   @ManyToOne(() => ForumTopic, { nullable: false })
@@ -24,4 +38,3 @@ export class ForumMessage {
   @JoinColumn({ name: 'id_user' })
   user: User;
 }
-

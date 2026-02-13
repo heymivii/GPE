@@ -1,4 +1,10 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Country } from '../../country/entities/country.entity';
 
 @Entity({ name: 'city' })
@@ -9,10 +15,22 @@ export class City {
   @Column({ name: 'city_name', type: 'varchar', length: 100 })
   name: string;
 
-  @Column({ name: 'latitude', type: 'numeric', precision: 10, scale: 8, nullable: true })
+  @Column({
+    name: 'latitude',
+    type: 'numeric',
+    precision: 10,
+    scale: 8,
+    nullable: true,
+  })
   latitude?: string;
 
-  @Column({ name: 'longitude', type: 'numeric', precision: 11, scale: 8, nullable: true })
+  @Column({
+    name: 'longitude',
+    type: 'numeric',
+    precision: 11,
+    scale: 8,
+    nullable: true,
+  })
   longitude?: string;
 
   @Column({ name: 'population', type: 'integer', nullable: true })
@@ -22,7 +40,13 @@ export class City {
   @JoinColumn({ name: 'id_country' })
   country: Country;
 
-  @Column({ name: 'slug', type: 'varchar', length: 150, unique: true, nullable: true })
+  @Column({
+    name: 'slug',
+    type: 'varchar',
+    length: 150,
+    unique: true,
+    nullable: true,
+  })
   slug: string;
 
   @Column({ name: 'timezone', type: 'varchar', length: 100, nullable: true })
@@ -40,4 +64,3 @@ export class City {
   @Column({ name: 'description', type: 'text', nullable: true })
   description: string;
 }
-

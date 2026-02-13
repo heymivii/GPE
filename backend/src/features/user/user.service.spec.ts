@@ -57,7 +57,10 @@ describe('UserService', () => {
 
       expect(bcrypt.hash).toHaveBeenCalledWith('Pass1234', 10);
       expect(repo.create).toHaveBeenCalledWith(
-        expect.objectContaining({ email: 'john@test.com', passwordHash: 'hashed-pw' }),
+        expect.objectContaining({
+          email: 'john@test.com',
+          passwordHash: 'hashed-pw',
+        }),
       );
       expect(result.idUser).toBe(1);
     });
@@ -65,7 +68,9 @@ describe('UserService', () => {
     it('should throw ConflictException if email already used', async () => {
       repo.findOne.mockResolvedValue({ idUser: 99 });
 
-      await expect(service.create(dto as any)).rejects.toThrow(ConflictException);
+      await expect(service.create(dto as any)).rejects.toThrow(
+        ConflictException,
+      );
     });
   });
 
@@ -131,7 +136,12 @@ describe('UserService', () => {
     });
 
     it('should hash password when updating password', async () => {
-      const user = { idUser: 1, firstName: 'A', lastName: 'B', passwordHash: 'old' };
+      const user = {
+        idUser: 1,
+        firstName: 'A',
+        lastName: 'B',
+        passwordHash: 'old',
+      };
       repo.findOne.mockResolvedValue(user);
       (bcrypt.hash as jest.Mock).mockResolvedValue('new-hashed');
       repo.save.mockImplementation(async (u) => u);

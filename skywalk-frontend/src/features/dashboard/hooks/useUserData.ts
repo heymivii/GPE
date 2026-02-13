@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 
 interface UserData {
@@ -51,11 +51,7 @@ export default function useUserData() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    loadUserData()
-  }, [])
-
-  const loadUserData = async () => {
+  const loadUserData = useCallback(async () => {
     try {
       setLoading(true)
       
@@ -94,7 +90,11 @@ export default function useUserData() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [t])
+
+  useEffect(() => {
+    loadUserData()
+  }, [loadUserData])
 
   const updatePreferences = (newPreferences: Partial<UserPreferences>) => {
     const updated = { ...preferences, ...newPreferences }

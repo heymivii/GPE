@@ -54,8 +54,13 @@ describe('CountryController', () => {
 
   describe('update()', () => {
     it('should update a country', async () => {
-      service.update.mockResolvedValue({ idCountry: 1, countryName: 'Updated' });
-      const result = await controller.update('1', { countryName: 'Updated' } as any);
+      service.update.mockResolvedValue({
+        idCountry: 1,
+        countryName: 'Updated',
+      });
+      const result = await controller.update('1', {
+        countryName: 'Updated',
+      } as any);
       expect(result.countryName).toBe('Updated');
     });
   });

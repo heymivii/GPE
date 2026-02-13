@@ -46,7 +46,6 @@ export class CostOfLivingService {
     private readonly countryRepository: Repository<Country>,
   ) {}
 
-
   private memKey(city: string, country: string): string {
     return `${city.toLowerCase().trim()}::${country.toLowerCase().trim()}`;
   }
@@ -64,7 +63,6 @@ export class CostOfLivingService {
   private memSet(key: string, data: CleanedCostOfLivingData): void {
     this.memCache.set(key, { data, expiresAt: Date.now() + this.MEM_TTL_MS });
   }
-
 
   async getCostOfLiving(city: string, country: string) {
     const normalizedCountry = this.validateCountry(country);
@@ -154,7 +152,6 @@ export class CostOfLivingService {
     return data;
   }
 
-
   async getCachedDataByCityId(
     cityId: number,
   ): Promise<CleanedCostOfLivingData | null> {
@@ -190,7 +187,6 @@ export class CostOfLivingService {
     return cleanedData;
   }
 
-
   private async persistToDb(
     cityId: number,
     data: CleanedCostOfLivingData,
@@ -205,7 +201,12 @@ export class CostOfLivingService {
       await this.cacheRepository.save(existing);
     } else {
       await this.cacheRepository.save(
-        this.cacheRepository.create({ cityId, data, cachedAt: new Date(), expiresAt }),
+        this.cacheRepository.create({
+          cityId,
+          data,
+          cachedAt: new Date(),
+          expiresAt,
+        }),
       );
     }
     this.logger.log(
@@ -249,7 +250,9 @@ export class CostOfLivingService {
         );
         throw new HttpException(
           `Failed to fetch cost of living data for ${cityName}`,
-          status === 429 ? HttpStatus.TOO_MANY_REQUESTS : HttpStatus.BAD_GATEWAY,
+          status === 429
+            ? HttpStatus.TOO_MANY_REQUESTS
+            : HttpStatus.BAD_GATEWAY,
         );
       }
     }
@@ -273,7 +276,6 @@ export class CostOfLivingService {
     return count;
   }
 
-
   private readonly SUPPORTED_CITIES = [
     { city: 'Paris', country: 'France' },
     { city: 'New York', country: 'United States' },
@@ -281,7 +283,11 @@ export class CostOfLivingService {
     { city: 'Geneva', country: 'Switzerland' },
   ];
 
-  async seedAllCities(): Promise<{ seeded: string[]; skipped: string[]; errors: string[] }> {
+  async seedAllCities(): Promise<{
+    seeded: string[];
+    skipped: string[];
+    errors: string[];
+  }> {
     const seeded: string[] = [];
     const skipped: string[] = [];
     const errors: string[] = [];
@@ -335,7 +341,10 @@ export class CostOfLivingService {
     return { seeded, skipped, errors };
   }
 
-  private async resolveOrCreateCity(cityName: string, countryName: string): Promise<number> {
+  private async resolveOrCreateCity(
+    cityName: string,
+    countryName: string,
+  ): Promise<number> {
     const existing = await this.cityRepository
       .createQueryBuilder('c')
       .innerJoinAndSelect('c.country', 'co')
@@ -353,7 +362,9 @@ export class CostOfLivingService {
       countryEntity = await this.countryRepository.save(
         this.countryRepository.create({ countryName, idContinent: 1 }),
       );
-      this.logger.log(`🌍 Created country: ${countryName} (id=${countryEntity.idCountry})`);
+      this.logger.log(
+        `🌍 Created country: ${countryName} (id=${countryEntity.idCountry})`,
+      );
     }
 
     const newCity = await this.cityRepository.save(

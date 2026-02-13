@@ -18,7 +18,13 @@ export class Country {
   @Column({ name: 'country_name', type: 'varchar', length: 100 })
   countryName: string;
 
-  @Column({ name: 'iso_code', type: 'char', length: 2, unique: true, nullable: true })
+  @Column({
+    name: 'iso_code',
+    type: 'char',
+    length: 2,
+    unique: true,
+    nullable: true,
+  })
   isoCode?: string;
 
   @Column({ type: 'varchar', length: 50, nullable: true })

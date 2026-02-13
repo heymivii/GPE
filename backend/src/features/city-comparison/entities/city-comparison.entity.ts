@@ -12,7 +12,6 @@ export class CityComparison {
   user: User;
 
   @ManyToOne(() => City, { nullable: false })
-  @JoinColumn({ name: 'city_id'})
+  @JoinColumn({ name: 'city_id' })
   city: City;
 }
-

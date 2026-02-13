@@ -1,4 +1,10 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Country } from '../../country/entities/country.entity';
 
 @Entity({ name: 'guide' })
@@ -15,11 +21,14 @@ export class Guide {
   @Column({ name: 'guide_type', type: 'varchar', length: 50, nullable: true })
   guide_type?: string;
 
-  @Column({ name: 'created_at', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({
+    name: 'created_at',
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
   created_at: Date;
 
   @ManyToOne(() => Country, { nullable: false })
-  @JoinColumn({ name: 'country_id'})
+  @JoinColumn({ name: 'country_id' })
   country: Country;
 }
-

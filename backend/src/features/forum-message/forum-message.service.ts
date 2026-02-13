@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateForumMessageDto } from './dto/create-forum-message.dto';
@@ -18,8 +22,12 @@ export class ForumMessageService {
     private readonly contentFilter: ContentFilterService,
   ) {}
 
-  async create(createForumMessageDto: CreateForumMessageDto): Promise<ForumMessage> {
-    const sanitized = this.contentFilter.sanitize(createForumMessageDto.content);
+  async create(
+    createForumMessageDto: CreateForumMessageDto,
+  ): Promise<ForumMessage> {
+    const sanitized = this.contentFilter.sanitize(
+      createForumMessageDto.content,
+    );
     const check = await this.contentFilter.validate(sanitized);
     if (!check.ok) {
       throw new BadRequestException(`Content rejected: ${check.reason}`);
@@ -30,7 +38,7 @@ export class ForumMessageService {
       topic: { topic_id: createForumMessageDto.idTopic } as any,
       user: { idUser: createForumMessageDto.idUser } as any,
     });
-    
+
     return await this.forumMessageRepository.save(message);
   }
 
@@ -54,26 +62,31 @@ export class ForumMessageService {
     return message;
   }
 
-  async update(id: number, updateForumMessageDto: UpdateForumMessageDto): Promise<ForumMessage> {
+  async update(
+    id: number,
+    updateForumMessageDto: UpdateForumMessageDto,
+  ): Promise<ForumMessage> {
     const message = await this.findOne(id);
 
     if (updateForumMessageDto.content) {
-      const sanitized = this.contentFilter.sanitize(updateForumMessageDto.content);
+      const sanitized = this.contentFilter.sanitize(
+        updateForumMessageDto.content,
+      );
       const check = await this.contentFilter.validate(sanitized);
       if (!check.ok) {
         throw new BadRequestException(`Content rejected: ${check.reason}`);
       }
       updateForumMessageDto.content = sanitized;
     }
-    
+
     Object.assign(message, updateForumMessageDto);
-    
+
     return await this.forumMessageRepository.save(message);
   }
 
   async remove(id: number): Promise<void> {
     const result = await this.forumMessageRepository.delete(id);
-    
+
     if (result.affected === 0) {
       throw new NotFoundException(`Message with ID ${id} not found`);
     }
@@ -95,7 +108,6 @@ export class ForumMessageService {
     });
   }
 
-
   async createReport(dto: CreateReportDto): Promise<ForumReport> {
     const existing = await this.forumReportRepository.findOne({
       where: {
@@ -114,7 +126,9 @@ export class ForumMessageService {
       reason: dto.reason,
       details: dto.details,
       reporter: { idUser: dto.idReporter } as any,
-      message: dto.idMessage ? ({ message_id: dto.idMessage } as any) : undefined,
+      message: dto.idMessage
+        ? ({ message_id: dto.idMessage } as any)
+        : undefined,
       topic: dto.idTopic ? ({ topic_id: dto.idTopic } as any) : undefined,
     });
 
@@ -125,7 +139,14 @@ export class ForumMessageService {
     const where = status ? { status: status as any } : {};
     return await this.forumReportRepository.find({
       where,
-      relations: ['reporter', 'message', 'message.user', 'topic', 'topic.user', 'moderator'],
+      relations: [
+        'reporter',
+        'message',
+        'message.user',
+        'topic',
+        'topic.user',
+        'moderator',
+      ],
       order: { createdAt: 'DESC' },
     });
   }
@@ -163,6 +184,11 @@ export class ForumMessageService {
       this.forumReportRepository.count({ where: { status: 'resolved' } }),
       this.forumReportRepository.count({ where: { status: 'rejected' } }),
     ]);
-    return { pending, resolved, rejected, total: pending + resolved + rejected };
+    return {
+      pending,
+      resolved,
+      rejected,
+      total: pending + resolved + rejected,
+    };
   }
 }

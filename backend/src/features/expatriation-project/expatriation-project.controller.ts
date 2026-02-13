@@ -107,4 +107,3 @@ export class ExpatriationProjectController {
     return await this.projectService.getChecklistProgress(+id, req.user.userId);
   }
 }
-

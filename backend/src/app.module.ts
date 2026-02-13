@@ -35,9 +35,7 @@ import { OecdMigrationModule } from './features/oecd-migration/oecd-migration.mo
       envFilePath: ['.env', '../.env'],
     }),
 
-    ThrottlerModule.forRoot([
-      { ttl: 60_000, limit: 60 },
-    ]),
+    ThrottlerModule.forRoot([{ ttl: 60_000, limit: 60 }]),
 
     TypeOrmModule.forRootAsync(typeOrmConfigAsync),
 
@@ -64,8 +62,6 @@ import { OecdMigrationModule } from './features/oecd-migration/oecd-migration.mo
     GlobalSearchModule,
     OecdMigrationModule,
   ],
-  providers: [
-    { provide: APP_GUARD, useClass: ThrottlerGuard },
-  ],
+  providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
 export class AppModule {}

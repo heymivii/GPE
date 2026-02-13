@@ -24,7 +24,9 @@ const mockMessageRepo = () => ({
 
 const mockContentFilter = () => ({
   sanitize: jest.fn((c: string) => c.trim()),
-  validate: jest.fn(async () => ({ ok: true } as { ok: boolean; reason?: string })),
+  validate: jest.fn(
+    async () => ({ ok: true }) as { ok: boolean; reason?: string },
+  ),
 });
 
 describe('ForumTopicService', () => {
@@ -69,7 +71,10 @@ describe('ForumTopicService', () => {
       topicRepo.create.mockReturnValue(savedTopic);
       topicRepo.save.mockResolvedValue(savedTopic);
       messageRepo.create.mockReturnValue({ content: dto.content });
-      messageRepo.save.mockResolvedValue({ message_id: 1, content: dto.content });
+      messageRepo.save.mockResolvedValue({
+        message_id: 1,
+        content: dto.content,
+      });
 
       const result = await service.create(dto as any);
 
@@ -81,17 +86,24 @@ describe('ForumTopicService', () => {
     });
 
     it('should reject topic with bad title', async () => {
-      contentFilter.validate.mockResolvedValueOnce({ ok: false, reason: 'profanity' });
+      contentFilter.validate.mockResolvedValueOnce({
+        ok: false,
+        reason: 'profanity',
+      });
 
-      await expect(service.create(dto as any)).rejects.toThrow(BadRequestException);
+      await expect(service.create(dto as any)).rejects.toThrow(
+        BadRequestException,
+      );
     });
 
     it('should reject topic with bad content (title passes, content fails)', async () => {
       contentFilter.validate
-        .mockResolvedValueOnce({ ok: true })        // title passes
+        .mockResolvedValueOnce({ ok: true }) // title passes
         .mockResolvedValueOnce({ ok: false, reason: 'hate speech' }); // content fails
 
-      await expect(service.create(dto as any)).rejects.toThrow(BadRequestException);
+      await expect(service.create(dto as any)).rejects.toThrow(
+        BadRequestException,
+      );
     });
   });
 
@@ -111,8 +123,9 @@ describe('ForumTopicService', () => {
       const result = await service.findOne(1);
       expect(result.topic_id).toBe(1);
       // Messages should be sorted ascending
-      expect(new Date(result.messages[0].sent_at).getTime())
-        .toBeLessThanOrEqual(new Date(result.messages[1].sent_at).getTime());
+      expect(
+        new Date(result.messages[0].sent_at).getTime(),
+      ).toBeLessThanOrEqual(new Date(result.messages[1].sent_at).getTime());
     });
 
     it('should throw NotFoundException if topic not found', async () => {
@@ -139,11 +152,14 @@ describe('ForumTopicService', () => {
     it('should reject bad title on update', async () => {
       const topic = { topic_id: 1, title: 'Old', messages: [] };
       topicRepo.findOne.mockResolvedValue(topic);
-      contentFilter.validate.mockResolvedValue({ ok: false, reason: 'profanity' });
+      contentFilter.validate.mockResolvedValue({
+        ok: false,
+        reason: 'profanity',
+      });
 
-      await expect(service.update(1, { title: 'bad title' } as any)).rejects.toThrow(
-        BadRequestException,
-      );
+      await expect(
+        service.update(1, { title: 'bad title' } as any),
+      ).rejects.toThrow(BadRequestException);
     });
   });
 
@@ -197,7 +213,9 @@ describe('ForumTopicService', () => {
     it('should throw NotFoundException for missing topic', async () => {
       topicRepo.findOne.mockResolvedValue(null);
 
-      await expect(service.moderatorRemove(999)).rejects.toThrow(NotFoundException);
+      await expect(service.moderatorRemove(999)).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 

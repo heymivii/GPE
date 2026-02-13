@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AdminProcedureService } from './admin-procedure.service';
 import { CreateAdminProcedureDto } from './dto/create-admin-procedure.dto';
@@ -32,7 +41,10 @@ export class AdminProcedureController {
   @Patch(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
-  update(@Param('id') id: string, @Body() updateAdminProcedureDto: UpdateAdminProcedureDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateAdminProcedureDto: UpdateAdminProcedureDto,
+  ) {
     return this.adminProcedureService.update(+id, updateAdminProcedureDto);
   }
 

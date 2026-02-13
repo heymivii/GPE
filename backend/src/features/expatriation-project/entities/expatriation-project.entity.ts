@@ -2,8 +2,6 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  ManyToOne,
-  JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
@@ -46,7 +44,13 @@ export class ExpatriationProject {
   @Column({ name: 'expected_duration', nullable: true })
   expectedDuration: number;
 
-  @Column({ name: 'housing_budget', type: 'decimal', precision: 10, scale: 2, nullable: true })
+  @Column({
+    name: 'housing_budget',
+    type: 'decimal',
+    precision: 10,
+    scale: 2,
+    nullable: true,
+  })
   housingBudget: number;
 
   @Column({ name: 'priorities', length: 100, nullable: true })

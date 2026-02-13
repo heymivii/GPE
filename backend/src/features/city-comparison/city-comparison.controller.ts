@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CityComparisonService } from './city-comparison.service';
 import { CreateCityComparisonDto } from './dto/create-city-comparison.dto';
@@ -28,7 +37,10 @@ export class CityComparisonController {
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
-  update(@Param('id') id: string, @Body() updateCityComparisonDto: UpdateCityComparisonDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateCityComparisonDto: UpdateCityComparisonDto,
+  ) {
     return this.cityComparisonService.update(+id, updateCityComparisonDto);
   }
 

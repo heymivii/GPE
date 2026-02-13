@@ -1,4 +1,10 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Country } from '../../country/entities/country.entity';
 
 @Entity({ name: 'checklist' })
@@ -12,11 +18,14 @@ export class Checklist {
   @Column({ name: 'steps', type: 'jsonb', nullable: true })
   steps?: unknown;
 
-  @Column({ name: 'created_at', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({
+    name: 'created_at',
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
   created_at: Date;
 
   @ManyToOne(() => Country, { nullable: false })
-  @JoinColumn({ name: 'country_id'})
+  @JoinColumn({ name: 'country_id' })
   country: Country;
 }
-

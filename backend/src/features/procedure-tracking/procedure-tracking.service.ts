@@ -4,7 +4,7 @@ import { UpdateProcedureTrackingDto } from './dto/update-procedure-tracking.dto'
 
 @Injectable()
 export class ProcedureTrackingService {
-  create(createProcedureTrackingDto: CreateProcedureTrackingDto) {
+  create(_createProcedureTrackingDto: CreateProcedureTrackingDto) {
     return 'This action adds a new procedureTracking';
   }
 
@@ -16,7 +16,7 @@ export class ProcedureTrackingService {
     return `This action returns a #${id} procedureTracking`;
   }
 
-  update(id: number, updateProcedureTrackingDto: UpdateProcedureTrackingDto) {
+  update(id: number, _updateProcedureTrackingDto: UpdateProcedureTrackingDto) {
     return `This action updates a #${id} procedureTracking`;
   }
 

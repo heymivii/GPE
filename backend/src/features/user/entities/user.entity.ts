@@ -40,7 +40,12 @@ export class User {
   @Column({ type: 'varchar', length: 50, nullable: true })
   status?: string;
 
-  @Column({ name: 'language_level', type: 'varchar', length: 50, nullable: true })
+  @Column({
+    name: 'language_level',
+    type: 'varchar',
+    length: 50,
+    nullable: true,
+  })
   languageLevel?: string;
 
   @Column({ name: 'mother_tongue', nullable: true })

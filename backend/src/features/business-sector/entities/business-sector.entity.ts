@@ -3,7 +3,6 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  OneToMany,
 } from 'typeorm';
 
 @Entity('business_sector')
@@ -19,5 +18,4 @@ export class BusinessSector {
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
-
 }

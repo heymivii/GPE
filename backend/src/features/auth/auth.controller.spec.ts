@@ -41,7 +41,12 @@ describe('AuthController', () => {
 
   describe('register()', () => {
     it('should register and set httpOnly cookie', async () => {
-      const dto = { firstName: 'A', lastName: 'B', email: 'a@b.com', password: 'Pass1234' };
+      const dto = {
+        firstName: 'A',
+        lastName: 'B',
+        email: 'a@b.com',
+        password: 'Pass1234',
+      };
       service.register.mockResolvedValue({
         message: 'Inscription réussie',
         user: { idUser: 1 },
@@ -132,7 +137,9 @@ describe('AuthController', () => {
     it('should delegate to service', async () => {
       service.forgotPassword.mockResolvedValue({ message: 'ok' });
 
-      const result = await controller.forgotPassword({ email: 'a@b.com' } as any);
+      const result = await controller.forgotPassword({
+        email: 'a@b.com',
+      } as any);
       expect(service.forgotPassword).toHaveBeenCalledWith('a@b.com');
       expect(result.message).toBe('ok');
     });

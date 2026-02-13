@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ProcedureTrackingService } from './procedure-tracking.service';
 import { CreateProcedureTrackingDto } from './dto/create-procedure-tracking.dto';
@@ -9,7 +18,9 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 @Controller('procedure-tracking')
 @UseGuards(JwtAuthGuard)
 export class ProcedureTrackingController {
-  constructor(private readonly procedureTrackingService: ProcedureTrackingService) {}
+  constructor(
+    private readonly procedureTrackingService: ProcedureTrackingService,
+  ) {}
 
   @Post()
   create(@Body() createProcedureTrackingDto: CreateProcedureTrackingDto) {
@@ -27,8 +38,14 @@ export class ProcedureTrackingController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProcedureTrackingDto: UpdateProcedureTrackingDto) {
-    return this.procedureTrackingService.update(+id, updateProcedureTrackingDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateProcedureTrackingDto: UpdateProcedureTrackingDto,
+  ) {
+    return this.procedureTrackingService.update(
+      +id,
+      updateProcedureTrackingDto,
+    );
   }
 
   @Delete(':id')

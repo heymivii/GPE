@@ -24,7 +24,9 @@ const mockReportRepo = () => ({
 
 const mockContentFilter = () => ({
   sanitize: jest.fn((c: string) => c.trim()),
-  validate: jest.fn(async () => ({ ok: true } as { ok: boolean; reason?: string })),
+  validate: jest.fn(
+    async () => ({ ok: true }) as { ok: boolean; reason?: string },
+  ),
 });
 
 describe('ForumMessageService', () => {
@@ -74,13 +76,19 @@ describe('ForumMessageService', () => {
     });
 
     it('should throw BadRequestException if content is rejected', async () => {
-      contentFilter.validate.mockResolvedValue({ ok: false, reason: 'profanity' });
+      contentFilter.validate.mockResolvedValue({
+        ok: false,
+        reason: 'profanity',
+      });
 
       await expect(service.create(dto)).rejects.toThrow(BadRequestException);
     });
 
     it('should throw BadRequestException with rejection reason', async () => {
-      contentFilter.validate.mockResolvedValue({ ok: false, reason: 'hate speech' });
+      contentFilter.validate.mockResolvedValue({
+        ok: false,
+        reason: 'hate speech',
+      });
 
       try {
         await service.create(dto);
@@ -115,7 +123,10 @@ describe('ForumMessageService', () => {
     it('should update message content with filtering', async () => {
       const existing = { message_id: 1, content: 'old' };
       messageRepo.findOne.mockResolvedValue(existing);
-      messageRepo.save.mockResolvedValue({ ...existing, content: 'new content' });
+      messageRepo.save.mockResolvedValue({
+        ...existing,
+        content: 'new content',
+      });
 
       await service.update(1, { content: 'new content' });
 
@@ -129,9 +140,9 @@ describe('ForumMessageService', () => {
       messageRepo.findOne.mockResolvedValue(existing);
       contentFilter.validate.mockResolvedValue({ ok: false, reason: 'spam' });
 
-      await expect(service.update(1, { content: 'spam content' })).rejects.toThrow(
-        BadRequestException,
-      );
+      await expect(
+        service.update(1, { content: 'spam content' }),
+      ).rejects.toThrow(BadRequestException);
     });
 
     it('should throw NotFoundException if message not found', async () => {
@@ -175,7 +186,9 @@ describe('ForumMessageService', () => {
     it('should throw NotFoundException if message not found', async () => {
       messageRepo.findOne.mockResolvedValue(null);
 
-      await expect(service.moderatorRemove(999)).rejects.toThrow(NotFoundException);
+      await expect(service.moderatorRemove(999)).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -203,7 +216,9 @@ describe('ForumMessageService', () => {
     it('should throw BadRequestException on duplicate report', async () => {
       reportRepo.findOne.mockResolvedValue({ idReport: 99 }); // existing
 
-      await expect(service.createReport(dto)).rejects.toThrow(BadRequestException);
+      await expect(service.createReport(dto)).rejects.toThrow(
+        BadRequestException,
+      );
     });
   });
 
@@ -230,7 +245,7 @@ describe('ForumMessageService', () => {
   describe('getReportStats()', () => {
     it('should return correct statistics', async () => {
       reportRepo.count
-        .mockResolvedValueOnce(5)  // pending
+        .mockResolvedValueOnce(5) // pending
         .mockResolvedValueOnce(10) // resolved
         .mockResolvedValueOnce(2); // rejected
 

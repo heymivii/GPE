@@ -213,7 +213,7 @@ export default function OnboardingFlow() {
       
       profileLoadedRef.current = true;
     }
-  }, [editMode, isAuthenticated, user, countries, setAllData, data.profile, data.destination])
+  }, [editMode, isAuthenticated, user, countries, setAllData, data.profile, data.destination, t])
 
   const handleStepClick = (stepId: number) => {
     if (canGoToStep(stepId)) {

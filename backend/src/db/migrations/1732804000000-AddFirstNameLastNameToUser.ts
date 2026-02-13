@@ -1,6 +1,8 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class AddFirstNameLastNameToUser1732804000000 implements MigrationInterface {
+export class AddFirstNameLastNameToUser1732804000000
+  implements MigrationInterface
+{
   name = 'AddFirstNameLastNameToUser1732804000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -39,6 +41,8 @@ export class AddFirstNameLastNameToUser1732804000000 implements MigrationInterfa
       DROP COLUMN "last_name"
     `);
 
-    console.log('✅ Migration annulée : colonnes first_name et last_name supprimées');
+    console.log(
+      '✅ Migration annulée : colonnes first_name et last_name supprimées',
+    );
   }
 }

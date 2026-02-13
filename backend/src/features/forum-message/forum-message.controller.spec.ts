@@ -85,7 +85,10 @@ describe('ForumMessageController', () => {
   describe('update()', () => {
     it('should delegate to service.update', async () => {
       const dto = { content: 'Updated content' };
-      service.update.mockResolvedValue({ message_id: 1, content: 'Updated content' });
+      service.update.mockResolvedValue({
+        message_id: 1,
+        content: 'Updated content',
+      });
 
       const result = await controller.update('1', dto as any);
       expect(service.update).toHaveBeenCalledWith(1, dto);
@@ -119,7 +122,12 @@ describe('ForumMessageController', () => {
 
   describe('createReport()', () => {
     it('should delegate to service.createReport', async () => {
-      const dto = { reporterId: 1, messageId: 2, reason: 'spam', itemType: 'message' };
+      const dto = {
+        reporterId: 1,
+        messageId: 2,
+        reason: 'spam',
+        itemType: 'message',
+      };
       service.createReport.mockResolvedValue({ idReport: 1 });
 
       const result = await controller.createReport(dto as any);
@@ -166,20 +174,36 @@ describe('ForumMessageController', () => {
     it('should resolve a report', async () => {
       const req = { user: { sub: 42 } };
       const body = { action: 'resolved' as const, moderatorNote: 'done' };
-      service.resolveReport.mockResolvedValue({ report_id: 1, status: 'resolved' });
+      service.resolveReport.mockResolvedValue({
+        report_id: 1,
+        status: 'resolved',
+      });
 
       const result = await controller.resolveReport('1', req, body);
-      expect(service.resolveReport).toHaveBeenCalledWith(1, 42, 'resolved', 'done');
+      expect(service.resolveReport).toHaveBeenCalledWith(
+        1,
+        42,
+        'resolved',
+        'done',
+      );
       expect(result.status).toBe('resolved');
     });
 
     it('should reject a report', async () => {
       const req = { user: { sub: 42 } };
       const body = { action: 'rejected' as const };
-      service.resolveReport.mockResolvedValue({ report_id: 1, status: 'rejected' });
+      service.resolveReport.mockResolvedValue({
+        report_id: 1,
+        status: 'rejected',
+      });
 
       const result = await controller.resolveReport('1', req, body);
-      expect(service.resolveReport).toHaveBeenCalledWith(1, 42, 'rejected', undefined);
+      expect(service.resolveReport).toHaveBeenCalledWith(
+        1,
+        42,
+        'rejected',
+        undefined,
+      );
       expect(result.status).toBe('rejected');
     });
   });

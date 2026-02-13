@@ -89,7 +89,9 @@ export class ContentFilterService {
       this.logger.log('✅ OpenAI Moderation API enabled');
     } else {
       this.openai = null;
-      this.logger.warn('⚠️ OPENAI_API_KEY not set — using local blocklist fallback only');
+      this.logger.warn(
+        '⚠️ OPENAI_API_KEY not set — using local blocklist fallback only',
+      );
     }
   }
 
@@ -121,12 +123,17 @@ export class ContentFilterService {
           this.logger.warn(
             `🚫 OpenAI flagged content: [${labels.join(', ')}] — "${content.slice(0, 80)}..."`,
           );
-          return { ok: false, reason: `Content flagged for: ${labels.join(', ')}` };
+          return {
+            ok: false,
+            reason: `Content flagged for: ${labels.join(', ')}`,
+          };
         }
 
         return { ok: true };
       } catch (error) {
-        this.logger.error(`OpenAI Moderation API error, falling back to local filter: ${error}`);
+        this.logger.error(
+          `OpenAI Moderation API error, falling back to local filter: ${error}`,
+        );
       }
     }
 

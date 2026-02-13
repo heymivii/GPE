@@ -1,4 +1,11 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 import { Country } from '../../country/entities/country.entity';
 import { ForumMessage } from '../../forum-message/entities/forum-message.entity';
@@ -23,10 +30,18 @@ export class ForumTopic {
   @Column({ name: 'is_locked', type: 'boolean', default: false })
   is_locked: boolean;
 
-  @Column({ name: 'created_at', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({
+    name: 'created_at',
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
   created_at: Date;
 
-  @Column({ name: 'updated_at', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({
+    name: 'updated_at',
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
   updated_at: Date;
 
   @ManyToOne(() => User, { nullable: false })
@@ -40,4 +55,3 @@ export class ForumTopic {
   @OneToMany(() => ForumMessage, (message) => message.topic)
   messages: ForumMessage[];
 }
-

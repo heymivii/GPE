@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateForumTopicDto } from './dto/create-forum-topic.dto';
@@ -18,18 +22,30 @@ export class ForumTopicService {
   ) {}
 
   async create(createForumTopicDto: CreateForumTopicDto): Promise<ForumTopic> {
-    const titleFilter = await this.contentFilterService.validate(createForumTopicDto.title);
+    const titleFilter = await this.contentFilterService.validate(
+      createForumTopicDto.title,
+    );
     if (!titleFilter.ok) {
-      throw new BadRequestException(`Topic title rejected: ${titleFilter.reason}`);
+      throw new BadRequestException(
+        `Topic title rejected: ${titleFilter.reason}`,
+      );
     }
 
-    const contentFilter = await this.contentFilterService.validate(createForumTopicDto.content);
+    const contentFilter = await this.contentFilterService.validate(
+      createForumTopicDto.content,
+    );
     if (!contentFilter.ok) {
-      throw new BadRequestException(`Topic content rejected: ${contentFilter.reason}`);
+      throw new BadRequestException(
+        `Topic content rejected: ${contentFilter.reason}`,
+      );
     }
 
-    const sanitizedTitle = this.contentFilterService.sanitize(createForumTopicDto.title);
-    const sanitizedContent = this.contentFilterService.sanitize(createForumTopicDto.content.trim());
+    const sanitizedTitle = this.contentFilterService.sanitize(
+      createForumTopicDto.title,
+    );
+    const sanitizedContent = this.contentFilterService.sanitize(
+      createForumTopicDto.content.trim(),
+    );
 
     const topic = this.forumTopicRepository.create({
       title: sanitizedTitle,
@@ -39,7 +55,7 @@ export class ForumTopicService {
         ? ({ idCountry: createForumTopicDto.idCountry } as any)
         : undefined,
     });
-    
+
     const savedTopic = await this.forumTopicRepository.save(topic);
 
     const initialMessage = this.forumMessageRepository.create({
@@ -47,11 +63,12 @@ export class ForumTopicService {
       topic: { topic_id: savedTopic.topic_id } as any,
       user: { idUser: createForumTopicDto.idUser } as any,
     });
-    
+
     await this.forumMessageRepository.save(initialMessage);
-    
+
     return savedTopic;
-  }  async findAll(): Promise<ForumTopic[]> {
+  }
+  async findAll(): Promise<ForumTopic[]> {
     return await this.forumTopicRepository.find({
       relations: ['user', 'country'],
       order: { created_at: 'DESC' },
@@ -79,27 +96,43 @@ export class ForumTopicService {
     return topic;
   }
 
-  async update(id: number, updateForumTopicDto: UpdateForumTopicDto): Promise<ForumTopic> {
+  async update(
+    id: number,
+    updateForumTopicDto: UpdateForumTopicDto,
+  ): Promise<ForumTopic> {
     const topic = await this.findOne(id);
 
     if (updateForumTopicDto.title) {
-      const titleFilter = await this.contentFilterService.validate(updateForumTopicDto.title);
+      const titleFilter = await this.contentFilterService.validate(
+        updateForumTopicDto.title,
+      );
       if (!titleFilter.ok) {
-        throw new BadRequestException(`Topic title rejected: ${titleFilter.reason}`);
+        throw new BadRequestException(
+          `Topic title rejected: ${titleFilter.reason}`,
+        );
       }
-      topic.title = this.contentFilterService.sanitize(updateForumTopicDto.title);
+      topic.title = this.contentFilterService.sanitize(
+        updateForumTopicDto.title,
+      );
     }
-    if (updateForumTopicDto.category) topic.category = updateForumTopicDto.category;
-    
+    if (updateForumTopicDto.category)
+      topic.category = updateForumTopicDto.category;
+
     const updatedTopic = await this.forumTopicRepository.save(topic);
 
     if (updateForumTopicDto.content !== undefined) {
       if (updateForumTopicDto.content.trim()) {
-        const contentFilter = await this.contentFilterService.validate(updateForumTopicDto.content);
+        const contentFilter = await this.contentFilterService.validate(
+          updateForumTopicDto.content,
+        );
         if (!contentFilter.ok) {
-          throw new BadRequestException(`Topic content rejected: ${contentFilter.reason}`);
+          throw new BadRequestException(
+            `Topic content rejected: ${contentFilter.reason}`,
+          );
         }
-        const sanitizedContent = this.contentFilterService.sanitize(updateForumTopicDto.content.trim());
+        const sanitizedContent = this.contentFilterService.sanitize(
+          updateForumTopicDto.content.trim(),
+        );
 
         const firstMessage = await this.forumMessageRepository.findOne({
           where: { topic: { topic_id: id } },
@@ -127,10 +160,9 @@ export class ForumTopicService {
         }
       }
     }
-    
+
     return updatedTopic;
   }
-
 
   async lockTopic(id: number): Promise<ForumTopic> {
     const topic = await this.findOne(id);
@@ -151,7 +183,7 @@ export class ForumTopicService {
 
   async remove(id: number): Promise<void> {
     const result = await this.forumTopicRepository.delete(id);
-    
+
     if (result.affected === 0) {
       throw new NotFoundException(`Topic with ID ${id} not found`);
     }

@@ -28,7 +28,10 @@ describe('UserController', () => {
   describe('getProfile()', () => {
     it('should return user without passwordHash', async () => {
       service.findOne.mockResolvedValue({
-        idUser: 1, email: 'a@b.com', passwordHash: 'secret', firstName: 'A',
+        idUser: 1,
+        email: 'a@b.com',
+        passwordHash: 'secret',
+        firstName: 'A',
       });
       const req = { user: { userId: 1 } };
       const result = await controller.getProfile(req);
@@ -41,10 +44,14 @@ describe('UserController', () => {
   describe('updateProfile()', () => {
     it('should update and strip passwordHash', async () => {
       service.update.mockResolvedValue({
-        idUser: 1, firstName: 'New', passwordHash: 'hashed',
+        idUser: 1,
+        firstName: 'New',
+        passwordHash: 'hashed',
       });
       const req = { user: { userId: 1 } };
-      const result = await controller.updateProfile(req, { firstName: 'New' } as any);
+      const result = await controller.updateProfile(req, {
+        firstName: 'New',
+      } as any);
 
       expect(result.firstName).toBe('New');
       expect((result as any).passwordHash).toBeUndefined();

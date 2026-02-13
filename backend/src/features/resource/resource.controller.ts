@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ResourceService } from './resource.service';
 import { CreateResourceDto } from './dto/create-resource.dto';
@@ -28,7 +37,10 @@ export class ResourceController {
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
-  update(@Param('id') id: string, @Body() updateResourceDto: UpdateResourceDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateResourceDto: UpdateResourceDto,
+  ) {
     return this.resourceService.update(+id, updateResourceDto);
   }
 

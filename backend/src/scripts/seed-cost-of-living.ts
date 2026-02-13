@@ -12,22 +12,23 @@ const CACHE_TTL_DAYS = 30;
 const targetCities = [
   { cityName: 'Paris', countryName: 'France', apiName: 'Paris' },
   { cityName: 'Lyon', countryName: 'France', apiName: 'Lyon' },
-  { cityName: 'New York City', countryName: 'United States', apiName: 'New York' },
+  {
+    cityName: 'New York City',
+    countryName: 'United States',
+    apiName: 'New York',
+  },
   { cityName: 'Tokyo', countryName: 'Japan', apiName: 'Tokyo' },
   { cityName: 'Zurich', countryName: 'Switzerland', apiName: 'Geneva' },
 ];
 
 async function fetchFromApi(cityName: string, countryName: string) {
-  const response = await axios.get(
-    `https://${RAPIDAPI_HOST}/prices`,
-    {
-      params: { city_name: cityName, country_name: countryName },
-      headers: {
-        'x-rapidapi-key': RAPIDAPI_KEY!,
-        'x-rapidapi-host': RAPIDAPI_HOST!,
-      },
+  const response = await axios.get(`https://${RAPIDAPI_HOST}/prices`, {
+    params: { city_name: cityName, country_name: countryName },
+    headers: {
+      'x-rapidapi-key': RAPIDAPI_KEY!,
+      'x-rapidapi-host': RAPIDAPI_HOST!,
     },
-  );
+  });
   return response.data;
 }
 
@@ -73,7 +74,9 @@ async function seedCostOfLiving() {
       });
 
       if (!city) {
-        console.warn(`   ⚠️ City "${target.cityName}" not found in DB. Skipping.`);
+        console.warn(
+          `   ⚠️ City "${target.cityName}" not found in DB. Skipping.`,
+        );
         errorCount++;
         continue;
       }
@@ -84,13 +87,17 @@ async function seedCostOfLiving() {
         [city.city_id],
       );
       if (existing.length > 0) {
-        console.log(`   ⏩ Already cached (expires ${existing[0].expires_at}). Skipping.`);
+        console.log(
+          `   ⏩ Already cached (expires ${existing[0].expires_at}). Skipping.`,
+        );
         skippedCount++;
         continue;
       }
 
       try {
-        console.log(`   🌐 Calling API for "${target.apiName}, ${target.countryName}"...`);
+        console.log(
+          `   🌐 Calling API for "${target.apiName}, ${target.countryName}"...`,
+        );
         const rawData = await fetchFromApi(target.apiName, target.countryName);
 
         if (rawData.error) {
@@ -99,12 +106,18 @@ async function seedCostOfLiving() {
           continue;
         }
 
-        console.log(`   📊 Received ${rawData.prices?.length || 0} price items`);
+        console.log(
+          `   📊 Received ${rawData.prices?.length || 0} price items`,
+        );
 
         const cleanedData = cleaner.cleanData(rawData);
-        console.log(`   🧹 Data cleaned. Monthly budget avg: ${cleanedData.summary?.monthlyBudget?.avg}`);
+        console.log(
+          `   🧹 Data cleaned. Monthly budget avg: ${cleanedData.summary?.monthlyBudget?.avg}`,
+        );
 
-        const expiresAt = new Date(Date.now() + CACHE_TTL_DAYS * 24 * 60 * 60 * 1000);
+        const expiresAt = new Date(
+          Date.now() + CACHE_TTL_DAYS * 24 * 60 * 60 * 1000,
+        );
 
         await AppDataSource.query(
           `INSERT INTO cost_of_living_cache (city_id, data, cached_at, expires_at)
@@ -116,7 +129,6 @@ async function seedCostOfLiving() {
 
         console.log(`   ✅ Cached! Expires: ${expiresAt.toISOString()}`);
         successCount++;
-
       } catch (apiError: any) {
         console.error(`   ❌ API error: ${apiError.message}`);
         errorCount++;
@@ -142,7 +154,9 @@ async function seedCostOfLiving() {
     );
     console.log(`\n📋 Cache contents (${cacheRows.length} entries):`);
     for (const row of cacheRows) {
-      console.log(`   - ${row.city_name} (city_id=${row.city_id}) cached at ${row.cached_at}`);
+      console.log(
+        `   - ${row.city_name} (city_id=${row.city_id}) cached at ${row.cached_at}`,
+      );
     }
 
     process.exit(0);

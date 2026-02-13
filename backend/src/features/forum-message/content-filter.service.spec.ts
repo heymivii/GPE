@@ -69,12 +69,16 @@ describe('ContentFilterService', () => {
     });
 
     it('should accept clean text', async () => {
-      const result = await service.validate('Bonjour, je cherche des infos sur le visa Canada.');
+      const result = await service.validate(
+        'Bonjour, je cherche des infos sur le visa Canada.',
+      );
       expect(result.ok).toBe(true);
     });
 
     it('should accept normal English text', async () => {
-      const result = await service.validate('What are the best cities for expats in Europe?');
+      const result = await service.validate(
+        'What are the best cities for expats in Europe?',
+      );
       expect(result.ok).toBe(true);
     });
 
@@ -99,7 +103,9 @@ describe('ContentFilterService', () => {
 
     // Spam patterns
     it('should reject spam content', async () => {
-      const result = await service.validate('Buy now! Limited offer! Act fast! Click here!');
+      const result = await service.validate(
+        'Buy now! Limited offer! Act fast! Click here!',
+      );
       expect(result.ok).toBe(false);
       expect(result.reason).toBe('spam');
     });
@@ -118,13 +124,17 @@ describe('ContentFilterService', () => {
 
     // All-caps detection
     it('should reject all-caps messages', async () => {
-      const result = await service.validate('JE SUIS VRAIMENT TRES EN COLERE CONTRE TOUT LE MONDE ICI');
+      const result = await service.validate(
+        'JE SUIS VRAIMENT TRES EN COLERE CONTRE TOUT LE MONDE ICI',
+      );
       expect(result.ok).toBe(false);
       expect(result.reason).toBe('all_caps');
     });
 
     it('should accept mostly lowercase with some caps', async () => {
-      const result = await service.validate('Je suis content de partager mon EXPÉRIENCE');
+      const result = await service.validate(
+        'Je suis content de partager mon EXPÉRIENCE',
+      );
       expect(result.ok).toBe(true);
     });
 

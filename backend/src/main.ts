@@ -1,6 +1,5 @@
 import * as crypto from 'crypto';
 if (!globalThis.crypto) {
-
   globalThis.crypto = crypto as any;
 }
 
@@ -22,7 +21,7 @@ async function bootstrap() {
     }),
   );
 
-
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const cookieParser = require('cookie-parser');
   app.use(cookieParser());
 
@@ -62,25 +61,31 @@ async function bootstrap() {
   const swaggerConfig = new DocumentBuilder()
     .setTitle('SkyWalk API')
     .setDescription(
-      'API REST de la plateforme SkyWalk — aide à l\'expatriation.\n\n' +
-      '**Modules** : Auth, User, Forum, Destinations, Cost of Living, Job Offers, ' +
-      'Expatriation Projects, Global Search, OECD Migration, et plus.',
+      "API REST de la plateforme SkyWalk — aide à l'expatriation.\n\n" +
+        '**Modules** : Auth, User, Forum, Destinations, Cost of Living, Job Offers, ' +
+        'Expatriation Projects, Global Search, OECD Migration, et plus.',
     )
     .setVersion('1.0.0')
     .addBearerAuth(
       { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
       'JWT-auth',
     )
-    .addTag('Auth', 'Inscription, connexion, refresh token, mot de passe oublié')
+    .addTag(
+      'Auth',
+      'Inscription, connexion, refresh token, mot de passe oublié',
+    )
     .addTag('User', 'Profil utilisateur (CRUD)')
     .addTag('Forum Topic', 'Topics du forum communautaire')
     .addTag('Forum Message', 'Messages du forum + modération + signalements')
     .addTag('Country', 'Gestion des pays')
     .addTag('Continent', 'Gestion des continents')
-    .addTag('Destinations', 'Destinations enrichies (emploi, coût de la vie, migration)')
+    .addTag(
+      'Destinations',
+      'Destinations enrichies (emploi, coût de la vie, migration)',
+    )
     .addTag('Cost of Living', 'Coût de la vie par ville (RapidAPI / Numbeo)')
-    .addTag('Expatriation Project', 'Projets d\'expatriation + checklist')
-    .addTag('Job Offer', 'Offres d\'emploi (CRUD local + Adzuna API)')
+    .addTag('Expatriation Project', "Projets d'expatriation + checklist")
+    .addTag('Job Offer', "Offres d'emploi (CRUD local + Adzuna API)")
     .addTag('Global Search', 'Recherche multi-catégories')
     .addTag('OECD Migration', 'Données migratoires OECD')
     .addTag('City', 'Villes')
@@ -88,11 +93,11 @@ async function bootstrap() {
     .addTag('Checklist', 'Items de checklist')
     .addTag('Resource', 'Ressources')
     .addTag('Guide', 'Guides')
-    .addTag('Experience', 'Retours d\'expérience')
+    .addTag('Experience', "Retours d'expérience")
     .addTag('Notification', 'Notifications')
     .addTag('Admin Procedure', 'Procédures administratives')
     .addTag('Procedure Tracking', 'Suivi de procédures')
-    .addTag('Business Sector', 'Secteurs d\'activité')
+    .addTag('Business Sector', "Secteurs d'activité")
     .addTag('Housing', 'Logements')
     .build();
 
@@ -118,4 +123,3 @@ async function bootstrap() {
 }
 
 bootstrap();
-

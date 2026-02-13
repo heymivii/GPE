@@ -48,7 +48,9 @@ describe('CountryService', () => {
       repo.find.mockResolvedValue([{ idCountry: 1 }]);
       const result = await service.findAll();
       expect(result).toHaveLength(1);
-      expect(repo.find).toHaveBeenCalledWith(expect.objectContaining({ relations: ['continent'] }));
+      expect(repo.find).toHaveBeenCalledWith(
+        expect.objectContaining({ relations: ['continent'] }),
+      );
     });
   });
 

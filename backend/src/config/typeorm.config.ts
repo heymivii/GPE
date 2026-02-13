@@ -7,7 +7,8 @@ export const typeOrmConfigAsync: TypeOrmModuleAsyncOptions = {
   useFactory: async (configService: ConfigService) => {
     const host = configService.get<string>('DB_HOST') || 'localhost';
     const useSsl =
-      configService.get<string>('DB_SSL') === 'true' || host.includes('supabase.co');
+      configService.get<string>('DB_SSL') === 'true' ||
+      host.includes('supabase.co');
 
     return {
       type: 'postgres',
@@ -27,7 +28,9 @@ export const typeOrmConfigAsync: TypeOrmModuleAsyncOptions = {
 
       ssl: useSsl ? { require: true, rejectUnauthorized: false } : false,
 
-      extra: useSsl ? { ssl: { require: true, rejectUnauthorized: false } } : undefined,
+      extra: useSsl
+        ? { ssl: { require: true, rejectUnauthorized: false } }
+        : undefined,
     };
   },
 };

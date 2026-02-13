@@ -22,7 +22,7 @@ export class UserController {
   async getProfile(@Request() req) {
     const user = await this.userService.findOne(req.user.userId);
 
-    const { passwordHash, ...result } = user;
+    const { passwordHash: _h1, ...result } = user;
     return result;
   }
 
@@ -34,7 +34,7 @@ export class UserController {
       updateUserDto,
     );
 
-    const { passwordHash, ...result } = updatedUser;
+    const { passwordHash: _h2, ...result } = updatedUser;
     return result;
   }
 

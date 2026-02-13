@@ -4,7 +4,7 @@ import { UpdateAdminProcedureDto } from './dto/update-admin-procedure.dto';
 
 @Injectable()
 export class AdminProcedureService {
-  create(createAdminProcedureDto: CreateAdminProcedureDto) {
+  create(_createAdminProcedureDto: CreateAdminProcedureDto) {
     return 'This action adds a new adminProcedure';
   }
 
@@ -16,7 +16,7 @@ export class AdminProcedureService {
     return `This action returns a #${id} adminProcedure`;
   }
 
-  update(id: number, updateAdminProcedureDto: UpdateAdminProcedureDto) {
+  update(id: number, _updateAdminProcedureDto: UpdateAdminProcedureDto) {
     return `This action updates a #${id} adminProcedure`;
   }
 

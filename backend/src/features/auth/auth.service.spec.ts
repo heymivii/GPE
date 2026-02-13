@@ -1,7 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
-import { ConflictException, UnauthorizedException, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  UnauthorizedException,
+  NotFoundException,
+} from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { AuthService } from './auth.service';
 import { User } from '../user/entities/user.entity';
@@ -86,9 +90,14 @@ describe('AuthService', () => {
     });
 
     it('should throw ConflictException if email already exists', async () => {
-      userRepo.findOne.mockResolvedValue({ idUser: 1, email: 'john@example.com' });
+      userRepo.findOne.mockResolvedValue({
+        idUser: 1,
+        email: 'john@example.com',
+      });
 
-      await expect(service.register(dto as any)).rejects.toThrow(ConflictException);
+      await expect(service.register(dto as any)).rejects.toThrow(
+        ConflictException,
+      );
     });
   });
 
@@ -136,7 +145,11 @@ describe('AuthService', () => {
 
   describe('getProfile()', () => {
     it('should return sanitized user', async () => {
-      const user = { idUser: 1, email: 'test@test.com', passwordHash: 'secret' };
+      const user = {
+        idUser: 1,
+        email: 'test@test.com',
+        passwordHash: 'secret',
+      };
       userRepo.findOne.mockResolvedValue(user);
 
       const result = await service.getProfile(1);
@@ -156,7 +169,11 @@ describe('AuthService', () => {
   describe('refreshToken()', () => {
     it('should return new tokens for valid refresh token', async () => {
       jwtService.verify.mockReturnValue({ sub: 1, type: 'refresh' });
-      userRepo.findOne.mockResolvedValue({ idUser: 1, email: 'a@b.com', userRole: 'user' });
+      userRepo.findOne.mockResolvedValue({
+        idUser: 1,
+        email: 'a@b.com',
+        userRole: 'user',
+      });
 
       const result = await service.refreshToken('valid-refresh');
       expect(result.access_token).toBe('mock-jwt-token');
@@ -166,7 +183,9 @@ describe('AuthService', () => {
     it('should throw UnauthorizedException for invalid token type', async () => {
       jwtService.verify.mockReturnValue({ sub: 1, type: 'access' });
 
-      await expect(service.refreshToken('bad-token')).rejects.toThrow(UnauthorizedException);
+      await expect(service.refreshToken('bad-token')).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
 
     it('should throw UnauthorizedException if verify throws', async () => {
@@ -174,7 +193,9 @@ describe('AuthService', () => {
         throw new Error('expired');
       });
 
-      await expect(service.refreshToken('expired-token')).rejects.toThrow(UnauthorizedException);
+      await expect(service.refreshToken('expired-token')).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
   });
 
@@ -186,7 +207,10 @@ describe('AuthService', () => {
       jwtService.sign.mockReturnValue('reset-token');
 
       const result = await service.forgotPassword('a@b.com');
-      expect(mailService.sendPasswordResetEmail).toHaveBeenCalledWith('a@b.com', 'reset-token');
+      expect(mailService.sendPasswordResetEmail).toHaveBeenCalledWith(
+        'a@b.com',
+        'reset-token',
+      );
       expect(result.message).toContain('réinitialisation');
     });
 
@@ -227,9 +251,9 @@ describe('AuthService', () => {
         throw new Error('expired');
       });
 
-      await expect(service.resetPassword('expired', 'NewPass1')).rejects.toThrow(
-        UnauthorizedException,
-      );
+      await expect(
+        service.resetPassword('expired', 'NewPass1'),
+      ).rejects.toThrow(UnauthorizedException);
     });
   });
 });
