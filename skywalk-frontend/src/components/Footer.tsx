@@ -15,7 +15,7 @@ export default function Footer() {
             <p className="text-sm leading-relaxed">
               {t('footer.description')}
             </p>
-            <div className="flex space-x-4">
+            {/* <div className="flex space-x-4">
               <a 
                 href="https://facebook.com" 
                 target="_blank" 
@@ -61,7 +61,7 @@ export default function Footer() {
               >
                 <Youtube className="w-5 h-5" />
               </a>
-            </div>
+            </div> */}
           </div>
 
           <div>
@@ -147,8 +147,8 @@ export default function Footer() {
               </li>
               <li className="flex items-start space-x-2">
                 <Phone className="w-4 h-4 mt-1 flex-shrink-0" />
-                <a href="tel:+33123456789" className="hover:text-[#5EA3C0] transition-colors">
-                  +33 1 23 45 67 89
+                <a href="tel:+33658286380" className="hover:text-[#5EA3C0] transition-colors">
+                  +33 6 58 28 63 80
                 </a>
               </li>
               <li className="flex items-start space-x-2">

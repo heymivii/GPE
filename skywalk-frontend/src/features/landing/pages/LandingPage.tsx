@@ -41,7 +41,7 @@ export default function LandingPage() {
 
   return (
     <>
-      <section className="min-h-[70vh] lg:min-h-[90vh] flex items-center justify-center bg-white px-4 sm:px-8">
+      <section className="min-h-[70vh] lg:min-h-[90vh] flex items-center justify-center bg-white px-4 sm:px-8 pt-20 lg:pt-24">
         <div className="w-full max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
 
           <div className="flex-1 w-full lg:w-1/2">

@@ -46,7 +46,7 @@ function RadarChart({ data, countryNames, colors }: {
 
   return (
     <div className="flex flex-col items-center">
-      <svg viewBox="0 0 300 300" className="w-full max-w-xs">
+      <svg viewBox="-60 -60 420 420" className="w-full max-w-md overflow-visible">
         {gridLevels.map(level => (
           <polygon
             key={level}
@@ -88,7 +88,7 @@ function RadarChart({ data, countryNames, colors }: {
           })
         )}
         {data.map((d, i) => {
-          const p = point(i, R + 22)
+          const p = point(i, R + 30)
           return (
             <text
               key={i}
@@ -96,7 +96,7 @@ function RadarChart({ data, countryNames, colors }: {
               y={p.y}
               textAnchor="middle"
               dominantBaseline="middle"
-              className="text-[10px] fill-gray-500 font-medium"
+              className="text-xs sm:text-sm fill-gray-500 font-medium"
             >
               {d.label}
             </text>
@@ -190,19 +190,37 @@ export default function ComparisonTable({ countries, isAuthenticated = true }: C
   const radarData = useMemo<RadarDataPoint[]>(() => {
     const convertedSalaries = countries.map(c => convertAmount(c.costOfLiving?.averageSalary, c) ?? 0)
     const convertedRents = countries.map(c => convertAmount(c.costOfLiving?.averageRent?.oneBedroom, c) ?? 0)
+    const convertedFood = countries.map(c => convertAmount(c.costOfLiving?.food?.restaurantMeal, c) ?? 0)
+    const convertedTransport = countries.map(c => convertAmount(c.costOfLiving?.transportMonthly, c) ?? 0)
+    
     const maxSalary = Math.max(...convertedSalaries)
     const maxRent = Math.max(...convertedRents)
-
+    const maxFood = Math.max(...convertedFood)
+    const maxTransport = Math.max(...convertedTransport)
 
     return [
       {
-        label: t('comparison.radar.salary'),
+        label: t('comparison.radar.salary', { defaultValue: 'Salaire' }),
         values: convertedSalaries.map(s => maxSalary ? (s / maxSalary) * 100 : 0)
       },
       {
-        label: t('comparison.radar.affordability'),
+        label: t('comparison.radar.affordability', { defaultValue: 'Logement' }),
         values: convertedRents.map(r => maxRent
           ? (1 - r / maxRent) * 80 + 20
+          : 50
+        )
+      },
+      {
+        label: t('comparison.radar.food', { defaultValue: 'Nourriture' }),
+        values: convertedFood.map(f => maxFood
+          ? (1 - f / maxFood) * 80 + 20
+          : 50
+        )
+      },
+      {
+        label: t('comparison.radar.transport', { defaultValue: 'Transport' }),
+        values: convertedTransport.map(t => maxTransport
+          ? (1 - t / maxTransport) * 80 + 20
           : 50
         )
       }

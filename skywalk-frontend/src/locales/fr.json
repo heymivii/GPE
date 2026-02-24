@@ -885,7 +885,7 @@
         },
         "4": {
           "question": "Est-ce que SkyWalk m'aide à trouver un emploi ?",
-          "answer": "Oui ! Notre moteur de recherche agrège des milliers d'offres d'emploi à l'international via l'API Adzuna. Vous pouvez filtrer par pays, ville, type de contrat et salaire."
+          "answer": "Oui ! Notre moteur de recherche agrège des milliers d'offres d'emploi à l'international. Vous pouvez filtrer par pays, ville, type de contrat et salaire."
         },
         "5": {
           "question": "Comment puis-je échanger avec d'autres expatriés ?",
@@ -1826,7 +1826,7 @@
       "benefitsTitle": "Ce que vous obtenez :",
       "benefit1": "Sauvegardez votre projet et retrouvez-le à tout moment",
       "benefit2": "Accédez à des recommandations personnalisées",
-      "benefit3": "Comparez jusqu'à 5 pays en détail",
+      "benefit3": "Comparez jusqu'à 3 pays en détail",
       "benefit4": "Rejoignez une communauté d'expatriés",
       "createAccount": "Créer mon compte gratuit",
       "hasAccount": "J'ai déjà un compte",

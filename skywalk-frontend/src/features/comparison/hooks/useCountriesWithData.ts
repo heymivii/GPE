@@ -201,7 +201,9 @@ export function useCountriesWithData() {
       ? extractCostOfLivingFromCache(detailData.capitalData)
       : undefined
 
-    const costOfLiving = realCostOfLiving || jsonData?.costOfLiving
+    // Single source of truth: only use data from cost_of_living_cache (via API)
+    // No fallback to static JSON data
+    const costOfLiving = realCostOfLiving || undefined
 
     const baseCountry: EnrichedCountry = {
       uniqueId: `country-${country.idCountry}`,

@@ -150,7 +150,7 @@ export default function Dropdown() {
   };
 
   return (
-    <div className="p-8">
+    <div className=" sm:p-8">
       <div className="max-w-2xl mx-auto">
         <div className="bg-white rounded-2xl shadow-lg p-8">
           <div className="space-y-6">

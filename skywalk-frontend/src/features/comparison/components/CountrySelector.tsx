@@ -62,6 +62,11 @@ export default function CountrySelector({
 
   const parentCountry = selectedParentId ? countries.find(c => c.idCountry === selectedParentId && !c.isCity) : null
 
+  // Determine the type of currently selected items (if any)
+  const selectionType = selectedCountriesData.length > 0 
+    ? (selectedCountriesData[0].isCity ? 'city' : 'country') 
+    : null;
+
   let listItems = []
   if (!selectedParentId) {
     listItems = availableCountries.filter(c => !c.isCity)
@@ -213,11 +218,32 @@ export default function CountrySelector({
                         key={country.uniqueId}
                         onClick={() => {
                           const hasCities = !selectedParentId && !country.isCity && countries.some(c => c.parentId === country.idCountry && c.isCity)
-                          if (hasCities) {
-                            setSelectedParentId(country.idCountry)
-                            setSearchQuery('')
-                            inputRef.current?.focus()
-                            return
+                          
+                          if (!selectedParentId && !country.isCity) {
+                            if (selectionType === 'city') {
+                              // We can only select cities. Clicking a country opens it if it has cities.
+                              if (hasCities) {
+                                setSelectedParentId(country.idCountry)
+                                setSearchQuery('')
+                                inputRef.current?.focus()
+                              }
+                              return;
+                            } else if (selectionType === 'country') {
+                              // We can only select countries. Clicking a country selects it directly.
+                              // Fall through to onCountryToggle
+                            } else {
+                              // Nothing selected yet. Open if it has cities, otherwise select.
+                              if (hasCities) {
+                                setSelectedParentId(country.idCountry)
+                                setSearchQuery('')
+                                inputRef.current?.focus()
+                                return;
+                              }
+                            }
+                          } else {
+                            // We are clicking a city, or "Tout le pays" inside a parent.
+                            if (selectionType === 'city' && !country.isCity) return;
+                            if (selectionType === 'country' && country.isCity) return;
                           }
 
                           onCountryToggle(country.uniqueId!)
@@ -251,7 +277,7 @@ export default function CountrySelector({
                             {country.isCity ? country.countryName : (selectedParentId ? t('comparison.entireCountry', { defaultValue: 'Tout le pays' }) : getCountryName(country))}
                           </span>
                           <span className="text-xs text-gray-400">
-                            {country.isCity ? getCountryName(parentCountry!) : t(`comparison.data.continents.${country.continent}`, { defaultValue: country.continent || '' })}
+                            {country.isCity ? getCountryName(parentCountry || countries.find(c => c.idCountry === country.parentId && !c.isCity)!) : t(`comparison.data.continents.${country.continent}`, { defaultValue: country.continent || '' })}
                           </span>
                         </div>
                       </button>
