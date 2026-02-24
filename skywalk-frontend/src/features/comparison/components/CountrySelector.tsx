@@ -31,7 +31,6 @@ export default function CountrySelector({
     return t(sc.i18nKey, { defaultValue: country.countryName })
   }
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -44,7 +43,6 @@ export default function CountrySelector({
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  // Lock body scroll on mobile when dropdown/modal is open
   useEffect(() => {
     if (isDropdownOpen && window.innerWidth < 640) {
       document.body.style.overflow = 'hidden'
@@ -62,7 +60,6 @@ export default function CountrySelector({
 
   const parentCountry = selectedParentId ? countries.find(c => c.idCountry === selectedParentId && !c.isCity) : null
 
-  // Determine the type of currently selected items (if any)
   const selectionType = selectedCountriesData.length > 0 
     ? (selectedCountriesData[0].isCity ? 'city' : 'country') 
     : null;
@@ -71,9 +68,6 @@ export default function CountrySelector({
   if (!selectedParentId) {
     listItems = availableCountries.filter(c => !c.isCity)
   } else {
-    // When a parent is selected, show the parent country AND its cities
-    // We get them from countries (not availableCountries) so even if the country is selected
-    // you can still see its cities, and vice versa.
     listItems = countries.filter(c =>
       (c.idCountry === selectedParentId && !c.isCity) ||
       (c.parentId === selectedParentId && c.isCity)
@@ -91,7 +85,6 @@ export default function CountrySelector({
 
   return (
     <div className="space-y-4">
-      {/* Selected countries as chips */}
       {selectedCountriesData.length > 0 && (
         <div className="flex flex-wrap gap-2 sm:gap-3">
           {selectedCountriesData.map((country) => (
@@ -128,7 +121,6 @@ export default function CountrySelector({
         </div>
       )}
 
-      {/* Add country dropdown */}
       {canAddMore && (
         <div ref={dropdownRef} className="relative">
           <button
@@ -150,7 +142,6 @@ export default function CountrySelector({
 
           {isDropdownOpen && (
             <>
-              {/* Mobile Backdrop */}
               <div
                 className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-40 sm:hidden animate-in fade-in duration-200"
                 onClick={() => {
@@ -162,7 +153,6 @@ export default function CountrySelector({
 
               <div className="fixed inset-x-0 bottom-0 top-[15vh] sm:absolute sm:inset-auto sm:top-full sm:left-0 sm:right-0 sm:mt-2 bg-white rounded-t-3xl sm:rounded-2xl sm:border sm:border-gray-200 shadow-2xl z-50 sm:max-h-80 overflow-hidden flex flex-col animate-in slide-in-from-bottom-full sm:slide-in-from-top-2 duration-300">
 
-                {/* Mobile Header & Handle */}
                 <div className="sm:hidden flex flex-col bg-white">
                   <div className="w-full flex justify-center pt-3 pb-2">
                     <div className="w-12 h-1.5 bg-gray-200 rounded-full" />
@@ -183,7 +173,6 @@ export default function CountrySelector({
                     </button>
                   </div>
                 </div>
-                {/* Search input and Back button */}
                 <div className="p-3 border-b border-gray-100 flex-shrink-0 flex items-center gap-2">
                   {selectedParentId && (
                     <button
@@ -210,7 +199,6 @@ export default function CountrySelector({
                   </div>
                 </div>
 
-                {/* Location list */}
                 <div className="overflow-y-auto flex-1">
                   {filteredItems.length > 0 ? (
                     filteredItems.map((country) => (
@@ -221,18 +209,13 @@ export default function CountrySelector({
                           
                           if (!selectedParentId && !country.isCity) {
                             if (selectionType === 'city') {
-                              // We can only select cities. Clicking a country opens it if it has cities.
                               if (hasCities) {
                                 setSelectedParentId(country.idCountry)
                                 setSearchQuery('')
                                 inputRef.current?.focus()
                               }
                               return;
-                            } else if (selectionType === 'country') {
-                              // We can only select countries. Clicking a country selects it directly.
-                              // Fall through to onCountryToggle
-                            } else {
-                              // Nothing selected yet. Open if it has cities, otherwise select.
+                            } else if (selectionType !== 'country') {
                               if (hasCities) {
                                 setSelectedParentId(country.idCountry)
                                 setSearchQuery('')
@@ -241,7 +224,6 @@ export default function CountrySelector({
                               }
                             }
                           } else {
-                            // We are clicking a city, or "Tout le pays" inside a parent.
                             if (selectionType === 'city' && !country.isCity) return;
                             if (selectionType === 'country' && country.isCity) return;
                           }
@@ -252,7 +234,6 @@ export default function CountrySelector({
                             setIsDropdownOpen(false)
                             setSelectedParentId(null)
                           } else if (selectedParentId) {
-                            // keep dropdown open but go back to country selection
                             setSelectedParentId(null)
                           }
                         }}

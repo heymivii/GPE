@@ -52,9 +52,15 @@
       "signupMessage": "Créez un compte gratuit pour une expérience personnalisée avec des recommandations adaptées à votre projet d'expatriation.",
       "createAccount": "Créer un compte",
       "close": "Fermer"
-    }
+    },
+    "quit": "Quitter",
+    "remove": "Supprimer"
   },
   "services": {
+    "citySelector": {
+      "city": "Ville",
+      "select": "Sélectionner"
+    },
     "guides": {
       "sectionTitle": "Guides étape par étape",
       "tipsTitle": "Conseils pratiques",
@@ -1113,6 +1119,12 @@
     "selection": "Sélection :",
     "tableHeader": "Comparatif",
     "currencyLabel": "Devise d'affichage :",
+    "addCountry": "Sélectionner un pays",
+    "addAnotherCountry": "Ajouter un pays",
+    "addDestination": "Ajouter une destination",
+    "searchCountry": "Rechercher un pays...",
+    "entireCountry": "Tout le pays",
+    "noCountryFound": "Aucune destination trouvée",
     "limitReached": {
       "title": "Limite atteinte (Mode Invité)",
       "message": "Vous comparez {{count}} pays.",
@@ -1140,8 +1152,10 @@
       "salary": "Salaire",
       "safety": "Sécurité",
       "healthcare": "Santé",
-      "affordability": "Accessibilité",
-      "workLife": "Équilibre"
+      "affordability": "Logement",
+      "workLife": "Équilibre",
+      "food": "Nourriture",
+      "transport": "Transport"
     },
     "fields": {
       "continent": "Continent",

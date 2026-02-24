@@ -38,9 +38,8 @@ export default function OnboardingLayout({
         <div className="max-w-2xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8">
           <div className="mb-4 sm:mb-6 px-2 sm:px-0 flex items-center justify-between">
             <Breadcrumbs items={breadcrumbItems} />
-            {/* Added a mobile-friendly explicit Back/Dashboard button */}
             <a href={isAuthenticated ? '/dashboard' : '/'} className="sm:hidden text-sm font-medium text-gray-500 hover:text-gray-900 border border-gray-300 rounded-lg px-3 py-1.5 ml-2 shrink-0">
-              Quitter
+              {t('common.quit', { defaultValue: 'Quitter' })}
             </a>
           </div>
           <div className="rounded-2xl bg-neutral-50 p-4 sm:p-6 md:p-8 shadow-sm">

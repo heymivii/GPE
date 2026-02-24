@@ -201,8 +201,6 @@ export function useCountriesWithData() {
       ? extractCostOfLivingFromCache(detailData.capitalData)
       : undefined
 
-    // Single source of truth: only use data from cost_of_living_cache (via API)
-    // No fallback to static JSON data
     const costOfLiving = realCostOfLiving || undefined
 
     const baseCountry: EnrichedCountry = {
@@ -236,7 +234,6 @@ export function useCountriesWithData() {
 
     enrichedCountries.push(baseCountry)
 
-    // Add cities as synthetic countries
     detailData?.cities?.forEach((city) => {
       if (!city.costOfLiving) return
       const cityId = city.id || city.city_id || Math.random()
@@ -246,7 +243,7 @@ export function useCountriesWithData() {
         uniqueId: `city-${cityId}`,
         isCity: true,
         parentId: country.idCountry,
-        countryName: city.name, // City name
+        countryName: city.name,
         costOfLiving: extractCostOfLivingFromCache(city.costOfLiving),
 
         climate: undefined,

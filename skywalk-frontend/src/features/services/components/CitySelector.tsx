@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { MapPin, ChevronDown, Check } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { CityDestination } from '../../destinations/types';
 
 interface CitySelectorProps {
@@ -14,6 +15,7 @@ export default function CitySelector({
     availableCities,
 }: CitySelectorProps) {
     const [isOpen, setIsOpen] = useState(false);
+    const { t } = useTranslation();
 
     if (!availableCities || availableCities.length <= 1) {
         return null;
@@ -36,10 +38,10 @@ export default function CitySelector({
                 <MapPin className="w-4 h-4 text-gray-600" />
                 <div className="flex flex-col items-start text-left">
                     <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
-                        Ville
+                        {t('services.citySelector.city', { defaultValue: 'Ville' })}
                     </span>
                     <span className="text-sm font-semibold text-gray-900">
-                        {selectedCityData ? selectedCityData.name : 'Sélectionner'}
+                        {selectedCityData ? selectedCityData.name : t('services.citySelector.select', { defaultValue: 'Sélectionner' })}
                     </span>
                 </div>
                 <ChevronDown

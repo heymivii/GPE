@@ -42,19 +42,16 @@ export function useServiceContent({ service, category }: UseServiceContentParams
 
   const availableCities = useMemo((): CityDestination[] => {
     if (!countryData || !countryData.cities) return [];
-    // Sort cities by priority and then by name
     return [...countryData.cities].sort((a, b) => {
       if (a.priority !== b.priority) return a.priority - b.priority;
       return a.name.localeCompare(b.name);
     });
   }, [countryData]);
 
-  // Automatically select the first city when availableCities changes and selectedCity is not valid for this country
   useEffect(() => {
     if (availableCities.length > 0) {
       const isSelectedCityValid = availableCities.some((c) => c.slug === selectedCity);
       if (!selectedCity || !isSelectedCityValid) {
-        // Find capital if possible, else first city
         const capital = availableCities.find((c) => c.isCapital);
         setSelectedCity(capital ? capital.slug : availableCities[0].slug);
       }

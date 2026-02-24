@@ -52,9 +52,15 @@
       "signupMessage": "Create a free account for a personalized experience with recommendations tailored to your expatriation project.",
       "createAccount": "Create an account",
       "close": "Close"
-    }
+    },
+    "quit": "Quit",
+    "remove": "Remove"
   },
   "services": {
+    "citySelector": {
+      "city": "City",
+      "select": "Select"
+    },
     "guides": {
       "sectionTitle": "Step-by-step guides",
       "tipsTitle": "Practical tips",
@@ -1113,6 +1119,12 @@
     "selection": "Selection:",
     "tableHeader": "Comparison",
     "currencyLabel": "Display currency:",
+    "addCountry": "Select a country",
+    "addAnotherCountry": "Add a country",
+    "addDestination": "Add a destination",
+    "searchCountry": "Search a country...",
+    "entireCountry": "Entire country",
+    "noCountryFound": "No destination found",
     "limitReached": {
       "title": "Limit Reached (Guest Mode)",
       "message": "You are comparing {{count}} countries.",
@@ -1140,8 +1152,10 @@
       "salary": "Salary",
       "safety": "Safety",
       "healthcare": "Healthcare",
-      "affordability": "Affordability",
-      "workLife": "Work/Life"
+      "affordability": "Housing",
+      "workLife": "Work/Life",
+      "food": "Food",
+      "transport": "Transport"
     },
     "fields": {
       "continent": "Continent",

@@ -17,7 +17,6 @@ export default function Stepper({ steps, onStepClick }: StepperProps) {
       <div className="flex items-start justify-between min-w-[max-content] sm:min-w-0 px-4 sm:px-8">
         {steps.map((step, index) => (
           <div key={step.id} className="flex items-start flex-1 last:flex-none">
-            {/* Step Icon & Label */}
             <div className="flex flex-col items-center shrink-0 w-24">
               <button
                 onClick={() => onStepClick?.(step.id)}
@@ -58,7 +57,6 @@ export default function Stepper({ steps, onStepClick }: StepperProps) {
               </span>
             </div>
 
-            {/* Connecting Line */}
             {index < steps.length - 1 && (
               <div className={`
                 flex-1 h-0.5 mt-4 min-w-[1rem] sm:min-w-[2rem] transition-colors duration-200 relative z-0

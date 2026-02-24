@@ -20,14 +20,12 @@ export default function CountryComparison() {
     if (selectedCountries.includes(countryId)) {
       setSelectedCountries(selectedCountries.filter(id => id !== countryId))
     } else if (selectedCountries.length < maxCountries) {
-      // Check if the new selection is of the same type (city vs country) as existing selections
       const newSelection = countries?.find(c => c.uniqueId === countryId);
       
       if (selectedCountries.length > 0 && newSelection) {
         const firstSelection = countries?.find(c => c.uniqueId === selectedCountries[0]);
         
         if (firstSelection && firstSelection.isCity !== newSelection.isCity) {
-          // If types don't match, clear existing selections and start fresh with the new one
           setSelectedCountries([countryId]);
           return;
         }

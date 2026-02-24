@@ -240,7 +240,6 @@ export default function PersonalizedDashboard() {
           <div className={`h-full ${editMode ? 'ring-2 ring-purple-300 rounded-b-xl sm:rounded-xl overflow-hidden ring-offset-1' : ''}`}>
             {children}
           </div>
-          {/* Invisible overlay so interacting with widgets doesn't trigger while editing */}
           {editMode && <div className="absolute inset-0 top-10 sm:top-0 sm:left-4 z-10 bg-transparent pointer-events-none rounded-b-xl sm:rounded-xl" />}
         </div>
       </div>
@@ -411,13 +410,6 @@ export default function PersonalizedDashboard() {
                   </>
                 )}
               </button>
-              {/* <Link
-                to="/profile"
-                className="flex items-center text-gray-600 hover:bg-gray-100 p-2 rounded-lg transition-colors"
-                title={t('dashboard.personalized.settings')}
-              >
-                <Settings className="w-4 h-4" /> */}
-              {/* </Link> */}
             </div>
           </div>
         </div>

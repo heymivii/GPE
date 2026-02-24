@@ -81,9 +81,8 @@ export default function EmploiStats({ countryName, cityName }: EmploiStatsProps)
     data: adzunaData,
     isLoading: isAdzunaLoading,
   } = useQuery<AdzunaSearchResponse>({
-    // Add `apiCity` to the query key so it refetches when the selected city changes (even though Adzuna search is by country here)
     queryKey: ['emploi-adzuna', adzunaCode, apiCity],
-    queryFn: () => searchJobs({ country: adzunaCode, resultsPerPage: 6, page: 1 }), // Assuming searchJobs takes full country scope but caching varies
+    queryFn: () => searchJobs({ country: adzunaCode, resultsPerPage: 6, page: 1 }),
     enabled: !!adzunaCode,
     staleTime: 30 * 60 * 1000,
     retry: 1,
