@@ -28,8 +28,10 @@ export class CostOfLivingService {
     ['fr', 'France'],
     ['usa', 'United States'],
     ['united states', 'United States'],
+    ['etats-unis', 'United States'],
     ['us', 'United States'],
     ['japan', 'Japan'],
+    ['japon', 'Japan'],
     ['jp', 'Japan'],
     ['switzerland', 'Switzerland'],
     ['ch', 'Switzerland'],
@@ -44,7 +46,7 @@ export class CostOfLivingService {
     private readonly cityRepository: Repository<City>,
     @InjectRepository(Country)
     private readonly countryRepository: Repository<Country>,
-  ) {}
+  ) { }
 
   private memKey(city: string, country: string): string {
     return `${city.toLowerCase().trim()}::${country.toLowerCase().trim()}`;
@@ -139,9 +141,9 @@ export class CostOfLivingService {
     const resolvedCityId = cityEntity
       ? cityEntity.city_id
       : await this.resolveOrCreateCity(city, normalizedCountry).catch((e) => {
-          this.logger.warn(`Could not resolve/create city: ${e}`);
-          return null;
-        });
+        this.logger.warn(`Could not resolve/create city: ${e}`);
+        return null;
+      });
 
     if (resolvedCityId) {
       this.persistToDb(resolvedCityId, data).catch((e) =>
@@ -155,11 +157,14 @@ export class CostOfLivingService {
   async getCachedDataByCityId(
     cityId: number,
   ): Promise<CleanedCostOfLivingData | null> {
+    this.logger.log(`🔍 getCachedDataByCityId called with cityId=${cityId} (type: ${typeof cityId})`);
     const cached = await this.cacheRepository.findOne({ where: { cityId } });
+    this.logger.log(`🔍 cached result: ${cached ? `found (id=${cached.id}, cityId=${cached.cityId}, expires=${cached.expiresAt})` : 'NOT FOUND'}`);
     if (cached && new Date(cached.expiresAt) > new Date()) {
-      this.logger.log(`📦 DB Cache HIT for city_id=${cityId}`);
+      this.logger.log(`📦 DB Cache HIT for city_id=${cityId}, salary=${(cached.data as any)?.summary?.averageSalary}`);
       return cached.data as CleanedCostOfLivingData;
     }
+    this.logger.warn(`⚠️ DB Cache MISS for city_id=${cityId}`);
     return null;
   }
 
@@ -182,6 +187,14 @@ export class CostOfLivingService {
     }
 
     const cleanedData = await this.fetchFromApi(cityName, countryName);
+
+    // Validate that cleaned data actually contains valid figures before caching
+    const isInvalidData = !cleanedData.summary.averageSalary && !cleanedData.categories.housing.rent.oneBedroom.cityCenter.avg;
+    if (isInvalidData) {
+      this.logger.warn(`Returned API data for ${cityName} is mostly empty/zeros. Not caching it.`);
+      return cleanedData; // return it but don't cache
+    }
+
     await this.persistToDb(cityId, cleanedData);
     this.memSet(key, cleanedData);
     return cleanedData;
@@ -218,16 +231,25 @@ export class CostOfLivingService {
     cityName: string,
     countryName: string,
   ): Promise<CleanedCostOfLivingData> {
+    let apiCityName = cityName;
+    if (cityName === 'New York City') apiCityName = 'New York';
+    if (cityName === 'Zurich' || cityName === 'Zürich') apiCityName = 'Geneva';
+
+    let apiCountryName = countryName;
+    if (countryName === 'États-Unis') apiCountryName = 'United States';
+    if (countryName === 'Japon') apiCountryName = 'Japan';
+    if (countryName === 'Suisse') apiCountryName = 'Switzerland';
+
     const maxRetries = 3;
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
         this.logger.log(
-          `🌐 Fetching cost of living for ${cityName}, ${countryName} (attempt ${attempt})`,
+          `🌐 Fetching cost of living for ${apiCityName}, ${apiCountryName} (attempt ${attempt})`,
         );
         const response = await axios.request({
           method: 'GET',
           url: `${this.BASE_URL}/prices`,
-          params: { city_name: cityName, country_name: countryName },
+          params: { city_name: apiCityName, country_name: apiCountryName },
           headers: {
             'x-rapidapi-key': this.RAPIDAPI_KEY,
             'x-rapidapi-host': this.RAPIDAPI_HOST,

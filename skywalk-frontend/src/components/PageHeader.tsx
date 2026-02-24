@@ -12,10 +12,10 @@ export function PageHeader({ title, description, children }: PageHeaderProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
         <div className="max-w-3xl">
           {children}
-          <h1 className="text-5xl font-bold text-gray-900 mb-6 tracking-tight font-outfit">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 tracking-tight font-outfit">
             {title}
           </h1>
-          <p className="text-xl text-gray-500 leading-relaxed font-light">
+          <p className="text-base sm:text-lg lg:text-xl text-gray-500 leading-relaxed font-light">
             {description}
           </p>
         </div>

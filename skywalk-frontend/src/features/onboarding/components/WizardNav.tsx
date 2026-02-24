@@ -22,16 +22,16 @@ export default function WizardNav({
   const finalNextLabel = isLastStep && !nextLabel ? t('onboarding.nav.goToDashboard') : resolvedNextLabel
 
   return (
-    <div className="flex justify-between items-center pt-6 mt-8 border-t border-gray-200">
+    <div className="flex flex-col-reverse sm:flex-row justify-between items-stretch sm:items-center pt-6 mt-8 border-t border-gray-200 gap-3 sm:gap-0">
       {onBack ? (
         <button
           onClick={onBack}
-          className="rounded-xl px-6 py-2 bg-neutral-200 text-neutral-800 hover:bg-neutral-300 transition-colors duration-200 font-medium"
+          className="w-full sm:w-auto rounded-xl px-6 py-3 sm:py-2 bg-neutral-200 text-neutral-800 hover:bg-neutral-300 transition-colors duration-200 font-medium"
         >
           {backLabel || t('onboarding.nav.back')}
         </button>
       ) : (
-        <div /> 
+        <div className="hidden sm:block" />
       )}
 
       {onNext && (
@@ -39,12 +39,12 @@ export default function WizardNav({
           onClick={onNext}
           disabled={isNextDisabled}
           className={`
-            rounded-xl px-6 py-2 font-medium transition-colors duration-200
+            w-full sm:w-auto rounded-xl px-6 py-3 sm:py-2 font-medium transition-colors duration-200
             ${isNextDisabled
               ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
               : 'bg-black text-white hover:bg-neutral-800'
             }
-            ${isLastStep ? 'px-8' : ''}
+            ${isLastStep ? 'sm:px-8' : ''}
           `}
         >
           {finalNextLabel}

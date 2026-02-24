@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next';
 import Dropdown from '../components/Dropdown';
 import DestinationCard from '../../dashboard/components/DestinationCard';
 import LandingToolsSection from '../components/LandingToolsSection';
+import MiddleCtaBanner from '../components/MiddleCtaBanner';
+import NewsletterCTA from '../components/NewsletterCTA';
 import HowItWorks from '../components/HowItWorks';
 import Testimonials from '../components/Testimonials';
 import FAQ from '../components/FAQ';
@@ -39,43 +41,43 @@ export default function LandingPage() {
 
   return (
     <>
-      <section className="min-h-[90vh] flex items-center justify-center bg-gradient-to-b from-white to-gray-100 px-8">
-        <div className="w-full max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-12">
-          
+      <section className="min-h-[70vh] lg:min-h-[90vh] flex items-center justify-center bg-white px-4 sm:px-8">
+        <div className="w-full max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+
           <div className="flex-1 w-full lg:w-1/2">
-            <div className="flex flex-col gap-5">
-              <p className="font-outfit font-bold text-4xl md:text-6xl lg:text-7xl">{t('landing.hero.title')}</p>
-              <p className="font-light text-lg">{t('landing.hero.subtitle')}
+            <div className="flex flex-col gap-4 sm:gap-5">
+              <p className="font-outfit font-bold text-3xl sm:text-4xl md:text-6xl lg:text-7xl">{t('landing.hero.title')}</p>
+              <p className="font-light text-base sm:text-lg">{t('landing.hero.subtitle')}
                 <br /> {t('landing.hero.subtitle2')}
               </p>
 
-              <div className="mt-7">
-                <Link 
+              <div className="mt-5 sm:mt-7">
+                <Link
                   to={isAuthenticated ? "/onboarding" : "/auth/register?redirect=/onboarding"}
-                  className="inline-flex items-center text-white bg-[#5EA3C0] border-none rounded-full pl-12 pr-20 py-5 text-base relative hover:bg-[#4d8a9d] transition-colors"
+                  className="inline-flex items-center text-white bg-[#5EA3C0] border-none rounded-full pl-6 sm:pl-12 pr-14 sm:pr-20 py-4 sm:py-5 text-sm sm:text-base relative hover:bg-[#4d8a9d] transition-colors"
                 >
                   {t('landing.hero.cta')}
-                  <div className="text-black bg-white absolute right-1 top-1/2 transform -translate-y-1/2 rounded-full p-4">
-                    <ArrowRightIcon className="icon" />
+                  <div className="text-black bg-white absolute right-1 top-1/2 transform -translate-y-1/2 rounded-full p-3 sm:p-4">
+                    <ArrowRightIcon className="icon w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
                 </Link>
               </div>
             </div>
 
-            <div className="mt-20 flex items-center justify-between w-full max-w-2xl">
+            <div className="mt-12 sm:mt-20 flex items-center justify-between w-full max-w-2xl">
               <div className="flex-1 flex flex-col min-w-0">
-                <span className="text-3xl font-bold whitespace-nowrap">12 000+</span>
-                <span className="text-gray-600 text-sm font-medium mt-1 break-words">{t('landing.hero.stats.expats')}</span>
+                <span className="text-2xl sm:text-4xl font-semibold tracking-tight whitespace-nowrap text-[#1d1d1f]">50+</span>
+                <span className="text-[#86868b] text-xs sm:text-sm font-medium mt-1 break-words">{t('landing.hero.stats.expats', { defaultValue: 'Early Expats Supported' })}</span>
               </div>
-              <div className="h-10 w-px bg-gray-300 mx-2 sm:mx-6" />
+              <div className="h-10 sm:h-12 w-px bg-gray-200 mx-2 sm:mx-8" />
               <div className="flex-1 flex flex-col min-w-0">
-                <span className="text-3xl font-bold whitespace-nowrap">95%</span>
-                <span className="text-gray-600 text-sm font-medium mt-1 break-words">{t('landing.hero.stats.satisfaction')}</span>
+                <span className="text-2xl sm:text-4xl font-semibold tracking-tight whitespace-nowrap text-[#1d1d1f]">98%</span>
+                <span className="text-[#86868b] text-xs sm:text-sm font-medium mt-1 break-words">{t('landing.hero.stats.satisfaction', { defaultValue: 'Satisfaction Rate' })}</span>
               </div>
-              <div className="h-10 w-px bg-gray-300 mx-2 sm:mx-6" />
+              <div className="h-10 sm:h-12 w-px bg-gray-200 mx-2 sm:mx-8" />
               <div className="flex-1 flex flex-col min-w-0">
-                <span className="text-3xl font-bold whitespace-nowrap">20+</span>
-                <span className="text-gray-600 text-sm font-medium mt-1 break-words">{t('landing.hero.stats.countries')}</span>
+                <span className="text-2xl sm:text-4xl font-semibold tracking-tight whitespace-nowrap text-[#1d1d1f]">10+</span>
+                <span className="text-[#86868b] text-xs sm:text-sm font-medium mt-1 break-words">{t('landing.hero.stats.countries', { defaultValue: 'Destinations Analyzed' })}</span>
               </div>
             </div>
           </div>
@@ -83,7 +85,7 @@ export default function LandingPage() {
           <div className="flex-1 w-full lg:w-1/2">
             <Dropdown />
           </div>
-          
+
         </div>
       </section>
 
@@ -91,11 +93,13 @@ export default function LandingPage() {
 
       <LandingToolsSection />
 
-      <section className="mt-16 px-8 w-full max-w-7xl mx-auto pb-16">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+      <MiddleCtaBanner />
+
+      <section className="mt-12 sm:mt-16 px-4 sm:px-8 w-full max-w-7xl mx-auto pb-12 sm:pb-16">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 sm:mb-10 gap-4">
           <div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-3 font-outfit">{t('landing.destinations.title')}</h2>
-            <p className="text-gray-600 text-lg">{t('landing.destinations.subtitle')}</p>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 sm:mb-3 font-outfit">{t('landing.destinations.title')}</h2>
+            <p className="text-gray-600 text-base sm:text-lg">{t('landing.destinations.subtitle')}</p>
           </div>
           <Link
             to="/destinations"
@@ -107,7 +111,7 @@ export default function LandingPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Link 
+          <Link
             to={`/destinations/${popularDestinations[0].isoCode}`}
             className="lg:row-span-2 h-full min-h-[400px] block"
           >
@@ -122,7 +126,7 @@ export default function LandingPage() {
           </Link>
 
           <div className="space-y-6">
-            <Link 
+            <Link
               to={`/destinations/${popularDestinations[1].isoCode}`}
               className="block"
             >
@@ -134,8 +138,8 @@ export default function LandingPage() {
                 size="small"
               />
             </Link>
-            
-            <Link 
+
+            <Link
               to={`/destinations/${popularDestinations[2].isoCode}`}
               className="block"
             >
@@ -152,6 +156,9 @@ export default function LandingPage() {
       </section>
 
       <Testimonials />
+
+      <NewsletterCTA />
+
       <FAQ />
     </>
   );

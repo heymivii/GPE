@@ -9,6 +9,7 @@ import { getCountryMapping, getCurrentLocale } from '../../../data/supportedCoun
 
 interface LogementStatsProps {
   countryName?: string;
+  cityName?: string;
 }
 
 const fmtPrice = (v: number | undefined | null, decimals = 0): string =>
@@ -43,15 +44,17 @@ function PriceRow({ label, avg, min, max, localCur, exchangeRates }: {
   );
 }
 
-export default function LogementStats({ countryName }: LogementStatsProps) {
+export default function LogementStats({ countryName, cityName }: LogementStatsProps) {
   const { t } = useTranslation();
   const mapping = getCountryMapping(countryName);
 
   const { formatPrice, isSameCurrency, displayCurrency, displaySymbol } = useCurrency();
 
+  const apiCity = cityName || mapping.city;
+
   const { data, isLoading, isError } = useQuery<CleanedCostOfLivingData>({
-    queryKey: ['cost-of-living', mapping.city, mapping.country],
-    queryFn: () => costOfLivingApi.getCostOfLiving(mapping.city, mapping.country),
+    queryKey: ['cost-of-living', apiCity, mapping.country],
+    queryFn: () => costOfLivingApi.getCostOfLiving(apiCity, mapping.country),
     staleTime: 60 * 60 * 1000,
     gcTime: 2 * 60 * 60 * 1000,
     retry: 2,
@@ -85,7 +88,7 @@ export default function LogementStats({ countryName }: LogementStatsProps) {
   const utilities = data.categories.utilities;
   const salary = data.categories.salary;
   const localCur = data.currency.code;
-  const cityName = data.city.name;
+  const numbeoCityName = data.city.name;
   const rates = data.currency.exchangeRates ?? null;
 
   const same = isSameCurrency(localCur);
@@ -125,7 +128,7 @@ export default function LogementStats({ countryName }: LogementStatsProps) {
           )}
           <div className="flex items-center space-x-1.5 px-3 py-1.5 bg-blue-50 rounded-full">
             <MapPin className="w-3.5 h-3.5 text-blue-600" />
-            <span className="text-xs font-medium text-blue-700">{cityName}</span>
+            <span className="text-xs font-medium text-blue-700">{numbeoCityName}</span>
           </div>
         </div>
       </div>
@@ -201,7 +204,7 @@ export default function LogementStats({ countryName }: LogementStatsProps) {
             <div>
               <h3 className="font-semibold text-blue-900 mb-1">{t('services.stats.logement.salaryContext')}</h3>
               <p className="text-sm text-blue-800">
-                {t('services.stats.logement.avgNetSalary', { city: cityName })}{' '}
+                {t('services.stats.logement.avgNetSalary', { city: numbeoCityName })}{' '}
                 <strong>
                   {fp(salary.averageMonthly.avg)}{t('services.stats.common.perMonth')}
                   {!same && (
@@ -219,7 +222,7 @@ export default function LogementStats({ countryName }: LogementStatsProps) {
 
       <div className="bg-gray-50 border border-gray-200 rounded-xl p-5">
         <p className="text-sm text-gray-600 leading-relaxed">
-          <strong>{t('services.stats.common.source')}</strong> {t('services.stats.common.sourceNumbeo')} <strong>{cityName}</strong>.
+          <strong>{t('services.stats.common.source')}</strong> {t('services.stats.common.sourceNumbeo')} <strong>{numbeoCityName}</strong>.
           {!same && (
             <> {t('services.stats.common.pricesConverted', { symbol: displaySymbol, from: localCur, to: displayCurrency })}</>
           )}

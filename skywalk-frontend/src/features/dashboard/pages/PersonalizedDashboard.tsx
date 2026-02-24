@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Settings, Plus, LayoutGrid, X, Check, User, CheckSquare, Wallet, Lightbulb, GripVertical } from 'lucide-react'
+import { Plus, LayoutGrid, X, Check, User, CheckSquare, Wallet, Lightbulb, GripVertical } from 'lucide-react'
 import { Link, useSearchParams } from 'react-router-dom'
 import {
   DndContext,
@@ -45,7 +45,7 @@ export default function PersonalizedDashboard() {
   })
   const [editMode, setEditMode] = useState(false)
   const [showAddWidget, setShowAddWidget] = useState(false)
-  
+
   const defaultLayout = [
     'checklist',
     'profile-summary',
@@ -56,19 +56,23 @@ export default function PersonalizedDashboard() {
     'budget-tracker',
     'currency-converter',
   ]
-  
+
   const [dashboardLayout, setDashboardLayout] = useState<string[]>(
     widgetOrder || defaultLayout
   )
-  
+
   useEffect(() => {
     if (widgetOrder) {
       setDashboardLayout(widgetOrder)
     }
   }, [widgetOrder])
-  
+
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
@@ -100,7 +104,7 @@ export default function PersonalizedDashboard() {
   ]
 
   const activeProject = projects?.find(p => p.idProject === selectedProjectId)
-  
+
   const countryData = useCountryData(activeProject?.idDestinationCountry)
   const originCountryData = useCountryData(activeProject?.idOriginCountry)
 
@@ -156,13 +160,13 @@ export default function PersonalizedDashboard() {
   }
 
   const userData = {
-    name: user?.fullName || t('dashboard.personalized.defaultUser'), 
+    name: user?.fullName || t('dashboard.personalized.defaultUser'),
     onboardingData: {
       destination: {
         fromCountry: originCountryData?.code || 'FR',
         toCountry: countryData?.code || 'XX',
         targetCity: '',
-        departureYear: activeProject?.expectedDepartureDate 
+        departureYear: activeProject?.expectedDepartureDate
           ? new Date(activeProject.expectedDepartureDate).getFullYear().toString()
           : new Date().getFullYear().toString()
       },
@@ -184,10 +188,10 @@ export default function PersonalizedDashboard() {
   const visibleWidgets = dashboardLayout.filter(
     widgetId => !hiddenWidgets.includes(widgetId)
   )
-  
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
-    
+
     if (over && active.id !== over.id) {
       setDashboardLayout((items) => {
         const oldIndex = items.indexOf(active.id as string)
@@ -198,7 +202,7 @@ export default function PersonalizedDashboard() {
       })
     }
   }
-  
+
   const SortableWidget = ({ id, children, className: extraClass = '' }: { id: string; children: React.ReactNode; className?: string }) => {
     const {
       attributes,
@@ -208,32 +212,36 @@ export default function PersonalizedDashboard() {
       transition,
       isDragging,
     } = useSortable({ id })
-    
+
     const style = {
       transform: CSS.Transform.toString(transform),
       transition,
-      opacity: isDragging ? 0.5 : 1,
-      cursor: editMode ? 'grab' : 'default',
+      opacity: isDragging ? 0.7 : 1,
+      zIndex: isDragging ? 50 : 1,
     }
-    
+
     return (
-      <div 
-        ref={setNodeRef} 
-        style={style} 
-        className={`relative h-full ${extraClass} ${editMode ? 'hover:ring-2 hover:ring-purple-300 rounded-xl transition-all' : ''}`}
+      <div
+        ref={setNodeRef}
+        style={style}
+        className={`relative h-full ${extraClass} ${editMode ? 'transition-all duration-300' : ''}`}
       >
         {editMode && (
           <div
             {...attributes}
             {...listeners}
-            className="absolute -left-2 top-1/2 -translate-y-1/2 z-10 cursor-grab active:cursor-grabbing bg-purple-500 rounded-lg p-2 shadow-lg hover:shadow-xl hover:bg-purple-600 transition-all"
+            className="absolute top-0 inset-x-0 h-10 sm:h-auto sm:w-10 sm:inset-auto sm:-left-3 sm:top-1/2 sm:-translate-y-1/2 z-20 cursor-grab active:cursor-grabbing bg-purple-100 sm:bg-purple-600 rounded-t-xl sm:rounded-lg flex sm:flex-col items-center justify-center p-0 sm:py-3 border-x border-t border-purple-200 sm:border-0 shadow-sm sm:shadow-lg hover:bg-purple-200 sm:hover:bg-purple-700 transition-colors touch-none"
             title={t('dashboard.dragToReorder')}
           >
-            <GripVertical className="w-4 h-4 text-white" />
+            <GripVertical className="w-5 h-5 sm:w-4 sm:h-4 text-purple-600 sm:text-white" />
           </div>
         )}
-        <div className={`h-full ${editMode ? 'pl-4' : ''}`}>
-          {children}
+        <div className={`h-full ${editMode ? 'pt-10 sm:pt-0 sm:pl-4 transition-all duration-300' : 'transition-all duration-300'}`}>
+          <div className={`h-full ${editMode ? 'ring-2 ring-purple-300 rounded-b-xl sm:rounded-xl overflow-hidden ring-offset-1' : ''}`}>
+            {children}
+          </div>
+          {/* Invisible overlay so interacting with widgets doesn't trigger while editing */}
+          {editMode && <div className="absolute inset-0 top-10 sm:top-0 sm:left-4 z-10 bg-transparent pointer-events-none rounded-b-xl sm:rounded-xl" />}
         </div>
       </div>
     )
@@ -255,7 +263,7 @@ export default function PersonalizedDashboard() {
             {...commonProps}
           />
         )
-      
+
       case 'local-time':
         return (
           <LocalTimeWidget
@@ -265,7 +273,7 @@ export default function PersonalizedDashboard() {
             {...commonProps}
           />
         )
-      
+
       case 'weather':
         return (
           <WeatherWidget
@@ -275,7 +283,7 @@ export default function PersonalizedDashboard() {
             {...commonProps}
           />
         )
-      
+
       case 'recommendations':
         return (
           <RecommendationsWidget
@@ -286,7 +294,7 @@ export default function PersonalizedDashboard() {
             {...commonProps}
           />
         )
-      
+
       case 'checklist':
         return (
           <ChecklistWidget
@@ -296,7 +304,7 @@ export default function PersonalizedDashboard() {
             {...commonProps}
           />
         )
-      
+
       case 'budget-tracker':
         return (
           <BudgetTrackerWidget
@@ -307,7 +315,7 @@ export default function PersonalizedDashboard() {
             {...commonProps}
           />
         )
-      
+
       case 'currency-converter':
         return (
           <CurrencyConverterWidget
@@ -315,7 +323,7 @@ export default function PersonalizedDashboard() {
             {...commonProps}
           />
         )
-      
+
       case 'job-opportunities':
         return (
           <JobOpportunitiesWidget
@@ -330,7 +338,7 @@ export default function PersonalizedDashboard() {
             {...commonProps}
           />
         )
-      
+
       default:
         return null
     }
@@ -358,9 +366,9 @@ export default function PersonalizedDashboard() {
                 >
                   {projects.map((project) => {
                     const countryNames: Record<number, string> = {
-                      1: t('countries.france'), 2: t('countries.canada'), 3: t('countries.switzerland'), 4: t('countries.germany'), 
+                      1: t('countries.france'), 2: t('countries.canada'), 3: t('countries.switzerland'), 4: t('countries.germany'),
                       5: t('countries.spain'), 6: t('countries.italy'), 7: t('countries.portugal'), 8: t('countries.belgium'),
-                      9: t('countries.netherlands'), 10: t('countries.luxembourg'), 11: t('countries.unitedKingdom'), 
+                      9: t('countries.netherlands'), 10: t('countries.luxembourg'), 11: t('countries.unitedKingdom'),
                       12: t('countries.ireland'), 13: t('countries.unitedStates'), 14: t('countries.australia'), 16: t('countries.japan')
                     }
                     const countryName = countryNames[project.idDestinationCountry] || t('dashboard.personalized.defaultDestination')
@@ -386,11 +394,10 @@ export default function PersonalizedDashboard() {
               )}
               <button
                 onClick={() => setEditMode(!editMode)}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg font-medium transition-all text-sm ${
-                  editMode 
-                    ? 'bg-blue-600 text-white shadow-md hover:bg-blue-700' 
-                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 hover:border-gray-400'
-                }`}
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg font-medium transition-all text-sm ${editMode
+                  ? 'bg-blue-600 text-white shadow-md hover:bg-blue-700'
+                  : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 hover:border-gray-400'
+                  }`}
               >
                 {editMode ? (
                   <>
@@ -404,13 +411,13 @@ export default function PersonalizedDashboard() {
                   </>
                 )}
               </button>
-              <Link
+              {/* <Link
                 to="/profile"
                 className="flex items-center text-gray-600 hover:bg-gray-100 p-2 rounded-lg transition-colors"
                 title={t('dashboard.personalized.settings')}
               >
-                <Settings className="w-4 h-4" />
-              </Link>
+                <Settings className="w-4 h-4" /> */}
+              {/* </Link> */}
             </div>
           </div>
         </div>
@@ -462,7 +469,7 @@ export default function PersonalizedDashboard() {
                 </p>
                 {activeProject?.expectedDepartureDate && (
                   <span className="text-[10px] text-emerald-600 font-semibold bg-emerald-50 px-1.5 py-0.5 rounded-full shrink-0">
-                    {t('dashboard.personalized.stats.departureDate.days', { 
+                    {t('dashboard.personalized.stats.departureDate.days', {
                       count: Math.max(0, Math.ceil((new Date(activeProject.expectedDepartureDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
                     })}
                   </span>
@@ -496,14 +503,14 @@ export default function PersonalizedDashboard() {
             <div className="min-w-0">
               <p className="text-[11px] text-gray-400 uppercase tracking-wide">{t('dashboard.personalized.stats.duration.label')}</p>
               <p className="text-sm font-bold text-gray-900 truncate">
-                {activeProject?.expectedDuration 
+                {activeProject?.expectedDuration
                   ? (() => {
-                      const months = activeProject.expectedDuration
-                      if (months <= 6) return t('dashboard.personalized.stats.duration.less6months')
-                      if (months <= 12) return t('dashboard.personalized.stats.duration.6to12months')
-                      if (months <= 36) return t('dashboard.personalized.stats.duration.1to3years')
-                      return t('dashboard.personalized.stats.duration.more3years')
-                    })()
+                    const months = activeProject.expectedDuration
+                    if (months <= 6) return t('dashboard.personalized.stats.duration.less6months')
+                    if (months <= 12) return t('dashboard.personalized.stats.duration.6to12months')
+                    if (months <= 36) return t('dashboard.personalized.stats.duration.1to3years')
+                    return t('dashboard.personalized.stats.duration.more3years')
+                  })()
                   : t('dashboard.personalized.stats.duration.undefined')}
               </p>
             </div>
@@ -539,7 +546,7 @@ export default function PersonalizedDashboard() {
                   {renderWidget(widgetId)}
                 </SortableWidget>
               ))}
-              
+
               {editMode && (
                 <button
                   onClick={() => setShowAddWidget(true)}
@@ -617,18 +624,16 @@ export default function PersonalizedDashboard() {
                         }
                       }}
                       disabled={isAdded}
-                      className={`group relative flex items-start p-5 rounded-xl border-2 text-left transition-all duration-200 ${
-                        isAdded
-                          ? 'border-gray-200 bg-gray-50 opacity-60 cursor-default'
-                          : 'border-white bg-white shadow-sm hover:border-blue-500 cursor-pointer'
-                      }`}
+                      className={`group relative flex items-start p-5 rounded-xl border-2 text-left transition-all duration-200 ${isAdded
+                        ? 'border-gray-200 bg-gray-50 opacity-60 cursor-default'
+                        : 'border-white bg-white shadow-sm hover:border-blue-500 cursor-pointer'
+                        }`}
                     >
-                      <div className={`p-3 rounded-lg mr-4 ${
-                        isAdded ? 'bg-gray-200 text-gray-500' : 'bg-blue-50 text-blue-600 group-hover:bg-blue-100'
-                      }`}>
+                      <div className={`p-3 rounded-lg mr-4 ${isAdded ? 'bg-gray-200 text-gray-500' : 'bg-blue-50 text-blue-600 group-hover:bg-blue-100'
+                        }`}>
                         <Icon className="w-6 h-6" />
                       </div>
-                      
+
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-1">
                           <h3 className={`font-semibold ${isAdded ? 'text-gray-500' : 'text-gray-900'}`}>
@@ -644,7 +649,7 @@ export default function PersonalizedDashboard() {
                         <p className={`text-sm leading-relaxed ${isAdded ? 'text-gray-400' : 'text-gray-500'}`}>
                           {widget.description}
                         </p>
-                        
+
                         {!isAdded && (
                           <div className="mt-4 flex items-center text-sm font-medium text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
                             <Plus className="w-4 h-4 mr-1" />

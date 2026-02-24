@@ -4,8 +4,10 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../../hooks/useAuth';
 import { useQuery } from '@tanstack/react-query';
 import { expatriationProjectApi } from '../../../api/expatriation-project';
+import { destinationsApi } from '../../../api/destinations';
 import type { ServiceConfig, ServiceGuide } from '../../../data/services-config';
 import { getCountryContent } from '../../../data/services-content-by-country';
+import type { CityDestination } from '../../destinations/types';
 
 interface UseServiceContentParams {
   service: ServiceConfig;
@@ -17,6 +19,7 @@ export function useServiceContent({ service, category }: UseServiceContentParams
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+  const [selectedCity, setSelectedCity] = useState<string | null>(null);
 
   useEffect(() => {
     const countryParam = searchParams.get('country');
@@ -31,6 +34,35 @@ export function useServiceContent({ service, category }: UseServiceContentParams
     enabled: isAuthenticated,
   });
 
+  const { data: countryData } = useQuery({
+    queryKey: ['country-details', selectedCountry],
+    queryFn: () => destinationsApi.getBySlug(selectedCountry!),
+    enabled: !!selectedCountry && isAuthenticated,
+  });
+
+  const availableCities = useMemo((): CityDestination[] => {
+    if (!countryData || !countryData.cities) return [];
+    // Sort cities by priority and then by name
+    return [...countryData.cities].sort((a, b) => {
+      if (a.priority !== b.priority) return a.priority - b.priority;
+      return a.name.localeCompare(b.name);
+    });
+  }, [countryData]);
+
+  // Automatically select the first city when availableCities changes and selectedCity is not valid for this country
+  useEffect(() => {
+    if (availableCities.length > 0) {
+      const isSelectedCityValid = availableCities.some((c) => c.slug === selectedCity);
+      if (!selectedCity || !isSelectedCityValid) {
+        // Find capital if possible, else first city
+        const capital = availableCities.find((c) => c.isCapital);
+        setSelectedCity(capital ? capital.slug : availableCities[0].slug);
+      }
+    } else if (selectedCountry === null) {
+      setSelectedCity(null);
+    }
+  }, [availableCities, selectedCity, selectedCountry]);
+
   const enrichedContent = useMemo(() => {
     if (!selectedCountry) {
       return {
@@ -41,7 +73,7 @@ export function useServiceContent({ service, category }: UseServiceContentParams
     }
 
     const countryContent = getCountryContent(selectedCountry, category);
-    
+
     if (!countryContent) {
       return {
         ...service,
@@ -92,6 +124,9 @@ export function useServiceContent({ service, category }: UseServiceContentParams
     content: enrichedContent,
     selectedCountry,
     setSelectedCountry,
+    selectedCity,
+    setSelectedCity,
+    availableCities,
     displayMode,
     hasProject: projects && projects.length > 0,
     isAuthenticated,

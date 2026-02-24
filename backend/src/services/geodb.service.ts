@@ -1,4 +1,5 @@
 import axios from 'axios';
+import * as https from 'https';
 
 interface CityData {
   id: number;
@@ -32,6 +33,7 @@ class GeoDBService {
           'x-rapidapi-key': this.apiKey,
           'x-rapidapi-host': 'wft-geo-db.p.rapidapi.com',
         },
+        httpsAgent: new https.Agent({ rejectUnauthorized: false }),
       });
 
       const data = response.data;

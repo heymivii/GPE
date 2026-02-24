@@ -1,4 +1,5 @@
 import axios from 'axios';
+import * as https from 'https';
 import * as NodeCache from 'node-cache';
 
 interface CountryInfo {
@@ -38,7 +39,9 @@ class RestCountriesService {
     }
 
     try {
-      const response = await axios.get(`${this.baseURL}/alpha/${countryCode}`);
+      const response = await axios.get(`${this.baseURL}/alpha/${countryCode}`, {
+        httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+      });
       const country = response.data[0];
 
       this.cache.set(cacheKey, country);

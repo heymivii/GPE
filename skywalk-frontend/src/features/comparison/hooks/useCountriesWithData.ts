@@ -64,21 +64,7 @@ export interface EnrichedCountry {
     internetMonthly?: number
     capitalCityData?: CostOfLivingData | null
   }
-  healthcare?: {
-    qualityRating?: string
-    system?: string
-    accessibility?: string
-    averageCosts?: {
-      doctorVisit?: number
-      emergency?: number
-      insurance?: number
-    }
-  }
-  lifestyle?: {
-    safetyRating?: string
-    workLifeBalance?: string
-    cuisine?: string
-  }
+
   climate?: {
     type?: string
     averageTemp?: {
@@ -102,6 +88,9 @@ export interface EnrichedCountry {
       category: string
     }>
   }
+  uniqueId?: string
+  isCity?: boolean
+  parentId?: number
 }
 
 function extractCostOfLivingFromCache(
@@ -117,15 +106,15 @@ function extractCostOfLivingFromCache(
   const m = food?.markets
   const weeklyGroceries = m
     ? Math.round(
-        (m.bread500g?.avg || 0) * 2 +
-        (m.milk1L?.avg || 0) * 3 +
-        (m.eggs12?.avg || 0) +
-        (m.rice1kg?.avg || 0) +
-        (m.chicken1kg?.avg || 0) +
-        (m.tomato1kg?.avg || 0) +
-        (m.potato1kg?.avg || 0) +
-        (m.apple1kg?.avg || 0),
-      )
+      (m.bread500g?.avg || 0) * 2 +
+      (m.milk1L?.avg || 0) * 3 +
+      (m.eggs12?.avg || 0) +
+      (m.rice1kg?.avg || 0) +
+      (m.chicken1kg?.avg || 0) +
+      (m.tomato1kg?.avg || 0) +
+      (m.potato1kg?.avg || 0) +
+      (m.apple1kg?.avg || 0),
+    )
     : undefined
 
   return {
@@ -167,7 +156,7 @@ export function useCountriesWithData() {
   const { data: destinationDetails, isLoading: isLoadingDetails } = useQuery({
     queryKey: ['country-destinations-details'],
     queryFn: async () => {
-      const results: Record<string, { capitalData: CostOfLivingData | null; currency: string; exchangeRates?: Record<string, number> }> = {}
+      const results: Record<string, { capitalData: CostOfLivingData | null; currency: string; exchangeRates?: Record<string, number>; cities?: import('../../destinations/types').CityDestination[] }> = {}
       await Promise.all(
         SUPPORTED_COUNTRY_CODES.map(async (code) => {
           try {
@@ -179,9 +168,10 @@ export function useCountriesWithData() {
               capitalData: capitalCity?.costOfLiving ?? null,
               currency: detail.currency || 'EUR',
               exchangeRates: capitalCity?.costOfLiving?.currency?.exchangeRates,
+              cities: detail.cities,
             }
           } catch {
-            results[code] = { capitalData: null, currency: 'EUR' }
+            results[code] = { capitalData: null, currency: 'EUR', cities: [] }
           }
         }),
       )
@@ -193,58 +183,76 @@ export function useCountriesWithData() {
 
   const isLoading = isLoadingCountries || isLoadingDetails
 
-  const enrichedCountries: EnrichedCountry[] | undefined = apiCountries
-    ?.map((country: Country): EnrichedCountry | undefined => {
-      const countryCode = country.isoCode
+  const enrichedCountries: EnrichedCountry[] = []
 
-      if (!countryCode || !SUPPORTED_COUNTRY_CODES.includes(countryCode)) {
-        return undefined
-      }
+  apiCountries?.forEach((country: Country) => {
+    const countryCode = country.isoCode
 
-      const jsonData = countriesDataJson.countries.find(
-        c => c.code === countryCode,
-      ) as CountryDataFromJson | undefined
+    if (!countryCode || !SUPPORTED_COUNTRY_CODES.includes(countryCode)) {
+      return
+    }
 
-      const detailData = destinationDetails?.[countryCode]
-      const realCostOfLiving = detailData?.capitalData
-        ? extractCostOfLivingFromCache(detailData.capitalData)
-        : undefined
+    const jsonData = countriesDataJson.countries.find(
+      c => c.code === countryCode,
+    ) as CountryDataFromJson | undefined
 
-      const costOfLiving = realCostOfLiving || jsonData?.costOfLiving
+    const detailData = destinationDetails?.[countryCode]
+    const realCostOfLiving = detailData?.capitalData
+      ? extractCostOfLivingFromCache(detailData.capitalData)
+      : undefined
 
-      return {
-        idCountry: country.idCountry,
-        countryName: country.countryName,
-        countryCode: countryCode,
-        isoCode: countryCode,
-        flagUrl: jsonData?.flagUrl || country.flagUrl,
-        flagEmoji: jsonData?.flagEmoji,
-        capital: jsonData?.capital || country.capital,
-        continent: jsonData?.continent || country.continent?.continentName,
-        currency: jsonData?.currency,
-        sourceCurrencyCode: detailData?.capitalData?.currency?.code || jsonData?.currency || 'EUR',
-        exchangeRates: detailData?.exchangeRates,
-        languages: jsonData?.languages?.join(', '),
-        costOfLiving,
-        healthcare: jsonData
-          ? ((jsonData as unknown as Record<string, unknown>).healthcare as EnrichedCountry['healthcare'])
-          : undefined,
-        lifestyle: jsonData
-          ? ((jsonData as unknown as Record<string, unknown>).lifestyle as EnrichedCountry['lifestyle'])
-          : undefined,
-        climate: jsonData
-          ? ((jsonData as unknown as Record<string, unknown>).climate as EnrichedCountry['climate'])
-          : undefined,
-        taxation: jsonData
-          ? ((jsonData as unknown as Record<string, unknown>).taxation as EnrichedCountry['taxation'])
-          : undefined,
-        recommendations: jsonData?.recommendations,
-        expatProjectTemplate: jsonData
-          ? ((jsonData as unknown as Record<string, unknown>).expatProjectTemplate as EnrichedCountry['expatProjectTemplate'])
-          : undefined,
-      }
+    const costOfLiving = realCostOfLiving || jsonData?.costOfLiving
+
+    const baseCountry: EnrichedCountry = {
+      uniqueId: `country-${country.idCountry}`,
+      isCity: false,
+      idCountry: country.idCountry,
+      countryName: country.countryName,
+      countryCode: countryCode,
+      isoCode: countryCode,
+      flagUrl: jsonData?.flagUrl || country.flagUrl,
+      flagEmoji: jsonData?.flagEmoji,
+      capital: jsonData?.capital || country.capital,
+      continent: jsonData?.continent || country.continent?.continentName,
+      currency: jsonData?.currency,
+      sourceCurrencyCode: detailData?.capitalData?.currency?.code || jsonData?.currency || 'EUR',
+      exchangeRates: detailData?.exchangeRates,
+      languages: jsonData?.languages?.join(', '),
+      costOfLiving,
+
+      climate: jsonData
+        ? ((jsonData as unknown as Record<string, unknown>).climate as EnrichedCountry['climate'])
+        : undefined,
+      taxation: jsonData
+        ? ((jsonData as unknown as Record<string, unknown>).taxation as EnrichedCountry['taxation'])
+        : undefined,
+      recommendations: jsonData?.recommendations,
+      expatProjectTemplate: jsonData
+        ? ((jsonData as unknown as Record<string, unknown>).expatProjectTemplate as EnrichedCountry['expatProjectTemplate'])
+        : undefined,
+    }
+
+    enrichedCountries.push(baseCountry)
+
+    // Add cities as synthetic countries
+    detailData?.cities?.forEach((city) => {
+      if (!city.costOfLiving) return
+      const cityId = city.id || city.city_id || Math.random()
+
+      enrichedCountries.push({
+        ...baseCountry,
+        uniqueId: `city-${cityId}`,
+        isCity: true,
+        parentId: country.idCountry,
+        countryName: city.name, // City name
+        costOfLiving: extractCostOfLivingFromCache(city.costOfLiving),
+
+        climate: undefined,
+        taxation: undefined,
+        recommendations: undefined,
+      })
     })
-    .filter((c): c is EnrichedCountry => c !== undefined)
+  })
 
   return {
     data: enrichedCountries,

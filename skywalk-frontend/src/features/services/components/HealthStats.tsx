@@ -78,12 +78,13 @@ const HEALTH_META: Record<string, HealthSystemMeta> = {
 
 interface HealthStatsProps {
   countryName?: string;
+  cityName?: string;
 }
 
 const fmtNum = (v: number, d = 0) =>
   v.toLocaleString(getCurrentLocale(), { minimumFractionDigits: d, maximumFractionDigits: d });
 
-export default function HealthStats({ countryName }: HealthStatsProps) {
+export default function HealthStats({ countryName, cityName }: HealthStatsProps) {
   const { t } = useTranslation();
   const countryKey = countryName || 'france';
   const mapping = getCountryMapping(countryName);
@@ -91,9 +92,11 @@ export default function HealthStats({ countryName }: HealthStatsProps) {
 
   const { formatPrice, isSameCurrency, displayCurrency, displaySymbol } = useCurrency();
 
+  const apiCity = cityName || mapping.city;
+
   const { data, isLoading, isError } = useQuery<CleanedCostOfLivingData>({
-    queryKey: ['cost-of-living', mapping.city, mapping.country],
-    queryFn: () => costOfLivingApi.getCostOfLiving(mapping.city, mapping.country),
+    queryKey: ['cost-of-living', apiCity, mapping.country],
+    queryFn: () => costOfLivingApi.getCostOfLiving(apiCity, mapping.country),
     staleTime: 60 * 60 * 1000,
     gcTime: 2 * 60 * 60 * 1000,
     retry: 2,
@@ -124,7 +127,7 @@ export default function HealthStats({ countryName }: HealthStatsProps) {
   }
 
   const localCur = data.currency.code;
-  const cityName = data.city.name;
+  const numbeoCityName = data.city.name;
   const rates = data.currency.exchangeRates ?? null;
   const same = isSameCurrency(localCur);
   const fp = (v?: number) => formatPrice(v, localCur, rates);
@@ -167,7 +170,7 @@ export default function HealthStats({ countryName }: HealthStatsProps) {
           )}
           <div className="flex items-center space-x-1.5 px-3 py-1.5 bg-blue-50 rounded-full">
             <MapPin className="w-3.5 h-3.5 text-blue-600" />
-            <span className="text-xs font-medium text-blue-700">{cityName}</span>
+            <span className="text-xs font-medium text-blue-700">{numbeoCityName}</span>
           </div>
         </div>
       </div>
@@ -204,17 +207,15 @@ export default function HealthStats({ countryName }: HealthStatsProps) {
           <p className="text-xs text-gray-500 mt-1">{t('services.stats.health.averageCoverage')}</p>
         </div>
 
-        <div className={`rounded-xl p-5 border transition-all hover:shadow-sm ${
-          totalHealthMonthly > 400 ? 'bg-red-50 border-red-200' :
+        <div className={`rounded-xl p-5 border transition-all hover:shadow-sm ${totalHealthMonthly > 400 ? 'bg-red-50 border-red-200' :
           totalHealthMonthly > 150 ? 'bg-orange-50 border-orange-200' :
-          'bg-green-50 border-green-200'
-        }`}>
+            'bg-green-50 border-green-200'
+          }`}>
           <div className="flex items-center justify-between mb-3">
-            <TrendingUp className={`w-5 h-5 ${
-              totalHealthMonthly > 400 ? 'text-red-600' :
+            <TrendingUp className={`w-5 h-5 ${totalHealthMonthly > 400 ? 'text-red-600' :
               totalHealthMonthly > 150 ? 'text-orange-600' :
-              'text-green-600'
-            }`} />
+                'text-green-600'
+              }`} />
           </div>
           <p className="text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">{t('services.stats.health.totalHealthCost')}</p>
           <HeadlinePrice value={totalHealthMonthly} suffix={t('services.stats.common.perMonth')} />
@@ -319,7 +320,7 @@ export default function HealthStats({ countryName }: HealthStatsProps) {
 
       <div className="bg-gray-50 border border-gray-200 rounded-xl p-5">
         <p className="text-sm text-gray-600 leading-relaxed">
-          <strong>{t('services.stats.common.source')}</strong> {t('services.stats.health.sourceExtra', { city: cityName })}
+          <strong>{t('services.stats.common.source')}</strong> {t('services.stats.health.sourceExtra', { city: numbeoCityName })}
           {!same && (
             <> {t('services.stats.common.pricesConverted', { symbol: displaySymbol, from: localCur, to: displayCurrency })}</>
           )}

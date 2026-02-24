@@ -1,78 +1,82 @@
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { Briefcase, Home, Bus, Heart, Lock } from 'lucide-react';
-import ServiceTools from '../../services/components/ServiceTools';
+import { Briefcase, Home, Bus, Heart, ArrowRight } from 'lucide-react';
 
 export default function LandingToolsSection() {
   const { t } = useTranslation();
-  const [activeCategory, setActiveCategory] = useState('emploi');
 
-  const categories = [
-    { id: 'emploi', label: t('landing.tools.categories.emploi'), icon: Briefcase },
-    { id: 'logement', label: t('landing.tools.categories.logement'), icon: Home },
-    { id: 'transport', label: t('landing.tools.categories.transport'), icon: Bus },
-    { id: 'sante', label: t('landing.tools.categories.sante'), icon: Heart },
+  const tools = [
+    {
+      id: 'emploi',
+      title: t('landing.tools.categories.emploi'),
+      description: 'Find salaries, job demand, and working conditions for your target destination.',
+      icon: Briefcase,
+      link: '/services/emploi'
+    },
+    {
+      id: 'logement',
+      title: t('landing.tools.categories.logement'),
+      description: 'Compare rent prices, utility costs, and housing availability to plan your budget.',
+      icon: Home,
+      link: '/services/logement'
+    },
+    {
+      id: 'transport',
+      title: t('landing.tools.categories.transport'),
+      description: 'Estimate monthly transportation costs and explore local transit options.',
+      icon: Bus,
+      link: '/services/transport'
+    },
+    {
+      id: 'sante',
+      title: t('landing.tools.categories.sante'),
+      description: 'Understand healthcare quality, insurance costs, and medical facility standards.',
+      icon: Heart,
+      link: '/services/sante'
+    }
   ];
 
   return (
-    <section className="py-16 px-8 bg-white">
+    <section className="py-20 sm:py-32 px-4 sm:px-8 bg-[#f5f5f7]">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4 font-outfit">
+        <div className="text-center mb-16 sm:mb-20">
+          <h2 className="text-3xl sm:text-5xl font-semibold tracking-tight text-[#1d1d1f] mb-4 font-outfit">
             {t('landing.tools.title')}
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg sm:text-xl text-[#86868b] max-w-2xl mx-auto font-medium">
             {t('landing.tools.subtitle')}
           </p>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-8 items-start">
-          <div className="w-full lg:w-64 flex-shrink-0 space-y-2">
-            {categories.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setActiveCategory(cat.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all ${
-                  activeCategory === cat.id
-                    ? 'bg-gray-900 text-white shadow-lg scale-105'
-                    : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
-                }`}
-              >
-                <cat.icon className={`w-5 h-5 ${activeCategory === cat.id ? 'text-white' : 'text-gray-500'}`} />
-                <span className="font-medium">{cat.label}</span>
-              </button>
-            ))}
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+          {tools.map((tool) => (
+            <Link
+              key={tool.id}
+              to={tool.link}
+              className="group relative bg-white rounded-[2rem] p-8 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)] border border-gray-100/50 flex flex-col h-full overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-gray-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-          <div className="flex-1 w-full bg-gray-50 rounded-3xl p-2 border border-gray-100 shadow-sm min-h-[500px] relative">
-             <div className="h-full bg-white rounded-2xl overflow-hidden relative">
-                <div className="absolute inset-0 z-10 bg-white/60 backdrop-blur-[2px] flex flex-col items-center justify-center text-center p-6">
-                  <div className="bg-white p-4 rounded-full shadow-xl mb-4">
-                    <Lock className="w-8 h-8 text-[#5EA3C0]" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2 font-outfit">
-                    {t('landing.preview.title')}
-                  </h3>
-                  <p className="text-gray-600 mb-6 max-w-md">
-                    {t('landing.preview.description')}
-                  </p>
-                  <Link
-                    to="/auth/register"
-                    className="inline-flex items-center justify-center px-8 py-3 text-base font-bold text-white transition-all duration-200 bg-[#5EA3C0] border border-transparent rounded-full hover:bg-[#4d8a9d] shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                  >
-                    {t('landing.preview.cta')}
-                  </Link>
+              <div className="relative z-10 flex flex-col h-full">
+                <div className="w-14 h-14 rounded-2xl bg-[#f5f5f7] flex items-center justify-center mb-8 text-[#1d1d1f] group-hover:scale-110 group-hover:bg-white group-hover:shadow-sm transition-all duration-500">
+                  <tool.icon className="w-6 h-6" strokeWidth={1.5} />
                 </div>
 
-                <div className="pointer-events-none select-none filter blur-[1px]">
-                  <ServiceTools 
-                    category={activeCategory} 
-                    isExpanded={true} 
-                  />
+                <h3 className="text-2xl font-semibold tracking-tight text-[#1d1d1f] mb-3 font-outfit">
+                  {tool.title}
+                </h3>
+
+                <p className="text-[#86868b] leading-relaxed mb-8 flex-grow">
+                  {tool.description}
+                </p>
+
+                <div className="flex items-center mt-auto">
+                  <span className="text-sm font-semibold text-[#1d1d1f]">Explore</span>
+                  <ArrowRight className="w-4 h-4 ml-2 text-gray-400 group-hover:text-[#1d1d1f] group-hover:translate-x-1 transition-all duration-300" />
                 </div>
-             </div>
-          </div>
+              </div>
+            </Link>
+          ))}
         </div>
       </div>
     </section>

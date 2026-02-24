@@ -1719,6 +1719,7 @@
       "departureYear": "Expected departure year",
       "fromCountryPlaceholder": "Select your departure country",
       "toCountryPlaceholder": "Select your destination country",
+      "cannotChangeCountry": "The country cannot be changed once the project is created.",
       "errors": {
         "fromCountryRequired": "Departure country is required",
         "toCountryRequired": "Destination country is required",
@@ -2605,34 +2606,146 @@
       "low": "Low"
     },
     "sectors": {
-      "france": { "techDev": "Tech & Development", "health": "Healthcare", "logistics": "Logistics & Transport", "construction": "Construction", "hospitality": "Hospitality & Catering" },
-      "uk": { "techEng": "Tech & Engineering", "finance": "Finance & Banking", "healthcare": "Healthcare (NHS)", "marketing": "Marketing & Communications", "construction": "Construction" },
-      "ch": { "finance": "Finance & Insurance", "it": "IT & Cybersecurity", "health": "Healthcare (doctors, nurses)", "pharma": "Pharmaceuticals", "watchmaking": "Watchmaking" },
-      "us": { "techSoftware": "Tech & Software", "healthMedical": "Health & Medical", "finance": "Finance", "dataScience": "Data Science & AI", "engineering": "Engineering" },
-      "ca": { "techIt": "Tech & IT", "health": "Healthcare", "construction": "Construction & Trades", "finance": "Finance", "naturalRes": "Natural Resources" },
-      "de": { "autoEng": "Automotive Engineering", "itSoftware": "IT & Software", "healthCare": "Healthcare & Nursing", "industry": "Industry & Manufacturing", "logistics": "Logistics" },
-      "au": { "mining": "Mining & Resources", "techIt": "Tech & IT", "healthcare": "Healthcare", "construction": "Construction", "agriculture": "Agriculture" },
-      "jp": { "itEng": "IT & Engineering", "automotive": "Automotive", "finance": "Finance", "teaching": "Teaching (English)", "tourism": "Tourism & Hospitality" }
+      "france": {
+        "techDev": "Tech & Development",
+        "health": "Healthcare",
+        "logistics": "Logistics & Transport",
+        "construction": "Construction",
+        "hospitality": "Hospitality & Catering"
+      },
+      "uk": {
+        "techEng": "Tech & Engineering",
+        "finance": "Finance & Banking",
+        "healthcare": "Healthcare (NHS)",
+        "marketing": "Marketing & Communications",
+        "construction": "Construction"
+      },
+      "ch": {
+        "finance": "Finance & Insurance",
+        "it": "IT & Cybersecurity",
+        "health": "Healthcare (doctors, nurses)",
+        "pharma": "Pharmaceuticals",
+        "watchmaking": "Watchmaking"
+      },
+      "us": {
+        "techSoftware": "Tech & Software",
+        "healthMedical": "Health & Medical",
+        "finance": "Finance",
+        "dataScience": "Data Science & AI",
+        "engineering": "Engineering"
+      },
+      "ca": {
+        "techIt": "Tech & IT",
+        "health": "Healthcare",
+        "construction": "Construction & Trades",
+        "finance": "Finance",
+        "naturalRes": "Natural Resources"
+      },
+      "de": {
+        "autoEng": "Automotive Engineering",
+        "itSoftware": "IT & Software",
+        "healthCare": "Healthcare & Nursing",
+        "industry": "Industry & Manufacturing",
+        "logistics": "Logistics"
+      },
+      "au": {
+        "mining": "Mining & Resources",
+        "techIt": "Tech & IT",
+        "healthcare": "Healthcare",
+        "construction": "Construction",
+        "agriculture": "Agriculture"
+      },
+      "jp": {
+        "itEng": "IT & Engineering",
+        "automotive": "Automotive",
+        "finance": "Finance",
+        "teaching": "Teaching (English)",
+        "tourism": "Tourism & Hospitality"
+      }
     },
     "contracts": {
-      "france": { "cdi": "CDI (Permanent Contract)", "cdd": "CDD (Fixed-term Contract)", "interim": "Temporary Work (Interim)", "freelance": "Freelance / Self-employed", "alternance": "Apprenticeship / Work-study" },
-      "uk": { "permanent": "Permanent contract", "fixedTerm": "Fixed-term contract", "temporary": "Temporary contract", "zeroHours": "Zero-hours contract (Flexible hours)", "selfEmployed": "Self-employed / Contractor" },
-      "ch": { "cdi": "CDI (Unlimited contract)", "cdd": "CDD (Fixed-term)", "trial": "Extended trial contract", "freelance": "Freelance (self-employed)", "temporary": "Temporary (via agency)" },
-      "us": { "atWill": "At-will employment (termination by either party)", "fullTime": "Full-time (permanent equivalent)", "partTime": "Part-time", "contractor": "Independent contractor (freelance)", "internship": "Internship (paid or unpaid)" },
-      "ca": { "permanentFull": "Permanent full-time", "permanentPart": "Permanent part-time", "fixedTerm": "Fixed-term contract", "casual": "Casual / Temporary", "selfEmployed": "Self-employed / Contractor" },
-      "de": { "unbefristet": "Unbefristeter Vertrag (Permanent)", "befristet": "Befristeter Vertrag (Fixed-term)", "minijob": "Minijob (≤€520/month, reduced charges)", "werkvertrag": "Werkvertrag (Service contract)", "freiberufler": "Freiberufler (Self-employed)" },
-      "au": { "permanent": "Permanent (full-time / part-time)", "fixedTerm": "Fixed-term contract", "casual": "Casual (flexible hours, +25% loading)", "contractor": "Contractor / ABN (self-employed)", "workingHoliday": "Working Holiday (visa 417/462)" },
-      "jp": { "seishain": "Seishain (正社員) — Permanent", "keiyaku": "Keiyaku-shain (契約社員) — Fixed-term", "haken": "Haken-shain (派遣社員) — Temporary", "partTime": "Part-time (パート / アルバイト)", "freelance": "Freelance (フリーランス)" }
+      "france": {
+        "cdi": "CDI (Permanent Contract)",
+        "cdd": "CDD (Fixed-term Contract)",
+        "interim": "Temporary Work (Interim)",
+        "freelance": "Freelance / Self-employed",
+        "alternance": "Apprenticeship / Work-study"
+      },
+      "uk": {
+        "permanent": "Permanent contract",
+        "fixedTerm": "Fixed-term contract",
+        "temporary": "Temporary contract",
+        "zeroHours": "Zero-hours contract (Flexible hours)",
+        "selfEmployed": "Self-employed / Contractor"
+      },
+      "ch": {
+        "cdi": "CDI (Unlimited contract)",
+        "cdd": "CDD (Fixed-term)",
+        "trial": "Extended trial contract",
+        "freelance": "Freelance (self-employed)",
+        "temporary": "Temporary (via agency)"
+      },
+      "us": {
+        "atWill": "At-will employment (termination by either party)",
+        "fullTime": "Full-time (permanent equivalent)",
+        "partTime": "Part-time",
+        "contractor": "Independent contractor (freelance)",
+        "internship": "Internship (paid or unpaid)"
+      },
+      "ca": {
+        "permanentFull": "Permanent full-time",
+        "permanentPart": "Permanent part-time",
+        "fixedTerm": "Fixed-term contract",
+        "casual": "Casual / Temporary",
+        "selfEmployed": "Self-employed / Contractor"
+      },
+      "de": {
+        "unbefristet": "Unbefristeter Vertrag (Permanent)",
+        "befristet": "Befristeter Vertrag (Fixed-term)",
+        "minijob": "Minijob (≤€520/month, reduced charges)",
+        "werkvertrag": "Werkvertrag (Service contract)",
+        "freiberufler": "Freiberufler (Self-employed)"
+      },
+      "au": {
+        "permanent": "Permanent (full-time / part-time)",
+        "fixedTerm": "Fixed-term contract",
+        "casual": "Casual (flexible hours, +25% loading)",
+        "contractor": "Contractor / ABN (self-employed)",
+        "workingHoliday": "Working Holiday (visa 417/462)"
+      },
+      "jp": {
+        "seishain": "Seishain (正社員) — Permanent",
+        "keiyaku": "Keiyaku-shain (契約社員) — Fixed-term",
+        "haken": "Haken-shain (派遣社員) — Temporary",
+        "partTime": "Part-time (パート / アルバイト)",
+        "freelance": "Freelance (フリーランス)"
+      }
     },
     "platformTypes": {
-      "publicService": "Public service", "generalist": "Generalist", "executives": "Executives", "techStartups": "Tech & Startups",
-      "proNetwork": "Professional network", "marketLeader": "Market leader", "publicSector": "Public sector",
-      "comprehensive": "Comprehensive", "government": "Government", "leaderRomandie": "Leader Romandie",
-      "aggregator": "Aggregator", "nationalLeader": "National leader", "specializedRecruitment": "Specialized recruitment",
-      "reviewsJobs": "Reviews + Jobs", "matchingAI": "AI Matching", "federalGov": "Federal government",
-      "canadaOnly": "Canada only", "recruitment": "Recruitment", "leaderGermany": "Leader Germany",
-      "proNetworkDACH": "Professional network DACH", "international": "International",
-      "leaderAustralia": "Leader Australia", "foreignersJapan": "Foreigners in Japan", "bilingualIntl": "Bilingual/International"
+      "publicService": "Public service",
+      "generalist": "Generalist",
+      "executives": "Executives",
+      "techStartups": "Tech & Startups",
+      "proNetwork": "Professional network",
+      "marketLeader": "Market leader",
+      "publicSector": "Public sector",
+      "comprehensive": "Comprehensive",
+      "government": "Government",
+      "leaderRomandie": "Leader Romandie",
+      "aggregator": "Aggregator",
+      "nationalLeader": "National leader",
+      "specializedRecruitment": "Specialized recruitment",
+      "reviewsJobs": "Reviews + Jobs",
+      "matchingAI": "AI Matching",
+      "federalGov": "Federal government",
+      "canadaOnly": "Canada only",
+      "recruitment": "Recruitment",
+      "leaderGermany": "Leader Germany",
+      "proNetworkDACH": "Professional network DACH",
+      "international": "International",
+      "leaderAustralia": "Leader Australia",
+      "foreignersJapan": "Foreigners in Japan",
+      "bilingualIntl": "Bilingual/International"
     },
     "permits": {
       "france": {

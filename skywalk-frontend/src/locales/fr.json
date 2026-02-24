@@ -1719,6 +1719,7 @@
       "departureYear": "Année de départ prévue",
       "fromCountryPlaceholder": "Sélectionnez votre pays de départ",
       "toCountryPlaceholder": "Sélectionnez votre pays de destination",
+      "cannotChangeCountry": "Le pays ne peut pas être modifié une fois le projet créé.",
       "errors": {
         "fromCountryRequired": "Le pays de départ est requis",
         "toCountryRequired": "Le pays de destination est requis",
@@ -2605,34 +2606,146 @@
       "low": "Faible"
     },
     "sectors": {
-      "france": { "techDev": "Tech & Développement", "health": "Santé", "logistics": "Logistique & Transport", "construction": "BTP", "hospitality": "Hôtellerie-Restauration" },
-      "uk": { "techEng": "Tech & Ingénierie", "finance": "Finance & Banque", "healthcare": "Healthcare (NHS)", "marketing": "Marketing & Com", "construction": "Construction" },
-      "ch": { "finance": "Finance & assurance", "it": "Informatique & cybersécurité", "health": "Santé (médecins, infirmiers)", "pharma": "Pharmaceutique", "watchmaking": "Horlogerie" },
-      "us": { "techSoftware": "Tech & Software", "healthMedical": "Santé & Medical", "finance": "Finance", "dataScience": "Data Science & IA", "engineering": "Ingénierie" },
-      "ca": { "techIt": "Tech & IT", "health": "Santé", "construction": "Construction & Trades", "finance": "Finance", "naturalRes": "Ressources naturelles" },
-      "de": { "autoEng": "Ingénierie automobile", "itSoftware": "IT & Software", "healthCare": "Santé & soins", "industry": "Industrie & Manufacturing", "logistics": "Logistique" },
-      "au": { "mining": "Mining & Ressources", "techIt": "Tech & IT", "healthcare": "Healthcare", "construction": "Construction", "agriculture": "Agriculture" },
-      "jp": { "itEng": "IT & Ingénierie", "automotive": "Automobile", "finance": "Finance", "teaching": "Enseignement (anglais)", "tourism": "Tourisme & Hôtellerie" }
+      "france": {
+        "techDev": "Tech & Développement",
+        "health": "Santé",
+        "logistics": "Logistique & Transport",
+        "construction": "BTP",
+        "hospitality": "Hôtellerie-Restauration"
+      },
+      "uk": {
+        "techEng": "Tech & Ingénierie",
+        "finance": "Finance & Banque",
+        "healthcare": "Healthcare (NHS)",
+        "marketing": "Marketing & Com",
+        "construction": "Construction"
+      },
+      "ch": {
+        "finance": "Finance & assurance",
+        "it": "Informatique & cybersécurité",
+        "health": "Santé (médecins, infirmiers)",
+        "pharma": "Pharmaceutique",
+        "watchmaking": "Horlogerie"
+      },
+      "us": {
+        "techSoftware": "Tech & Software",
+        "healthMedical": "Santé & Medical",
+        "finance": "Finance",
+        "dataScience": "Data Science & IA",
+        "engineering": "Ingénierie"
+      },
+      "ca": {
+        "techIt": "Tech & IT",
+        "health": "Santé",
+        "construction": "Construction & Trades",
+        "finance": "Finance",
+        "naturalRes": "Ressources naturelles"
+      },
+      "de": {
+        "autoEng": "Ingénierie automobile",
+        "itSoftware": "IT & Software",
+        "healthCare": "Santé & soins",
+        "industry": "Industrie & Manufacturing",
+        "logistics": "Logistique"
+      },
+      "au": {
+        "mining": "Mining & Ressources",
+        "techIt": "Tech & IT",
+        "healthcare": "Healthcare",
+        "construction": "Construction",
+        "agriculture": "Agriculture"
+      },
+      "jp": {
+        "itEng": "IT & Ingénierie",
+        "automotive": "Automobile",
+        "finance": "Finance",
+        "teaching": "Enseignement (anglais)",
+        "tourism": "Tourisme & Hôtellerie"
+      }
     },
     "contracts": {
-      "france": { "cdi": "CDI (Contrat à Durée Indéterminée)", "cdd": "CDD (Contrat à Durée Déterminée)", "interim": "Intérim (Travail temporaire)", "freelance": "Freelance / Auto-entrepreneur", "alternance": "Alternance (Apprentissage / Professionnalisation)" },
-      "uk": { "permanent": "Permanent contract (équivalent CDI)", "fixedTerm": "Fixed-term contract (équivalent CDD)", "temporary": "Temporary contract (Intérim)", "zeroHours": "Zero-hours contract (Heures flexibles)", "selfEmployed": "Self-employed / Contractor" },
-      "ch": { "cdi": "CDI (contrat illimité)", "cdd": "CDD", "trial": "Contrat d'essai longue durée", "freelance": "Freelance (indépendant)", "temporary": "Temporaire (via agence)" },
-      "us": { "atWill": "At-will employment (résiliation libre par les deux parties)", "fullTime": "Full-time (équivalent CDI)", "partTime": "Part-time", "contractor": "Independent contractor (freelance)", "internship": "Internship (stage rémunéré ou non)" },
-      "ca": { "permanentFull": "Permanent full-time (CDI)", "permanentPart": "Permanent part-time", "fixedTerm": "Fixed-term contract (CDD)", "casual": "Casual / Temporary", "selfEmployed": "Self-employed / Contractor" },
-      "de": { "unbefristet": "Unbefristeter Vertrag (CDI)", "befristet": "Befristeter Vertrag (CDD)", "minijob": "Minijob (≤520€/mois, charges réduites)", "werkvertrag": "Werkvertrag (contrat d'ouvrage)", "freiberufler": "Freiberufler (indépendant)" },
-      "au": { "permanent": "Permanent (full-time / part-time)", "fixedTerm": "Fixed-term contract", "casual": "Casual (heures flexibles, +25% loading)", "contractor": "Contractor / ABN (auto-entrepreneur)", "workingHoliday": "Working Holiday (visa 417/462)" },
-      "jp": { "seishain": "Seishain (正社員) — CDI permanent", "keiyaku": "Keiyaku-shain (契約社員) — CDD", "haken": "Haken-shain (派遣社員) — Intérim", "partTime": "Part-time (パート / アルバイト)", "freelance": "Freelance (フリーランス)" }
+      "france": {
+        "cdi": "CDI (Contrat à Durée Indéterminée)",
+        "cdd": "CDD (Contrat à Durée Déterminée)",
+        "interim": "Intérim (Travail temporaire)",
+        "freelance": "Freelance / Auto-entrepreneur",
+        "alternance": "Alternance (Apprentissage / Professionnalisation)"
+      },
+      "uk": {
+        "permanent": "Permanent contract (équivalent CDI)",
+        "fixedTerm": "Fixed-term contract (équivalent CDD)",
+        "temporary": "Temporary contract (Intérim)",
+        "zeroHours": "Zero-hours contract (Heures flexibles)",
+        "selfEmployed": "Self-employed / Contractor"
+      },
+      "ch": {
+        "cdi": "CDI (contrat illimité)",
+        "cdd": "CDD",
+        "trial": "Contrat d'essai longue durée",
+        "freelance": "Freelance (indépendant)",
+        "temporary": "Temporaire (via agence)"
+      },
+      "us": {
+        "atWill": "At-will employment (résiliation libre par les deux parties)",
+        "fullTime": "Full-time (équivalent CDI)",
+        "partTime": "Part-time",
+        "contractor": "Independent contractor (freelance)",
+        "internship": "Internship (stage rémunéré ou non)"
+      },
+      "ca": {
+        "permanentFull": "Permanent full-time (CDI)",
+        "permanentPart": "Permanent part-time",
+        "fixedTerm": "Fixed-term contract (CDD)",
+        "casual": "Casual / Temporary",
+        "selfEmployed": "Self-employed / Contractor"
+      },
+      "de": {
+        "unbefristet": "Unbefristeter Vertrag (CDI)",
+        "befristet": "Befristeter Vertrag (CDD)",
+        "minijob": "Minijob (≤520€/mois, charges réduites)",
+        "werkvertrag": "Werkvertrag (contrat d'ouvrage)",
+        "freiberufler": "Freiberufler (indépendant)"
+      },
+      "au": {
+        "permanent": "Permanent (full-time / part-time)",
+        "fixedTerm": "Fixed-term contract",
+        "casual": "Casual (heures flexibles, +25% loading)",
+        "contractor": "Contractor / ABN (auto-entrepreneur)",
+        "workingHoliday": "Working Holiday (visa 417/462)"
+      },
+      "jp": {
+        "seishain": "Seishain (正社員) — CDI permanent",
+        "keiyaku": "Keiyaku-shain (契約社員) — CDD",
+        "haken": "Haken-shain (派遣社員) — Intérim",
+        "partTime": "Part-time (パート / アルバイト)",
+        "freelance": "Freelance (フリーランス)"
+      }
     },
     "platformTypes": {
-      "publicService": "Service public", "generalist": "Généraliste", "executives": "Cadres", "techStartups": "Tech & Startups",
-      "proNetwork": "Réseau professionnel", "marketLeader": "Leader du marché", "publicSector": "Secteur public",
-      "comprehensive": "Complet", "government": "Gouvernement", "leaderRomandie": "Leader Romandie",
-      "aggregator": "Agrégateur", "nationalLeader": "Leader national", "specializedRecruitment": "Recrutement spécialisé",
-      "reviewsJobs": "Avis + Emplois", "matchingAI": "Matching IA", "federalGov": "Gouvernement fédéral",
-      "canadaOnly": "Canada uniquement", "recruitment": "Recrutement", "leaderGermany": "Leader Allemagne",
-      "proNetworkDACH": "Réseau professionnel DACH", "international": "International",
-      "leaderAustralia": "Leader Australie", "foreignersJapan": "Étrangers au Japon", "bilingualIntl": "Bilingue/International"
+      "publicService": "Service public",
+      "generalist": "Généraliste",
+      "executives": "Cadres",
+      "techStartups": "Tech & Startups",
+      "proNetwork": "Réseau professionnel",
+      "marketLeader": "Leader du marché",
+      "publicSector": "Secteur public",
+      "comprehensive": "Complet",
+      "government": "Gouvernement",
+      "leaderRomandie": "Leader Romandie",
+      "aggregator": "Agrégateur",
+      "nationalLeader": "Leader national",
+      "specializedRecruitment": "Recrutement spécialisé",
+      "reviewsJobs": "Avis + Emplois",
+      "matchingAI": "Matching IA",
+      "federalGov": "Gouvernement fédéral",
+      "canadaOnly": "Canada uniquement",
+      "recruitment": "Recrutement",
+      "leaderGermany": "Leader Allemagne",
+      "proNetworkDACH": "Réseau professionnel DACH",
+      "international": "International",
+      "leaderAustralia": "Leader Australie",
+      "foreignersJapan": "Étrangers au Japon",
+      "bilingualIntl": "Bilingue/International"
     },
     "permits": {
       "france": {

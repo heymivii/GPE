@@ -1,6 +1,6 @@
 import {
   Briefcase, DollarSign, TrendingUp, Clock, Loader2, AlertCircle,
-  ExternalLink, Building2, Globe, FileText, Shield, MapPin, Search
+  ExternalLink, Building2, Globe, FileText, Shield, MapPin, Search, ArrowRightLeft
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -9,6 +9,7 @@ import { costOfLivingApi } from '../../../api/costOfLiving';
 import type { CleanedCostOfLivingData } from '../../../api/costOfLiving';
 import type { AdzunaSearchResponse, AdzunaJobDto } from '../../../features/search/types/job';
 import { useCurrency } from '../../../contexts/CurrencyContext';
+import CurrencySelector from '../../../components/CurrencySelector';
 import { getCountryMapping, getCurrentLocale } from '../../../data/supportedCountries';
 import {
   emploiDataByCountry,
@@ -21,6 +22,7 @@ import {
 
 interface EmploiStatsProps {
   countryName?: string;
+  cityName?: string;
 }
 
 const SLUG_TO_ADZUNA: Record<string, string> = {
@@ -61,23 +63,27 @@ function timeAgo(dateStr: string): string {
   return rtf.format(-Math.floor(days / 30), 'month');
 }
 
-export default function EmploiStats({ countryName }: EmploiStatsProps) {
+export default function EmploiStats({ countryName, cityName }: EmploiStatsProps) {
   const { t } = useTranslation();
   const countryKey = countryName || 'france';
   const mapping = getCountryMapping(countryName);
   const adzunaCode = SLUG_TO_ADZUNA[countryKey];
-  const { formatPrice, isSameCurrency } = useCurrency();
+  const { formatPrice, isSameCurrency, displayCurrency } = useCurrency();
 
-  const displayName = mapping?.displayName
+  const apiCity = cityName || mapping.city;
+
+  const displayName = !cityName ? (mapping?.displayName
     || countryName?.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('-')
-    || 'France';
+    || 'France') : (cityName.charAt(0).toUpperCase() + cityName.slice(1).replace(/-/g, ' '));
+
 
   const {
     data: adzunaData,
     isLoading: isAdzunaLoading,
   } = useQuery<AdzunaSearchResponse>({
-    queryKey: ['emploi-adzuna', adzunaCode],
-    queryFn: () => searchJobs({ country: adzunaCode, resultsPerPage: 6, page: 1 }),
+    // Add `apiCity` to the query key so it refetches when the selected city changes (even though Adzuna search is by country here)
+    queryKey: ['emploi-adzuna', adzunaCode, apiCity],
+    queryFn: () => searchJobs({ country: adzunaCode, resultsPerPage: 6, page: 1 }), // Assuming searchJobs takes full country scope but caching varies
     enabled: !!adzunaCode,
     staleTime: 30 * 60 * 1000,
     retry: 1,
@@ -87,8 +93,8 @@ export default function EmploiStats({ countryName }: EmploiStatsProps) {
     data: colData,
     isLoading: isColLoading,
   } = useQuery<CleanedCostOfLivingData>({
-    queryKey: ['cost-of-living', mapping?.city, mapping?.country],
-    queryFn: () => costOfLivingApi.getCostOfLiving(mapping.city, mapping.country),
+    queryKey: ['cost-of-living', apiCity, mapping?.country],
+    queryFn: () => costOfLivingApi.getCostOfLiving(apiCity, mapping.country),
     enabled: !!mapping,
     staleTime: 30 * 60 * 1000,
     retry: 1,
@@ -135,15 +141,32 @@ export default function EmploiStats({ countryName }: EmploiStatsProps) {
 
   return (
     <section className="space-y-8">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-gray-900">
-          {t('services.stats.emploi.title', { city: displayName })}
-        </h2>
-        {adzunaCode && (
-          <span className="text-xs text-gray-400 flex items-center gap-1">
-            <Globe className="w-3 h-3" /> {t('services.stats.emploi.realTimeData')}
-          </span>
-        )}
+      <div className="flex items-center justify-between flex-wrap gap-4">
+        <div className="flex items-center gap-3">
+          <h2 className="text-xl font-semibold text-gray-900">
+            {t('services.stats.emploi.title', { city: displayName })}
+          </h2>
+          {adzunaCode && (
+            <span className="text-xs text-gray-400 flex items-center gap-1">
+              <Globe className="w-3 h-3" /> {t('services.stats.emploi.realTimeData')}
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-2 flex-wrap justify-end">
+          <CurrencySelector />
+          {!same && (
+            <div className="flex items-center space-x-1.5 px-3 py-1.5 bg-amber-50 rounded-full">
+              <ArrowRightLeft className="w-3.5 h-3.5 text-amber-600" />
+              <span className="text-xs font-medium text-amber-700">
+                {localCur} → {displayCurrency}
+              </span>
+            </div>
+          )}
+          <div className="flex items-center space-x-1.5 px-3 py-1.5 bg-blue-50 rounded-full">
+            <MapPin className="w-3.5 h-3.5 text-blue-600" />
+            <span className="text-xs font-medium text-blue-700">{displayName}</span>
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">

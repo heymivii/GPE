@@ -28,7 +28,6 @@ interface AllStepsData {
   }
   needs: {
     priorities: string[]
-    needPersonalizedSupport: boolean | undefined
   }
 }
 
@@ -78,9 +77,9 @@ export default function SummaryStep({ data, onBack, onEdit, onComplete, isSubmit
   ], [data.objective, t, getTranslatedLabel])
 
   const preparationItems = useMemo(() => [
-    { 
-      label: t('onboarding.summary.stepsDone'), 
-      value: data.preparation.stepsDone.length > 0 
+    {
+      label: t('onboarding.summary.stepsDone'),
+      value: data.preparation.stepsDone.length > 0
         ? getMultipleTranslatedLabels('stepsDone', data.preparation.stepsDone)
         : t('onboarding.summary.none')
     },
@@ -88,13 +87,9 @@ export default function SummaryStep({ data, onBack, onEdit, onComplete, isSubmit
   ], [data.preparation, t, getMultipleTranslatedLabels])
 
   const needsItems = useMemo(() => [
-    { 
-      label: t('onboarding.summary.prioritiesLabel'), 
+    {
+      label: t('onboarding.summary.prioritiesLabel'),
       value: getMultipleTranslatedLabels('priorities', data.needs.priorities)
-    },
-    { 
-      label: t('onboarding.summary.personalizedSupport'), 
-      value: data.needs.needPersonalizedSupport ? t('onboarding.summary.yes') : t('onboarding.summary.no')
     }
   ], [data.needs, t, getMultipleTranslatedLabels])
 

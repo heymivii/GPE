@@ -16,6 +16,13 @@ export const SUPPORTED_COUNTRIES: SupportedCountry[] = [
     { code: 'CH', iso3: 'CHE', name: 'Suisse', slug: 'suisse', flag: '🇨🇭', i18nKey: 'countries.switzerland', apiCity: 'Geneva', apiCountryName: 'Switzerland' },
 ] as const;
 
+export const CITIES_BY_COUNTRY: Record<string, string[]> = {
+    'France': ['Paris', 'Marseille', 'Lyon', 'Toulouse', 'Nice'],
+    'États-Unis': ['New York City', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix'],
+    'Japon': ['Tokyo', 'Yokohama', 'Osaka', 'Nagoya', 'Sapporo'],
+    'Suisse': ['Zurich', 'Geneva', 'Basel', 'Lausanne', 'Bern'],
+};
+
 export const SUPPORTED_COUNTRY_CODES = SUPPORTED_COUNTRIES.map(c => c.code);
 export const SUPPORTED_COUNTRY_NAMES = SUPPORTED_COUNTRIES.map(c => c.name);
 export const SUPPORTED_COUNTRY_SLUGS = SUPPORTED_COUNTRIES.map(c => c.slug);

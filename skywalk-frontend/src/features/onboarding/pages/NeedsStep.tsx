@@ -2,13 +2,11 @@ import { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import FormField from '../ui/FormField'
 import MultiPillSelect from '../ui/MultiPillSelect'
-import YesNoToggle from '../ui/YesNoToggle'
 import WizardNav from '../components/WizardNav'
 import { PRIORITY_IDS } from '../data/constants'
 
 interface NeedsStepData {
   priorities: string[]
-  needPersonalizedSupport: boolean | undefined
 }
 
 interface NeedsStepProps {
@@ -21,7 +19,6 @@ export default function NeedsStep({ data, onNext, onBack }: NeedsStepProps) {
   const { t } = useTranslation()
   const [formData, setFormData] = useState<NeedsStepData>({
     priorities: data?.priorities || [],
-    needPersonalizedSupport: data?.needPersonalizedSupport
   })
 
   const [errors, setErrors] = useState<Partial<Record<keyof NeedsStepData, string>>>({})
@@ -33,10 +30,6 @@ export default function NeedsStep({ data, onNext, onBack }: NeedsStepProps) {
 
     if (!formData.priorities || formData.priorities.length === 0) {
       newErrors.priorities = t('onboarding.needs.errors.prioritiesRequired')
-    }
-
-    if (formData.needPersonalizedSupport === undefined) {
-      newErrors.needPersonalizedSupport = t('onboarding.needs.errors.supportRequired')
     }
 
     setErrors(newErrors)
@@ -56,14 +49,7 @@ export default function NeedsStep({ data, onNext, onBack }: NeedsStepProps) {
     }
   }
 
-  const handleSupportChange = (value: boolean) => {
-    setFormData(prev => ({ ...prev, needPersonalizedSupport: value }))
-    if (errors.needPersonalizedSupport) {
-      setErrors(prev => ({ ...prev, needPersonalizedSupport: undefined }))
-    }
-  }
-
-  const isNextDisabled = formData.priorities.length === 0 || formData.needPersonalizedSupport === undefined
+  const isNextDisabled = formData.priorities.length === 0
 
   return (
     <div className="space-y-6">
@@ -89,20 +75,6 @@ export default function NeedsStep({ data, onNext, onBack }: NeedsStepProps) {
             values={formData.priorities}
             onChange={handlePrioritiesChange}
             aria-describedby={errors.priorities ? 'priorities-error' : 'priorities-helper'}
-          />
-        </FormField>
-
-        <FormField
-          label={t('onboarding.needs.personalizedSupport')}
-          required
-          error={errors.needPersonalizedSupport}
-          helper={t('onboarding.needs.personalizedSupportHelper')}
-          id="personalizedSupport"
-        >
-          <YesNoToggle
-            value={formData.needPersonalizedSupport}
-            onChange={handleSupportChange}
-            aria-describedby={errors.needPersonalizedSupport ? 'personalizedSupport-error' : 'personalizedSupport-helper'}
           />
         </FormField>
       </div>

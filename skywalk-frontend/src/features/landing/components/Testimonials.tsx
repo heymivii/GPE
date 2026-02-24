@@ -11,13 +11,13 @@ export default function Testimonials() {
   const { t } = useTranslation();
 
   return (
-    <section className="py-20 px-8 bg-white">
+    <section className="py-12 sm:py-20 px-4 sm:px-8 bg-white">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-14">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4 font-outfit">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 font-outfit">
             {t('landing.testimonials.title')}
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
             {t('landing.testimonials.subtitle')}
           </p>
         </div>

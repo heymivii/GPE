@@ -18,9 +18,9 @@ import { useProjects } from '../../projects/hooks/useProjectMutations'
 import { countryApi } from '../../../api/country'
 import { userApi } from '../../../api/user'
 import { useCountryData, useCountryDataByCode } from '../../../hooks/useCountryData'
-import type { 
+import type {
   UpdateExpatriationProjectDto,
-  CreateExpatriationProjectDto 
+  CreateExpatriationProjectDto
 } from '../../../types/expatriation-project'
 
 const CURRENCY_SYMBOLS: Record<string, string> = {
@@ -45,11 +45,11 @@ export default function OnboardingFlow() {
   const [showAuthGate, setShowAuthGate] = useState(false)
   const [searchParams, setSearchParams] = useSearchParams()
   const saveAttemptedRef = useRef(false)
-  
+
   const { mutateAsync: createProject, isPending: isCreatingProject } = useCreateProject()
   const { mutateAsync: updateProject, isPending: isUpdatingProject } = useUpdateProject()
   const { data: projects } = useProjects(editMode)
-  
+
   useEffect(() => {
     if (!isAuthLoading && !isAuthenticated) {
       navigate('/auth/register?redirect=/onboarding');
@@ -62,7 +62,7 @@ export default function OnboardingFlow() {
   })
 
   const existingProject = editMode ? projects?.find((p) => p.idProject === Number(id)) : null
-  
+
   const {
     currentStep,
     data,
@@ -74,7 +74,7 @@ export default function OnboardingFlow() {
     getSteps,
     canGoToStep,
     clearDraft
-  } = useOnboarding(editMode) 
+  } = useOnboarding(editMode)
 
   const formOriginCountryData = useCountryDataByCode(data.destination?.fromCountry)
   const rawCurrency = formOriginCountryData?.currency || originCountryData?.currency || 'EUR'
@@ -83,7 +83,7 @@ export default function OnboardingFlow() {
   useEffect(() => {
     if (existingProject && editMode && !dataLoadedRef.current && countries.length > 0 && user) {
       dataLoadedRef.current = true;
-      
+
       const objectiveReverseMapping: Record<string, string> = {
         'study': 'studies',
         'work': 'work',
@@ -111,7 +111,7 @@ export default function OnboardingFlow() {
           fromCountry: originIsoCode,
           toCountry: destinationIsoCode,
           targetCity: existingProject.idDestinationCity?.toString() || '',
-          departureYear: existingProject.expectedDepartureDate 
+          departureYear: existingProject.expectedDepartureDate
             ? new Date(existingProject.expectedDepartureDate).getFullYear().toString()
             : new Date().getFullYear().toString()
         },
@@ -132,22 +132,21 @@ export default function OnboardingFlow() {
           housingBudget: existingProject.housingBudget?.toString() || '0'
         },
         needs: {
-          priorities: existingProject.priorities?.split(',').map(p => p.trim()) || [],
-          needPersonalizedSupport: existingProject.needsSupport || false
+          priorities: existingProject.priorities?.split(',').map(p => p.trim()) || []
         }
       };
 
       setAllData(projectData);
-      
+
     }
   }, [existingProject, editMode, countries, setAllData, user])
 
   useEffect(() => {
     if (!editMode && isAuthenticated && user && countries.length > 0 && !profileLoadedRef.current) {
-      
-      
+
+
       const originCountry = countries.find(c => c.idCountry === user.idOriginCountry);
-      
+
       const profileData: {
         age?: string;
         status?: string;
@@ -205,12 +204,12 @@ export default function OnboardingFlow() {
             departureYear: data.destination?.departureYear || ''
           }
         });
-        
+
         if (!localStorage.getItem('skywalk-onboarding-draft')) {
-             toast.success(t('onboarding.profilePrefilled'), { id: 'profile-prefill' });
+          toast.success(t('onboarding.profilePrefilled'), { id: 'profile-prefill' });
         }
       }
-      
+
       profileLoadedRef.current = true;
     }
   }, [editMode, isAuthenticated, user, countries, setAllData, data.profile, data.destination, t])
@@ -228,7 +227,7 @@ export default function OnboardingFlow() {
         return;
       }
 
-  
+
       if (data.profile) {
         try {
           await userApi.updateProfile({
@@ -249,7 +248,7 @@ export default function OnboardingFlow() {
 
       const originCountry = countries.find(c => c.isoCode === data.destination?.fromCountry);
       const originCountryId = originCountry?.idCountry;
-      
+
       if (!destinationCountryId) {
         toast.error(t('onboarding.invalidDestination'));
         return;
@@ -270,7 +269,7 @@ export default function OnboardingFlow() {
         '1_3_years': 24,
         'more_3_years': 48
       };
-      
+
       const projectData: UpdateExpatriationProjectDto = {
         idDestinationCountry: destinationCountryId,
         idOriginCountry: originCountryId,
@@ -281,53 +280,52 @@ export default function OnboardingFlow() {
         housingBudget: parseFloat(data.preparation?.housingBudget || '0'),
         stepsDone: data.preparation?.stepsDone?.join(',') || '',
         priorities: data.needs?.priorities?.join(', ') || '',
-        needsSupport: data.needs?.needPersonalizedSupport || false,
         projectStatus: 'planning' as const,
         expectedDepartureDate: data.destination?.departureYear ? `${data.destination.departureYear}-01-01` : undefined,
       };
 
 
       if (editMode && id) {
-        
-        const countryChanged = existingProject && 
+
+        const countryChanged = existingProject &&
           existingProject.idDestinationCountry !== destinationCountryId;
-        
+
         if (countryChanged) {
           const confirmed = window.confirm(t('onboarding.countryChangeWarning'));
-          
+
           if (!confirmed) {
             toast(t('onboarding.modificationCancelled'), { icon: 'ℹ️' });
             return;
           }
-          
+
           projectData.checklistProgress = {};
-          toast(t('onboarding.checklistReset'), { 
+          toast(t('onboarding.checklistReset'), {
             icon: '⚠️',
-            duration: 5000 
+            duration: 5000
           });
         }
-        
+
         await updateProject({
           projectId: Number(id),
           data: projectData
         });
-        
+
         toast.success(t('onboarding.projectUpdated'));
-        
+
         navigate(`/projects/${id}`);
       } else {
         await createProject(projectData as CreateExpatriationProjectDto);
-        
+
         localStorage.setItem('skywalk-user-data', JSON.stringify(data))
         localStorage.setItem('skywalk-onboarding-completed', 'true')
-        
+
         clearDraft()
-        
+
         toast.success(t('onboarding.projectCreated'));
-        
+
         navigate(`/projects`);
       }
-      
+
     } catch (error) {
       console.error('Error completing onboarding:', error)
       if (error && typeof error === 'object' && 'response' in error) {
@@ -359,30 +357,30 @@ export default function OnboardingFlow() {
       }
 
       if (shouldSave && !isAuthenticated && !saveAttemptedRef.current) {
-         
-         await new Promise(resolve => setTimeout(resolve, 1000));
-         
-         try {
-           await refreshUser();
-           return;
-         } catch (e) {
-           console.error('❌ Refresh failed', e);
-           setShowAuthGate(true);
-           return;
-         }
+
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        try {
+          await refreshUser();
+          return;
+        } catch (e) {
+          console.error('❌ Refresh failed', e);
+          setShowAuthGate(true);
+          return;
+        }
       }
 
       if (
-        shouldSave && 
-        isAuthenticated && 
-        countries.length > 0 && 
+        shouldSave &&
+        isAuthenticated &&
+        countries.length > 0 &&
         !saveAttemptedRef.current
       ) {
         toast.loading(t('onboarding.creatingProject'), { id: 'auto-save' });
         saveAttemptedRef.current = true;
-        
+
         localStorage.removeItem('skywalk-should-save');
-        
+
         setSearchParams(prev => {
           const newParams = new URLSearchParams(prev);
           newParams.delete('save');
@@ -398,10 +396,10 @@ export default function OnboardingFlow() {
   }, [isAuthenticated, isAuthLoading, countries, data, handleComplete, setSearchParams, refreshUser, searchParams, t]);
 
   const renderCurrentStep = () => {
-    
+
     if (showAuthGate) {
       return (
-        <AuthGateStep 
+        <AuthGateStep
           age={data.profile?.age}
           onBack={() => setShowAuthGate(false)}
         />
@@ -413,6 +411,7 @@ export default function OnboardingFlow() {
         return (
           <DestinationStep
             data={data.destination}
+            isEditMode={editMode}
             onNext={(stepData) => {
               updateStepData('destination', stepData)
               nextStep()

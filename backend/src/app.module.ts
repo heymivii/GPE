@@ -27,6 +27,7 @@ import { ExpatriationProjectModule } from './features/expatriation-project/expat
 import { DestinationsModule } from './features/destinations/destinations.module';
 import { GlobalSearchModule } from './features/global-search/global-search.module';
 import { OecdMigrationModule } from './features/oecd-migration/oecd-migration.module';
+import { NewsletterModule } from './features/newsletter/newsletter.module';
 
 @Module({
   imports: [
@@ -61,7 +62,8 @@ import { OecdMigrationModule } from './features/oecd-migration/oecd-migration.mo
     DestinationsModule,
     GlobalSearchModule,
     OecdMigrationModule,
+    NewsletterModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
-export class AppModule {}
+export class AppModule { }

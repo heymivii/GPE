@@ -1,10 +1,13 @@
 import { useMemo, useCallback } from 'react'
-import { 
-  MapPin, DollarSign, Globe, TrendingUp, Trophy, Lock,
-  Heart, Thermometer, Receipt, Zap, ArrowRightLeft, Users
+import {
+  MapPin, DollarSign, Globe, TrendingUp, Lock,
+  Thermometer, Receipt, Zap, ArrowRightLeft, Users
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import type { EnrichedCountry } from '../hooks/useCountriesWithData'
+import { ComparisonSection } from './ComparisonSection'
+import { ComparisonRow } from './rows/ComparisonRow'
+import { ComparisonRowWithBar } from './rows/ComparisonRowWithBar'
 import { useTranslation } from 'react-i18next'
 import { useCurrency, DISPLAY_CURRENCIES } from '../../../contexts/CurrencyContext'
 import { useMigrationData } from '../hooks/useMigrationData'
@@ -114,32 +117,6 @@ function RadarChart({ data, countryNames, colors }: {
 }
 
 
-function ValueBar({ value, max, color = '#5EA3C0' }: { value: number; max: number; color?: string }) {
-  const pct = max > 0 ? Math.min((value / max) * 100, 100) : 0
-  return (
-    <div className="w-full bg-gray-100 rounded-full h-2 mt-1.5">
-      <div
-        className="h-2 rounded-full transition-all duration-700"
-        style={{ width: `${pct}%`, backgroundColor: color }}
-      />
-    </div>
-  )
-}
-
-
-function ScoreBadge({ score }: { score: string }) {
-  const m = score.match(/(\d+)/)
-  const num = m ? parseInt(m[1]) : 0
-  const pct = (num / 10) * 100
-  const color = pct >= 80 ? 'text-emerald-600 bg-emerald-50 ring-emerald-200' :
-                pct >= 60 ? 'text-amber-600 bg-amber-50 ring-amber-200' :
-                            'text-red-500 bg-red-50 ring-red-200'
-  return (
-    <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-sm font-bold ring-1 ${color}`}>
-      {score}
-    </span>
-  )
-}
 
 
 export default function ComparisonTable({ countries, isAuthenticated = true }: ComparisonTableProps) {
@@ -182,6 +159,7 @@ export default function ComparisonTable({ countries, isAuthenticated = true }: C
   }, [t])
 
   const tdCountryName = useCallback((country: EnrichedCountry): string => {
+    if (country.isCity) return country.countryName
     if (!country.isoCode) return country.countryName
     const sc = SUPPORTED_COUNTRIES.find(c => c.code === country.isoCode)
     if (!sc) return country.countryName
@@ -215,10 +193,6 @@ export default function ComparisonTable({ countries, isAuthenticated = true }: C
     const maxSalary = Math.max(...convertedSalaries)
     const maxRent = Math.max(...convertedRents)
 
-    const parseRating = (s?: string) => {
-      const m = s?.match(/(\d+)/)
-      return m ? parseInt(m[1]) : 0
-    }
 
     return [
       {
@@ -226,46 +200,28 @@ export default function ComparisonTable({ countries, isAuthenticated = true }: C
         values: convertedSalaries.map(s => maxSalary ? (s / maxSalary) * 100 : 0)
       },
       {
-        label: t('comparison.radar.safety'),
-        values: countries.map(c => parseRating(c.lifestyle?.safetyRating) * 10)
-      },
-      {
-        label: t('comparison.radar.healthcare'),
-        values: countries.map(c => parseRating(c.healthcare?.qualityRating) * 10)
-      },
-      {
         label: t('comparison.radar.affordability'),
         values: convertedRents.map(r => maxRent
           ? (1 - r / maxRent) * 80 + 20
           : 50
         )
-      },
-      {
-        label: t('comparison.radar.workLife'),
-        values: countries.map(c => {
-          const wlb = c.lifestyle?.workLifeBalance?.toLowerCase()
-          if (wlb === 'excellent') return 95
-          if (wlb === 'bon' || wlb === 'good') return 75
-          if (wlb === 'moyen' || wlb === 'average') return 55
-          return 50
-        })
-      },
+      }
     ]
   }, [countries, t, convertAmount])
 
   return (
     <div className="space-y-8">
-      <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-xl border-b border-gray-200/80 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] py-6 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 transition-all">
-        <div className="grid grid-cols-[200px_1fr] gap-8 max-w-7xl mx-auto items-end">
-          <div className="pb-2 text-xs font-bold text-gray-400 uppercase tracking-widest">
+      <div className="hidden sm:block sticky top-16 md:top-20 z-20 bg-white/95 backdrop-blur-xl border-b border-gray-200/80 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] py-4 sm:py-6 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 transition-all overflow-x-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr] lg:grid-cols-[200px_1fr] gap-4 sm:gap-8 max-w-7xl mx-auto items-end min-w-0 px-4 sm:px-8">
+          <div className="hidden sm:block pb-2 text-xs font-bold text-gray-400 uppercase tracking-widest">
             {t('comparison.tableHeader')}
           </div>
-          <div className={`grid gap-8 ${colClass}`}>
+          <div className={`grid gap-4 sm:gap-8 ${colClass}`}>
             {countries.map((country, idx) => (
-              <div key={country.idCountry} className="flex flex-col gap-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-2xl overflow-hidden shadow-sm ring-1 ring-gray-900/5 bg-white p-0.5">
-                    <div className="w-full h-full rounded-xl overflow-hidden">
+              <div key={country.idCountry} className="flex items-center gap-2 sm:flex-col sm:items-start sm:gap-3">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl overflow-hidden shadow-sm ring-1 ring-gray-900/5 bg-white p-0.5">
+                    <div className="w-full h-full rounded-lg sm:rounded-xl overflow-hidden">
                       {country.flagUrl ? (
                         <img src={country.flagUrl} alt={country.countryName} className="w-full h-full object-cover" />
                       ) : (
@@ -280,11 +236,11 @@ export default function ComparisonTable({ countries, isAuthenticated = true }: C
                     style={{ backgroundColor: RADAR_COLORS[idx] }}
                   />
                 </div>
-                <div>
-                  <h3 className="font-bold text-xl text-gray-900 tracking-tight leading-none mb-1">
+                <div className="min-w-0">
+                  <h3 className="font-bold text-sm sm:text-xl text-gray-900 tracking-tight leading-tight sm:leading-none mb-0 sm:mb-1 truncate">
                     {tdCountryName(country)}
                   </h3>
-                  <span className="text-sm text-gray-500 font-medium">
+                  <span className="text-xs text-gray-500 font-medium hidden sm:inline">
                     {td('continents', country.continent)}
                   </span>
                 </div>
@@ -304,11 +260,10 @@ export default function ComparisonTable({ countries, isAuthenticated = true }: C
             <button
               key={cur.code}
               onClick={() => setDisplayCurrency(cur.code)}
-              className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-all ${
-                displayCurrency === cur.code
-                  ? 'bg-[#5EA3C0] text-white shadow-sm'
-                  : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
-              }`}
+              className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-all ${displayCurrency === cur.code
+                ? 'bg-[#5EA3C0] text-white shadow-sm'
+                : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                }`}
             >
               {cur.symbol} {cur.code}
             </button>
@@ -316,12 +271,12 @@ export default function ComparisonTable({ countries, isAuthenticated = true }: C
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="p-2 bg-white rounded-lg text-[#5EA3C0] shadow-sm border border-gray-100">
-            <Zap className="w-5 h-5" />
+      <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-8">
+        <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+          <div className="p-1.5 sm:p-2 bg-white rounded-lg text-[#5EA3C0] shadow-sm border border-gray-100">
+            <Zap className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
-          <h3 className="text-lg font-bold text-gray-900">{t('comparison.sections.overview')}</h3>
+          <h3 className="text-base sm:text-lg font-bold text-gray-900">{t('comparison.sections.overview')}</h3>
         </div>
         <RadarChart
           data={radarData}
@@ -334,22 +289,22 @@ export default function ComparisonTable({ countries, isAuthenticated = true }: C
         title={t('comparison.sections.general')}
         icon={<Globe className="w-5 h-5" />}
       >
-        <ComparisonRow
+        <ComparisonRow countries={countries}
           label={t('comparison.fields.continent')}
           values={countries.map(c => td('continents', c.continent))}
           colClass={colClass}
         />
-        <ComparisonRow
+        <ComparisonRow countries={countries}
           label={t('comparison.fields.capital')}
           values={countries.map(c => td('capitals', c.capital))}
           colClass={colClass}
         />
-        <ComparisonRow
+        <ComparisonRow countries={countries}
           label={t('comparison.fields.languages')}
           values={countries.map(c => tdLangs(c.languages))}
           colClass={colClass}
         />
-        <ComparisonRow
+        <ComparisonRow countries={countries}
           label={t('comparison.fields.currency')}
           values={countries.map(c => c.currency || t('comparison.fields.notSpecifiedFeminine'))}
           colClass={colClass}
@@ -358,277 +313,253 @@ export default function ComparisonTable({ countries, isAuthenticated = true }: C
 
       {isAuthenticated ? (
         <>
-      <ComparisonSection
-        title={t('comparison.sections.costOfLiving')}
-        icon={<DollarSign className="w-5 h-5" />}
-      >
-        <ComparisonRowWithBar
-          label={t('comparison.fields.averageSalary')}
-          values={countries.map(c => ({
-            raw: convertAmount(c.costOfLiving?.averageSalary, c),
-            display: fmt(c.costOfLiving?.averageSalary, c),
-          }))}
-          highlightBest="highest"
-          colClass={colClass}
-          colors={RADAR_COLORS}
-        />
-        <ComparisonRowWithBar
-          label={t('comparison.fields.rentOneRoom')}
-          values={countries.map(c => ({
-            raw: convertAmount(c.costOfLiving?.averageRent?.oneBedroom, c),
-            display: fmt(c.costOfLiving?.averageRent?.oneBedroom, c),
-          }))}
-          highlightBest="lowest"
-          colClass={colClass}
-          colors={RADAR_COLORS}
-        />
-        <ComparisonRowWithBar
-          label={t('comparison.fields.rentThreeRooms')}
-          values={countries.map(c => ({
-            raw: convertAmount(c.costOfLiving?.averageRent?.threeBedroom, c),
-            display: fmt(c.costOfLiving?.averageRent?.threeBedroom, c),
-          }))}
-          highlightBest="lowest"
-          colClass={colClass}
-          colors={RADAR_COLORS}
-        />
-        <ComparisonRowWithBar
-          label={t('comparison.fields.restaurantMeal')}
-          values={countries.map(c => ({
-            raw: convertAmount(c.costOfLiving?.food?.restaurantMeal, c),
-            display: fmt(c.costOfLiving?.food?.restaurantMeal, c),
-          }))}
-          highlightBest="lowest"
-          colClass={colClass}
-          colors={RADAR_COLORS}
-        />
-        <ComparisonRowWithBar
-          label={t('comparison.fields.groceries')}
-          values={countries.map(c => ({
-            raw: convertAmount(c.costOfLiving?.food?.groceriesWeekly, c),
-            display: fmt(c.costOfLiving?.food?.groceriesWeekly, c),
-          }))}
-          highlightBest="lowest"
-          colClass={colClass}
-          colors={RADAR_COLORS}
-        />
-        <ComparisonRowWithBar
-          label={t('comparison.fields.utilities')}
-          values={countries.map(c => ({
-            raw: convertAmount(c.costOfLiving?.utilities, c),
-            display: fmt(c.costOfLiving?.utilities, c),
-          }))}
-          highlightBest="lowest"
-          colClass={colClass}
-          colors={RADAR_COLORS}
-        />
-        <ComparisonRowWithBar
-          label={t('comparison.fields.transport')}
-          values={countries.map(c => ({
-            raw: convertAmount(c.costOfLiving?.transportMonthly, c),
-            display: fmt(c.costOfLiving?.transportMonthly, c),
-          }))}
-          highlightBest="lowest"
-          colClass={colClass}
-          colors={RADAR_COLORS}
-        />
-      </ComparisonSection>
-
-      <ComparisonSection
-        title={t('comparison.sections.qualityOfLife')}
-        icon={<Heart className="w-5 h-5" />}
-      >
-        <ComparisonRowScore
-          label={t('comparison.fields.safety')}
-          values={countries.map(c => c.lifestyle?.safetyRating)}
-          colClass={colClass}
-        />
-        <ComparisonRowScore
-          label={t('comparison.fields.healthcareQuality')}
-          values={countries.map(c => c.healthcare?.qualityRating)}
-          colClass={colClass}
-        />
-        <ComparisonRow
-          label={t('comparison.fields.healthcareSystem')}
-          values={countries.map(c => {
-            const text = tdByCode('healthcareSystem', c.isoCode)
-            return text.length > 80 ? text.slice(0, 77) + '…' : text
-          })}
-          colClass={colClass}
-        />
-        <ComparisonRow
-          label={t('comparison.fields.workLifeBalance')}
-          values={countries.map(c => td('workLifeBalance', c.lifestyle?.workLifeBalance))}
-          colClass={colClass}
-        />
-      </ComparisonSection>
-
-      <ComparisonSection
-        title={t('comparison.sections.climate')}
-        icon={<Thermometer className="w-5 h-5" />}
-      >
-        <ComparisonRow
-          label={t('comparison.fields.climateType')}
-          values={countries.map(c => {
-            const text = tdByCode('climateType', c.isoCode)
-            return text.length > 60 ? text.slice(0, 57) + '…' : text
-          })}
-          colClass={colClass}
-        />
-        <ComparisonRow
-          label={t('comparison.fields.tempSummer')}
-          values={countries.map(c => c.climate?.averageTemp?.summer || t('comparison.fields.notSpecified'))}
-          colClass={colClass}
-        />
-        <ComparisonRow
-          label={t('comparison.fields.tempWinter')}
-          values={countries.map(c => c.climate?.averageTemp?.winter || t('comparison.fields.notSpecified'))}
-          colClass={colClass}
-        />
-      </ComparisonSection>
-
-      <ComparisonSection
-        title={t('comparison.sections.taxation')}
-        icon={<Receipt className="w-5 h-5" />}
-      >
-        <ComparisonRow
-          label={t('comparison.fields.incomeTax')}
-          values={countries.map(c => c.taxation?.incomeTaxRange || t('comparison.fields.notSpecified'))}
-          colClass={colClass}
-        />
-        <ComparisonRow
-          label={t('comparison.fields.vat')}
-          values={countries.map(c => c.taxation?.vat || t('comparison.fields.notSpecified'))}
-          colClass={colClass}
-        />
-      </ComparisonSection>
-
           <ComparisonSection
-            title={t('comparison.sections.immigration')}
-            icon={<MapPin className="w-5 h-5" />}
+            title={t('comparison.sections.costOfLiving')}
+            icon={<DollarSign className="w-5 h-5" />}
           >
-            <ComparisonRowWithBar
-              label={t('comparison.fields.stocksForeignPop')}
-              values={countries.map(c => {
-                const m = getByIso2(c.isoCode)
-                const v = m?.stocksForeignPop?.value
-                return {
-                  raw: v ?? null,
-                  display: v != null
-                    ? `${fmtNum(v)} (${m?.stocksForeignPop?.year})`
-                    : t('comparison.fields.notSpecified'),
-                }
-              })}
+            <ComparisonRowWithBar countries={countries}
+              label={t('comparison.fields.averageSalary')}
+              values={countries.map(c => ({
+                raw: convertAmount(c.costOfLiving?.averageSalary, c),
+                display: fmt(c.costOfLiving?.averageSalary, c),
+              }))}
               highlightBest="highest"
               colClass={colClass}
               colors={RADAR_COLORS}
             />
-            <ComparisonRowWithBar
-              label={t('comparison.fields.inflowsForeignPop')}
-              values={countries.map(c => {
-                const m = getByIso2(c.isoCode)
-                const v = m?.inflowsForeignPop?.value
-                return {
-                  raw: v ?? null,
-                  display: v != null
-                    ? `${fmtNum(v)} (${m?.inflowsForeignPop?.year})`
-                    : t('comparison.fields.notSpecified'),
-                }
-              })}
-              highlightBest="highest"
+            <ComparisonRowWithBar countries={countries}
+              label={t('comparison.fields.rentOneRoom')}
+              values={countries.map(c => ({
+                raw: convertAmount(c.costOfLiving?.averageRent?.oneBedroom, c),
+                display: fmt(c.costOfLiving?.averageRent?.oneBedroom, c),
+              }))}
+              highlightBest="lowest"
               colClass={colClass}
               colors={RADAR_COLORS}
             />
-            <ComparisonRowWithBar
-              label={t('comparison.fields.outflowsForeignPop')}
-              values={countries.map(c => {
-                const m = getByIso2(c.isoCode)
-                const v = m?.outflowsForeignPop?.value
-                return {
-                  raw: v ?? null,
-                  display: v != null
-                    ? `${fmtNum(v)} (${m?.outflowsForeignPop?.year})`
-                    : t('comparison.fields.notSpecified'),
-                }
-              })}
+            <ComparisonRowWithBar countries={countries}
+              label={t('comparison.fields.rentThreeRooms')}
+              values={countries.map(c => ({
+                raw: convertAmount(c.costOfLiving?.averageRent?.threeBedroom, c),
+                display: fmt(c.costOfLiving?.averageRent?.threeBedroom, c),
+              }))}
+              highlightBest="lowest"
               colClass={colClass}
               colors={RADAR_COLORS}
             />
-            <ComparisonRowWithBar
-              label={t('comparison.fields.asylumSeekers')}
-              values={countries.map(c => {
-                const m = getByIso2(c.isoCode)
-                const v = m?.asylumSeekers?.value
-                return {
-                  raw: v ?? null,
-                  display: v != null
-                    ? `${fmtNum(v)} (${m?.asylumSeekers?.year})`
-                    : t('comparison.fields.notSpecified'),
-                }
-              })}
+            <ComparisonRowWithBar countries={countries}
+              label={t('comparison.fields.restaurantMeal')}
+              values={countries.map(c => ({
+                raw: convertAmount(c.costOfLiving?.food?.restaurantMeal, c),
+                display: fmt(c.costOfLiving?.food?.restaurantMeal, c),
+              }))}
+              highlightBest="lowest"
               colClass={colClass}
               colors={RADAR_COLORS}
             />
-            <ComparisonRowWithBar
-              label={t('comparison.fields.nationalityAcquisitions')}
-              values={countries.map(c => {
-                const m = getByIso2(c.isoCode)
-                const v = m?.nationalityAcquisitions?.value
-                return {
-                  raw: v ?? null,
-                  display: v != null
-                    ? `${fmtNum(v)} (${m?.nationalityAcquisitions?.year})`
-                    : t('comparison.fields.notSpecified'),
-                }
-              })}
-              highlightBest="highest"
+            <ComparisonRowWithBar countries={countries}
+              label={t('comparison.fields.groceries')}
+              values={countries.map(c => ({
+                raw: convertAmount(c.costOfLiving?.food?.groceriesWeekly, c),
+                display: fmt(c.costOfLiving?.food?.groceriesWeekly, c),
+              }))}
+              highlightBest="lowest"
               colClass={colClass}
               colors={RADAR_COLORS}
             />
-
-            <ComparisonRow
-              label={t('comparison.fields.steps')}
-              values={countries.map(c => {
-                const stepsCount = c.expatProjectTemplate?.steps?.length
-                return stepsCount ? t('comparison.fields.stepsValue', { count: stepsCount }) : t('comparison.fields.notSpecified')
-              })}
+            <ComparisonRowWithBar countries={countries}
+              label={t('comparison.fields.utilities')}
+              values={countries.map(c => ({
+                raw: convertAmount(c.costOfLiving?.utilities, c),
+                display: fmt(c.costOfLiving?.utilities, c),
+              }))}
+              highlightBest="lowest"
               colClass={colClass}
+              colors={RADAR_COLORS}
             />
-            <ComparisonRow
-              label={t('comparison.fields.difficulty')}
-              values={countries.map(c => 
-                td('visaDifficulty', c.recommendations?.visaDifficulty)
-              )}
+            <ComparisonRowWithBar countries={countries}
+              label={t('comparison.fields.transport')}
+              values={countries.map(c => ({
+                raw: convertAmount(c.costOfLiving?.transportMonthly, c),
+                display: fmt(c.costOfLiving?.transportMonthly, c),
+              }))}
+              highlightBest="lowest"
               colClass={colClass}
+              colors={RADAR_COLORS}
             />
-            <ComparisonRow
-              label={t('comparison.fields.languageRequired')}
-              values={countries.map(c => 
-                td('languageRequired', c.recommendations?.language)
-              )}
-              colClass={colClass}
-            />
-
-            <div className="px-8 py-3 bg-gray-50/50 border-t border-gray-100">
-              <p className="text-xs text-gray-400 flex items-center gap-1.5">
-                <Users className="w-3.5 h-3.5" />
-                {t('comparison.oecdSource')}
-              </p>
-            </div>
           </ComparisonSection>
 
-          <ComparisonSection
-            title={t('comparison.sections.idealFor')}
-            icon={<TrendingUp className="w-5 h-5" />}
-          >
-            <ComparisonRow
-              label={t('comparison.fields.recommendedProfiles')}
-              values={countries.map(c => 
-                tdBestFor(c.recommendations?.bestFor)
-              )}
-              colClass={colClass}
-            />
-          </ComparisonSection>
+          {!countries.every(c => c.isCity) && (
+            <>
+
+              <ComparisonSection
+                title={t('comparison.sections.climate')}
+                icon={<Thermometer className="w-5 h-5" />}
+              >
+                <ComparisonRow countries={countries}
+                  label={t('comparison.fields.climateType')}
+                  values={countries.map(c => {
+                    const text = tdByCode('climateType', c.isoCode)
+                    return text.length > 60 ? text.slice(0, 57) + '…' : text
+                  })}
+                  colClass={colClass}
+                />
+                <ComparisonRow countries={countries}
+                  label={t('comparison.fields.tempSummer')}
+                  values={countries.map(c => c.climate?.averageTemp?.summer || t('comparison.fields.notSpecified'))}
+                  colClass={colClass}
+                />
+                <ComparisonRow countries={countries}
+                  label={t('comparison.fields.tempWinter')}
+                  values={countries.map(c => c.climate?.averageTemp?.winter || t('comparison.fields.notSpecified'))}
+                  colClass={colClass}
+                />
+              </ComparisonSection>
+
+              <ComparisonSection
+                title={t('comparison.sections.taxation')}
+                icon={<Receipt className="w-5 h-5" />}
+              >
+                <ComparisonRow countries={countries}
+                  label={t('comparison.fields.incomeTax')}
+                  values={countries.map(c => c.taxation?.incomeTaxRange || t('comparison.fields.notSpecified'))}
+                  colClass={colClass}
+                />
+                <ComparisonRow countries={countries}
+                  label={t('comparison.fields.vat')}
+                  values={countries.map(c => c.taxation?.vat || t('comparison.fields.notSpecified'))}
+                  colClass={colClass}
+                />
+              </ComparisonSection>
+
+              <ComparisonSection
+                title={t('comparison.sections.immigration')}
+                icon={<MapPin className="w-5 h-5" />}
+              >
+                <ComparisonRowWithBar countries={countries}
+                  label={t('comparison.fields.stocksForeignPop')}
+                  values={countries.map(c => {
+                    const m = getByIso2(c.isoCode)
+                    const v = m?.stocksForeignPop?.value
+                    return {
+                      raw: v ?? null,
+                      display: v != null
+                        ? `${fmtNum(v)} (${m?.stocksForeignPop?.year})`
+                        : t('comparison.fields.notSpecified'),
+                    }
+                  })}
+                  highlightBest="highest"
+                  colClass={colClass}
+                  colors={RADAR_COLORS}
+                />
+                <ComparisonRowWithBar countries={countries}
+                  label={t('comparison.fields.inflowsForeignPop')}
+                  values={countries.map(c => {
+                    const m = getByIso2(c.isoCode)
+                    const v = m?.inflowsForeignPop?.value
+                    return {
+                      raw: v ?? null,
+                      display: v != null
+                        ? `${fmtNum(v)} (${m?.inflowsForeignPop?.year})`
+                        : t('comparison.fields.notSpecified'),
+                    }
+                  })}
+                  highlightBest="highest"
+                  colClass={colClass}
+                  colors={RADAR_COLORS}
+                />
+                <ComparisonRowWithBar countries={countries}
+                  label={t('comparison.fields.outflowsForeignPop')}
+                  values={countries.map(c => {
+                    const m = getByIso2(c.isoCode)
+                    const v = m?.outflowsForeignPop?.value
+                    return {
+                      raw: v ?? null,
+                      display: v != null
+                        ? `${fmtNum(v)} (${m?.outflowsForeignPop?.year})`
+                        : t('comparison.fields.notSpecified'),
+                    }
+                  })}
+                  colClass={colClass}
+                  colors={RADAR_COLORS}
+                />
+                <ComparisonRowWithBar countries={countries}
+                  label={t('comparison.fields.asylumSeekers')}
+                  values={countries.map(c => {
+                    const m = getByIso2(c.isoCode)
+                    const v = m?.asylumSeekers?.value
+                    return {
+                      raw: v ?? null,
+                      display: v != null
+                        ? `${fmtNum(v)} (${m?.asylumSeekers?.year})`
+                        : t('comparison.fields.notSpecified'),
+                    }
+                  })}
+                  colClass={colClass}
+                  colors={RADAR_COLORS}
+                />
+                <ComparisonRowWithBar countries={countries}
+                  label={t('comparison.fields.nationalityAcquisitions')}
+                  values={countries.map(c => {
+                    const m = getByIso2(c.isoCode)
+                    const v = m?.nationalityAcquisitions?.value
+                    return {
+                      raw: v ?? null,
+                      display: v != null
+                        ? `${fmtNum(v)} (${m?.nationalityAcquisitions?.year})`
+                        : t('comparison.fields.notSpecified'),
+                    }
+                  })}
+                  highlightBest="highest"
+                  colClass={colClass}
+                  colors={RADAR_COLORS}
+                />
+
+                <ComparisonRow countries={countries}
+                  label={t('comparison.fields.steps')}
+                  values={countries.map(c => {
+                    const stepsCount = c.expatProjectTemplate?.steps?.length
+                    return stepsCount ? t('comparison.fields.stepsValue', { count: stepsCount }) : t('comparison.fields.notSpecified')
+                  })}
+                  colClass={colClass}
+                />
+                <ComparisonRow countries={countries}
+                  label={t('comparison.fields.difficulty')}
+                  values={countries.map(c =>
+                    td('visaDifficulty', c.recommendations?.visaDifficulty)
+                  )}
+                  colClass={colClass}
+                />
+                <ComparisonRow countries={countries}
+                  label={t('comparison.fields.languageRequired')}
+                  values={countries.map(c =>
+                    td('languageRequired', c.recommendations?.language)
+                  )}
+                  colClass={colClass}
+                />
+
+                <div className="px-4 sm:px-8 py-3 bg-gray-50/50 border-t border-gray-100">
+                  <p className="text-[10px] sm:text-xs text-gray-400 flex items-center gap-1.5">
+                    <Users className="w-3.5 h-3.5" />
+                    {t('comparison.oecdSource')}
+                  </p>
+                </div>
+              </ComparisonSection>
+
+              <ComparisonSection
+                title={t('comparison.sections.idealFor')}
+                icon={<TrendingUp className="w-5 h-5" />}
+              >
+                <ComparisonRow countries={countries}
+                  label={t('comparison.fields.recommendedProfiles')}
+                  values={countries.map(c =>
+                    tdBestFor(c.recommendations?.bestFor)
+                  )}
+                  colClass={colClass}
+                />
+              </ComparisonSection>
+            </>
+          )}
         </>
       ) : (
         <PremiumGate />
@@ -637,27 +568,26 @@ export default function ComparisonTable({ countries, isAuthenticated = true }: C
   )
 }
 
-
 function PremiumGate() {
   const { t } = useTranslation()
   return (
     <div className="relative overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-2xl shadow-gray-900/5 mt-8">
       <div className="absolute -top-24 -right-24 w-96 h-96 bg-[#5EA3C0]/10 rounded-full blur-3xl opacity-50" />
       <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-gray-50 rounded-full blur-3xl opacity-50" />
-      
+
       <div className="relative p-8 md:p-12 text-center">
         <div className="inline-flex items-center justify-center w-20 h-20 mb-8 rounded-3xl bg-[#5EA3C0] text-white shadow-lg shadow-[#5EA3C0]/30 transform rotate-3 hover:rotate-6 transition-transform duration-300">
           <Lock className="w-10 h-10" />
         </div>
-        
+
         <h3 className="text-3xl font-bold text-gray-900 mb-4 tracking-tight">
           {t('comparison.premiumAccess.title')}
         </h3>
-        
+
         <p className="text-lg text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
           {t('comparison.premiumAccess.description')}
         </p>
-        
+
         <div className="grid md:grid-cols-2 gap-4 max-w-3xl mx-auto mb-10 text-left">
           {[
             t('comparison.premiumAccess.benefits.procedures'),
@@ -675,7 +605,7 @@ function PremiumGate() {
             </div>
           ))}
         </div>
-        
+
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
             to="/auth/register"
@@ -690,7 +620,7 @@ function PremiumGate() {
             {t('comparison.premiumAccess.login')}
           </Link>
         </div>
-        
+
         <p className="mt-8 text-sm font-medium text-gray-400">
           {t('comparison.premiumAccess.footer')}
         </p>
@@ -699,154 +629,6 @@ function PremiumGate() {
   )
 }
 
-function ComparisonSection({ 
-  title, 
-  icon, 
-  children 
-}: { 
-  title: string
-  icon: React.ReactNode
-  children: React.ReactNode 
-}) {
-  return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-shadow duration-300 hover:shadow-md">
-      <div className="bg-gray-50/30 px-8 py-4 border-b border-gray-100">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-white rounded-lg text-[#5EA3C0] shadow-sm border border-gray-100">
-            {icon}
-          </div>
-          <h3 className="text-lg font-bold text-gray-900">{title}</h3>
-        </div>
-      </div>
-      <div className="divide-y divide-gray-50">
-        {children}
-      </div>
-    </div>
-  )
-}
 
 
-function ComparisonRow({ 
-  label, 
-  values,
-  colClass,
-}: { 
-  label: string
-  values: string[]
-  colClass: string
-}) {
-  return (
-    <div className="grid grid-cols-[200px_1fr] gap-8 px-8 py-5">
-      <div className="font-medium text-gray-500 flex items-center text-sm uppercase tracking-wide">
-        {label}
-      </div>
-      <div className={`grid gap-8 ${colClass}`}>
-        {values.map((value, index) => (
-          <div key={index} className="text-base text-gray-700 flex items-center">
-            <span className="break-words leading-snug">{value}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
 
-
-interface BarValue {
-  raw: number | undefined | null
-  display: string
-}
-
-function ComparisonRowWithBar({ 
-  label, 
-  values,
-  highlightBest,
-  colClass,
-  colors,
-}: { 
-  label: string
-  values: BarValue[]
-  highlightBest?: 'highest' | 'lowest'
-  colClass: string
-  colors: string[]
-}) {
-  const { t } = useTranslation()
-
-  const rawValues = values.map(v => v.raw ?? null)
-  const validValues = rawValues.filter((v): v is number => v !== null)
-  const maxVal = validValues.length > 0 ? Math.max(...validValues) : 0
-
-  const bestIndex = (() => {
-    if (!highlightBest || validValues.length === 0) return -1
-    if (highlightBest === 'highest') {
-      const max = Math.max(...validValues)
-      return rawValues.indexOf(max)
-    } else {
-      const min = Math.min(...validValues)
-      return rawValues.indexOf(min)
-    }
-  })()
-
-  return (
-    <div className="grid grid-cols-[200px_1fr] gap-8 px-8 py-5">
-      <div className="font-medium text-gray-500 flex items-center text-sm uppercase tracking-wide">
-        {label}
-      </div>
-      <div className={`grid gap-8 ${colClass}`}>
-        {values.map((value, index) => (
-          <div key={index}>
-            <div className={`text-base flex items-center justify-between p-2 rounded-lg ${
-              index === bestIndex
-                ? 'bg-[#5EA3C0]/10 text-gray-900 font-semibold ring-1 ring-[#5EA3C0]/20'
-                : 'text-gray-700'
-            }`}>
-              <span className="break-words">{value.display}</span>
-              {index === bestIndex && (
-                <div
-                  className="flex-shrink-0 w-6 h-6 bg-[#5EA3C0]/20 text-[#5EA3C0] rounded-full flex items-center justify-center ml-2"
-                  title={t('comparison.bestOption')}
-                >
-                  <Trophy className="w-3.5 h-3.5" />
-                </div>
-              )}
-            </div>
-            {value.raw != null && maxVal > 0 && (
-              <ValueBar value={value.raw} max={maxVal} color={colors[index]} />
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-
-function ComparisonRowScore({
-  label,
-  values,
-  colClass,
-}: {
-  label: string
-  values: (string | undefined)[]
-  colClass: string
-}) {
-  const { t } = useTranslation()
-  return (
-    <div className="grid grid-cols-[200px_1fr] gap-8 px-8 py-5">
-      <div className="font-medium text-gray-500 flex items-center text-sm uppercase tracking-wide">
-        {label}
-      </div>
-      <div className={`grid gap-8 ${colClass}`}>
-        {values.map((value, index) => (
-          <div key={index} className="flex items-center">
-            {value ? (
-              <ScoreBadge score={value} />
-            ) : (
-              <span className="text-gray-400 text-sm">{t('comparison.fields.notSpecified')}</span>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}

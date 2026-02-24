@@ -8,6 +8,7 @@ import ServiceGuides from '../components/ServiceGuides';
 import ServiceStats from '../components/ServiceStats';
 import ServiceResults from '../components/ServiceResults';
 import CountrySelector from '../components/CountrySelector';
+import CitySelector from '../components/CitySelector';
 import ServiceTools from '../components/ServiceTools';
 import HealthStats from '../components/HealthStats';
 import TransportStats from '../components/TransportStats';
@@ -28,11 +29,14 @@ export default function ServicePage() {
     content,
     selectedCountry,
     setSelectedCountry,
+    selectedCity,
+    setSelectedCity,
+    availableCities,
     displayMode,
     isAuthenticated,
-  } = useServiceContent({ 
-    service: service || { id: '', title: '', subtitle: '', description: '', icon: Plus, color: '', bgColor: '', guides: [], tips: [], stats: [] } satisfies ServiceConfig, 
-    category: category || '' 
+  } = useServiceContent({
+    service: service || { id: '', title: '', subtitle: '', description: '', icon: Plus, color: '', bgColor: '', guides: [], tips: [], stats: [] } satisfies ServiceConfig,
+    category: category || ''
   });
 
   if (!category) {
@@ -63,11 +67,13 @@ export default function ServicePage() {
   const categoriesWithTools = ['emploi', 'logement', 'transport', 'sante'];
   const hasSidebarTools = categoriesWithTools.includes(category || '');
 
+  const selectedCityName = availableCities.find(c => c.slug === selectedCity)?.name || undefined;
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <PageHeader 
-        title={service.title} 
-        description={service.description} 
+      <PageHeader
+        title={service.title}
+        description={service.description}
       />
 
       <div className="bg-white border-b border-gray-200">
@@ -142,12 +148,19 @@ export default function ServicePage() {
             </div>
 
             {isAuthenticated && (
-              <div className="w-full lg:w-auto flex-shrink-0">
+              <div className="w-full lg:w-auto flex flex-col sm:flex-row items-center gap-3 flex-shrink-0">
                 <CountrySelector
                   selectedCountry={selectedCountry}
                   onCountryChange={setSelectedCountry}
                   showGenericOption={true}
                 />
+                {availableCities.length > 1 && (
+                  <CitySelector
+                    selectedCity={selectedCity}
+                    onCityChange={setSelectedCity}
+                    availableCities={availableCities}
+                  />
+                )}
               </div>
             )}
           </div>
@@ -157,12 +170,11 @@ export default function ServicePage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
           {isAuthenticated && hasSidebarTools && (
-            <aside className={`flex-shrink-0 transition-all duration-300 ${
-              isToolsExpanded ? 'lg:w-96' : 'lg:w-80'
-            }`}>
+            <aside className={`flex-shrink-0 transition-all duration-300 ${isToolsExpanded ? 'lg:w-96' : 'lg:w-80'
+              }`}>
               <div className="lg:sticky lg:top-8 space-y-6">
-                <ServiceTools 
-                  category={category || ''} 
+                <ServiceTools
+                  category={category || ''}
                   countryName={selectedCountry || undefined}
                   isExpanded={isToolsExpanded}
                   onToggleExpand={() => setIsToolsExpanded(!isToolsExpanded)}
@@ -173,13 +185,13 @@ export default function ServicePage() {
 
           <main className="flex-1 min-w-0 space-y-8">
             {selectedCountry && category === 'logement' ? (
-              <LogementStats countryName={selectedCountry} />
+              <LogementStats countryName={selectedCountry} cityName={selectedCityName} />
             ) : selectedCountry && category === 'emploi' ? (
-              <EmploiStats countryName={selectedCountry} />
+              <EmploiStats countryName={selectedCountry} cityName={selectedCityName} />
             ) : selectedCountry && category === 'sante' ? (
-              <HealthStats countryName={selectedCountry} />
+              <HealthStats countryName={selectedCountry} cityName={selectedCityName} />
             ) : selectedCountry && category === 'transport' ? (
-              <TransportStats countryName={selectedCountry} />
+              <TransportStats countryName={selectedCountry} cityName={selectedCityName} />
             ) : category === 'visa' ? (
               <VisaStats countryName={selectedCountry || 'general'} />
             ) : content.stats && content.stats.length > 0 ? (

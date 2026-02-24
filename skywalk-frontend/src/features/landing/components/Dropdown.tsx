@@ -32,8 +32,8 @@ export default function Dropdown() {
   const categoryOptions = [
     { value: 'emploi', label: t('landing.search.options.job'), disabled: false },
     { value: 'logement', label: t('landing.search.options.housing'), disabled: true },
+    { value: 'transport', label: t('services.categories.transport.title'), disabled: true },
     { value: 'sante', label: t('landing.search.options.health'), disabled: true },
-    { value: 'demarches', label: t('landing.search.options.other'), disabled: true },
   ];
 
   const [activeField, setActiveField] = useState<string | null>(null);
@@ -88,7 +88,7 @@ export default function Dropdown() {
     const isEmpty = !value;
 
     return (
-      <div className="relative w-full min-w-[400px]">
+      <div className="relative w-full">
         <div
           className={`flex items-center space-x-4 p-4 border rounded-xl cursor-pointer transition-all duration-200 ${isHighlighted
             ? 'border-[#5EA3C0]/30 bg-[#5EA3C0]/5'
@@ -118,11 +118,10 @@ export default function Dropdown() {
                 {options.map((option) => (
                   <div
                     key={option.value}
-                    className={`px-4 py-2 text-gray-700 ${
-                      option.disabled
-                        ? 'opacity-40 cursor-not-allowed'
-                        : 'hover:bg-gray-50 cursor-pointer'
-                    } ${value === option.value ? 'bg-gray-50 font-medium' : ''}`}
+                    className={`px-4 py-2 text-gray-700 ${option.disabled
+                      ? 'opacity-40 cursor-not-allowed'
+                      : 'hover:bg-gray-50 cursor-pointer'
+                      } ${value === option.value ? 'bg-gray-50 font-medium' : ''}`}
                     onClick={(e) => {
                       e.stopPropagation();
                       if (!option.disabled) {

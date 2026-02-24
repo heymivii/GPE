@@ -28,7 +28,7 @@ const categoryColors: Record<string, string> = {
 
 const contractTypeIds = ['permanent', 'contract', 'full_time', 'part_time'] as const
 
-import { SUPPORTED_COUNTRIES } from '../../../data/supportedCountries'
+import { SUPPORTED_COUNTRIES, CITIES_BY_COUNTRY } from '../../../data/supportedCountries'
 
 const countries = SUPPORTED_COUNTRIES.map(c => ({
   code: c.code,
@@ -41,15 +41,11 @@ export default function FilterSection({ filters, onFiltersChange }: FilterSectio
   const { t } = useTranslation()
   const [isPriceExpanded, setIsPriceExpanded] = useState(false)
   const [isDateExpanded, setIsDateExpanded] = useState(false)
-  const [cityInput, setCityInput] = useState(filters.city || '')
   const cityDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const handleCityChange = useCallback((value: string) => {
-    setCityInput(value)
     if (cityDebounceRef.current) clearTimeout(cityDebounceRef.current)
-    cityDebounceRef.current = setTimeout(() => {
-      onFiltersChange({ city: value.trim() })
-    }, 600)
+    onFiltersChange({ city: value })
   }, [onFiltersChange])
 
   const categories = categoryIds.map(id => ({
@@ -87,7 +83,6 @@ export default function FilterSection({ filters, onFiltersChange }: FilterSectio
   }
 
   const clearAllFilters = () => {
-    setCityInput('')
     onFiltersChange({
       category: '',
       country: '',
@@ -135,13 +130,12 @@ export default function FilterSection({ filters, onFiltersChange }: FilterSectio
               <button
                 key={category.id}
                 onClick={() => !category.disabled && handleCategoryToggle(category.id)}
-                className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                  category.disabled
+                className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-all ${category.disabled
                     ? 'bg-gray-50 text-gray-300 cursor-not-allowed'
                     : filters.category === category.id
                       ? category.color
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
+                  }`}
               >
                 <span className="flex items-center justify-between">
                   {category.name}
@@ -294,15 +288,15 @@ export default function FilterSection({ filters, onFiltersChange }: FilterSectio
                       thisMonth: [today, new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]]
                     }
                     return (
-                    <button
-                      key={periodKey}
-                      onClick={() => {
-                        onFiltersChange({ dateRange: ranges[periodKey] })
-                      }}
-                      className="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded"
-                    >
-                      {t(`searchPage.filter.${periodKey}`)}
-                    </button>
+                      <button
+                        key={periodKey}
+                        onClick={() => {
+                          onFiltersChange({ dateRange: ranges[periodKey] })
+                        }}
+                        className="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded"
+                      >
+                        {t(`searchPage.filter.${periodKey}`)}
+                      </button>
                     )
                   })}
                 </div>
@@ -312,18 +306,28 @@ export default function FilterSection({ filters, onFiltersChange }: FilterSectio
         </div>
       </div>
 
-      <div className="pt-4 border-t">
-        <div className="flex items-center gap-4">
-          <label className="font-medium text-gray-700">{t('searchPage.filter.city')}</label>
-          <input
-            type="text"
-            value={cityInput}
-            onChange={(e) => handleCityChange(e.target.value)}
-            placeholder={t('searchPage.filter.cityPlaceholder')}
-            className="flex-1 max-w-xs px-3 py-2 border border-gray-300 rounded-lg text-sm"
-          />
+      {filters.country && (CITIES_BY_COUNTRY[filters.country]?.length ?? 0) > 0 && (
+        <div className="pt-4 border-t">
+          <div className="flex items-center gap-2 mb-3">
+            <MapPin className="w-4 h-4 text-gray-500" />
+            <label className="font-medium text-gray-700">{t('searchPage.filter.city')}</label>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {CITIES_BY_COUNTRY[filters.country].map((city) => (
+              <button
+                key={city}
+                onClick={() => handleCityChange(filters.city === city ? '' : city)}
+                className={`px-3 py-1.5 rounded-full text-sm transition-all ${filters.city === city
+                    ? 'bg-blue-100 text-blue-800 font-medium'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+              >
+                {city}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </div >
   )
 }

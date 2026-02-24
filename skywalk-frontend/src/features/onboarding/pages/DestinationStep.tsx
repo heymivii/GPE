@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useQuery } from '@tanstack/react-query'
 import FormField from '../ui/FormField'
 import Select from '../ui/Select'
 import TextInput from '../ui/TextInput'
 import WizardNav from '../components/WizardNav'
+import { destinationsApi } from '../../../api/destinations'
 
 interface DestinationStepData {
   fromCountry: string
@@ -14,13 +16,14 @@ interface DestinationStepData {
 
 interface DestinationStepProps {
   data?: DestinationStepData
+  isEditMode?: boolean
   onNext: (data: DestinationStepData) => void
   onBack?: () => void
 }
 
 import { useCostOfLiving } from '../../../contexts/CostOfLivingContext';
 
-export default function DestinationStep({ data, onNext, onBack }: DestinationStepProps) {
+export default function DestinationStep({ data, isEditMode, onNext, onBack }: DestinationStepProps) {
   const { t } = useTranslation()
   const { supportedCountries } = useCostOfLiving();
 
@@ -36,6 +39,19 @@ export default function DestinationStep({ data, onNext, onBack }: DestinationSte
     value: c.code,
     label: t(c.i18nKey)
   }));
+
+  const selectedCountrySlug = supportedCountries.find(c => c.code === formData.toCountry)?.slug;
+
+  const { data: countryDetail, isLoading: isLoadingCities } = useQuery({
+    queryKey: ['destination', selectedCountrySlug],
+    queryFn: () => destinationsApi.getBySlug(selectedCountrySlug!),
+    enabled: !!selectedCountrySlug,
+  });
+
+  const cityOptions = countryDetail?.cities?.map(city => ({
+    value: city.name,
+    label: city.name
+  })) || [];
 
   useEffect(() => {
     if (data) {
@@ -89,6 +105,11 @@ export default function DestinationStep({ data, onNext, onBack }: DestinationSte
 
   const handleFieldChange = (field: keyof DestinationStepData) => (value: string) => {
     const newFormData = { ...formData, [field]: value }
+
+    if (field === 'toCountry' && value !== formData.toCountry) {
+      newFormData.targetCity = ''
+    }
+
     setFormData(newFormData)
 
     if (field === 'toCountry' && value && newFormData.fromCountry && value === newFormData.fromCountry) {
@@ -119,6 +140,7 @@ export default function DestinationStep({ data, onNext, onBack }: DestinationSte
           required
           error={errors.fromCountry}
           id="fromCountry"
+          helper={isEditMode ? t('onboarding.destination.cannotChangeCountry') : undefined}
         >
           <Select
             id="fromCountry"
@@ -127,6 +149,7 @@ export default function DestinationStep({ data, onNext, onBack }: DestinationSte
             onChange={handleFieldChange('fromCountry')}
             placeholder={t('onboarding.destination.fromCountryPlaceholder')}
             aria-describedby={errors.fromCountry ? 'fromCountry-error' : undefined}
+            disabled={isEditMode}
           />
         </FormField>
 
@@ -135,6 +158,7 @@ export default function DestinationStep({ data, onNext, onBack }: DestinationSte
           required
           error={errors.toCountry}
           id="toCountry"
+          helper={isEditMode ? t('onboarding.destination.cannotChangeCountry') : undefined}
         >
           <Select
             id="toCountry"
@@ -143,6 +167,7 @@ export default function DestinationStep({ data, onNext, onBack }: DestinationSte
             onChange={handleFieldChange('toCountry')}
             placeholder={t('onboarding.destination.toCountryPlaceholder')}
             aria-describedby={errors.toCountry ? 'toCountry-error' : undefined}
+            disabled={isEditMode}
           />
         </FormField>
 
@@ -152,12 +177,14 @@ export default function DestinationStep({ data, onNext, onBack }: DestinationSte
           error={errors.targetCity}
           id="targetCity"
         >
-          <TextInput
+          <Select
             id="targetCity"
+            options={cityOptions}
             value={formData.targetCity}
             onChange={handleFieldChange('targetCity')}
-            placeholder={t('onboarding.destination.targetCityPlaceholder')}
+            placeholder={isLoadingCities ? t('common.loading') : t('onboarding.destination.targetCityPlaceholder')}
             aria-describedby={errors.targetCity ? 'targetCity-error' : 'targetCity-helper'}
+            disabled={!formData.toCountry || isLoadingCities}
           />
         </FormField>
 

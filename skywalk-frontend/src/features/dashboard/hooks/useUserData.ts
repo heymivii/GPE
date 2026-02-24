@@ -29,7 +29,6 @@ interface UserData {
     }
     needs: {
       priorities: string[]
-      needPersonalizedSupport: boolean
     }
   }
 }
@@ -54,13 +53,13 @@ export default function useUserData() {
   const loadUserData = useCallback(async () => {
     try {
       setLoading(true)
-      
+
       const savedOnboardingData = localStorage.getItem('skywalk-user-data')
       const isCompleted = localStorage.getItem('skywalk-onboarding-completed') === 'true'
-      
+
       if (savedOnboardingData && isCompleted) {
         const onboardingData = JSON.parse(savedOnboardingData)
-        
+
         const userData: UserData = {
           id: '1',
           name: 'SkyWalk User',
@@ -68,7 +67,7 @@ export default function useUserData() {
           onboardingCompleted: true,
           onboardingData: onboardingData
         }
-        
+
         await new Promise(resolve => setTimeout(resolve, 500))
         setUserData(userData)
       } else {
@@ -79,12 +78,12 @@ export default function useUserData() {
           onboardingCompleted: false
         })
       }
-      
+
       const savedPreferences = localStorage.getItem('dashboard-preferences')
       if (savedPreferences) {
         setPreferences(JSON.parse(savedPreferences))
       }
-      
+
     } catch (err) {
       setError(err instanceof Error ? err.message : t('common.loadingError'))
     } finally {
@@ -107,7 +106,7 @@ export default function useUserData() {
     const hiddenWidgets = isHidden
       ? preferences.hiddenWidgets.filter(id => id !== widgetId)
       : [...preferences.hiddenWidgets, widgetId]
-    
+
     updatePreferences({ hiddenWidgets })
   }
 

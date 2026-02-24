@@ -27,7 +27,6 @@ interface OnboardingData {
   }
   needs: {
     priorities: string[]
-    needPersonalizedSupport: boolean | undefined
   }
 }
 
@@ -42,7 +41,7 @@ export default function useOnboarding(skipLocalStorage = false) {
     if (skipLocalStorage) {
       return;
     }
-    
+
     const savedDraft = localStorage.getItem(STORAGE_KEY)
     if (savedDraft) {
       try {
@@ -57,14 +56,14 @@ export default function useOnboarding(skipLocalStorage = false) {
 
   useEffect(() => {
     if (skipLocalStorage) return;
-    
+
     if (Object.keys(data).length > 0) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ data, currentStep }))
     }
   }, [data, currentStep, skipLocalStorage])
 
   const updateStepData = <T extends keyof OnboardingData>(
-    step: T, 
+    step: T,
     stepData: OnboardingData[T]
   ) => {
     setData(prev => ({
@@ -121,22 +120,21 @@ export default function useOnboarding(skipLocalStorage = false) {
 
     switch (step) {
       case 'destination':
-        return !!(stepData as OnboardingData['destination']).fromCountry && 
-               !!(stepData as OnboardingData['destination']).toCountry && 
-               !!(stepData as OnboardingData['destination']).departureYear
+        return !!(stepData as OnboardingData['destination']).fromCountry &&
+          !!(stepData as OnboardingData['destination']).toCountry &&
+          !!(stepData as OnboardingData['destination']).departureYear
       case 'profile':
-        return !!(stepData as OnboardingData['profile']).age && 
-               !!(stepData as OnboardingData['profile']).status && 
-               !!(stepData as OnboardingData['profile']).travelParty && 
-               !!(stepData as OnboardingData['profile']).languageLevel
+        return !!(stepData as OnboardingData['profile']).age &&
+          !!(stepData as OnboardingData['profile']).status &&
+          !!(stepData as OnboardingData['profile']).travelParty &&
+          !!(stepData as OnboardingData['profile']).languageLevel
       case 'objective':
-        return !!(stepData as OnboardingData['objective']).goal && 
-               !!(stepData as OnboardingData['objective']).stayDuration
+        return !!(stepData as OnboardingData['objective']).goal &&
+          !!(stepData as OnboardingData['objective']).stayDuration
       case 'preparation':
         return !!(stepData as OnboardingData['preparation']).housingBudget
       case 'needs':
-        return (stepData as OnboardingData['needs']).priorities.length > 0 && 
-               (stepData as OnboardingData['needs']).needPersonalizedSupport !== undefined
+        return (stepData as OnboardingData['needs']).priorities.length > 0
       default:
         return false
     }
@@ -150,7 +148,7 @@ export default function useOnboarding(skipLocalStorage = false) {
 
   const canGoToStep = (step: number): boolean => {
     if (step <= currentStep) return true
-    
+
     const stepKeys: (keyof OnboardingData)[] = ['destination', 'profile', 'objective', 'preparation', 'needs']
     for (let i = 0; i < step - 1; i++) {
       if (!isStepCompleted(stepKeys[i])) {

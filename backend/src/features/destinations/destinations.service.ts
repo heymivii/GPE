@@ -1,4 +1,5 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import slugify from 'slugify';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { City } from '../city/entities/city.entity';
@@ -222,6 +223,8 @@ export class DestinationsService {
         const allCountries = await this.countryRepository.find();
         country = allCountries.find(
           (c) =>
+            slugify(c.countryName, { lower: true, strict: true }) ===
+              slug.toLowerCase() ||
             c.countryName.toLowerCase() === slug.toLowerCase() ||
             c.countryName.toLowerCase().replace(/ /g, '-') ===
               slug.toLowerCase(),

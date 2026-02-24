@@ -9,14 +9,14 @@ import { PageHeader } from '../../../components/PageHeader'
 
 export default function CountryComparison() {
   const { t } = useTranslation()
-  const [selectedCountries, setSelectedCountries] = useState<number[]>([])
+  const [selectedCountries, setSelectedCountries] = useState<string[]>([])
   const { isAuthenticated } = useAuth();
 
   const { data: countries } = useCountriesWithData()
 
   const maxCountries = isAuthenticated ? 3 : 2;
 
-  const handleCountryToggle = (countryId: number) => {
+  const handleCountryToggle = (countryId: string) => {
     if (selectedCountries.includes(countryId)) {
       setSelectedCountries(selectedCountries.filter(id => id !== countryId))
     } else if (selectedCountries.length < maxCountries) {
@@ -24,13 +24,13 @@ export default function CountryComparison() {
     }
   }
 
-  const selectedCountriesData = countries?.filter(c => 
-    selectedCountries.includes(c.idCountry)
+  const selectedCountriesData = countries?.filter(c =>
+    selectedCountries.includes(c.uniqueId!)
   ) || []
 
   return (
     <div className="min-h-screen bg-gray-50/50 pb-20">
-      <PageHeader 
+      <PageHeader
         title={t('comparison.title')}
         description={t('comparison.description')}
       >
@@ -46,8 +46,8 @@ export default function CountryComparison() {
         </div>
       </PageHeader>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <div className="mb-8">
           {!isAuthenticated && selectedCountries.length >= 2 && (
             <div className="mb-6 p-4 bg-[#5EA3C0]/10 border border-[#5EA3C0]/20 rounded-xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
               <div className="p-2 bg-[#5EA3C0]/20 rounded-lg text-[#5EA3C0]">
@@ -67,7 +67,7 @@ export default function CountryComparison() {
               </div>
             </div>
           )}
-          
+
           <CountrySelector
             countries={countries || []}
             selectedCountries={selectedCountries}
@@ -85,7 +85,7 @@ export default function CountryComparison() {
             <ComparisonTable countries={selectedCountriesData} isAuthenticated={isAuthenticated} />
           </div>
         ) : (
-          <div className="mt-12 border-2 border-dashed border-gray-200 rounded-3xl p-12 text-center bg-white/50">
+          <div className="mt-8 sm:mt-12 border-2 border-dashed border-gray-200 rounded-2xl sm:rounded-3xl p-6 sm:p-12 text-center bg-white/50">
             <div className="max-w-md mx-auto">
               <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6 relative">
                 <div className="absolute inset-0 bg-[#5EA3C0]/20 rounded-full animate-ping opacity-20"></div>
