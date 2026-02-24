@@ -796,17 +796,39 @@
     "tools": {
       "title": "Nos outils gratuits",
       "subtitle": "Préparez votre expatriation avec nos simulateurs et outils d'analyse.",
+      "explore": "Explorer",
       "categories": {
         "emploi": "Emploi",
         "logement": "Logement",
         "transport": "Transport",
         "sante": "Santé"
+      },
+      "descriptions": {
+        "emploi": "Consultez les salaires, la demande d'emploi et les conditions de travail de votre destination.",
+        "logement": "Comparez les loyers, les charges et la disponibilité des logements pour planifier votre budget.",
+        "transport": "Estimez les coûts de transport mensuels et explorez les options de transports en commun.",
+        "sante": "Comprenez la qualité des soins, les coûts d'assurance et les standards médicaux."
       }
     },
     "preview": {
       "title": "Accédez à tous nos outils",
       "description": "Créez votre compte gratuitement pour utiliser nos simulateurs et préparer votre départ.",
       "cta": "Créer mon compte"
+    },
+    "ctaBanner": {
+      "title": "Prêt à franchir le pas ?",
+      "description": "Rejoignez les premiers utilisateurs qui préparent déjà leur expatriation avec SkyWalk. Accédez à des checklists personnalisées et des outils d'analyse du coût de la vie, gratuitement.",
+      "cta": "Commencer gratuitement"
+    },
+    "newsletter": {
+      "title": "Restez informé sur l'expatriation",
+      "description": "Rejoignez notre communauté grandissante et recevez les dernières actualités, guides de destinations et fonctionnalités en avant-première directement dans votre boîte mail.",
+      "placeholder": "Entrez votre adresse email",
+      "subscribe": "S'abonner",
+      "subscribing": "Envoi en cours...",
+      "successTitle": "Vous êtes inscrit !",
+      "successDescription": "Surveillez votre boîte mail pour les prochaines mises à jour.",
+      "error": "Une erreur est survenue. Veuillez réessayer."
     },
     "hero": {
       "title": "Simplifiez votre expatriation",
@@ -816,7 +838,7 @@
       "stats": {
         "expats": "expatriés accompagnés",
         "satisfaction": "de satisfaction",
-        "countries": "pays couverts"
+        "countries": "destinations couvertes"
       }
     },
     "destinations": {
@@ -883,7 +905,7 @@
         },
         "2": {
           "question": "Quels pays sont couverts par la plateforme ?",
-          "answer": "Nous couvrons actuellement plus de 20 pays populaires pour l'expatriation, dont le Japon, les États-Unis, la Suisse, le Canada, l'Australie et bien d'autres. De nouvelles destinations sont ajoutées régulièrement."
+          "answer": "Nous couvrons actuellement 4 pays : la France, le Japon, les États-Unis et la Suisse, avec des données détaillées sur le coût de la vie dans plusieurs villes de chaque pays. De nouvelles destinations sont ajoutées régulièrement."
         },
         "3": {
           "question": "Comment fonctionne le comparateur de coût de la vie ?",

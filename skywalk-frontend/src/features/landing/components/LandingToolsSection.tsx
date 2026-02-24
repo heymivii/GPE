@@ -9,28 +9,28 @@ export default function LandingToolsSection() {
     {
       id: 'emploi',
       title: t('landing.tools.categories.emploi'),
-      description: 'Find salaries, job demand, and working conditions for your target destination.',
+      description: t('landing.tools.descriptions.emploi'),
       icon: Briefcase,
       link: '/services/emploi'
     },
     {
       id: 'logement',
       title: t('landing.tools.categories.logement'),
-      description: 'Compare rent prices, utility costs, and housing availability to plan your budget.',
+      description: t('landing.tools.descriptions.logement'),
       icon: Home,
       link: '/services/logement'
     },
     {
       id: 'transport',
       title: t('landing.tools.categories.transport'),
-      description: 'Estimate monthly transportation costs and explore local transit options.',
+      description: t('landing.tools.descriptions.transport'),
       icon: Bus,
       link: '/services/transport'
     },
     {
       id: 'sante',
       title: t('landing.tools.categories.sante'),
-      description: 'Understand healthcare quality, insurance costs, and medical facility standards.',
+      description: t('landing.tools.descriptions.sante'),
       icon: Heart,
       link: '/services/sante'
     }
@@ -71,7 +71,7 @@ export default function LandingToolsSection() {
                 </p>
 
                 <div className="flex items-center mt-auto">
-                  <span className="text-sm font-semibold text-[#1d1d1f]">Explore</span>
+                  <span className="text-sm font-semibold text-[#1d1d1f]">{t('landing.tools.explore')}</span>
                   <ArrowRight className="w-4 h-4 ml-2 text-gray-400 group-hover:text-[#1d1d1f] group-hover:translate-x-1 transition-all duration-300" />
                 </div>
               </div>

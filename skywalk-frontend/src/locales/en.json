@@ -796,17 +796,39 @@
     "tools": {
       "title": "Our Free Tools",
       "subtitle": "Prepare your expatriation with our simulators and analysis tools.",
+      "explore": "Explore",
       "categories": {
         "emploi": "Employment",
         "logement": "Housing",
         "transport": "Transport",
         "sante": "Health"
+      },
+      "descriptions": {
+        "emploi": "Find salaries, job demand, and working conditions for your target destination.",
+        "logement": "Compare rent prices, utility costs, and housing availability to plan your budget.",
+        "transport": "Estimate monthly transportation costs and explore local transit options.",
+        "sante": "Understand healthcare quality, insurance costs, and medical facility standards."
       }
     },
     "preview": {
       "title": "Access all our tools",
       "description": "Create your free account to use our simulators and prepare your departure.",
       "cta": "Create my account"
+    },
+    "ctaBanner": {
+      "title": "Ready to make your move?",
+      "description": "Join early adopters who are already planning their successful expatriation with SkyWalk. Get access to personalized prep-lists and cost-of-living tools for free.",
+      "cta": "Start your expatriation free"
+    },
+    "newsletter": {
+      "title": "Stay updated on expatriation tips",
+      "description": "Join our growing community and receive the latest insights, destination guides, and exclusive early-access features directly in your inbox.",
+      "placeholder": "Enter your email address",
+      "subscribe": "Subscribe",
+      "subscribing": "Subscribing...",
+      "successTitle": "You're on the list!",
+      "successDescription": "Keep an eye on your inbox for updates.",
+      "error": "An error occurred. Please try again."
     },
     "hero": {
       "title": "Simplify your expatriation",
@@ -816,7 +838,7 @@
       "stats": {
         "expats": "expats supported",
         "satisfaction": "satisfaction",
-        "countries": "countries covered"
+        "countries": "destinations covered"
       }
     },
     "destinations": {
@@ -883,7 +905,7 @@
         },
         "2": {
           "question": "Which countries are covered by the platform?",
-          "answer": "We currently cover more than 20 popular countries for expatriation, including Japan, the United States, Switzerland, Canada, Australia and many more. New destinations are added regularly."
+          "answer": "We currently cover 4 countries: France, Japan, the United States, and Switzerland, with detailed cost-of-living data across multiple cities in each country. New destinations are added regularly."
         },
         "3": {
           "question": "How does the cost of living comparator work?",

@@ -76,7 +76,7 @@ export default function LandingPage() {
               </div>
               <div className="h-10 sm:h-12 w-px bg-gray-200 mx-2 sm:mx-8" />
               <div className="flex-1 flex flex-col min-w-0">
-                <span className="text-2xl sm:text-4xl font-semibold tracking-tight whitespace-nowrap text-[#1d1d1f]">10+</span>
+                <span className="text-2xl sm:text-4xl font-semibold tracking-tight whitespace-nowrap text-[#1d1d1f]">4</span>
                 <span className="text-[#86868b] text-xs sm:text-sm font-medium mt-1 break-words">{t('landing.hero.stats.countries', { defaultValue: 'Destinations Analyzed' })}</span>
               </div>
             </div>

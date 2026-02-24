@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { Mail, CheckCircle2, AlertCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import apiClient from '../../../lib/api';
 
 export default function NewsletterCTA() {
+    const { t } = useTranslation();
     const [email, setEmail] = useState('');
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [errorMessage, setErrorMessage] = useState('');
@@ -23,8 +25,7 @@ export default function NewsletterCTA() {
             setEmail('');
         } catch (error: any) {
             setStatus('error');
-            setErrorMessage(error.response?.data?.message || 'Une erreur est survenue. Veuillez réessayer.');
-            console.error('Newsletter subscription error:', error);
+            setErrorMessage(error.response?.data?.message || t('landing.newsletter.error'));
         }
     };
 
@@ -36,18 +37,18 @@ export default function NewsletterCTA() {
                 </div>
 
                 <h2 className="text-3xl sm:text-5xl font-semibold tracking-tight font-outfit text-[#1d1d1f] mb-4">
-                    Stay updated on expatriation tips
+                    {t('landing.newsletter.title')}
                 </h2>
                 <p className="text-[#86868b] text-lg sm:text-xl mb-12 max-w-2xl mx-auto font-medium">
-                    Join our growing community and receive the latest insights, destination guides, and exclusive early-access features directly in your inbox.
+                    {t('landing.newsletter.description')}
                 </p>
 
                 {status === 'success' ? (
                     <div className="flex flex-col items-center justify-center gap-4 animate-fade-in p-8 bg-[#f5f5f7] rounded-[2rem] max-w-md mx-auto">
                         <CheckCircle2 className="w-12 h-12 text-[#1d1d1f]" strokeWidth={1.5} />
                         <div className="space-y-1">
-                            <p className="text-[#1d1d1f] font-semibold text-lg">You're on the list!</p>
-                            <p className="text-[#86868b]">Keep an eye on your inbox for updates.</p>
+                            <p className="text-[#1d1d1f] font-semibold text-lg">{t('landing.newsletter.successTitle')}</p>
+                            <p className="text-[#86868b]">{t('landing.newsletter.successDescription')}</p>
                         </div>
                     </div>
                 ) : (
@@ -62,7 +63,7 @@ export default function NewsletterCTA() {
                                     required
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    placeholder="Enter your email address"
+                                    placeholder={t('landing.newsletter.placeholder')}
                                     className={`w-full pl-13 pr-6 py-4 rounded-full border focus:ring-1 transition-all outline-none bg-white placeholder-gray-400 shadow-[0_2px_10px_rgba(0,0,0,0.02)] text-lg ${status === 'error'
                                         ? 'border-red-300 focus:border-red-500 focus:ring-red-500 text-red-900 bg-red-50/50'
                                         : 'border-gray-200/60 focus:border-[#1d1d1f] focus:ring-[#1d1d1f] text-[#1d1d1f]'
@@ -74,7 +75,7 @@ export default function NewsletterCTA() {
                                 disabled={status === 'loading'}
                                 className="w-full sm:w-auto flex items-center justify-center px-8 py-4 bg-[#1d1d1f] text-white font-medium rounded-full hover:bg-black transition-all shadow-[0_4px_14px_rgba(0,0,0,0.1)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.15)] hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none whitespace-nowrap text-lg"
                             >
-                                {status === 'loading' ? 'Subscribing...' : 'Subscribe'}
+                                {status === 'loading' ? t('landing.newsletter.subscribing') : t('landing.newsletter.subscribe')}
                             </button>
                         </form>
                         {status === 'error' && (
