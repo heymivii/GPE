@@ -1,10 +1,9 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class CompleteSchemaRebuild1762802000000 implements MigrationInterface {
-  name = 'CompleteSchemaRebuild1762802000000';
+export class CompleteSchemaRebuild1700000000000 implements MigrationInterface {
+  name = 'CompleteSchemaRebuild1700000000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`SET session_replication_role = 'replica'`);
 
     await queryRunner.query(`DROP TABLE IF EXISTS "notification" CASCADE`);
     await queryRunner.query(`DROP TABLE IF EXISTS "forum_message" CASCADE`);
@@ -34,8 +33,6 @@ export class CompleteSchemaRebuild1762802000000 implements MigrationInterface {
     await queryRunner.query(
       `DROP FUNCTION IF EXISTS update_updated_at_column() CASCADE`,
     );
-
-    await queryRunner.query(`SET session_replication_role = 'origin'`);
 
     await queryRunner.query(`
             CREATE TABLE "continent" (
