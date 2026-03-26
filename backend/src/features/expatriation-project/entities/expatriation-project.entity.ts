@@ -5,8 +5,14 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { ProcedureTracking } from '../../procedure-tracking/entities/procedure-tracking.entity';
+import { TravelType } from 'src/features/project/travel-type/travel-type.entity';
+import { User } from 'src/features/user/entities/user.entity';
+import { Country } from 'src/features/country/entities/country.entity';
+import { City } from 'src/features/city/entities/city.entity';
 
 export interface ChecklistProgress {
   [stepId: string]: {
@@ -35,17 +41,14 @@ export class ExpatriationProject {
   @Column({ name: 'id_destination_city', nullable: true })
   idDestinationCity: number;
 
-  @Column({ name: 'travel_type', length: 50, nullable: true })
-  travelType: string;
-
-  @Column({ name: 'main_objective', length: 100, nullable: true })
-  mainObjective: string;
+  @Column({ name: 'objective', length: 100, nullable: true })
+  objective: string;
 
   @Column({ name: 'expected_duration', nullable: true })
   expectedDuration: number;
 
   @Column({
-    name: 'housing_budget',
+    name: 'budget',
     type: 'decimal',
     precision: 10,
     scale: 2,
@@ -53,52 +56,12 @@ export class ExpatriationProject {
   })
   housingBudget: number;
 
-  @Column({ name: 'priorities', length: 100, nullable: true })
-  priorities: string;
-
-  @Column({ name: 'steps_done', type: 'text', nullable: true })
-  stepsDone: string;
-
-  @Column({ name: 'needs_support', default: false })
-  needsSupport: boolean;
-
-  @Column({ name: 'project_status', length: 50, default: 'planning' })
+  @Column({ name: 'status', length: 50, default: 'planning' })
   projectStatus: string;
+
 
   @Column({ name: 'expected_departure_date', type: 'date', nullable: true })
   expectedDepartureDate: Date;
-
-  @Column({
-    name: 'checklist_progress',
-    type: 'jsonb',
-    default: '{}',
-    nullable: true,
-  })
-  checklistProgress: ChecklistProgress;
-
-  @Column({ name: 'language_level', length: 50, nullable: true })
-  languageLevel: string;
-
-  @Column({ name: 'id_origin_country', nullable: true })
-  idOriginCountry: number;
-
-  @Column({ name: 'completed_at', type: 'timestamp', nullable: true })
-  completedAt: Date;
-
-  @Column({ name: 'completed_reason', type: 'text', nullable: true })
-  completedReason: string;
-
-  @Column({ name: 'completed_feedback', type: 'text', nullable: true })
-  completedFeedback: string;
-
-  @Column({ name: 'cancelled_at', type: 'timestamp', nullable: true })
-  cancelledAt: Date;
-
-  @Column({ name: 'cancellation_reason', length: 100, nullable: true })
-  cancellationReason: string;
-
-  @Column({ name: 'cancellation_details', type: 'text', nullable: true })
-  cancellationDetails: string;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
@@ -106,6 +69,20 @@ export class ExpatriationProject {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
-  @OneToMany(() => ProcedureTracking, (tracking) => tracking.project)
-  processTrackings: ProcedureTracking[];
+  @ManyToOne(()=>User)
+  @JoinColumn({name:'id_user' })
+  user:User;
+
+  // travel_type (string) → FK vers TravelType
+  @ManyToOne(() => TravelType, { nullable: true })
+  @JoinColumn({ name: 'id_travel_type'})
+  travelType: TravelType;
+
+  @ManyToOne(() => Country)
+  @JoinColumn({ name: 'id_destination_country'})
+  destinationCountry: Country;
+
+  @ManyToOne(() => City)
+  @JoinColumn({ name: 'id_destination_city'})
+  destinationCity: City;
 }

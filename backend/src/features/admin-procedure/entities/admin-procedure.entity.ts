@@ -18,8 +18,11 @@ export class AdminProcedure {
   @Column({ name: 'description', type: 'text', nullable: true })
   description?: string;
 
-  @Column({ name: 'required_documents', type: 'text', nullable: true })
-  required_documents?: string;
+  @Column({ name: 'category', type: 'varchar', nullable: true })
+  category?: string;
+
+  @Column({ name: 'step_order', type: 'integer', nullable: true })
+  step_order?: string;
 
   @Column({ name: 'average_delay_days', type: 'integer', nullable: true })
   average_delay_days?: number;

@@ -36,31 +36,19 @@ export class City {
   @Column({ name: 'population', type: 'integer', nullable: true })
   population?: number;
 
-  @ManyToOne(() => Country, { nullable: false })
-  @JoinColumn({ name: 'id_country' })
-  country: Country;
-
-  @Column({
-    name: 'slug',
-    type: 'varchar',
-    length: 150,
-    unique: true,
-    nullable: true,
-  })
-  slug: string;
-
   @Column({ name: 'timezone', type: 'varchar', length: 100, nullable: true })
   timezone: string;
 
   @Column({ name: 'is_capital', type: 'boolean', default: false })
   isCapital: boolean;
 
-  @Column({ name: 'priority', type: 'int', default: 0 })
-  priority: number;
-
   @Column({ name: 'image_url', type: 'text', nullable: true })
   imageUrl: string;
 
-  @Column({ name: 'description', type: 'text', nullable: true })
-  description: string;
+  @Column({name:'id_country' })
+  id_country:number;
+
+  @ManyToOne(() => Country, { nullable: false })
+  @JoinColumn({ name: 'id_country' })
+  country: Country;
 }

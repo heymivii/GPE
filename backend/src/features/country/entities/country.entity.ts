@@ -8,7 +8,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import { Continent } from '../../continent/entities/continent.entity';
-import { AdminProcedure } from '../../admin-procedure/entities/admin-procedure.entity';
+import { City } from 'src/features/city/entities/city.entity';
 
 @Entity('country')
 export class Country {
@@ -27,17 +27,6 @@ export class Country {
   })
   isoCode?: string;
 
-  @Column({ type: 'varchar', length: 50, nullable: true })
-  currency?: string;
-
-  @Column({ type: 'varchar', length: 100, nullable: true })
-  language?: string;
-
-  @Column({ name: 'visa_info', type: 'text', nullable: true })
-  visaInfo?: string;
-
-  @Column({ name: 'flag_url', type: 'varchar', length: 255, nullable: true })
-  flagUrl?: string;
 
   @Column({ name: 'id_continent' })
   idContinent: number;
@@ -49,6 +38,6 @@ export class Country {
   @JoinColumn({ name: 'id_continent' })
   continent: Continent;
 
-  @OneToMany(() => AdminProcedure, (process) => process.country)
-  administrativeProcedures: AdminProcedure[];
+  @OneToMany(() => City, (city) => city.country)
+  cities: City[];
 }
