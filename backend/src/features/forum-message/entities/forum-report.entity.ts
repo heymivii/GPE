@@ -44,18 +44,18 @@ export class ForumReport {
   createdAt: Date;
 
   @ManyToOne(() => User, { nullable: false })
-  @JoinColumn({ name: 'id_reporter' })
+  @JoinColumn({ name: 'reporter_id' })
   reporter: User;
 
   @ManyToOne(() => ForumMessage, { nullable: true, onDelete: 'SET NULL' })
-  @JoinColumn({ name: 'id_message' })
+  @JoinColumn({ name: 'message_id' })
   message?: ForumMessage;
 
   @ManyToOne(() => ForumTopic, { nullable: true, onDelete: 'SET NULL' })
-  @JoinColumn({ name: 'id_topic' })
+  @JoinColumn({ name: 'topic_id' })
   topic?: ForumTopic;
 
   @ManyToOne(() => User, { nullable: true })
-  @JoinColumn({ name: 'id_moderator' })
+  @JoinColumn({ name: 'moderator_id' })
   moderator?: User;
 }

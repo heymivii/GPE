@@ -31,10 +31,10 @@ export class ForumMessage {
   updated_at: Date;
 
   @ManyToOne(() => ForumTopic, { nullable: false })
-  @JoinColumn({ name: 'id_topic' })
+  @JoinColumn({ name: 'topic_id' })
   topic: ForumTopic;
 
   @ManyToOne(() => User, { nullable: false })
-  @JoinColumn({ name: 'id_user' })
+  @JoinColumn({ name: 'user_id' })
   user: User;
 }

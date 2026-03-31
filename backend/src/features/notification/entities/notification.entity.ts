@@ -9,8 +9,8 @@ import { User } from '../../user/entities/user.entity';
 
 @Entity({ name: 'notification' })
 export class Notification {
-  @PrimaryGeneratedColumn({ name: 'notification_id' })
-  notification_id: number;
+  @PrimaryGeneratedColumn({ name: 'id_notification' })
+  id_notification: number;
 
   @Column({ name: 'notif_type', type: 'varchar', length: 50 })
   notif_type: string;
@@ -29,6 +29,6 @@ export class Notification {
   sent_at: Date;
 
   @ManyToOne(() => User, { nullable: false })
-  @JoinColumn({ name: 'id_user' })
+  @JoinColumn({ name: 'user_id' })
   user: User;
 }

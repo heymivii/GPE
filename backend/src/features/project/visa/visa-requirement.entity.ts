@@ -2,7 +2,7 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('visa_requirement')
 export class VisaRequirement {
-  @PrimaryGeneratedColumn({name: 'visa_requirement'})
+  @PrimaryGeneratedColumn({name: 'id_visa_requirement'})
   idVisaRequirement: number;
 
   @Column({ name: 'origin_country' })

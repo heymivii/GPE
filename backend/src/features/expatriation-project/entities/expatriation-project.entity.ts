@@ -2,44 +2,18 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  OneToMany,
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { ProcedureTracking } from '../../procedure-tracking/entities/procedure-tracking.entity';
 import { TravelType } from 'src/features/project/travel-type/travel-type.entity';
 import { User } from 'src/features/user/entities/user.entity';
 import { Country } from 'src/features/country/entities/country.entity';
 import { City } from 'src/features/city/entities/city.entity';
 
-export interface ChecklistProgress {
-  [stepId: string]: {
-    completed: boolean;
-    completedAt?: string;
-    substeps?: {
-      [substepId: string]: {
-        completed: boolean;
-        completedAt?: string;
-      };
-    };
-  };
-}
-
 @Entity('expatriation_project')
 export class ExpatriationProject {
   @PrimaryGeneratedColumn({ name: 'id_project' })
   idProject: number;
-
-  @Column({ name: 'id_user' })
-  idUser: number;
-
-  @Column({ name: 'id_destination_country' })
-  idDestinationCountry: number;
-
-  @Column({ name: 'id_destination_city', nullable: true })
-  idDestinationCity: number;
 
   @Column({ name: 'objective', length: 100, nullable: true })
   objective: string;
@@ -54,35 +28,27 @@ export class ExpatriationProject {
     scale: 2,
     nullable: true,
   })
-  housingBudget: number;
+  budget: number;
 
   @Column({ name: 'status', length: 50, default: 'planning' })
-  projectStatus: string;
-
+  status: string;
 
   @Column({ name: 'expected_departure_date', type: 'date', nullable: true })
   expectedDepartureDate: Date;
 
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
+  @ManyToOne(() => User, { nullable: false })
+  @JoinColumn({ name: 'user_id' })
+  user: User;
 
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
-
-  @ManyToOne(()=>User)
-  @JoinColumn({name:'id_user' })
-  user:User;
-
-  // travel_type (string) → FK vers TravelType
   @ManyToOne(() => TravelType, { nullable: true })
-  @JoinColumn({ name: 'id_travel_type'})
+  @JoinColumn({ name: 'travel_type_id' })
   travelType: TravelType;
 
-  @ManyToOne(() => Country)
-  @JoinColumn({ name: 'id_destination_country'})
+  @ManyToOne(() => Country, { nullable: false })
+  @JoinColumn({ name: 'destination_country_id' })
   destinationCountry: Country;
 
-  @ManyToOne(() => City)
-  @JoinColumn({ name: 'id_destination_city'})
+  @ManyToOne(() => City, { nullable: true })
+  @JoinColumn({ name: 'destination_city_id' })
   destinationCity: City;
 }

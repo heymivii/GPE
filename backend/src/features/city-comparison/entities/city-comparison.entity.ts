@@ -4,11 +4,11 @@ import { City } from '../../city/entities/city.entity';
 
 @Entity({ name: 'city_comparison' })
 export class CityComparison {
-  @PrimaryGeneratedColumn({ name: 'comparison_id' })
-  comparison_id: number;
+  @PrimaryGeneratedColumn({ name: 'id_comparison' })
+  id_comparison: number;
 
   @ManyToOne(() => User, { nullable: false })
-  @JoinColumn({ name: 'id_user' })
+  @JoinColumn({ name: 'user_id' })
   user: User;
 
   @ManyToOne(() => City, { nullable: false })

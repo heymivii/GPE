@@ -45,10 +45,7 @@ export class City {
   @Column({ name: 'image_url', type: 'text', nullable: true })
   imageUrl: string;
 
-  @Column({name:'id_country' })
-  id_country:number;
-
   @ManyToOne(() => Country, { nullable: false })
-  @JoinColumn({ name: 'id_country' })
+  @JoinColumn({ name: 'country_id' })
   country: Country;
 }

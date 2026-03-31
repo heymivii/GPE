@@ -45,11 +45,11 @@ export class ForumTopic {
   updated_at: Date;
 
   @ManyToOne(() => User, { nullable: false })
-  @JoinColumn({ name: 'id_user' })
+  @JoinColumn({ name: 'user_id' })
   user: User;
 
   @ManyToOne(() => Country, { nullable: true })
-  @JoinColumn({ name: 'id_country' })
+  @JoinColumn({ name: 'country_id' })
   country?: Country;
 
   @OneToMany(() => ForumMessage, (message) => message.topic)

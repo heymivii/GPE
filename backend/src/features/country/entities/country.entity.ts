@@ -2,7 +2,6 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
   ManyToOne,
   JoinColumn,
   OneToMany,
@@ -28,14 +27,8 @@ export class Country {
   isoCode?: string;
 
 
-  @Column({ name: 'id_continent' })
-  idContinent: number;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
   @ManyToOne(() => Continent, { nullable: false })
-  @JoinColumn({ name: 'id_continent' })
+  @JoinColumn({ name: 'continent_id' })
   continent: Continent;
 
   @OneToMany(() => City, (city) => city.country)

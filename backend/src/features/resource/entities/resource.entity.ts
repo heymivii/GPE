@@ -34,6 +34,6 @@ export class Resource {
   created_at: Date;
 
   @ManyToOne(() => Country, { nullable: false })
-  @JoinColumn({ name: 'id_country' })
+  @JoinColumn({ name: 'country_id' })
   country: Country;
 }

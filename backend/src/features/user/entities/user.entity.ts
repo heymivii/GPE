@@ -47,7 +47,7 @@ export class User {
   updatedAt: Date;
 
   @ManyToOne(() => Country, { nullable: true })
-  @JoinColumn({ name: 'id_origin_country' })
+  @JoinColumn({ name: 'origin_country_id' })
   originCountry?: Country;
 
   @OneToMany(() => ProcedureTracking, (tracking) => tracking.user)
