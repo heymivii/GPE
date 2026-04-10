@@ -4,13 +4,14 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  CreateDateColumn,
 } from 'typeorm';
 import { Country } from '../../country/entities/country.entity';
 
 @Entity({ name: 'resource' })
 export class Resource {
-  @PrimaryGeneratedColumn({ name: 'id_resource' })
-  resource_id: number;
+  @PrimaryGeneratedColumn({ name: 'id' })
+  id: number;
 
   @Column({ name: 'title', type: 'varchar', length: 255 })
   title: string;
@@ -24,14 +25,13 @@ export class Resource {
     length: 50,
     nullable: true,
   })
-  resource_type?: string;
+  resourceType?: string;
 
-  @Column({
-    name: 'created_at',
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-  })
-  created_at: Date;
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date;
+
+  @Column({ name: 'country_id' })
+  countryId: number;
 
   @ManyToOne(() => Country, { nullable: false })
   @JoinColumn({ name: 'country_id' })

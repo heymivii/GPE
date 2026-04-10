@@ -25,7 +25,7 @@ export class CountryService {
 
   async findOne(id: number): Promise<Country> {
     const country = await this.countryRepository.findOne({
-      where: { idCountry: id },
+      where: { id: id },
       relations: ['continent'],
     });
 

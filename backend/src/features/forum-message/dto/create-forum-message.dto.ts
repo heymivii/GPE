@@ -7,9 +7,9 @@ export class CreateForumMessageDto {
 
   @IsNotEmpty()
   @IsNumber()
-  idTopic: number;
+  topicId: number;
 
   @IsNotEmpty()
   @IsNumber()
-  idUser: number;
+  userId: number;
 }

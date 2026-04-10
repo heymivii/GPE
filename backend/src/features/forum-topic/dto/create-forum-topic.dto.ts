@@ -30,9 +30,9 @@ export class CreateForumTopicDto {
 
   @IsNotEmpty()
   @IsNumber()
-  idUser: number;
+  userId: number;
 
   @IsOptional()
   @IsNumber()
-  idCountry?: number;
+  countryId?: number;
 }

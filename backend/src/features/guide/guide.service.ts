@@ -1,26 +1,57 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Guide } from './entities/guide.entity';
 import { CreateGuideDto } from './dto/create-guide.dto';
 import { UpdateGuideDto } from './dto/update-guide.dto';
 
 @Injectable()
 export class GuideService {
-  create(_createGuideDto: CreateGuideDto) {
-    return 'This action adds a new guide';
+  constructor(
+    @InjectRepository(Guide)
+    private readonly guideRepository: Repository<Guide>,
+  ) {}
+
+  async create(createDto: CreateGuideDto): Promise<Guide> {
+    const guide = this.guideRepository.create({
+      ...createDto,
+      country: { id: createDto.countryId } as any,
+    });
+    return await this.guideRepository.save(guide);
   }
 
-  findAll() {
-    return `This action returns all guide`;
+  async findAll(): Promise<Guide[]> {
+    return await this.guideRepository.find({
+      relations: ['country'],
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} guide`;
+  async findByCountry(countryId: number): Promise<Guide[]> {
+    return await this.guideRepository.find({
+      where: { country: { id: countryId } },
+      relations: ['country'],
+    });
   }
 
-  update(id: number, _updateGuideDto: UpdateGuideDto) {
-    return `This action updates a #${id} guide`;
+  async findOne(id: number): Promise<Guide> {
+    const guide = await this.guideRepository.findOne({
+      where: { id },
+      relations: ['country'],
+    });
+    if (!guide) {
+      throw new NotFoundException(`Guide with ID ${id} not found`);
+    }
+    return guide;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} guide`;
+  async update(id: number, updateDto: UpdateGuideDto): Promise<Guide> {
+    const guide = await this.findOne(id);
+    Object.assign(guide, updateDto);
+    return await this.guideRepository.save(guide);
+  }
+
+  async remove(id: number): Promise<void> {
+    const guide = await this.findOne(id);
+    await this.guideRepository.remove(guide);
   }
 }

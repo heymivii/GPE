@@ -49,7 +49,7 @@ describe('UserService', () => {
     it('should create a new user with hashed password', async () => {
       repo.findOne.mockResolvedValue(null);
       (bcrypt.hash as jest.Mock).mockResolvedValue('hashed-pw');
-      const created = { idUser: 1, ...dto, passwordHash: 'hashed-pw' };
+      const created = { id: 1, ...dto, password: 'hashed-pw' };
       repo.create.mockReturnValue(created);
       repo.save.mockResolvedValue(created);
 
@@ -59,14 +59,14 @@ describe('UserService', () => {
       expect(repo.create).toHaveBeenCalledWith(
         expect.objectContaining({
           email: 'john@test.com',
-          passwordHash: 'hashed-pw',
+          password: 'hashed-pw',
         }),
       );
-      expect(result.idUser).toBe(1);
+      expect(result.id).toBe(1);
     });
 
     it('should throw ConflictException if email already used', async () => {
-      repo.findOne.mockResolvedValue({ idUser: 99 });
+      repo.findOne.mockResolvedValue({ id: 99 });
 
       await expect(service.create(dto as any)).rejects.toThrow(
         ConflictException,
@@ -78,7 +78,7 @@ describe('UserService', () => {
 
   describe('findAll()', () => {
     it('should return all users with relations', async () => {
-      repo.find.mockResolvedValue([{ idUser: 1 }, { idUser: 2 }]);
+      repo.find.mockResolvedValue([{ id: 1 }, { id: 2 }]);
 
       const result = await service.findAll();
       expect(result).toHaveLength(2);
@@ -92,7 +92,7 @@ describe('UserService', () => {
 
   describe('findOne()', () => {
     it('should return a user by id', async () => {
-      repo.findOne.mockResolvedValue({ idUser: 1, email: 'a@b.com' });
+      repo.findOne.mockResolvedValue({ id: 1, email: 'a@b.com' });
 
       const result = await service.findOne(1);
       expect(result.email).toBe('a@b.com');
@@ -109,7 +109,7 @@ describe('UserService', () => {
 
   describe('findByEmail()', () => {
     it('should return user by email', async () => {
-      repo.findOne.mockResolvedValue({ idUser: 1, email: 'a@b.com' });
+      repo.findOne.mockResolvedValue({ id: 1, email: 'a@b.com' });
 
       const result = await service.findByEmail('a@b.com');
       expect(result?.email).toBe('a@b.com');
@@ -127,7 +127,7 @@ describe('UserService', () => {
 
   describe('update()', () => {
     it('should update user fields', async () => {
-      const user = { idUser: 1, firstName: 'Old', lastName: 'User' };
+      const user = { id: 1, firstName: 'Old', lastName: 'User' };
       repo.findOne.mockResolvedValue(user);
       repo.save.mockImplementation(async (u) => u);
 
@@ -137,21 +137,21 @@ describe('UserService', () => {
 
     it('should hash password when updating password', async () => {
       const user = {
-        idUser: 1,
+        id: 1,
         firstName: 'A',
         lastName: 'B',
-        passwordHash: 'old',
+        password: 'old',
       };
       repo.findOne.mockResolvedValue(user);
       (bcrypt.hash as jest.Mock).mockResolvedValue('new-hashed');
       repo.save.mockImplementation(async (u) => u);
 
       const result = await service.update(1, { password: 'NewPass1' } as any);
-      expect(result.passwordHash).toBe('new-hashed');
+      expect(result.password).toBe('new-hashed');
     });
 
     it('should rebuild fullName when name changes', async () => {
-      const user = { idUser: 1, firstName: 'Old', lastName: 'Name' };
+      const user = { id: 1, firstName: 'Old', lastName: 'Name' };
       repo.findOne.mockResolvedValue(user);
       repo.save.mockImplementation(async (u) => u);
 
@@ -166,7 +166,7 @@ describe('UserService', () => {
 
   describe('remove()', () => {
     it('should remove user', async () => {
-      const user = { idUser: 1 };
+      const user = { id: 1 };
       repo.findOne.mockResolvedValue(user);
       repo.remove.mockResolvedValue(user);
 

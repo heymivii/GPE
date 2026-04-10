@@ -103,7 +103,6 @@ export class DestinationsService {
       where: {},
       relations: ['country'],
       order: {
-        priority: 'ASC',
         name: 'ASC',
       },
     });
@@ -113,9 +112,7 @@ export class DestinationsService {
     return this.cityRepository
       .createQueryBuilder('city')
       .leftJoinAndSelect('city.country', 'country')
-      .where('city.slug IS NOT NULL')
-      .orderBy('city.priority', 'ASC')
-      .addOrderBy('city.name', 'ASC')
+      .orderBy('city.name', 'ASC')
       .getMany();
   }
 
@@ -123,31 +120,31 @@ export class DestinationsService {
     const countries = await this.countryRepository
       .createQueryBuilder('country')
       .leftJoinAndSelect('country.continent', 'continent')
-      .orderBy('country.countryName', 'ASC')
+      .orderBy('country.name', 'ASC')
       .getMany();
 
     const [forumCounts, projectCounts, resourceCounts] = await Promise.all([
       this.forumTopicRepository
         .createQueryBuilder('ft')
         .innerJoin('ft.country', 'c')
-        .select('c.id_country', 'countryId')
+        .select('c.id', 'countryId')
         .addSelect('COUNT(*)', 'count')
-        .groupBy('c.id_country')
+        .groupBy('c.id')
         .getRawMany<{ countryId: number; count: string }>(),
 
       this.expatriationProjectRepository
         .createQueryBuilder('ep')
-        .select('ep.id_destination_country', 'countryId')
+        .select('ep.destination_country_id', 'countryId')
         .addSelect('COUNT(*)', 'count')
-        .groupBy('ep.id_destination_country')
+        .groupBy('ep.destination_country_id')
         .getRawMany<{ countryId: number; count: string }>(),
 
       this.resourceRepository
         .createQueryBuilder('r')
         .innerJoin('r.country', 'c2')
-        .select('c2.id_country', 'countryId')
+        .select('c2.id', 'countryId')
         .addSelect('COUNT(*)', 'count')
-        .groupBy('c2.id_country')
+        .groupBy('c2.id')
         .getRawMany<{ countryId: number; count: string }>(),
     ]);
 
@@ -166,12 +163,12 @@ export class DestinationsService {
 
     return countries.map((country) => ({
       ...country,
-      imageUrl: COUNTRY_IMAGES[country.countryName] || DEFAULT_IMAGE,
+      imageUrl: COUNTRY_IMAGES[country.name] || DEFAULT_IMAGE,
       stats: {
-        memberCount: projectMap.get(country.idCountry) || 0,
-        jobOffersCount: adzunaJobCounts.get(country.idCountry) || 0,
-        forumTopicsCount: forumMap.get(country.idCountry) || 0,
-        resourcesCount: resourceMap.get(country.idCountry) || 0,
+        memberCount: projectMap.get(country.id) || 0,
+        jobOffersCount: adzunaJobCounts.get(country.id) || 0,
+        forumTopicsCount: forumMap.get(country.id) || 0,
+        resourcesCount: resourceMap.get(country.id) || 0,
       },
     }));
   }
@@ -186,7 +183,7 @@ export class DestinationsService {
         ? ISO_TO_ADZUNA[country.isoCode.toUpperCase()]
         : undefined;
       if (!adzunaCode) {
-        jobCountMap.set(country.idCountry, 0);
+        jobCountMap.set(country.id, 0);
         return;
       }
       try {
@@ -195,12 +192,12 @@ export class DestinationsService {
           resultsPerPage: 1,
           page: 1,
         });
-        jobCountMap.set(country.idCountry, response.total);
+        jobCountMap.set(country.id, response.total);
       } catch (error) {
         this.logger.warn(
-          `⚠️  Adzuna count failed for ${country.countryName} (${adzunaCode}): ${error instanceof Error ? error.message : error}`,
+          `⚠️  Adzuna count failed for ${country.name} (${adzunaCode}): ${error instanceof Error ? error.message : error}`,
         );
-        jobCountMap.set(country.idCountry, 0);
+        jobCountMap.set(country.id, 0);
       }
     });
 
@@ -216,17 +213,17 @@ export class DestinationsService {
       });
     } else {
       country = await this.countryRepository.findOne({
-        where: { countryName: slug },
+        where: { name: slug },
       });
 
       if (!country) {
         const allCountries = await this.countryRepository.find();
         country = allCountries.find(
           (c) =>
-            slugify(c.countryName, { lower: true, strict: true }) ===
+            slugify(c.name, { lower: true, strict: true }) ===
               slug.toLowerCase() ||
-            c.countryName.toLowerCase() === slug.toLowerCase() ||
-            c.countryName.toLowerCase().replace(/ /g, '-') ===
+            c.name.toLowerCase() === slug.toLowerCase() ||
+            c.name.toLowerCase().replace(/ /g, '-') ===
               slug.toLowerCase(),
         );
       }
@@ -237,14 +234,14 @@ export class DestinationsService {
     }
 
     const cities = await this.cityRepository.find({
-      where: { country: { idCountry: country.idCountry } },
-      order: { priority: 'ASC', name: 'ASC' },
+      where: { countryId: country.id },
+      order: { name: 'ASC' },
     });
 
     const citiesWithCost = await Promise.all(
       cities.map(async (city) => {
         const cachedCostData =
-          await this.costOfLivingService.getCachedDataByCityId(city.city_id);
+          await this.costOfLivingService.getCachedDataByCityId(city.id);
         return {
           ...city,
           imageUrl:
@@ -275,10 +272,10 @@ export class DestinationsService {
     const [forumTopicsCount, memberCount, jobOffersCount, resourcesCount] =
       await Promise.all([
         this.forumTopicRepository.count({
-          where: { country: { idCountry: country.idCountry } },
+          where: { country: { id: country.id } },
         }),
         this.expatriationProjectRepository.count({
-          where: { idDestinationCountry: country.idCountry },
+          where: { destinationCountryId: country.id },
         }),
         adzunaCode
           ? this.adzunaService
@@ -287,17 +284,16 @@ export class DestinationsService {
               .catch(() => 0)
           : Promise.resolve(0),
         this.resourceRepository.count({
-          where: { country: { idCountry: country.idCountry } },
+          where: { country: { id: country.id } },
         }),
       ]);
 
     return {
       ...country,
-      imageUrl: COUNTRY_IMAGES[country.countryName] || DEFAULT_IMAGE,
+      imageUrl: COUNTRY_IMAGES[country.name] || DEFAULT_IMAGE,
       cities: citiesWithCost,
       costOfLiving: {
         averageHousing: averageHousingCost,
-        currency: country.currency || 'EUR',
       },
       stats: {
         memberCount,
@@ -309,13 +305,15 @@ export class DestinationsService {
   }
 
   async findOneBySlug(slug: string) {
+    // Note: slug column removed from City to match Drawio.
+    // Falling back to search by name for this method.
     const destination = await this.cityRepository.findOne({
-      where: { slug },
+      where: { name: slug },
       relations: ['country'],
     });
 
     if (!destination) {
-      throw new NotFoundException(`Destination with slug "${slug}" not found`);
+      throw new NotFoundException(`Destination "${slug}" not found`);
     }
 
     return destination;

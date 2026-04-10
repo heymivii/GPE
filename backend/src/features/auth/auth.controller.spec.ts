@@ -49,7 +49,7 @@ describe('AuthController', () => {
       };
       service.register.mockResolvedValue({
         message: 'Inscription réussie',
-        user: { idUser: 1 },
+        user: { id: 1 },
         access_token: 'tok',
         refresh_token: 'ref',
       });
@@ -62,7 +62,7 @@ describe('AuthController', () => {
         expect.objectContaining({ httpOnly: true }),
       );
       expect(result.access_token).toBe('tok');
-      expect(result.user.idUser).toBe(1);
+      expect(result.user.id).toBe(1);
     });
   });
 
@@ -73,7 +73,7 @@ describe('AuthController', () => {
       const dto = { email: 'a@b.com', password: 'Pass1234' };
       service.login.mockResolvedValue({
         message: 'Connexion réussie',
-        user: { idUser: 1 },
+        user: { id: 1 },
         access_token: 'tok',
         refresh_token: 'ref',
       });
@@ -93,8 +93,8 @@ describe('AuthController', () => {
 
   describe('getProfile()', () => {
     it('should return user profile', async () => {
-      service.getProfile.mockResolvedValue({ idUser: 1, email: 'a@b.com' });
-      const req = { user: { userId: 1 } };
+      service.getProfile.mockResolvedValue({ id: 1, email: 'a@b.com' });
+      const req = { user: { id: 1 } };
 
       const result = await controller.getProfile(req);
       expect(service.getProfile).toHaveBeenCalledWith(1);

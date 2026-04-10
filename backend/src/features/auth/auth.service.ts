@@ -33,19 +33,14 @@ export class AuthService {
 
     const hashedPassword = await bcrypt.hash(registerDto.password, 10);
 
-    const fullName = `${registerDto.firstName} ${registerDto.lastName}`;
-
     const newUser = this.userRepository.create({
       firstName: registerDto.firstName,
       lastName: registerDto.lastName,
-      fullName: fullName,
       email: registerDto.email,
-      passwordHash: hashedPassword,
-      userRole: 'user',
+      password: hashedPassword,
+      roles: 'user',
       age: registerDto.age,
-      status: registerDto.status,
-      languageLevel: registerDto.languageLevel,
-      idOriginCountry: registerDto.idOriginCountry,
+      countryOriginId: registerDto.idOriginCountry,
     });
 
     await this.userRepository.save(newUser);
@@ -72,7 +67,7 @@ export class AuthService {
 
     const isPasswordValid = await bcrypt.compare(
       loginDto.password,
-      user.passwordHash,
+      user.password,
     );
 
     if (!isPasswordValid) {
@@ -92,7 +87,7 @@ export class AuthService {
 
   async getProfile(userId: number) {
     const user = await this.userRepository.findOne({
-      where: { idUser: userId },
+      where: { id: userId },
     });
 
     if (!user) {
@@ -111,7 +106,7 @@ export class AuthService {
       }
 
       const user = await this.userRepository.findOne({
-        where: { idUser: payload.sub },
+        where: { id: payload.sub },
       });
 
       if (!user) {
@@ -138,7 +133,7 @@ export class AuthService {
     }
 
     const resetToken = this.jwtService.sign(
-      { sub: user.idUser, type: 'reset' },
+      { sub: user.id, type: 'reset' },
       { expiresIn: '1h' },
     );
 
@@ -158,7 +153,7 @@ export class AuthService {
       }
 
       const user = await this.userRepository.findOne({
-        where: { idUser: payload.sub },
+        where: { id: payload.sub },
       });
 
       if (!user) {
@@ -166,7 +161,7 @@ export class AuthService {
       }
 
       const hashedPassword = await bcrypt.hash(newPassword, 10);
-      user.passwordHash = hashedPassword;
+      user.password = hashedPassword;
 
       await this.userRepository.save(user);
 
@@ -178,9 +173,9 @@ export class AuthService {
 
   private generateToken(user: User): string {
     const payload = {
-      sub: user.idUser,
+      sub: user.id,
       email: user.email,
-      role: user.userRole,
+      role: user.roles,
     };
 
     return this.jwtService.sign(payload);
@@ -188,14 +183,14 @@ export class AuthService {
 
   private generateRefreshToken(user: User): string {
     const payload = {
-      sub: user.idUser,
+      sub: user.id,
       type: 'refresh',
     };
     return this.jwtService.sign(payload, { expiresIn: '7d' });
   }
 
   private sanitizeUser(user: User) {
-    const { passwordHash: _pw, ...sanitized } = user;
+    const { password: _pw, ...sanitized } = user;
     return sanitized;
   }
 }

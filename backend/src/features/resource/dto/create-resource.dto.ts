@@ -32,5 +32,5 @@ export class CreateResourceDto {
 
   @IsNotEmpty()
   @IsNumber()
-  idCountry: number;
+  countryId: number;
 }

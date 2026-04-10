@@ -1,14 +1,14 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { User } from './user.entity';
-import { Language } from 'src/features/geography/language/language.entity';
+import { Language } from '../../geography/language/language.entity';
 
 @Entity('user_language')
 export class UserLanguage{
   @PrimaryColumn({ name: 'user_id' })
-  idUser: number;
+  userId: number;
 
   @PrimaryColumn({ name: 'language_id' })
-  idLanguage: number;
+  languageId: number;
 
   @Column({name: 'level', type: 'varchar', length: 50})
   level: string;

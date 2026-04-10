@@ -9,8 +9,11 @@ import { City } from '../../city/entities/city.entity';
 
 @Entity({ name: 'cost_of_living_cache' })
 export class CostOfLivingCache {
-  @PrimaryGeneratedColumn({ name: 'id_cost_living_cache' })
-  id_cost_living_cache: number;
+  @PrimaryGeneratedColumn({ name: 'id' })
+  id: number;
+
+  @Column({ name: 'city_id' })
+  cityId: number;
 
   @OneToOne(() => City, { nullable: false })
   @JoinColumn({ name: 'city_id' })

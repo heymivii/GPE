@@ -30,21 +30,21 @@ describe('ContinentController', () => {
   describe('create()', () => {
     it('should create a continent', async () => {
       service.create.mockResolvedValue({
-        idContinent: 1,
-        continentName: 'Europe',
+        id: 1,
+        name: 'Europe',
       });
       const result = await controller.create({
-        continentName: 'Europe',
+        name: 'Europe',
       } as any);
-      expect(result.continentName).toBe('Europe');
+      expect(result.name).toBe('Europe');
     });
   });
 
   describe('findAll()', () => {
     it('should return all continents', async () => {
       service.findAll.mockResolvedValue([
-        { idContinent: 1 },
-        { idContinent: 2 },
+        { id: 1 },
+        { id: 2 },
       ]);
       const result = await controller.findAll();
       expect(result).toHaveLength(2);
@@ -53,23 +53,23 @@ describe('ContinentController', () => {
 
   describe('findOne()', () => {
     it('should parse id and delegate', async () => {
-      service.findOne.mockResolvedValue({ idContinent: 3 });
+      service.findOne.mockResolvedValue({ id: 3 });
       const result = await controller.findOne('3');
       expect(service.findOne).toHaveBeenCalledWith(3);
-      expect(result.idContinent).toBe(3);
+      expect(result.id).toBe(3);
     });
   });
 
   describe('update()', () => {
     it('should update a continent', async () => {
       service.update.mockResolvedValue({
-        idContinent: 1,
-        continentName: 'Updated',
+        id: 1,
+        name: 'Updated',
       });
       const result = await controller.update('1', {
-        continentName: 'Updated',
+        name: 'Updated',
       } as any);
-      expect(result.continentName).toBe('Updated');
+      expect(result.name).toBe('Updated');
     });
   });
 

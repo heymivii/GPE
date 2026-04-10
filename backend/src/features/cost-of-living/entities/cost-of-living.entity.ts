@@ -9,8 +9,8 @@ import { City } from '../../city/entities/city.entity';
 
 @Entity({ name: 'cost_of_living' })
 export class CostOfLiving {
-  @PrimaryGeneratedColumn({ name: 'id_cost_living' })
-  id_cost_living: number;
+  @PrimaryGeneratedColumn({ name: 'id' })
+  id: number;
 
   @Column({
     name: 'average_rent',
@@ -54,6 +54,9 @@ export class CostOfLiving {
     default: () => 'CURRENT_TIMESTAMP',
   })
   updated_at: Date;
+
+  @Column({ name: 'city_id' })
+  cityId: number;
 
   @ManyToOne(() => City, { nullable: false })
   @JoinColumn({ name: 'city_id' })

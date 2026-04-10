@@ -33,19 +33,19 @@ describe('CountryService', () => {
 
   describe('create()', () => {
     it('should create and save a country', async () => {
-      const dto = { countryName: 'France' };
-      repo.create.mockReturnValue({ idCountry: 1, ...dto });
-      repo.save.mockResolvedValue({ idCountry: 1, ...dto });
+      const dto = { name: 'France' };
+      repo.create.mockReturnValue({ id: 1, ...dto });
+      repo.save.mockResolvedValue({ id: 1, ...dto });
 
       const result = await service.create(dto as any);
-      expect(result.countryName).toBe('France');
+      expect(result.name).toBe('France');
       expect(repo.save).toHaveBeenCalled();
     });
   });
 
   describe('findAll()', () => {
     it('should return countries with continent relation', async () => {
-      repo.find.mockResolvedValue([{ idCountry: 1 }]);
+      repo.find.mockResolvedValue([{ id: 1 }]);
       const result = await service.findAll();
       expect(result).toHaveLength(1);
       expect(repo.find).toHaveBeenCalledWith(
@@ -56,9 +56,9 @@ describe('CountryService', () => {
 
   describe('findOne()', () => {
     it('should return a country', async () => {
-      repo.findOne.mockResolvedValue({ idCountry: 1, countryName: 'France' });
+      repo.findOne.mockResolvedValue({ id: 1, name: 'France' });
       const result = await service.findOne(1);
-      expect(result.countryName).toBe('France');
+      expect(result.name).toBe('France');
     });
 
     it('should throw NotFoundException', async () => {
@@ -69,18 +69,18 @@ describe('CountryService', () => {
 
   describe('update()', () => {
     it('should update country fields', async () => {
-      const country = { idCountry: 1, countryName: 'Old' };
+      const country = { id: 1, name: 'Old' };
       repo.findOne.mockResolvedValue(country);
       repo.save.mockImplementation(async (c) => c);
 
-      const result = await service.update(1, { countryName: 'New' } as any);
-      expect(result.countryName).toBe('New');
+      const result = await service.update(1, { name: 'New' } as any);
+      expect(result.name).toBe('New');
     });
   });
 
   describe('remove()', () => {
     it('should remove a country', async () => {
-      const country = { idCountry: 1 };
+      const country = { id: 1 };
       repo.findOne.mockResolvedValue(country);
       repo.remove.mockResolvedValue(country);
 

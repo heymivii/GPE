@@ -69,12 +69,12 @@ describe('AuthService', () => {
       userRepo.findOne.mockResolvedValue(null); // no existing user
       (bcrypt.hash as jest.Mock).mockResolvedValue('hashed-pw');
       const createdUser = {
-        idUser: 1,
+        id: 1,
         firstName: 'John',
         lastName: 'Doe',
         fullName: 'John Doe',
         email: 'john@example.com',
-        passwordHash: 'hashed-pw',
+        password: 'hashed-pw',
         userRole: 'user',
       };
       userRepo.create.mockReturnValue(createdUser);
@@ -85,13 +85,13 @@ describe('AuthService', () => {
       expect(result.message).toBe('Inscription réussie');
       expect(result.access_token).toBe('mock-jwt-token');
       expect(result.user).toBeDefined();
-      // passwordHash should be stripped by sanitizeUser
-      expect((result.user as any).passwordHash).toBeUndefined();
+      // password should be stripped by sanitizeUser
+      expect((result.user as any).password).toBeUndefined();
     });
 
     it('should throw ConflictException if email already exists', async () => {
       userRepo.findOne.mockResolvedValue({
-        idUser: 1,
+        id: 1,
         email: 'john@example.com',
       });
 
@@ -108,9 +108,9 @@ describe('AuthService', () => {
 
     it('should login successfully with correct credentials', async () => {
       const user = {
-        idUser: 1,
+        id: 1,
         email: 'john@example.com',
-        passwordHash: 'hashed-pw',
+        password: 'hashed-pw',
         userRole: 'user',
       };
       userRepo.findOne.mockResolvedValue(user);
@@ -120,7 +120,7 @@ describe('AuthService', () => {
 
       expect(result.message).toBe('Connexion réussie');
       expect(result.access_token).toBe('mock-jwt-token');
-      expect((result.user as any).passwordHash).toBeUndefined();
+      expect((result.user as any).password).toBeUndefined();
     });
 
     it('should throw UnauthorizedException if user not found', async () => {
@@ -131,9 +131,9 @@ describe('AuthService', () => {
 
     it('should throw UnauthorizedException if password is wrong', async () => {
       userRepo.findOne.mockResolvedValue({
-        idUser: 1,
+        id: 1,
         email: 'john@example.com',
-        passwordHash: 'hashed-pw',
+        password: 'hashed-pw',
       });
       (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
@@ -146,15 +146,15 @@ describe('AuthService', () => {
   describe('getProfile()', () => {
     it('should return sanitized user', async () => {
       const user = {
-        idUser: 1,
+        id: 1,
         email: 'test@test.com',
-        passwordHash: 'secret',
+        password: 'secret',
       };
       userRepo.findOne.mockResolvedValue(user);
 
       const result = await service.getProfile(1);
       expect(result.email).toBe('test@test.com');
-      expect((result as any).passwordHash).toBeUndefined();
+      expect((result as any).password).toBeUndefined();
     });
 
     it('should throw NotFoundException if user missing', async () => {
@@ -170,7 +170,7 @@ describe('AuthService', () => {
     it('should return new tokens for valid refresh token', async () => {
       jwtService.verify.mockReturnValue({ sub: 1, type: 'refresh' });
       userRepo.findOne.mockResolvedValue({
-        idUser: 1,
+        id: 1,
         email: 'a@b.com',
         userRole: 'user',
       });
@@ -203,7 +203,7 @@ describe('AuthService', () => {
 
   describe('forgotPassword()', () => {
     it('should send reset email for existing user', async () => {
-      userRepo.findOne.mockResolvedValue({ idUser: 1, email: 'a@b.com' });
+      userRepo.findOne.mockResolvedValue({ id: 1, email: 'a@b.com' });
       jwtService.sign.mockReturnValue('reset-token');
 
       const result = await service.forgotPassword('a@b.com');
@@ -228,10 +228,10 @@ describe('AuthService', () => {
   describe('resetPassword()', () => {
     it('should reset password with valid reset token', async () => {
       jwtService.verify.mockReturnValue({ sub: 1, type: 'reset' });
-      const user = { idUser: 1, passwordHash: 'old' };
+      const user = { id: 1, password: 'old' };
       userRepo.findOne.mockResolvedValue(user);
       (bcrypt.hash as jest.Mock).mockResolvedValue('new-hashed');
-      userRepo.save.mockResolvedValue({ ...user, passwordHash: 'new-hashed' });
+      userRepo.save.mockResolvedValue({ ...user, password: 'new-hashed' });
 
       const result = await service.resetPassword('reset-token', 'NewPass1');
       expect(result.message).toContain('réinitialisé');

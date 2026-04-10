@@ -3,7 +3,7 @@ import { IsNotEmpty, IsOptional, IsString, Length } from 'class-validator';
 export class CreateContinentDto {
   @IsNotEmpty()
   @IsString()
-  continentName: string;
+  name: string;
 
   @IsOptional()
   @IsString()

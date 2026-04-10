@@ -23,7 +23,7 @@ export class ContinentService {
 
   async findOne(id: number): Promise<Continent> {
     const continent = await this.continentRepository.findOne({
-      where: { idContinent: id },
+      where: { id: id },
     });
 
     if (!continent) {

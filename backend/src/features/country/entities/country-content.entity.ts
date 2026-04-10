@@ -9,8 +9,8 @@ import { Country } from './country.entity';
 
 @Entity('country_content')
 export class CountryContent {
-  @PrimaryGeneratedColumn({ name: 'id_country_content' })
-  id_country_content: number;
+  @PrimaryGeneratedColumn({ name: 'id' })
+  id: number;
 
   @Column({ type: 'varchar', length: 255 })
   title: string;
@@ -19,7 +19,10 @@ export class CountryContent {
   url: string;
 
   @Column({ name: 'content_type' })
-  content_type: string;
+  contentType: string;
+
+  @Column({ name: 'country_id' })
+  countryId: number;
 
   @ManyToOne(() => Country, { nullable: false })
   @JoinColumn({ name: 'country_id' })

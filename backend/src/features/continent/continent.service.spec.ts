@@ -33,18 +33,18 @@ describe('ContinentService', () => {
 
   describe('create()', () => {
     it('should create and save a continent', async () => {
-      const dto = { continentName: 'Europe' };
-      repo.create.mockReturnValue({ idContinent: 1, ...dto });
-      repo.save.mockResolvedValue({ idContinent: 1, ...dto });
+      const dto = { name: 'Europe' };
+      repo.create.mockReturnValue({ id: 1, ...dto });
+      repo.save.mockResolvedValue({ id: 1, ...dto });
 
       const result = await service.create(dto as any);
-      expect(result.continentName).toBe('Europe');
+      expect(result.name).toBe('Europe');
     });
   });
 
   describe('findAll()', () => {
     it('should return all continents', async () => {
-      repo.find.mockResolvedValue([{ idContinent: 1 }, { idContinent: 2 }]);
+      repo.find.mockResolvedValue([{ id: 1 }, { id: 2 }]);
       const result = await service.findAll();
       expect(result).toHaveLength(2);
     });
@@ -53,11 +53,11 @@ describe('ContinentService', () => {
   describe('findOne()', () => {
     it('should return a continent', async () => {
       repo.findOne.mockResolvedValue({
-        idContinent: 1,
-        continentName: 'Europe',
+        id: 1,
+        name: 'Europe',
       });
       const result = await service.findOne(1);
-      expect(result.continentName).toBe('Europe');
+      expect(result.name).toBe('Europe');
     });
 
     it('should throw NotFoundException', async () => {
@@ -68,18 +68,18 @@ describe('ContinentService', () => {
 
   describe('update()', () => {
     it('should update continent', async () => {
-      const continent = { idContinent: 1, continentName: 'Old' };
+      const continent = { id: 1, name: 'Old' };
       repo.findOne.mockResolvedValue(continent);
       repo.save.mockImplementation(async (c) => c);
 
-      const result = await service.update(1, { continentName: 'New' } as any);
-      expect(result.continentName).toBe('New');
+      const result = await service.update(1, { name: 'New' } as any);
+      expect(result.name).toBe('New');
     });
   });
 
   describe('remove()', () => {
     it('should remove continent', async () => {
-      const continent = { idContinent: 1 };
+      const continent = { id: 1 };
       repo.findOne.mockResolvedValue(continent);
       repo.remove.mockResolvedValue(continent);
 

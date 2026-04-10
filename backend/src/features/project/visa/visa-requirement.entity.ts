@@ -1,22 +1,37 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Country } from '../../country/entities/country.entity';
 
 @Entity('visa_requirement')
 export class VisaRequirement {
-  @PrimaryGeneratedColumn({name: 'id_visa_requirement'})
-  idVisaRequirement: number;
+  @PrimaryGeneratedColumn({ name: 'id' })
+  id: number;
 
-  @Column({ name: 'origin_country' })
-  origin_country: string;
+  @Column({ name: 'origin_country_id' })
+  originCountryId: number;
 
-  @Column({ name: 'destination_country' })
-  destination_country: string;
+  @ManyToOne(() => Country)
+  @JoinColumn({ name: 'origin_country_id' })
+  originCountry: Country;
 
-  @Column({ name: 'visa_type' })
-  visa_type: string;
+  @Column({ name: 'destination_country_id' })
+  destinationCountryId: number;
 
-  @Column({ type: 'int', nullable: true })
-  duration_days: number;
+  @ManyToOne(() => Country)
+  @JoinColumn({ name: 'destination_country_id' })
+  destinationCountry: Country;
 
-  @Column({ type: 'text', nullable: true })
+  @Column({ name: 'visa_type', type: 'varchar', length: 100 })
+  visaType: string;
+
+  @Column({ name: 'duration_days', type: 'int', nullable: true })
+  durationDays: number;
+
+  @Column({ name: 'description', type: 'text', nullable: true })
   description: string;
 }

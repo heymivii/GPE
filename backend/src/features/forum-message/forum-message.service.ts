@@ -35,8 +35,8 @@ export class ForumMessageService {
 
     const message = this.forumMessageRepository.create({
       content: sanitized,
-      topic: { topic_id: createForumMessageDto.idTopic } as any,
-      user: { idUser: createForumMessageDto.idUser } as any,
+      topic: { id: createForumMessageDto.topicId } as any,
+      user: { id: createForumMessageDto.userId } as any,
     });
 
     return await this.forumMessageRepository.save(message);
@@ -45,13 +45,13 @@ export class ForumMessageService {
   async findAll(): Promise<ForumMessage[]> {
     return await this.forumMessageRepository.find({
       relations: ['user', 'topic'],
-      order: { sent_at: 'DESC' },
+      order: { sentAt: 'DESC' },
     });
   }
 
   async findOne(id: number): Promise<ForumMessage> {
     const message = await this.forumMessageRepository.findOne({
-      where: { message_id: id },
+      where: { id: id },
       relations: ['user', 'topic'],
     });
 
@@ -102,18 +102,18 @@ export class ForumMessageService {
 
   async findByTopic(topicId: number): Promise<ForumMessage[]> {
     return await this.forumMessageRepository.find({
-      where: { topic: { topic_id: topicId } as any },
+      where: { topic: { id: topicId } as any },
       relations: ['user'],
-      order: { sent_at: 'ASC' },
+      order: { sentAt: 'ASC' },
     });
   }
 
   async createReport(dto: CreateReportDto): Promise<ForumReport> {
     const existing = await this.forumReportRepository.findOne({
       where: {
-        reporter: { idUser: dto.idReporter },
-        ...(dto.idMessage ? { message: { message_id: dto.idMessage } } : {}),
-        ...(dto.idTopic ? { topic: { topic_id: dto.idTopic } } : {}),
+        reporter: { id: dto.reporterId },
+        ...(dto.messageId ? { message: { id: dto.messageId } } : {}),
+        ...(dto.topicId ? { topic: { id: dto.topicId } } : {}),
         status: 'pending' as const,
       },
     });
@@ -125,11 +125,11 @@ export class ForumMessageService {
     const report = this.forumReportRepository.create({
       reason: dto.reason,
       details: dto.details,
-      reporter: { idUser: dto.idReporter } as any,
-      message: dto.idMessage
-        ? ({ message_id: dto.idMessage } as any)
+      reporter: { id: dto.reporterId } as any,
+      message: dto.messageId
+        ? ({ id: dto.messageId } as any)
         : undefined,
-      topic: dto.idTopic ? ({ topic_id: dto.idTopic } as any) : undefined,
+      topic: dto.topicId ? ({ id: dto.topicId } as any) : undefined,
     });
 
     return await this.forumReportRepository.save(report);
@@ -158,7 +158,7 @@ export class ForumMessageService {
     moderatorNote?: string,
   ): Promise<ForumReport> {
     const report = await this.forumReportRepository.findOne({
-      where: { idReport: reportId },
+      where: { id: reportId },
     });
 
     if (!report) {
@@ -168,7 +168,7 @@ export class ForumMessageService {
     report.status = action;
     report.moderatorNote = moderatorNote || null;
     report.resolvedAt = new Date();
-    report.moderator = { idUser: moderatorId } as any;
+    report.moderator = { id: moderatorId } as any;
 
     return await this.forumReportRepository.save(report);
   }
