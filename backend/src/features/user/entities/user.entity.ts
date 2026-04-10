@@ -13,17 +13,14 @@ import { ProcedureTracking } from '../../procedure-tracking/entities/procedure-t
 
 @Entity('app_user')
 export class User {
-  @PrimaryGeneratedColumn({ name: 'id_user' })
-  idUser: number;
+  @PrimaryGeneratedColumn({ name: 'id' })
+  id: number;
 
   @Column({ name: 'firstname', type: 'varchar', length: 50, nullable: true })
   firstName?: string;
 
   @Column({ name: 'lastname', type: 'varchar', length: 50, nullable: true })
   lastName?: string;
-
-  @Column({ name: 'full_name', type: 'varchar', length: 100 })
-  fullName: string;
 
   @Column({ type: 'varchar', length: 255, unique: true })
   email: string;
@@ -37,8 +34,8 @@ export class User {
   @Column({ type: 'integer', nullable: true })
   age?: number;
 
-  @Column({ name: 'id_origin_country', nullable: true })
-  idOriginCountry?: number;
+  @Column({ name: 'country_origin_id', nullable: true })
+  countryOriginId?: number;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
@@ -47,7 +44,7 @@ export class User {
   updatedAt: Date;
 
   @ManyToOne(() => Country, { nullable: true })
-  @JoinColumn({ name: 'origin_country_id' })
+  @JoinColumn({ name: 'country_origin_id' })
   originCountry?: Country;
 
   @OneToMany(() => ProcedureTracking, (tracking) => tracking.user)

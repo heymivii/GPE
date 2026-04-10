@@ -12,8 +12,8 @@ import { ForumMessage } from '../../forum-message/entities/forum-message.entity'
 
 @Entity({ name: 'forum_topic' })
 export class ForumTopic {
-  @PrimaryGeneratedColumn({ name: 'id_topic' })
-  topic_id: number;
+  @PrimaryGeneratedColumn({ name: 'id' })
+  id: number;
 
   @Column({ name: 'title', type: 'varchar', length: 255 })
   title: string;
@@ -22,27 +22,27 @@ export class ForumTopic {
   category?: string;
 
   @Column({ name: 'views_count', type: 'int', default: 0 })
-  views_count: number;
+  viewsCount: number;
 
   @Column({ name: 'is_pinned', type: 'boolean', default: false })
-  is_pinned: boolean;
+  isPinned: boolean;
 
   @Column({ name: 'is_locked', type: 'boolean', default: false })
-  is_locked: boolean;
+  isLocked: boolean;
 
   @Column({
     name: 'created_at',
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',
   })
-  created_at: Date;
+  createdAt: Date;
 
   @Column({
     name: 'updated_at',
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',
   })
-  updated_at: Date;
+  updatedAt: Date;
 
   @ManyToOne(() => User, { nullable: false })
   @JoinColumn({ name: 'user_id' })

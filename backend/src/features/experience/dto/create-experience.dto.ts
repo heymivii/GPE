@@ -24,9 +24,5 @@ export class CreateExperienceDto {
 
   @IsNotEmpty()
   @IsNumber()
-  idUser: number;
-
-  @IsNotEmpty()
-  @IsNumber()
-  idCity: number;
+  countryId: number;
 }

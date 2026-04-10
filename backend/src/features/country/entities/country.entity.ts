@@ -7,15 +7,15 @@ import {
   OneToMany,
 } from 'typeorm';
 import { Continent } from '../../continent/entities/continent.entity';
-import { City } from 'src/features/city/entities/city.entity';
+import { City } from '../../city/entities/city.entity';
 
 @Entity('country')
 export class Country {
-  @PrimaryGeneratedColumn({ name: 'id_country' })
-  idCountry: number;
+  @PrimaryGeneratedColumn({ name: 'id' })
+  id: number;
 
-  @Column({ name: 'country_name', type: 'varchar', length: 100 })
-  countryName: string;
+  @Column({ name: 'name', type: 'varchar', length: 100 })
+  name: string;
 
   @Column({
     name: 'iso_code',
@@ -26,6 +26,8 @@ export class Country {
   })
   isoCode?: string;
 
+  @Column({ name: 'continent_id' })
+  continentId: number;
 
   @ManyToOne(() => Continent, { nullable: false })
   @JoinColumn({ name: 'continent_id' })

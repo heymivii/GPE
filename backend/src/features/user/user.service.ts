@@ -28,21 +28,14 @@ export class UserService {
 
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
 
-    const fullName = `${createUserDto.firstName} ${createUserDto.lastName}`;
-
     const user = this.userRepository.create({
       firstName: createUserDto.firstName,
       lastName: createUserDto.lastName,
-      fullName: fullName,
       email: createUserDto.email,
-      passwordHash: hashedPassword,
+      password: hashedPassword,
       age: createUserDto.age,
-      status: createUserDto.status,
-      languageLevel: createUserDto.languageLevel,
-      motherTongue: createUserDto.motherTongue,
-      spokenLanguages: createUserDto.spokenLanguages,
-      idOriginCountry: createUserDto.idOriginCountry,
-      userRole: 'user',
+      countryOriginId: createUserDto.countryOriginId,
+      roles: 'user',
     });
 
     return await this.userRepository.save(user);
@@ -56,7 +49,7 @@ export class UserService {
 
   async findOne(id: number): Promise<User> {
     const user = await this.userRepository.findOne({
-      where: { idUser: id },
+      where: { id: id },
       relations: ['originCountry'],
     });
 
@@ -76,18 +69,11 @@ export class UserService {
   async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
     const user = await this.findOne(id);
 
-    if (updateUserDto.firstName || updateUserDto.lastName) {
-      const firstName = updateUserDto.firstName || user.firstName || '';
-      const lastName = updateUserDto.lastName || user.lastName || '';
-      updateUserDto['fullName'] = `${firstName} ${lastName}`.trim();
+    if (updateUserDto.password) {
+      updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
     }
 
-    if (updateUserDto.password) {
-      const hashedPassword = await bcrypt.hash(updateUserDto.password, 10);
-      Object.assign(user, { ...updateUserDto, passwordHash: hashedPassword });
-    } else {
-      Object.assign(user, updateUserDto);
-    }
+    Object.assign(user, updateUserDto);
 
     return await this.userRepository.save(user);
   }

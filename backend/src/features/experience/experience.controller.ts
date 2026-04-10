@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ExperienceService } from './experience.service';
@@ -21,8 +22,8 @@ export class ExperienceController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  create(@Body() createExperienceDto: CreateExperienceDto) {
-    return this.experienceService.create(createExperienceDto);
+  create(@Request() req, @Body() createExperienceDto: CreateExperienceDto) {
+    return this.experienceService.create(req.user.userId, createExperienceDto);
   }
 
   @Get()

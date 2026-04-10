@@ -1,15 +1,21 @@
-import { Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn, Column } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 import { City } from '../../city/entities/city.entity';
 
 @Entity({ name: 'city_comparison' })
 export class CityComparison {
-  @PrimaryGeneratedColumn({ name: 'id_comparison' })
-  id_comparison: number;
+  @PrimaryGeneratedColumn({ name: 'id' })
+  id: number;
+
+  @Column({ name: 'user_id' })
+  userId: number;
 
   @ManyToOne(() => User, { nullable: false })
   @JoinColumn({ name: 'user_id' })
   user: User;
+
+  @Column({ name: 'city_id' })
+  cityId: number;
 
   @ManyToOne(() => City, { nullable: false })
   @JoinColumn({ name: 'city_id' })

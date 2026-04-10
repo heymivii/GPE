@@ -10,8 +10,8 @@ import { User } from '../../user/entities/user.entity';
 
 @Entity({ name: 'forum_message' })
 export class ForumMessage {
-  @PrimaryGeneratedColumn({ name: 'id_message' })
-  message_id: number;
+  @PrimaryGeneratedColumn({ name: 'id' })
+  id: number;
 
   @Column({ name: 'content', type: 'text' })
   content: string;
@@ -21,18 +21,19 @@ export class ForumMessage {
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',
   })
-  sent_at: Date;
+  sentAt: Date;
 
   @Column({
     name: 'updated_at',
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',
   })
-  updated_at: Date;
+  updatedAt: Date;
 
   @ManyToOne(() => ForumTopic, { nullable: false })
   @JoinColumn({ name: 'topic_id' })
   topic: ForumTopic;
+
 
   @ManyToOne(() => User, { nullable: false })
   @JoinColumn({ name: 'user_id' })

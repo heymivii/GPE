@@ -3,22 +3,23 @@ import {
   IsOptional,
   IsString,
   IsNumber,
-  IsEnum,
+  IsIn,
   IsDateString,
 } from 'class-validator';
 
-enum TrackingStatus {
-  NOT_STARTED = 'not_started',
-  IN_PROGRESS = 'in_progress',
-  COMPLETED = 'completed',
-  BLOCKED = 'blocked',
-  CANCELLED = 'cancelled',
-}
-
 export class CreateProcedureTrackingDto {
+  @IsNotEmpty()
+  @IsNumber()
+  adminProcedureId: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  expatProjectId: number;
+
   @IsOptional()
-  @IsEnum(TrackingStatus)
-  status?: TrackingStatus;
+  @IsString()
+  @IsIn(['not_started', 'in_progress', 'completed', 'blocked', 'cancelled'])
+  status?: string;
 
   @IsOptional()
   @IsDateString()
@@ -27,20 +28,4 @@ export class CreateProcedureTrackingDto {
   @IsOptional()
   @IsDateString()
   endDate?: string;
-
-  @IsOptional()
-  @IsString()
-  comments?: string;
-
-  @IsNotEmpty()
-  @IsNumber()
-  idUser: number;
-
-  @IsNotEmpty()
-  @IsNumber()
-  idProcess: number;
-
-  @IsNotEmpty()
-  @IsNumber()
-  idProject: number;
 }

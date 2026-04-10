@@ -4,13 +4,14 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  CreateDateColumn,
 } from 'typeorm';
 import { Country } from '../../country/entities/country.entity';
 
 @Entity({ name: 'checklist' })
 export class Checklist {
-  @PrimaryGeneratedColumn({ name: 'id_checklist' })
-  id_checklist: number;
+  @PrimaryGeneratedColumn({ name: 'id' })
+  id: number;
 
   @Column({ name: 'title', type: 'varchar', length: 255 })
   title: string;
@@ -18,12 +19,11 @@ export class Checklist {
   @Column({ name: 'steps', type: 'jsonb', nullable: true })
   steps?: unknown;
 
-  @Column({
-    name: 'created_at',
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-  })
-  created_at: Date;
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date;
+
+  @Column({ name: 'country_id' })
+  countryId: number;
 
   @ManyToOne(() => Country, { nullable: false })
   @JoinColumn({ name: 'country_id' })

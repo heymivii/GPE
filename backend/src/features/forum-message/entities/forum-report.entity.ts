@@ -22,8 +22,8 @@ export type ReportStatus = 'pending' | 'resolved' | 'rejected';
 
 @Entity({ name: 'forum_report' })
 export class ForumReport {
-  @PrimaryGeneratedColumn({ name: 'id_report' })
-  idReport: number;
+  @PrimaryGeneratedColumn({ name: 'id' })
+  id: number;
 
   @Column({ name: 'reason', type: 'varchar', length: 50 })
   reason: ReportReason;

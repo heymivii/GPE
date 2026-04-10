@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { NotificationService } from './notification.service';
@@ -26,13 +27,18 @@ export class NotificationController {
   }
 
   @Get()
-  findAll() {
-    return this.notificationService.findAll();
+  findAll(@Request() req) {
+    return this.notificationService.findAllByUser(req.user.userId);
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.notificationService.findOne(+id);
+  }
+
+  @Patch(':id/read')
+  markAsRead(@Param('id') id: string) {
+    return this.notificationService.markAsRead(+id);
   }
 
   @Patch(':id')

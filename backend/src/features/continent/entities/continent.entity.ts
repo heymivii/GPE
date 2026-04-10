@@ -1,4 +1,4 @@
-import { Country } from 'src/features/country/entities/country.entity';
+import { Country } from '../../country/entities/country.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -9,16 +9,16 @@ import {
 
 @Entity('continent')
 export class Continent {
-  @PrimaryGeneratedColumn({ name: 'id_continent' })
-  idContinent: number;
+  @PrimaryGeneratedColumn({ name: 'id' })
+  id: number;
 
   @Column({
-    name: 'continent_name',
+    name: 'name',
     type: 'varchar',
     length: 100,
     unique: true,
   })
-  continentName: string;
+  name: string;
 
   @Column({
     name: 'iso_code',

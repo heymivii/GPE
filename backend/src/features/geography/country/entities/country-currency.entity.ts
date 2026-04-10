@@ -1,17 +1,17 @@
-import { Country } from 'src/features/country/entities/country.entity';
+import { Country } from '../../../country/entities/country.entity';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { Currency } from '../../currency/currency.entity';
 
 @Entity('country_currency')
 export class CountryCurrency {
   @PrimaryColumn({ name: 'country_id' })
-  idCountry: number;
+  countryId: number;
 
   @PrimaryColumn({ name: 'currency_id' })
-  idCurrency: number;
+  currencyId: number;
 
   @Column({ name: 'is_primary', type: 'boolean', default: false })
-  is_primary: boolean;
+  isPrimary: boolean;
 
   @ManyToOne(() => Country)
   @JoinColumn({ name: 'country_id' })

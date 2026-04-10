@@ -1,26 +1,55 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { ProcedureTracking } from './entities/procedure-tracking.entity';
 import { CreateProcedureTrackingDto } from './dto/create-procedure-tracking.dto';
 import { UpdateProcedureTrackingDto } from './dto/update-procedure-tracking.dto';
 
 @Injectable()
 export class ProcedureTrackingService {
-  create(_createProcedureTrackingDto: CreateProcedureTrackingDto) {
-    return 'This action adds a new procedureTracking';
+  constructor(
+    @InjectRepository(ProcedureTracking)
+    private readonly trackingRepository: Repository<ProcedureTracking>,
+  ) {}
+
+  async create(userId: number, createDto: CreateProcedureTrackingDto): Promise<ProcedureTracking> {
+    const tracking = this.trackingRepository.create({
+      status: createDto.status ?? 'not_started',
+      start_date: createDto.startDate,
+      end_date: createDto.endDate,
+      user: { id: userId } as any,
+      admin_procedure: { id: createDto.adminProcedureId } as any,
+      project: { id: createDto.expatProjectId } as any,
+    });
+    return await this.trackingRepository.save(tracking);
   }
 
-  findAll() {
-    return `This action returns all procedureTracking`;
+  async findAllByUser(userId: number): Promise<ProcedureTracking[]> {
+    return await this.trackingRepository.find({
+      where: { user: { id: userId } },
+      relations: ['admin_procedure', 'project'],
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} procedureTracking`;
+  async findOne(id: number): Promise<ProcedureTracking> {
+    const tracking = await this.trackingRepository.findOne({
+      where: { id: id },
+      relations: ['user', 'admin_procedure', 'project'],
+    });
+    if (!tracking) {
+      throw new NotFoundException(`Suivi de procédure avec l'ID ${id} introuvable`);
+    }
+    return tracking;
   }
 
-  update(id: number, _updateProcedureTrackingDto: UpdateProcedureTrackingDto) {
-    return `This action updates a #${id} procedureTracking`;
+  async update(id: number, updateDto: UpdateProcedureTrackingDto): Promise<ProcedureTracking> {
+    const tracking = await this.findOne(id);
+    Object.assign(tracking, updateDto);
+    return await this.trackingRepository.save(tracking);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} procedureTracking`;
+  async remove(id: number): Promise<void> {
+    const tracking = await this.findOne(id);
+    await this.trackingRepository.remove(tracking);
   }
 }
