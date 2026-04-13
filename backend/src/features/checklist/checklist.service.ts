@@ -16,7 +16,7 @@ export class ChecklistService {
     const checklist = this.checklistRepository.create({
       title: createDto.title,
       steps: createDto.steps,
-      country: { id: createDto.countryId } as any,
+      country: { idCountry: createDto.countryId } as any,
     });
     return await this.checklistRepository.save(checklist);
   }
@@ -29,14 +29,14 @@ export class ChecklistService {
 
   async findByCountry(countryId: number): Promise<Checklist[]> {
     return await this.checklistRepository.find({
-      where: { country: { id: countryId } },
+      where: { country: { idCountry: countryId } },
       relations: ['country'],
     });
   }
 
   async findOne(id: number): Promise<Checklist> {
     const checklist = await this.checklistRepository.findOne({
-      where: { id },
+      where: { idChecklist: id },
       relations: ['country'],
     });
     if (!checklist) {

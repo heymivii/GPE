@@ -4,8 +4,8 @@ import { City } from '../../city/entities/city.entity';
 
 @Entity({ name: 'city_comparison' })
 export class CityComparison {
-  @PrimaryGeneratedColumn({ name: 'id' })
-  id: number;
+  @PrimaryGeneratedColumn({ name: 'id_city_comparison' })
+  idCityComparison: number;
 
   @Column({ name: 'user_id' })
   userId: number;

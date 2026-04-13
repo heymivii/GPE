@@ -15,8 +15,8 @@ export class ExperienceService {
   async create(userId: number, createDto: CreateExperienceDto): Promise<Experience> {
     const experience = this.experienceRepository.create({
       ...createDto,
-      user: { id: userId } as any,
-      country: { id: createDto.countryId } as any,
+      user: { idUser: userId } as any,
+      country: { idCountry: createDto.countryId } as any,
     });
     return await this.experienceRepository.save(experience);
   }
@@ -29,14 +29,14 @@ export class ExperienceService {
 
   async findByCountry(countryId: number): Promise<Experience[]> {
     return await this.experienceRepository.find({
-      where: { country: { id: countryId } },
+      where: { country: { idCountry: countryId } },
       relations: ['user', 'country'],
     });
   }
 
   async findOne(id: number): Promise<Experience> {
     const experience = await this.experienceRepository.findOne({
-      where: { id },
+      where: { idExperience: id },
       relations: ['user', 'country'],
     });
     if (!experience) {

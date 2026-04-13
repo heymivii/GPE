@@ -17,23 +17,23 @@ export class ProcedureTrackingService {
       status: createDto.status ?? 'not_started',
       start_date: createDto.startDate,
       end_date: createDto.endDate,
-      user: { id: userId } as any,
-      admin_procedure: { id: createDto.adminProcedureId } as any,
-      project: { id: createDto.expatProjectId } as any,
+      user: { idUser: userId } as any,
+      admin_procedure: { idAdminProcedure: createDto.adminProcedureId } as any,
+      project: { idProject: createDto.expatProjectId } as any,
     });
     return await this.trackingRepository.save(tracking);
   }
 
   async findAllByUser(userId: number): Promise<ProcedureTracking[]> {
     return await this.trackingRepository.find({
-      where: { user: { id: userId } },
+      where: { user: { idUser: userId } },
       relations: ['admin_procedure', 'project'],
     });
   }
 
   async findOne(id: number): Promise<ProcedureTracking> {
     const tracking = await this.trackingRepository.findOne({
-      where: { id: id },
+      where: { idProcedureTracking: id },
       relations: ['user', 'admin_procedure', 'project'],
     });
     if (!tracking) {

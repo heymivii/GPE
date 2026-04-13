@@ -10,8 +10,8 @@ import { User } from '../../user/entities/user.entity';
 
 @Entity({ name: 'notification' })
 export class Notification {
-  @PrimaryGeneratedColumn({ name: 'id' })
-  id: number;
+  @PrimaryGeneratedColumn({ name: 'id_notification' })
+  idNotification: number;
 
   @Column({ name: 'notif_type', type: 'varchar', length: 50 })
   notifType: string;

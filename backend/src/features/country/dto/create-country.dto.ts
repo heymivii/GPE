@@ -9,7 +9,8 @@ import {
 export class CreateCountryDto {
   @IsNotEmpty()
   @IsString()
-  name: string;
+  countryName: string;
+
 
   @IsOptional()
   @IsString()

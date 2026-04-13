@@ -19,7 +19,7 @@ export class AdminProcedureService {
       stepOrder: createDto.stepOrder,
       description: createDto.description,
       averageDelayDays: createDto.averageDelayDays,
-      country: { id: createDto.countryId } as any,
+      country: { idCountry: createDto.countryId } as any,
     });
     return await this.adminProcedureRepository.save(procedure);
   }
@@ -32,14 +32,14 @@ export class AdminProcedureService {
 
   async findByCountry(countryId: number): Promise<AdminProcedure[]> {
     return await this.adminProcedureRepository.find({
-      where: { country: { id: countryId } },
+      where: { country: { idCountry: countryId } },
       relations: ['country'],
     });
   }
 
   async findOne(id: number): Promise<AdminProcedure> {
     const procedure = await this.adminProcedureRepository.findOne({
-      where: { id: id },
+      where: { idAdminProcedure: id },
       relations: ['country'],
     });
     if (!procedure) {

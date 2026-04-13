@@ -9,8 +9,8 @@ import { Country } from '../../country/entities/country.entity';
 
 @Entity({ name: 'admin_procedure' })
 export class AdminProcedure {
-  @PrimaryGeneratedColumn({ name: 'id' })
-  id: number;
+  @PrimaryGeneratedColumn({ name: 'id_admin_procedure' })
+  idAdminProcedure: number;
 
   @Column({ name: 'procedure_type', type: 'varchar', length: 100 })
   procedureType: string;

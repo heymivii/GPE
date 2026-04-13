@@ -91,7 +91,7 @@ export class CostOfLivingService {
 
     if (cityEntity) {
       const cached = await this.cacheRepository.findOne({
-        where: { cityId: cityEntity.id },
+        where: { cityId: cityEntity.idCity },
       });
 
       if (cached && new Date(cached.expiresAt) > new Date()) {
@@ -139,7 +139,7 @@ export class CostOfLivingService {
     this.memSet(key, data);
 
     const resolvedCityId = cityEntity
-      ? cityEntity.id
+      ? cityEntity.idCity
       : await this.resolveOrCreateCity(city, normalizedCountry).catch((e) => {
         this.logger.warn(`Could not resolve/create city: ${e}`);
         return null;
@@ -159,7 +159,7 @@ export class CostOfLivingService {
   ): Promise<CleanedCostOfLivingData | null> {
     this.logger.log(`🔍 getCachedDataByCityId called with cityId=${cityId} (type: ${typeof cityId})`);
     const cached = await this.cacheRepository.findOne({ where: { cityId } });
-    this.logger.log(`🔍 cached result: ${cached ? `found (id=${cached.id}, cityId=${cached.cityId}, expires=${cached.expiresAt})` : 'NOT FOUND'}`);
+    this.logger.log(`🔍 cached result: ${cached ? `found (idCache=${cached.idCache}, cityId=${cached.cityId}, expires=${cached.expiresAt})` : 'NOT FOUND'}`);
     if (cached && new Date(cached.expiresAt) > new Date()) {
       return cached.data as CleanedCostOfLivingData;
     }
@@ -218,7 +218,7 @@ export class CostOfLivingService {
           data,
           cachedAt: new Date(),
           expiresAt,
-          city: { id: cityId } as any,
+          city: { idCity: cityId } as any,
         }),
       );
     }
@@ -374,18 +374,18 @@ export class CostOfLivingService {
       .andWhere('LOWER(co.name) = LOWER(:countryName)', { countryName })
       .getOne();
 
-    if (existing) return existing.id;
+    if (existing) return existing.idCity;
 
     let countryEntity = await this.countryRepository.findOne({
-      where: { name: countryName },
+      where: { countryName: countryName },
     });
 
     if (!countryEntity) {
       countryEntity = await this.countryRepository.save(
-        this.countryRepository.create({ name: countryName, continentId: 1 }),
+        this.countryRepository.create({ countryName: countryName, continentId: 1 }),
       );
       this.logger.log(
-        `🌍 Created country: ${countryName} (id=${countryEntity.id})`,
+        `🌍 Created country: ${countryName} (idCountry=${countryEntity.idCountry})`,
       );
     }
 
@@ -396,7 +396,7 @@ export class CostOfLivingService {
         isCapital: false,
       }),
     );
-    this.logger.log(`🏙️ Created city: ${cityName} (id=${newCity.id})`);
-    return newCity.id;
+    this.logger.log(`🏙️ Created city: ${cityName} (idCity=${newCity.idCity})`);
+    return newCity.idCity;
   }
 }

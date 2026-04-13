@@ -9,8 +9,8 @@ import { City } from '../../city/entities/city.entity';
 
 @Entity({ name: 'cost_of_living_cache' })
 export class CostOfLivingCache {
-  @PrimaryGeneratedColumn({ name: 'id' })
-  id: number;
+  @PrimaryGeneratedColumn({ name: 'id_cost_of_living_cache' })
+  idCache: number;
 
   @Column({ name: 'city_id' })
   cityId: number;

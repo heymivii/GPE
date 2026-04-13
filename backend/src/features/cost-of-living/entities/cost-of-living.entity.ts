@@ -9,8 +9,8 @@ import { City } from '../../city/entities/city.entity';
 
 @Entity({ name: 'cost_of_living' })
 export class CostOfLiving {
-  @PrimaryGeneratedColumn({ name: 'id' })
-  id: number;
+  @PrimaryGeneratedColumn({ name: 'id_cost_of_living' })
+  idCostOfLiving: number;
 
   @Column({
     name: 'average_rent',

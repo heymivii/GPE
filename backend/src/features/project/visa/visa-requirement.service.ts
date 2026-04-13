@@ -14,8 +14,8 @@ export class VisaRequirementService {
   async create(createDto: CreateVisaRequirementDto): Promise<VisaRequirement> {
     const visa = this.visaRequirementRepository.create({
       ...createDto,
-      originCountry: { id: createDto.originCountryId } as any,
-      destinationCountry: { id: createDto.destinationCountryId } as any,
+      originCountry: { idCountry: createDto.originCountryId } as any,
+      destinationCountry: { idCountry: createDto.destinationCountryId } as any,
     });
     return await this.visaRequirementRepository.save(visa);
   }
@@ -29,8 +29,8 @@ export class VisaRequirementService {
   async findByCountries(originId: number, destinationId: number): Promise<VisaRequirement[]> {
     return await this.visaRequirementRepository.find({
       where: {
-        originCountry: { id: originId },
-        destinationCountry: { id: destinationId },
+        originCountry: { idCountry: originId },
+        destinationCountry: { idCountry: destinationId },
       },
       relations: ['originCountry', 'destinationCountry'],
     });
@@ -38,7 +38,7 @@ export class VisaRequirementService {
 
   async findOne(id: number): Promise<VisaRequirement> {
     const visa = await this.visaRequirementRepository.findOne({
-      where: { id },
+      where: { idVisaRequirement: id },
       relations: ['originCountry', 'destinationCountry'],
     });
     if (!visa) {

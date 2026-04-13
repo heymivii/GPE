@@ -13,8 +13,8 @@ import { Country } from '../../country/entities/country.entity';
 @Entity({ name: 'experience' })
 @Check(`"rating" >= 1 AND "rating" <= 5`)
 export class Experience {
-  @PrimaryGeneratedColumn({ name: 'id' })
-  id: number;
+  @PrimaryGeneratedColumn({ name: 'id_experience' })
+  idExperience: number;
 
   @Column({ name: 'title', type: 'varchar', length: 255, nullable: true })
   title?: string;

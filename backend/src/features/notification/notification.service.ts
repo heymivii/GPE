@@ -16,21 +16,21 @@ export class NotificationService {
     const notification = this.notificationRepository.create({
       notifType: createDto.notificationType ?? 'info',
       message: createDto.message,
-      user: { id: createDto.userId } as any,
+      user: { idUser: createDto.userId } as any,
     });
     return await this.notificationRepository.save(notification);
   }
 
   async findAllByUser(userId: number): Promise<Notification[]> {
     return await this.notificationRepository.find({
-      where: { user: { id: userId } },
+      where: { user: { idUser: userId } },
       order: { sentAt: 'DESC' },
     });
   }
 
   async findOne(id: number): Promise<Notification> {
     const notification = await this.notificationRepository.findOne({
-      where: { id },
+      where: { idNotification: id },
       relations: ['user'],
     });
     if (!notification) {

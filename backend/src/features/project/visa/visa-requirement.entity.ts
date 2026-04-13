@@ -9,8 +9,8 @@ import { Country } from '../../country/entities/country.entity';
 
 @Entity('visa_requirement')
 export class VisaRequirement {
-  @PrimaryGeneratedColumn({ name: 'id' })
-  id: number;
+  @PrimaryGeneratedColumn({ name: 'id_visa_requirement' })
+  idVisaRequirement: number;
 
   @Column({ name: 'origin_country_id' })
   originCountryId: number;

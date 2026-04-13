@@ -11,11 +11,11 @@ import { City } from '../../city/entities/city.entity';
 
 @Entity('country')
 export class Country {
-  @PrimaryGeneratedColumn({ name: 'id' })
-  id: number;
+  @PrimaryGeneratedColumn({ name: 'id_country' })
+  idCountry: number;
 
   @Column({ name: 'name', type: 'varchar', length: 100 })
-  name: string;
+  countryName: string;
 
   @Column({
     name: 'iso_code',

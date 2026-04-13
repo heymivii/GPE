@@ -49,7 +49,7 @@ export class UserService {
 
   async findOne(id: number): Promise<User> {
     const user = await this.userRepository.findOne({
-      where: { id: id },
+      where: { idUser: id },
       relations: ['originCountry'],
     });
 

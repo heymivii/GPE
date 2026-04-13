@@ -40,7 +40,7 @@ export class AuthService {
       password: hashedPassword,
       roles: 'user',
       age: registerDto.age,
-      countryOriginId: registerDto.idOriginCountry,
+      countryOriginId: registerDto.countryOriginId,
     });
 
     await this.userRepository.save(newUser);
@@ -87,7 +87,7 @@ export class AuthService {
 
   async getProfile(userId: number) {
     const user = await this.userRepository.findOne({
-      where: { id: userId },
+      where: { idUser: userId },
     });
 
     if (!user) {
@@ -106,7 +106,7 @@ export class AuthService {
       }
 
       const user = await this.userRepository.findOne({
-        where: { id: payload.sub },
+        where: { idUser: payload.sub },
       });
 
       if (!user) {
@@ -133,7 +133,7 @@ export class AuthService {
     }
 
     const resetToken = this.jwtService.sign(
-      { sub: user.id, type: 'reset' },
+      { sub: user.idUser, type: 'reset' },
       { expiresIn: '1h' },
     );
 
@@ -153,7 +153,7 @@ export class AuthService {
       }
 
       const user = await this.userRepository.findOne({
-        where: { id: payload.sub },
+        where: { idUser: payload.sub },
       });
 
       if (!user) {
@@ -173,7 +173,7 @@ export class AuthService {
 
   private generateToken(user: User): string {
     const payload = {
-      sub: user.id,
+      sub: user.idUser,
       email: user.email,
       role: user.roles,
     };
@@ -183,7 +183,7 @@ export class AuthService {
 
   private generateRefreshToken(user: User): string {
     const payload = {
-      sub: user.id,
+      sub: user.idUser,
       type: 'refresh',
     };
     return this.jwtService.sign(payload, { expiresIn: '7d' });

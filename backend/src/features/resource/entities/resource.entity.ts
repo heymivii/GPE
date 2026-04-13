@@ -10,8 +10,8 @@ import { Country } from '../../country/entities/country.entity';
 
 @Entity({ name: 'resource' })
 export class Resource {
-  @PrimaryGeneratedColumn({ name: 'id' })
-  id: number;
+  @PrimaryGeneratedColumn({ name: 'id_resource' })
+  idResource: number;
 
   @Column({ name: 'title', type: 'varchar', length: 255 })
   title: string;

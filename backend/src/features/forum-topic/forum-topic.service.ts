@@ -50,9 +50,9 @@ export class ForumTopicService {
     const topic = this.forumTopicRepository.create({
       title: sanitizedTitle,
       category: createForumTopicDto.category,
-      user: { id: createForumTopicDto.userId } as any,
+      user: { idUser: createForumTopicDto.userId } as any,
       country: createForumTopicDto.countryId
-        ? ({ id: createForumTopicDto.countryId } as any)
+        ? ({ idCountry: createForumTopicDto.countryId } as any)
         : undefined,
     });
 
@@ -60,8 +60,8 @@ export class ForumTopicService {
 
     const initialMessage = this.forumMessageRepository.create({
       content: sanitizedContent,
-      topic: { id: savedTopic.id } as any,
-      user: { id: createForumTopicDto.userId } as any,
+      topic: { idForumTopic: savedTopic.idForumTopic } as any,
+      user: { idUser: createForumTopicDto.userId } as any,
     });
 
     await this.forumMessageRepository.save(initialMessage);
@@ -77,7 +77,7 @@ export class ForumTopicService {
 
   async findOne(id: number): Promise<ForumTopic> {
     const topic = await this.forumTopicRepository.findOne({
-      where: { id: id },
+      where: { idForumTopic: id },
       relations: ['user', 'country', 'messages', 'messages.user'],
     });
 
@@ -135,7 +135,7 @@ export class ForumTopicService {
         );
 
         const firstMessage = await this.forumMessageRepository.findOne({
-          where: { topic: { id: id } },
+          where: { topic: { idForumTopic: id } },
           order: { sentAt: 'ASC' },
         });
 
@@ -145,14 +145,14 @@ export class ForumTopicService {
         } else {
           const newMessage = this.forumMessageRepository.create({
             content: sanitizedContent,
-            topic: { id: id } as any,
+            topic: { idForumTopic: id } as any,
             user: topic.user,
           });
           await this.forumMessageRepository.save(newMessage);
         }
       } else {
         const firstMessage = await this.forumMessageRepository.findOne({
-          where: { topic: { id: id } },
+          where: { topic: { idForumTopic: id } },
           order: { sentAt: 'ASC' },
         });
         if (firstMessage) {

@@ -10,8 +10,8 @@ import { User } from '../../user/entities/user.entity';
 
 @Entity({ name: 'forum_message' })
 export class ForumMessage {
-  @PrimaryGeneratedColumn({ name: 'id' })
-  id: number;
+  @PrimaryGeneratedColumn({ name: 'id_forum_message' })
+  idForumMessage: number;
 
   @Column({ name: 'content', type: 'text' })
   content: string;

@@ -12,8 +12,8 @@ import { City } from '../../city/entities/city.entity';
 
 @Entity('expatriation_project')
 export class ExpatriationProject {
-  @PrimaryGeneratedColumn({ name: 'id' })
-  id: number;
+  @PrimaryGeneratedColumn({ name: 'id_project' })
+  idProject: number;
 
   @Column({ name: 'objective', length: 100, nullable: true })
   objective: string;

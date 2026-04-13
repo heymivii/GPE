@@ -22,7 +22,7 @@ export class TravelTypeService {
 
   async findOne(id: number): Promise<TravelType> {
     const travelType = await this.travelTypeRepository.findOne({
-      where: { id },
+      where: { idTravelType: id },
     });
     if (!travelType) {
       throw new NotFoundException(`Travel type with ID ${id} not found`);

@@ -261,7 +261,7 @@ async function seedCities() {
 
     for (const target of targetCities) {
       console.log(`\nProcessing ${target.name} (${target.countryCode})...`);
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       const countryInfo = await restCountriesService.getCountryByCode(
         target.countryCode,
@@ -286,7 +286,7 @@ async function seedCities() {
       }
 
       let city = await cityRepo.findOne({
-        where: { name: target.name, country: { id: country.id } },
+        where: { name: target.name, country: { idCountry: country.idCountry } },
       });
 
       if (!city) {
@@ -323,7 +323,7 @@ async function seedCities() {
       await cityRepo.save(city);
       console.log(`✅ Successfully enriched ${city.name}`);
 
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+      await new Promise((resolve) => setTimeout(resolve, 500));
     }
 
     console.log('\n✨ Seeding completed successfully!');

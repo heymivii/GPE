@@ -9,8 +9,8 @@ import { Country } from '../../country/entities/country.entity';
 
 @Entity({ name: 'city' })
 export class City {
-  @PrimaryGeneratedColumn({ name: 'id' })
-  id: number;
+  @PrimaryGeneratedColumn({ name: 'id_city' })
+  idCity: number;
 
   @Column({ name: 'name', type: 'varchar', length: 100 })
   name: string;

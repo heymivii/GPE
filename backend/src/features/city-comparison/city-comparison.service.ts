@@ -13,22 +13,22 @@ export class CityComparisonService {
 
   async create(userId: number, createDto: CreateCityComparisonDto): Promise<CityComparison> {
     const comparison = this.cityComparisonRepository.create({
-      user: { id: userId } as any,
-      city: { id: createDto.cityId } as any,
+      user: { idUser: userId } as any,
+      city: { idCity: createDto.cityId } as any,
     });
     return await this.cityComparisonRepository.save(comparison);
   }
 
   async findAllByUser(userId: number): Promise<CityComparison[]> {
     return await this.cityComparisonRepository.find({
-      where: { user: { id: userId } },
+      where: { user: { idUser: userId } },
       relations: ['city', 'city.country'],
     });
   }
 
   async findOne(id: number): Promise<CityComparison> {
     const comparison = await this.cityComparisonRepository.findOne({
-      where: { id },
+      where: { idCityComparison: id },
       relations: ['city', 'city.country', 'user'],
     });
     if (!comparison) {

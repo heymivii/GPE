@@ -15,7 +15,7 @@ export class CountryContentService {
   async create(createDto: CreateCountryContentDto): Promise<CountryContent> {
     const content = this.countryContentRepository.create({
       ...createDto,
-      country: { id: createDto.countryId } as any,
+      country: { idCountry: createDto.countryId } as any,
     });
     return await this.countryContentRepository.save(content);
   }
@@ -28,14 +28,14 @@ export class CountryContentService {
 
   async findByCountry(countryId: number): Promise<CountryContent[]> {
     return await this.countryContentRepository.find({
-      where: { country: { id: countryId } },
+      where: { country: { idCountry: countryId } },
       relations: ['country'],
     });
   }
 
   async findOne(id: number): Promise<CountryContent> {
     const content = await this.countryContentRepository.findOne({
-      where: { id },
+      where: { idCountryContent: id },
       relations: ['country'],
     });
     if (!content) {

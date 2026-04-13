@@ -11,8 +11,8 @@ import { ExpatriationProject } from '../../expatriation-project/entities/expatri
 
 @Entity({ name: 'procedure_tracking' })
 export class ProcedureTracking {
-  @PrimaryGeneratedColumn({ name: 'id' })
-  id: number;
+  @PrimaryGeneratedColumn({ name: 'id_procedure_tracking' })
+  idProcedureTracking: number;
 
   @Column({
     name: 'status',

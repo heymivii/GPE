@@ -23,7 +23,7 @@ export class BusinessSectorService {
 
   async findOne(id: number): Promise<BusinessSector> {
     const sector = await this.businessSectorRepository.findOne({
-      where: { id },
+      where: { idBusinessSector: id },
     });
     if (!sector) {
       throw new NotFoundException(`Business sector with ID ${id} not found`);

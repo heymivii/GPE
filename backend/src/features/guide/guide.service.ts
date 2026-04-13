@@ -15,7 +15,7 @@ export class GuideService {
   async create(createDto: CreateGuideDto): Promise<Guide> {
     const guide = this.guideRepository.create({
       ...createDto,
-      country: { id: createDto.countryId } as any,
+      country: { idCountry: createDto.countryId } as any,
     });
     return await this.guideRepository.save(guide);
   }
@@ -28,14 +28,14 @@ export class GuideService {
 
   async findByCountry(countryId: number): Promise<Guide[]> {
     return await this.guideRepository.find({
-      where: { country: { id: countryId } },
+      where: { country: { idCountry: countryId } },
       relations: ['country'],
     });
   }
 
   async findOne(id: number): Promise<Guide> {
     const guide = await this.guideRepository.findOne({
-      where: { id },
+      where: { idGuide: id },
       relations: ['country'],
     });
     if (!guide) {

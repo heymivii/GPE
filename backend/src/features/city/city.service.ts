@@ -40,7 +40,7 @@ export class CityService {
 
   async findOne(id: number): Promise<City> {
     const city = await this.cityRepository.findOne({
-      where: { id: id },
+      where: { idCity: id },
       relations: ['country'],
     });
     if (!city) {

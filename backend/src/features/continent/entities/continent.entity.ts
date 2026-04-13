@@ -9,8 +9,8 @@ import {
 
 @Entity('continent')
 export class Continent {
-  @PrimaryGeneratedColumn({ name: 'id' })
-  id: number;
+  @PrimaryGeneratedColumn({ name: 'id_continent' })
+  idContinent: number;
 
   @Column({
     name: 'name',

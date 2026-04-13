@@ -7,8 +7,8 @@ import {
 
 @Entity('business_sector')
 export class BusinessSector {
-  @PrimaryGeneratedColumn({ name: 'id' })
-  id: number;
+  @PrimaryGeneratedColumn({ name: 'id_business_sector' })
+  idBusinessSector: number;
 
   @Column({ name: 'name', type: 'varchar', length: 100, unique: true })
   name: string;

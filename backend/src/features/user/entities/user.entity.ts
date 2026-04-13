@@ -13,8 +13,8 @@ import { ProcedureTracking } from '../../procedure-tracking/entities/procedure-t
 
 @Entity('app_user')
 export class User {
-  @PrimaryGeneratedColumn({ name: 'id' })
-  id: number;
+  @PrimaryGeneratedColumn({ name: 'id_user' })
+  idUser: number;
 
   @Column({ name: 'firstname', type: 'varchar', length: 50, nullable: true })
   firstName?: string;

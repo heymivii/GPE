@@ -127,9 +127,9 @@ export class DestinationsService {
       this.forumTopicRepository
         .createQueryBuilder('ft')
         .innerJoin('ft.country', 'c')
-        .select('c.id', 'countryId')
+        .select('c.id_country', 'countryId')
         .addSelect('COUNT(*)', 'count')
-        .groupBy('c.id')
+        .groupBy('c.id_country')
         .getRawMany<{ countryId: number; count: string }>(),
 
       this.expatriationProjectRepository
@@ -142,9 +142,9 @@ export class DestinationsService {
       this.resourceRepository
         .createQueryBuilder('r')
         .innerJoin('r.country', 'c2')
-        .select('c2.id', 'countryId')
+        .select('c2.id_country', 'countryId')
         .addSelect('COUNT(*)', 'count')
-        .groupBy('c2.id')
+        .groupBy('c2.id_country')
         .getRawMany<{ countryId: number; count: string }>(),
     ]);
 
@@ -163,12 +163,12 @@ export class DestinationsService {
 
     return countries.map((country) => ({
       ...country,
-      imageUrl: COUNTRY_IMAGES[country.name] || DEFAULT_IMAGE,
+      imageUrl: COUNTRY_IMAGES[country.countryName] || DEFAULT_IMAGE,
       stats: {
-        memberCount: projectMap.get(country.id) || 0,
-        jobOffersCount: adzunaJobCounts.get(country.id) || 0,
-        forumTopicsCount: forumMap.get(country.id) || 0,
-        resourcesCount: resourceMap.get(country.id) || 0,
+        memberCount: projectMap.get(country.idCountry) || 0,
+        jobOffersCount: adzunaJobCounts.get(country.idCountry) || 0,
+        forumTopicsCount: forumMap.get(country.idCountry) || 0,
+        resourcesCount: resourceMap.get(country.idCountry) || 0,
       },
     }));
   }
@@ -183,7 +183,7 @@ export class DestinationsService {
         ? ISO_TO_ADZUNA[country.isoCode.toUpperCase()]
         : undefined;
       if (!adzunaCode) {
-        jobCountMap.set(country.id, 0);
+        jobCountMap.set(country.idCountry, 0);
         return;
       }
       try {
@@ -192,12 +192,12 @@ export class DestinationsService {
           resultsPerPage: 1,
           page: 1,
         });
-        jobCountMap.set(country.id, response.total);
+        jobCountMap.set(country.idCountry, response.total);
       } catch (error) {
         this.logger.warn(
-          `⚠️  Adzuna count failed for ${country.name} (${adzunaCode}): ${error instanceof Error ? error.message : error}`,
+          `⚠️  Adzuna count failed for ${country.countryName} (${adzunaCode}): ${error instanceof Error ? error.message : error}`,
         );
-        jobCountMap.set(country.id, 0);
+        jobCountMap.set(country.idCountry, 0);
       }
     });
 
@@ -213,17 +213,17 @@ export class DestinationsService {
       });
     } else {
       country = await this.countryRepository.findOne({
-        where: { name: slug },
+        where: { countryName: slug },
       });
 
       if (!country) {
         const allCountries = await this.countryRepository.find();
         country = allCountries.find(
           (c) =>
-            slugify(c.name, { lower: true, strict: true }) ===
+            slugify(c.countryName, { lower: true, strict: true }) ===
               slug.toLowerCase() ||
-            c.name.toLowerCase() === slug.toLowerCase() ||
-            c.name.toLowerCase().replace(/ /g, '-') ===
+            c.countryName.toLowerCase() === slug.toLowerCase() ||
+            c.countryName.toLowerCase().replace(/ /g, '-') ===
               slug.toLowerCase(),
         );
       }
@@ -234,14 +234,14 @@ export class DestinationsService {
     }
 
     const cities = await this.cityRepository.find({
-      where: { countryId: country.id },
+      where: { countryId: country.idCountry },
       order: { name: 'ASC' },
     });
 
     const citiesWithCost = await Promise.all(
       cities.map(async (city) => {
         const cachedCostData =
-          await this.costOfLivingService.getCachedDataByCityId(city.id);
+          await this.costOfLivingService.getCachedDataByCityId(city.idCity);
         return {
           ...city,
           imageUrl:
@@ -272,10 +272,10 @@ export class DestinationsService {
     const [forumTopicsCount, memberCount, jobOffersCount, resourcesCount] =
       await Promise.all([
         this.forumTopicRepository.count({
-          where: { country: { id: country.id } },
+          where: { country: { idCountry: country.idCountry } },
         }),
         this.expatriationProjectRepository.count({
-          where: { destinationCountryId: country.id },
+          where: { destinationCountryId: country.idCountry },
         }),
         adzunaCode
           ? this.adzunaService
@@ -284,13 +284,13 @@ export class DestinationsService {
               .catch(() => 0)
           : Promise.resolve(0),
         this.resourceRepository.count({
-          where: { country: { id: country.id } },
+          where: { country: { idCountry: country.idCountry } },
         }),
       ]);
 
     return {
       ...country,
-      imageUrl: COUNTRY_IMAGES[country.name] || DEFAULT_IMAGE,
+      imageUrl: COUNTRY_IMAGES[country.countryName] || DEFAULT_IMAGE,
       cities: citiesWithCost,
       costOfLiving: {
         averageHousing: averageHousingCost,

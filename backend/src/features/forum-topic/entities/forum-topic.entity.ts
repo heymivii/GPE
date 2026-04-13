@@ -12,8 +12,8 @@ import { ForumMessage } from '../../forum-message/entities/forum-message.entity'
 
 @Entity({ name: 'forum_topic' })
 export class ForumTopic {
-  @PrimaryGeneratedColumn({ name: 'id' })
-  id: number;
+  @PrimaryGeneratedColumn({ name: 'id_forum_topic' })
+  idForumTopic: number;
 
   @Column({ name: 'title', type: 'varchar', length: 255 })
   title: string;

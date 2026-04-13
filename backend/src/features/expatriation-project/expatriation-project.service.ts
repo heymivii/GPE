@@ -41,7 +41,7 @@ export class ExpatriationProjectService {
     userId: number,
   ): Promise<ExpatriationProject> {
     const project = await this.projectRepository.findOne({
-      where: { id: projectId },
+      where: { idProject: projectId },
       relations: ['destinationCountry', 'destinationCity', 'travelType'],
     });
 

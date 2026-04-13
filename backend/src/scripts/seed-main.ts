@@ -53,7 +53,7 @@ async function seedMain() {
       if (!country) {
         const continent = continentMap.get(data.continent);
         country = countryRepo.create({
-          name: data.name,
+          countryName: data.name,
           isoCode: data.isoCode,
           continent: continent,
         });
@@ -78,7 +78,7 @@ async function seedMain() {
       if (!country) continue;
 
       let city = await cityRepo.findOne({ 
-        where: { name: data.name, country: { id: country.id } } 
+        where: { name: data.name, country: { idCountry: country.idCountry } } 
       });
 
       if (!city) {
