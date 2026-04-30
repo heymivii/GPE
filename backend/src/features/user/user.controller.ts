@@ -7,10 +7,12 @@ import {
   UseGuards,
   Request,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiTags('User')
 @Controller('users')
@@ -38,10 +40,29 @@ export class UserController {
     return result;
   }
 
-  @UseGuards(JwtAuthGuard)
   @Delete('me')
   async deleteAccount(@Request() req) {
     await this.userService.remove(req.user.userId);
     return { message: 'Compte supprimé avec succès' };
+  }
+
+  @ApiOperation({ summary: 'List all users (Admin only)' })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @Get('admin/all')
+  async findAll() {
+    const users = await this.userService.findAll();
+    return users.map((user) => {
+      const { password: _pw, ...sanitized } = user;
+      return sanitized;
+    });
+  }
+
+  @ApiOperation({ summary: 'Get user statistics (Admin only)' })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @Get('admin/stats')
+  async getStats() {
+    return this.userService.getStats();
   }
 }

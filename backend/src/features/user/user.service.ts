@@ -82,4 +82,9 @@ export class UserService {
     const user = await this.findOne(id);
     await this.userRepository.remove(user);
   }
+
+  async getStats(): Promise<{ totalUsers: number }> {
+    const totalUsers = await this.userRepository.count();
+    return { totalUsers };
+  }
 }

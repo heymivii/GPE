@@ -15,7 +15,9 @@ import { ExpatriationProjectService } from './expatriation-project.service';
 import { CreateExpatriationProjectDto } from './dto/create-expatriation-project.dto';
 import { UpdateExpatriationProjectDto } from './dto/update-expatriation-project.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
 
 @ApiTags('Expatriation Project')
 @Controller('expatriation-project')
@@ -61,5 +63,26 @@ export class ExpatriationProjectController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Request() req, @Param('id') id: string) {
     await this.projectService.remove(+id, req.user.userId);
+  }
+
+  // --- Admin Routes ---
+
+  @ApiOperation({ summary: 'List all expatriation projects (Admin only)' })
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  @Get('admin/all')
+  async adminFindAll() {
+    return await this.projectService.findAll();
+  }
+
+  @ApiOperation({ summary: 'Update any expatriation project (Admin only)' })
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  @Patch('admin/:id')
+  async adminUpdate(
+    @Param('id') id: string,
+    @Body() updateDto: UpdateExpatriationProjectDto,
+  ) {
+    return await this.projectService.adminUpdate(+id, updateDto);
   }
 }

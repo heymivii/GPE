@@ -77,4 +77,29 @@ export class ExpatriationProjectService {
       where: { userId: userId },
     });
   }
+
+  // --- Admin Methods ---
+
+  async findAll(): Promise<ExpatriationProject[]> {
+    return await this.projectRepository.find({
+      relations: ['user', 'destinationCountry', 'destinationCity', 'travelType'],
+      order: { idProject: 'DESC' },
+    });
+  }
+
+  async adminUpdate(
+    projectId: number,
+    updateDto: UpdateExpatriationProjectDto,
+  ): Promise<ExpatriationProject> {
+    const project = await this.projectRepository.findOne({
+      where: { idProject: projectId },
+    });
+
+    if (!project) {
+      throw new NotFoundException(`Projet avec l'ID ${projectId} introuvable`);
+    }
+
+    Object.assign(project, updateDto);
+    return await this.projectRepository.save(project);
+  }
 }
