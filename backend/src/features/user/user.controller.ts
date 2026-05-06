@@ -6,7 +6,9 @@ import {
   Body,
   UseGuards,
   Request,
+  Query,
 } from '@nestjs/common';
+import { PaginationDto } from '../../common/dto/pagination.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -46,16 +48,20 @@ export class UserController {
     return { message: 'Compte supprimé avec succès' };
   }
 
+
   @ApiOperation({ summary: 'List all users (Admin only)' })
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   @Get('admin/all')
-  async findAll() {
-    const users = await this.userService.findAll();
-    return users.map((user) => {
-      const { password: _pw, ...sanitized } = user;
-      return sanitized;
-    });
+  async findAll(@Query() paginationDto: PaginationDto) {
+    const result = await this.userService.findAll(paginationDto);
+    return {
+      ...result,
+      data: result.data.map((user) => {
+        const { password: _pw, ...sanitized } = user;
+        return sanitized;
+      }),
+    };
   }
 
   @ApiOperation({ summary: 'Get user statistics (Admin only)' })
