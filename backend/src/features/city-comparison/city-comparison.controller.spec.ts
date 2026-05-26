@@ -8,7 +8,12 @@ describe('CityComparisonController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [CityComparisonController],
-      providers: [CityComparisonService],
+      providers: [
+        {
+          provide: CityComparisonService,
+          useValue: {},
+        },
+      ],
     }).compile();
 
     controller = module.get<CityComparisonController>(CityComparisonController);
