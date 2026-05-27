@@ -41,7 +41,7 @@ export default function OnboardingFlow() {
   const dataLoadedRef = useRef(false)
   const profileLoadedRef = useRef(false)
   const { isAuthenticated, isLoading: isAuthLoading, refreshUser, user } = useAuth()
-  const originCountryData = useCountryData(user?.idOriginCountry)
+  const originCountryData = useCountryData(user?.countryOriginId)
   const [showAuthGate, setShowAuthGate] = useState(false)
   const [searchParams, setSearchParams] = useSearchParams()
   const saveAttemptedRef = useRef(false)
@@ -103,7 +103,7 @@ export default function OnboardingFlow() {
       const destinationCountry = countries.find(c => c.idCountry === existingProject.idDestinationCountry);
       const destinationIsoCode = destinationCountry?.isoCode || '';
 
-      const originCountry = countries.find(c => c.idCountry === user?.idOriginCountry);
+      const originCountry = countries.find(c => c.idCountry === user?.countryOriginId);
       const originIsoCode = originCountry?.isoCode || 'FR';
 
       const projectData = {
@@ -145,7 +145,7 @@ export default function OnboardingFlow() {
     if (!editMode && isAuthenticated && user && countries.length > 0 && !profileLoadedRef.current) {
 
 
-      const originCountry = countries.find(c => c.idCountry === user.idOriginCountry);
+      const originCountry = countries.find(c => c.idCountry === user.countryOriginId);
 
       const profileData: {
         age?: string;
@@ -228,6 +228,9 @@ export default function OnboardingFlow() {
       }
 
 
+      const originCountry = countries.find(c => c.isoCode === data.destination?.fromCountry);
+      const originCountryId = originCountry?.idCountry;
+
       if (data.profile) {
         try {
           await userApi.updateProfile({
@@ -236,18 +239,15 @@ export default function OnboardingFlow() {
             languageLevel: data.profile.languageLevel,
             motherTongue: data.profile.motherTongue,
             spokenLanguages: data.profile.spokenLanguages,
+            countryOriginId: originCountryId,
           });
           await refreshUser();
         } catch (error) {
           console.error('Error updating profile:', error);
         }
       }
-
       const destinationCountry = countries.find(c => c.isoCode === data.destination?.toCountry);
       const destinationCountryId = destinationCountry?.idCountry;
-
-      const originCountry = countries.find(c => c.isoCode === data.destination?.fromCountry);
-      const originCountryId = originCountry?.idCountry;
 
       if (!destinationCountryId) {
         toast.error(t('onboarding.invalidDestination'));
