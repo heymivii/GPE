@@ -5,7 +5,7 @@ import type { UpdateChecklistDto } from '../../../api/checklist';
 export function useChecklistProgress(projectId: number) {
   const queryClient = useQueryClient();
 
-  const { data: progress = {}, isLoading } = useQuery({
+  const { data: progress = [], isLoading } = useQuery({
     queryKey: ['checklist-progress', projectId],
     queryFn: () => checklistApi.getProgress(projectId),
     enabled: !!projectId,
@@ -13,7 +13,7 @@ export function useChecklistProgress(projectId: number) {
 
   const updateMutation = useMutation({
     mutationFn: (dto: UpdateChecklistDto) =>
-      checklistApi.updateProgress(projectId, dto),
+      checklistApi.updateProgress(dto.trackingId, dto.status),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['checklist-progress', projectId],

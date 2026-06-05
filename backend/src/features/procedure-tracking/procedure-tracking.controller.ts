@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Request,
+  Query,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ProcedureTrackingService } from './procedure-tracking.service';
@@ -35,8 +36,11 @@ export class ProcedureTrackingController {
   }
 
   @Get()
-  findAll(@Request() req) {
-    return this.procedureTrackingService.findAllByUser(req.user.userId);
+  findAll(@Request() req, @Query('projectId') projectId?: string) {
+    return this.procedureTrackingService.findAllByUser(
+      req.user.userId,
+      projectId ? parseInt(projectId, 10) : undefined,
+    );
   }
 
   @Get(':id')

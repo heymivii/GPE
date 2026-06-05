@@ -64,6 +64,8 @@ const mapBackendToFrontendProject = (bp: any): ExpatriationProject => {
     checklistProgress: bp.checklistProgress || {},
     createdAt: bp.createdAt,
     updatedAt: bp.updatedAt,
+    destinationCity: bp.destinationCity,
+    destinationCountry: bp.destinationCountry,
   } as any;
 };
 
@@ -140,29 +142,30 @@ export const expatriationProjectApi = {
 
   complete: async (
     projectId: number,
-    data: { reason: string; feedback?: string },
+    _data: { reason: string; feedback?: string },
   ): Promise<ExpatriationProject> => {
-    const response = await apiClient.post<any>(
-      `/expatriation-project/${projectId}/complete`,
-      data,
+    const response = await apiClient.patch<any>(
+      `/expatriation-project/${projectId}`,
+      { status: 'completed' },
     );
     return mapBackendToFrontendProject(response.data);
   },
 
   cancel: async (
     projectId: number,
-    data: { reason: string; details?: string },
+    _data: { reason: string; details?: string },
   ): Promise<ExpatriationProject> => {
-    const response = await apiClient.post<any>(
-      `/expatriation-project/${projectId}/cancel`,
-      data,
+    const response = await apiClient.patch<any>(
+      `/expatriation-project/${projectId}`,
+      { status: 'cancelled' },
     );
     return mapBackendToFrontendProject(response.data);
   },
 
   reactivate: async (projectId: number): Promise<ExpatriationProject> => {
-    const response = await apiClient.post<any>(
-      `/expatriation-project/${projectId}/reactivate`,
+    const response = await apiClient.patch<any>(
+      `/expatriation-project/${projectId}`,
+      { status: 'planning' },
     );
     return mapBackendToFrontendProject(response.data);
   },

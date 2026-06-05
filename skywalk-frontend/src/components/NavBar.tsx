@@ -1,7 +1,7 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Search, Menu, X, ChevronDown, Globe, LogOut, User, LayoutDashboard, FolderKanban, Compass, BarChart3, MapPin, Briefcase, BookOpen } from 'lucide-react';
+import { Search, Menu, X, ChevronDown, Globe, LogOut, User, LayoutDashboard, FolderKanban, Compass, BarChart3, MapPin, Briefcase, BookOpen, ShieldAlert } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import GlobalSearchModal from './GlobalSearchModal';
 
@@ -25,6 +25,9 @@ export default function NavBar() {
   
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
+
+  const userRole = (user as any)?.roles || user?.role || user?.userRole || '';
+  const isAdmin = userRole.toLowerCase() === 'admin';
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -236,6 +239,16 @@ export default function NavBar() {
                       <FolderKanban className="w-4 h-4 text-gray-400" />
                       {t('nav.projects')}
                     </Link>
+                    {isAdmin && (
+                      <Link
+                        to="/admin"
+                        className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-blue-600 font-semibold text-sm border-t border-gray-100"
+                        onClick={() => setUserMenuOpen(false)}
+                      >
+                        <ShieldAlert className="w-4 h-4 text-blue-600" />
+                        Administration
+                      </Link>
+                    )}
                     <hr className="my-1 border-gray-100" />
                     <button
                       className="flex items-center gap-3 w-full text-left px-4 py-2.5 hover:bg-red-50 text-red-600 text-sm"
@@ -319,6 +332,16 @@ export default function NavBar() {
                       <p className="text-xs text-gray-500">{t('nav.profile')}</p>
                     </div>
                   </Link>
+                  {isAdmin && (
+                    <Link
+                      to="/admin"
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-blue-600 font-semibold text-sm"
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      <ShieldAlert className="w-4 h-4 text-blue-600" />
+                      Administration
+                    </Link>
+                  )}
                   <button
                     onClick={handleLogout}
                     className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg hover:bg-red-50 text-red-600 text-sm"

@@ -119,8 +119,8 @@ export function useCreateForumMessage(): UseMutationResult<ForumMessage, Error, 
   return useMutation({
     mutationFn: (data: CreateForumMessageDto) => forumMessagesApi.create(data),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: forumKeys.messagesByTopic(variables.idTopic) });
-      queryClient.invalidateQueries({ queryKey: forumKeys.topic(variables.idTopic) });
+      queryClient.invalidateQueries({ queryKey: forumKeys.messagesByTopic(variables.topicId) });
+      queryClient.invalidateQueries({ queryKey: forumKeys.topic(variables.topicId) });
       queryClient.invalidateQueries({ queryKey: forumKeys.messages() });
     },
   });

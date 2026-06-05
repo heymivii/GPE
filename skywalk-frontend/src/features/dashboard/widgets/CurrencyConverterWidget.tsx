@@ -42,29 +42,55 @@ const CurrencyConverterWidget: React.FC<CurrencyConverterWidgetProps> = ({
   } = useQuery({
     queryKey: ["exchangeRate", fromCurrency, toCurrency],
     queryFn: async () => {
+      const hasApiKey = API_KEY && API_KEY !== "your_api_key_here";
+      
+      try {
+        if (hasApiKey) {
+          const response = await fetch(
+            `https://v6.exchangerate-api.com/v6/${API_KEY}/pair/${fromCurrency}/${toCurrency}`
+          );
+          if (response.ok) {
+            const data = await response.json();
+            if (data.result === "success") {
+              return {
+                rate: data.conversion_rate as number,
+                lastUpdate: new Date(data.time_last_update_unix * 1000).toLocaleDateString(),
+              };
+            }
+          }
+        }
+      } catch (err) {
+        console.warn("Failed fetching from v6 API, falling back to public endpoint:", err);
+      }
+
+      // Fallback/Default: public keyless API
       const response = await fetch(
-        `https://v6.exchangerate-api.com/v6/${API_KEY}/pair/${fromCurrency}/${toCurrency}`
+        `https://open.er-api.com/v6/latest/${fromCurrency}`
       );
-      if (!response.ok) throw new Error("Failed to fetch exchange rate");
+      if (!response.ok) throw new Error("Failed to fetch exchange rates");
       const data = await response.json();
-      if (data.result !== "success") throw new Error(data["error-type"] || "Unknown error");
+      if (data.result !== "success") throw new Error("Failed to parse public exchange rates");
+      
+      const rate = data.rates[toCurrency];
+      if (typeof rate !== "number") {
+        throw new Error(`Rate not found for currency ${toCurrency}`);
+      }
+
       return {
-        rate: data.conversion_rate as number,
+        rate: rate,
         lastUpdate: new Date(data.time_last_update_unix * 1000).toLocaleDateString(),
       };
     },
-    enabled: !!API_KEY,
+    enabled: true,
     staleTime: 3600000,
     retry: 1,
   });
 
   const exchangeRate = rateData?.rate ?? null;
   const lastUpdate = rateData?.lastUpdate ?? null;
-  const error = !API_KEY
-    ? "API key not configured"
-    : rateError
-      ? t("dashboard.personalized.widgets.currencyConverter.error")
-      : null;
+  const error = rateError
+    ? t("dashboard.personalized.widgets.currencyConverter.error")
+    : null;
 
   useEffect(() => {
     if (exchangeRate !== null) {

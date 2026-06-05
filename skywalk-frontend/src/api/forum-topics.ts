@@ -6,40 +6,67 @@ import type {
   ForumTopicWithMessages,
 } from '../types/forum';
 
+// Normalise la réponse backend (camelCase) vers le type frontend (snake_case)
+function mapTopic(raw: any): ForumTopic {
+  return {
+    ...raw,
+    topic_id: raw.topic_id ?? raw.idForumTopic,
+    created_at: raw.created_at ?? raw.createdAt,
+    is_pinned: raw.is_pinned ?? raw.isPinned ?? false,
+    is_locked: raw.is_locked ?? raw.isLocked ?? false,
+    views_count: raw.views_count ?? raw.viewsCount ?? 0,
+    messages: Array.isArray(raw.messages) ? raw.messages.map(mapMessage) : undefined,
+  };
+}
+
+function mapMessage(raw: any) {
+  if (!raw) return undefined;
+  return {
+    ...raw,
+    message_id: raw.message_id ?? raw.idForumMessage,
+    sent_at: raw.sent_at ?? raw.sentAt,
+    user: raw.user ? {
+      idUser: raw.user.idUser ?? raw.user.id,
+      fullName: raw.user.fullName ?? (raw.user.firstName ? `${raw.user.firstName} ${raw.user.lastName || ''}`.trim() : 'Anonymous'),
+      email: raw.user.email,
+      roles: raw.user.roles ?? raw.user.role,
+    } : undefined,
+  };
+}
+
 export const forumTopicsApi = {
   findAll: async (): Promise<ForumTopic[]> => {
-    const response = await apiClient.get<ForumTopic[]>('/forum-topic');
-    return response.data;
+    const response = await apiClient.get<any[]>('/forum-topic');
+    return response.data.map(mapTopic);
   },
 
   findOne: async (id: number): Promise<ForumTopicWithMessages> => {
-    const response = await apiClient.get<ForumTopicWithMessages>(`/forum-topic/${id}`);
-    return response.data;
+    const response = await apiClient.get<any>(`/forum-topic/${id}`);
+    return mapTopic(response.data) as ForumTopicWithMessages;
   },
 
   create: async (data: CreateForumTopicDto): Promise<ForumTopic> => {
-    const response = await apiClient.post<ForumTopic>('/forum-topic', data);
-    return response.data;
+    const response = await apiClient.post<any>('/forum-topic', data);
+    return mapTopic(response.data);
   },
 
   update: async (id: number, data: UpdateForumTopicDto): Promise<ForumTopic> => {
-    const response = await apiClient.patch<ForumTopic>(`/forum-topic/${id}`, data);
-    return response.data;
+    const response = await apiClient.patch<any>(`/forum-topic/${id}`, data);
+    return mapTopic(response.data);
   },
 
   remove: async (id: number): Promise<void> => {
     await apiClient.delete(`/forum-topic/${id}`);
   },
 
-
   lockTopic: async (id: number): Promise<ForumTopic> => {
-    const response = await apiClient.patch<ForumTopic>(`/forum-topic/${id}/lock`);
-    return response.data;
+    const response = await apiClient.patch<any>(`/forum-topic/${id}/lock`);
+    return mapTopic(response.data);
   },
 
   pinTopic: async (id: number): Promise<ForumTopic> => {
-    const response = await apiClient.patch<ForumTopic>(`/forum-topic/${id}/pin`);
-    return response.data;
+    const response = await apiClient.patch<any>(`/forum-topic/${id}/pin`);
+    return mapTopic(response.data);
   },
 
   moderatorRemove: async (id: number): Promise<void> => {

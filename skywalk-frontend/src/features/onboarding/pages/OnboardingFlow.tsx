@@ -273,6 +273,9 @@ export default function OnboardingFlow() {
       const projectData: UpdateExpatriationProjectDto = {
         idDestinationCountry: destinationCountryId,
         idOriginCountry: originCountryId,
+        idDestinationCity: data.destination?.targetCity && !isNaN(parseInt(data.destination.targetCity, 10))
+          ? parseInt(data.destination.targetCity, 10)
+          : null,
         languageLevel: data.profile?.languageLevel,
         travelType: data.profile?.travelParty as 'alone' | 'couple' | 'family' | 'friends' | 'other',
         mainObjective: (objectiveMapping[data.objective?.goal || ''] || 'other') as 'work' | 'study' | 'retirement' | 'adventure' | 'family_reunion' | 'other',

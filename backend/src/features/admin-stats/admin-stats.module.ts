@@ -8,6 +8,7 @@ import { ForumTopic } from '../forum-topic/entities/forum-topic.entity';
 import { ForumMessage } from '../forum-message/entities/forum-message.entity';
 import { Country } from '../country/entities/country.entity';
 import { City } from '../city/entities/city.entity';
+import { TravelType } from '../project/travel-type/travel-type.entity';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { City } from '../city/entities/city.entity';
       ForumMessage,
       Country,
       City,
+      TravelType,
     ]),
   ],
   controllers: [AdminStatsController],

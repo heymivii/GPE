@@ -4,6 +4,7 @@ import { toast } from "react-hot-toast";
 import { useMutation } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../../hooks/useAuth";
+import { authApi } from "../../../api/auth";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
@@ -16,10 +17,20 @@ export default function LoginForm() {
   const redirect = searchParams.get("redirect") || "/dashboard";
 
   const loginMutation = useMutation({
-    mutationFn: (data: { email: string; password: string }) => login(data),
-    onSuccess: () => {
+    mutationFn: async (data: { email: string; password: string }) => {
+      await login(data);
+      // Fetch the full profile after login to get the roles field
+      return await authApi.getProfile();
+    },
+    onSuccess: (profile) => {
       toast.success(t("auth.login.success"));
-      navigate(redirect);
+      // Redirect admin users to the admin dashboard
+      const userRole = ((profile as any)?.roles || (profile as any)?.role || (profile as any)?.userRole || '').toLowerCase();
+      if (userRole === 'admin') {
+        navigate('/admin/dashboard');
+      } else {
+        navigate(redirect);
+      }
     },
     onError: (err: unknown) => {
       const axiosMsg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;

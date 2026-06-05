@@ -11,6 +11,7 @@ export interface Country {
   capital?: string;
   continent?: {
     idContinent: number;
-    continentName: string;
+    name: string;
+    continentName?: string;
   };
 }
