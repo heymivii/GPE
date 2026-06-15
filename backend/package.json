@@ -100,5 +100,10 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
+  },
+  "allowScripts": {
+    "@nestjs/core@10.4.19": true,
+    "bcrypt@6.0.0": true,
+    "fsevents@2.3.3": true
   }
 }
