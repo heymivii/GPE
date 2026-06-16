@@ -167,6 +167,19 @@ export class CostOfLivingService {
     return null;
   }
 
+  async updateCostOfLiving(cityId: number, data: any): Promise<any> {
+    await this.persistToDb(cityId, data);
+    const cityEntity = await this.cityRepository.findOne({
+      where: { idCity: cityId },
+      relations: ['country'],
+    });
+    if (cityEntity && cityEntity.country) {
+      const key = this.memKey(cityEntity.name, cityEntity.country.countryName);
+      this.memCache.delete(key);
+    }
+    return data;
+  }
+
   async fetchAndCache(
     cityId: number,
     cityName: string,
@@ -227,6 +240,60 @@ export class CostOfLivingService {
     );
   }
 
+  private createEmptyCostOfLiving(cityName: string, countryName: string): CleanedCostOfLivingData {
+    return {
+      city: {
+        id: 0,
+        name: cityName,
+        country: countryName,
+      },
+      currency: {
+        code: 'EUR',
+        exchangeRates: { EUR: 1 },
+        lastUpdated: new Date().toISOString(),
+      },
+      categories: {
+        housing: {
+          rent: {
+            oneBedroom: { cityCenter: { min: 0, avg: 0, max: 0, currency: 'EUR' }, outsideCenter: { min: 0, avg: 0, max: 0, currency: 'EUR' } },
+            threeBedroom: { cityCenter: { min: 0, avg: 0, max: 0, currency: 'EUR' }, outsideCenter: { min: 0, avg: 0, max: 0, currency: 'EUR' } },
+          },
+          buy: {
+            pricePerSqm: { cityCenter: { min: 0, avg: 0, max: 0, currency: 'EUR' }, outsideCenter: { min: 0, avg: 0, max: 0, currency: 'EUR' } },
+          },
+        },
+        food: { markets: {} as any },
+        transportation: {
+          publicTransport: { oneWayTicket: { min: 0, avg: 0, max: 0, currency: 'EUR' }, monthlyPass: { min: 0, avg: 0, max: 0, currency: 'EUR' } },
+          taxi: { start: { min: 0, avg: 0, max: 0, currency: 'EUR' }, per1km: { min: 0, avg: 0, max: 0, currency: 'EUR' }, waitingHour: { min: 0, avg: 0, max: 0, currency: 'EUR' } },
+          personal: { gasoline1L: { min: 0, avg: 0, max: 0, currency: 'EUR' }, newCar: { min: 0, avg: 0, max: 0, currency: 'EUR' } },
+        },
+        utilities: {
+          basic85m2: { min: 0, avg: 0, max: 0, currency: 'EUR' },
+          internet: { min: 0, avg: 0, max: 0, currency: 'EUR' },
+          mobileMinute: { min: 0, avg: 0, max: 0, currency: 'EUR' },
+        },
+        restaurants: {
+          inexpensiveMeal: { min: 0, avg: 0, max: 0, currency: 'EUR' },
+          midRangeMeal2People: { min: 0, avg: 0, max: 0, currency: 'EUR' },
+          mcMeal: { min: 0, avg: 0, max: 0, currency: 'EUR' },
+          cappuccino: { min: 0, avg: 0, max: 0, currency: 'EUR' },
+          cocaCola: { min: 0, avg: 0, max: 0, currency: 'EUR' },
+          domesticBeer: { min: 0, avg: 0, max: 0, currency: 'EUR' },
+          importedBeer: { min: 0, avg: 0, max: 0, currency: 'EUR' },
+        },
+        clothing: { jeans: { min: 0, avg: 0, max: 0, currency: 'EUR' }, summerDress: { min: 0, avg: 0, max: 0, currency: 'EUR' }, runningShoes: { min: 0, avg: 0, max: 0, currency: 'EUR' }, leatherShoes: { min: 0, avg: 0, max: 0, currency: 'EUR' } },
+        childcare: { preschool: { min: 0, avg: 0, max: 0, currency: 'EUR' }, primarySchool: { min: 0, avg: 0, max: 0, currency: 'EUR' } },
+        sports: { cinema: { min: 0, avg: 0, max: 0, currency: 'EUR' }, gym: { min: 0, avg: 0, max: 0, currency: 'EUR' }, tennis: { min: 0, avg: 0, max: 0, currency: 'EUR' } },
+        salary: { averageMonthly: { min: 0, avg: 0, max: 0, currency: 'EUR' }, mortgageRate: { min: 0, avg: 0, max: 0 } },
+      },
+      summary: {
+        monthlyBudget: { min: 0, avg: 0, max: 0 },
+        averageSalary: 0,
+      },
+    };
+  }
+
   private async fetchFromApi(
     cityName: string,
     countryName: string,
@@ -267,21 +334,12 @@ export class CostOfLivingService {
           continue;
         }
         this.logger.error(
-          `Error fetching cost of living for ${cityName}:`,
-          error?.message || error,
+          `Error fetching cost of living for ${cityName} from external API: ${error?.message || error}. Falling back to empty template.`,
         );
-        throw new HttpException(
-          `Failed to fetch cost of living data for ${cityName}`,
-          status === 429
-            ? HttpStatus.TOO_MANY_REQUESTS
-            : HttpStatus.BAD_GATEWAY,
-        );
+        return this.createEmptyCostOfLiving(cityName, countryName);
       }
     }
-    throw new HttpException(
-      `Failed after ${maxRetries} attempts`,
-      HttpStatus.BAD_GATEWAY,
-    );
+    return this.createEmptyCostOfLiving(cityName, countryName);
   }
 
   private validateCountry(country: string): string | null {

@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, FolderKanban, ClipboardList, LogOut, ShieldAlert, Menu, X, Globe, MapPin, Compass } from 'lucide-react';
+import { LayoutDashboard, FolderKanban, ClipboardList, LogOut, ShieldAlert, Menu, X, Globe, MapPin, Compass, Users } from 'lucide-react';
 import { useAuth } from '../../../hooks/useAuth';
+import { Toaster } from 'react-hot-toast';
 
 export default function AdminLayout() {
   const location = useLocation();
@@ -14,6 +15,11 @@ export default function AdminLayout() {
       path: '/admin/dashboard',
       label: 'Tableau de bord',
       icon: LayoutDashboard,
+    },
+    {
+      path: '/admin/roles',
+      label: 'Gestion des Rôles',
+      icon: Users,
     },
     {
       path: '/admin/projects',
@@ -50,9 +56,10 @@ export default function AdminLayout() {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row font-outfit">
+    <div className="h-screen bg-gray-50 flex flex-col md:flex-row font-outfit overflow-hidden">
+      <Toaster position="top-right" />
       {/* Mobile Header */}
-      <header className="md:hidden flex items-center justify-between px-4 py-4 bg-slate-900 text-white shadow-md z-30">
+      <header className="md:hidden flex items-center justify-between px-4 py-4 bg-slate-900 text-white shadow-md z-30 flex-shrink-0">
         <div className="flex items-center gap-2">
           <ShieldAlert className="w-6 h-6 text-[#5EA3C0]" />
           <span className="font-semibold text-lg tracking-wider">Console Admin</span>
@@ -67,13 +74,13 @@ export default function AdminLayout() {
 
       {/* Sidebar Navigation */}
       <aside
-        className={`fixed md:sticky top-0 left-0 bottom-0 z-40 w-64 bg-slate-900 text-slate-300 flex flex-col justify-between transition-transform duration-300 transform ${
+        className={`fixed md:sticky top-0 left-0 bottom-0 z-40 w-64 h-screen md:h-full bg-slate-900 text-slate-300 flex flex-col justify-between transition-transform duration-300 transform ${
           mobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
         } shadow-xl`}
       >
-        <div>
+        <div className="flex-1 flex flex-col overflow-y-auto min-h-0">
           {/* Logo Section */}
-          <div className="p-6 flex items-center gap-3 border-b border-slate-800">
+          <div className="p-6 flex items-center gap-3 border-b border-slate-800 flex-shrink-0">
             <div className="bg-[#5EA3C0]/15 p-2 rounded-lg">
               <ShieldAlert className="w-6 h-6 text-[#5EA3C0]" />
             </div>
@@ -84,7 +91,7 @@ export default function AdminLayout() {
           </div>
 
           {/* User Profile Summary */}
-          <div className="px-6 py-4 flex items-center gap-3 bg-slate-950/40 border-b border-slate-800">
+          <div className="px-6 py-4 flex items-center gap-3 bg-slate-950/40 border-b border-slate-800 flex-shrink-0">
             <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#5EA3C0] to-[#4891b0] text-white flex items-center justify-center font-bold text-sm">
               {user?.fullName?.charAt(0).toUpperCase() || 'A'}
             </div>
@@ -95,7 +102,7 @@ export default function AdminLayout() {
           </div>
 
           {/* Nav links */}
-          <nav className="p-4 space-y-1">
+          <nav className="p-4 space-y-1 flex-1">
             {navItems.map((item) => {
               const Icon = item.icon;
               const active = isActive(item.path);
@@ -119,7 +126,7 @@ export default function AdminLayout() {
         </div>
 
         {/* Footer actions */}
-        <div className="p-4 border-t border-slate-800">
+        <div className="p-4 border-t border-slate-800 flex-shrink-0">
           <button
             onClick={handleLogout}
             className="flex items-center gap-3 w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-red-400 hover:bg-red-950/20 hover:text-red-300 transition-colors"
@@ -139,7 +146,7 @@ export default function AdminLayout() {
       )}
 
       {/* Main Content Area */}
-      <main className="flex-1 overflow-x-hidden p-6 md:p-8 bg-gray-50">
+      <main className="flex-1 overflow-y-auto overflow-x-hidden p-6 md:p-8 bg-gray-50">
         <Outlet />
       </main>
     </div>

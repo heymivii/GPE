@@ -7,6 +7,8 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
+  Request,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CityService } from './city.service';
@@ -15,21 +17,36 @@ import { UpdateCityDto } from './dto/update-city.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { AdminLogService } from '../admin-log/admin-log.service';
 
 @ApiTags('City')
 @Controller('city')
 export class CityController {
-  constructor(private readonly cityService: CityService) {}
+  constructor(
+    private readonly cityService: CityService,
+    private readonly adminLogService: AdminLogService,
+  ) {}
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
-  create(@Body() createCityDto: CreateCityDto) {
-    return this.cityService.create(createCityDto);
+  async create(@Body() createCityDto: CreateCityDto, @Request() req) {
+    const city = await this.cityService.create(createCityDto);
+    await this.adminLogService.log(
+      req.user.userId,
+      'CREATE',
+      'City',
+      city.idCity.toString(),
+      `Création de la ville "${city.name}" (population : ${city.population || 'non renseignée'})`
+    );
+    return city;
   }
 
   @Get()
-  findAll() {
+  findAll(@Query('countryId') countryId?: string) {
+    if (countryId) {
+      return this.cityService.findByCountry(+countryId);
+    }
     return this.cityService.findAll();
   }
 
@@ -41,14 +58,30 @@ export class CityController {
   @Patch(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
-  update(@Param('id') id: string, @Body() updateCityDto: UpdateCityDto) {
-    return this.cityService.update(+id, updateCityDto);
+  async update(@Param('id') id: string, @Body() updateCityDto: UpdateCityDto, @Request() req) {
+    const city = await this.cityService.update(+id, updateCityDto);
+    await this.adminLogService.log(
+      req.user.userId,
+      'UPDATE',
+      'City',
+      city.idCity.toString(),
+      `Modification de la ville "${city.name}"`
+    );
+    return city;
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
-  remove(@Param('id') id: string) {
-    return this.cityService.remove(+id);
+  async remove(@Param('id') id: string, @Request() req) {
+    const city = await this.cityService.findOne(+id);
+    await this.cityService.remove(+id);
+    await this.adminLogService.log(
+      req.user.userId,
+      'DELETE',
+      'City',
+      id,
+      `Suppression de la ville "${city.name}"`
+    );
   }
 }

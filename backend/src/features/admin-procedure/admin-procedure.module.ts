@@ -3,9 +3,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AdminProcedureService } from './admin-procedure.service';
 import { AdminProcedureController } from './admin-procedure.controller';
 import { AdminProcedure } from './entities/admin-procedure.entity';
+import { AdminLogModule } from '../admin-log/admin-log.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([AdminProcedure])],
+  imports: [TypeOrmModule.forFeature([AdminProcedure]), AdminLogModule],
   controllers: [AdminProcedureController],
   providers: [AdminProcedureService],
   exports: [AdminProcedureService],

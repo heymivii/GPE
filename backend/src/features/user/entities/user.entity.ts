@@ -43,6 +43,9 @@ export class User {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
+  @Column({ name: 'last_login_at', type: 'timestamp', nullable: true })
+  lastLoginAt?: Date;
+
   @ManyToOne(() => Country, { nullable: true })
   @JoinColumn({ name: 'country_origin_id' })
   originCountry?: Country;

@@ -133,4 +133,8 @@ export const costOfLivingApi = {
         });
         return response.data;
     },
+    updateCostOfLiving: async (cityId: number, data: CleanedCostOfLivingData): Promise<CleanedCostOfLivingData> => {
+        const response = await apiClient.put<CleanedCostOfLivingData>(`/cost-of-living/${cityId}`, data);
+        return response.data;
+    },
 };

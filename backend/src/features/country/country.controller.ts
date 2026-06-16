@@ -9,6 +9,7 @@ import {
   HttpCode,
   HttpStatus,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 import { CountryService } from './country.service';
 import { CreateCountryDto } from './dto/create-country.dto';
@@ -17,18 +18,30 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { ApiTags } from '@nestjs/swagger';
+import { AdminLogService } from '../admin-log/admin-log.service';
 
 @ApiTags('Country')
 @Controller('country')
 export class CountryController {
-  constructor(private readonly countryService: CountryService) {}
+  constructor(
+    private readonly countryService: CountryService,
+    private readonly adminLogService: AdminLogService,
+  ) {}
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() createDto: CreateCountryDto) {
-    return this.countryService.create(createDto);
+  async create(@Body() createDto: CreateCountryDto, @Request() req) {
+    const country = await this.countryService.create(createDto);
+    await this.adminLogService.log(
+      req.user.userId,
+      'CREATE',
+      'Country',
+      country.idCountry.toString(),
+      `Création du pays "${country.countryName}"`
+    );
+    return country;
   }
 
   @Get()
@@ -44,15 +57,31 @@ export class CountryController {
   @Patch(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
-  update(@Param('id') id: string, @Body() updateDto: UpdateCountryDto) {
-    return this.countryService.update(+id, updateDto);
+  async update(@Param('id') id: string, @Body() updateDto: UpdateCountryDto, @Request() req) {
+    const country = await this.countryService.update(+id, updateDto);
+    await this.adminLogService.log(
+      req.user.userId,
+      'UPDATE',
+      'Country',
+      country.idCountry.toString(),
+      `Modification du pays "${country.countryName}"`
+    );
+    return country;
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id') id: string) {
-    return this.countryService.remove(+id);
+  async remove(@Param('id') id: string, @Request() req) {
+    const country = await this.countryService.findOne(+id);
+    await this.countryService.remove(+id);
+    await this.adminLogService.log(
+      req.user.userId,
+      'DELETE',
+      'Country',
+      id,
+      `Suppression du pays "${country.countryName}"`
+    );
   }
 }

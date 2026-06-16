@@ -1233,8 +1233,12 @@
     "data": {
       "continents": {
         "Europe": "Europe",
-        "Asie": "Asie",
-        "Amérique du Nord": "Amérique du Nord"
+        "Asia": "Asie",
+        "North America": "Amérique du Nord",
+        "South America": "Amérique du Sud",
+        "Africa": "Afrique",
+        "Oceania": "Océanie",
+        "Antarctica": "Antarctique"
       },
       "capitals": {
         "Paris": "Paris",

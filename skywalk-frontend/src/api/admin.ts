@@ -73,8 +73,10 @@ export const adminApi = {
     return response.data;
   },
 
-  getAllProcedures: async (): Promise<AdminProcedure[]> => {
-    const response = await apiClient.get<AdminProcedure[]>('/admin-procedure');
+  getAllProcedures: async (countryId?: number): Promise<AdminProcedure[]> => {
+    const response = await apiClient.get<AdminProcedure[]>('/admin-procedure', {
+      params: countryId ? { countryId } : undefined,
+    });
     return response.data;
   },
 
@@ -90,6 +92,11 @@ export const adminApi = {
 
   deleteProcedure: async (id: number): Promise<void> => {
     await apiClient.delete(`/admin-procedure/${id}`);
+  },
+
+  getLogs: async (): Promise<any[]> => {
+    const response = await apiClient.get<any[]>('/admin-logs');
+    return response.data;
   },
 };
 

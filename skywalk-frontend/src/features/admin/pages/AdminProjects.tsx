@@ -85,11 +85,18 @@ export default function AdminProjects() {
   };
 
   const getObjectiveLabel = (obj: string) => {
-    switch (obj?.toLowerCase()) {
-      case 'work': return 'Travailler';
-      case 'study': return 'Étudier';
-      case 'retire': return 'Retraite';
+    switch (obj?.toLowerCase()?.trim()) {
+      case 'work': return 'Travail';
+      case 'study':
+      case 'studies': return 'Études';
+      case 'retire':
+      case 'retirement': return 'Retraite';
       case 'investment': return 'Investissement';
+      case 'discovery':
+      case 'adventure': return 'Aventure / Découverte';
+      case 'family':
+      case 'family_reunion': return 'Regroupement familial';
+      case 'internship': return 'Stage';
       case 'other': return 'Autre';
       default: return obj || 'Non spécifié';
     }
