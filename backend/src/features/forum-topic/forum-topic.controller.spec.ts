@@ -5,6 +5,7 @@ import { ForumTopicService } from './forum-topic.service';
 const mockService = () => ({
   create: jest.fn(),
   findAll: jest.fn(),
+  getStats: jest.fn(),
   findOne: jest.fn(),
   update: jest.fn(),
   remove: jest.fn(),
@@ -57,13 +58,31 @@ describe('ForumTopicController', () => {
     });
   });
 
+  // ─── getStats ──────────────────────────────────────────────────
+
+  describe('getStats()', () => {
+    it('should return forum statistics', async () => {
+      const stats = {
+        totalTopics: 3,
+        totalMessages: 8,
+        last24h: 1,
+        byCategory: [{ category: 'question', count: 2 }],
+      };
+      service.getStats.mockResolvedValue(stats);
+
+      const result = await controller.getStats();
+      expect(service.getStats).toHaveBeenCalled();
+      expect(result).toEqual(stats);
+    });
+  });
+
   // ─── findOne ───────────────────────────────────────────────────
 
   describe('findOne()', () => {
     it('should return a single topic', async () => {
       service.findOne.mockResolvedValue({ idForumTopic: 5 });
 
-      const result = await controller.findOne('5');
+      const result = await controller.findOne(5);
       expect(service.findOne).toHaveBeenCalledWith(5);
       expect(result.idForumTopic).toBe(5);
     });
@@ -76,7 +95,7 @@ describe('ForumTopicController', () => {
       const dto = { title: 'Updated' };
       service.update.mockResolvedValue({ idForumTopic: 1, title: 'Updated' });
 
-      const result = await controller.update('1', dto as any);
+      const result = await controller.update(1, dto as any);
       expect(service.update).toHaveBeenCalledWith(1, dto);
       expect(result.title).toBe('Updated');
     });
@@ -88,7 +107,7 @@ describe('ForumTopicController', () => {
     it('should delegate to service.remove', async () => {
       service.remove.mockResolvedValue(undefined);
 
-      await controller.remove('3');
+      await controller.remove(3);
       expect(service.remove).toHaveBeenCalledWith(3);
     });
   });
@@ -99,7 +118,7 @@ describe('ForumTopicController', () => {
     it('should toggle lock', async () => {
       service.lockTopic.mockResolvedValue({ idForumTopic: 1, isLocked: true });
 
-      const result = await controller.lockTopic('1');
+      const result = await controller.lockTopic(1);
       expect(service.lockTopic).toHaveBeenCalledWith(1);
       expect(result.isLocked).toBe(true);
     });
@@ -111,7 +130,7 @@ describe('ForumTopicController', () => {
     it('should toggle pin', async () => {
       service.pinTopic.mockResolvedValue({ idForumTopic: 1, isPinned: true });
 
-      const result = await controller.pinTopic('1');
+      const result = await controller.pinTopic(1);
       expect(service.pinTopic).toHaveBeenCalledWith(1);
       expect(result.isPinned).toBe(true);
     });
@@ -123,7 +142,7 @@ describe('ForumTopicController', () => {
     it('should delegate to service.moderatorRemove', async () => {
       service.moderatorRemove.mockResolvedValue(undefined);
 
-      await controller.moderatorRemove('7');
+      await controller.moderatorRemove(7);
       expect(service.moderatorRemove).toHaveBeenCalledWith(7);
     });
   });

@@ -4,7 +4,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { MoreThanOrEqual, Repository } from 'typeorm';
 import { CreateForumTopicDto } from './dto/create-forum-topic.dto';
 import { UpdateForumTopicDto } from './dto/update-forum-topic.dto';
 import { ForumTopic } from './entities/forum-topic.entity';
@@ -73,6 +73,37 @@ export class ForumTopicService {
       relations: ['user', 'country'],
       order: { createdAt: 'DESC' },
     });
+  }
+
+  async getStats(): Promise<{
+    totalTopics: number;
+    totalMessages: number;
+    last24h: number;
+    byCategory: { category: string; count: number }[];
+  }> {
+    const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+    const [totalTopics, totalMessages, last24h, byCategoryRaw] =
+      await Promise.all([
+        this.forumTopicRepository.count(),
+        this.forumMessageRepository.count(),
+        this.forumTopicRepository.count({
+          where: { createdAt: MoreThanOrEqual(since) },
+        }),
+        this.forumTopicRepository
+          .createQueryBuilder('topic')
+          .select('topic.category', 'category')
+          .addSelect('COUNT(*)', 'count')
+          .groupBy('topic.category')
+          .getRawMany<{ category: string | null; count: string }>(),
+      ]);
+
+    const byCategory = byCategoryRaw.map((row) => ({
+      category: row.category ?? 'other',
+      count: parseInt(row.count, 10),
+    }));
+
+    return { totalTopics, totalMessages, last24h, byCategory };
   }
 
   async findOne(id: number): Promise<ForumTopic> {

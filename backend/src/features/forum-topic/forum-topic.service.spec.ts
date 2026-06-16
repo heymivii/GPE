@@ -13,6 +13,8 @@ const mockTopicRepo = () => ({
   findOne: jest.fn(),
   delete: jest.fn(),
   remove: jest.fn(),
+  count: jest.fn(),
+  createQueryBuilder: jest.fn(),
 });
 
 const mockMessageRepo = () => ({
@@ -20,6 +22,7 @@ const mockMessageRepo = () => ({
   save: jest.fn(),
   findOne: jest.fn(),
   remove: jest.fn(),
+  count: jest.fn(),
 });
 
 const mockContentFilter = () => ({
@@ -54,6 +57,51 @@ describe('ForumTopicService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+  });
+
+  // ─── getStats() ────────────────────────────────────────────────
+
+  describe('getStats()', () => {
+    it('should aggregate counts and category breakdown', async () => {
+      topicRepo.count
+        .mockResolvedValueOnce(4) // totalTopics
+        .mockResolvedValueOnce(1); // last24h
+      messageRepo.count.mockResolvedValue(9); // totalMessages
+      topicRepo.createQueryBuilder.mockReturnValue({
+        select: jest.fn().mockReturnThis(),
+        addSelect: jest.fn().mockReturnThis(),
+        groupBy: jest.fn().mockReturnThis(),
+        getRawMany: jest
+          .fn()
+          .mockResolvedValue([{ category: 'question', count: '3' }]),
+      });
+
+      const stats = await service.getStats();
+
+      expect(stats).toEqual({
+        totalTopics: 4,
+        totalMessages: 9,
+        last24h: 1,
+        byCategory: [{ category: 'question', count: 3 }],
+      });
+    });
+
+    it('should default a null category to "other"', async () => {
+      topicRepo.count.mockResolvedValue(0);
+      messageRepo.count.mockResolvedValue(0);
+      topicRepo.createQueryBuilder.mockReturnValue({
+        select: jest.fn().mockReturnThis(),
+        addSelect: jest.fn().mockReturnThis(),
+        groupBy: jest.fn().mockReturnThis(),
+        getRawMany: jest
+          .fn()
+          .mockResolvedValue([{ category: null, count: '2' }]),
+      });
+
+      const stats = await service.getStats();
+
+      expect(stats.byCategory).toEqual([{ category: 'other', count: 2 }]);
+    });
   });
 
   // ─── create() ──────────────────────────────────────────────────
