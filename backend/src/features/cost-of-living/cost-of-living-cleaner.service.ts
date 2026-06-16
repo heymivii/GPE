@@ -255,18 +255,18 @@ export class CostOfLivingCleanerService {
     const transport = data.prices.find((p) =>
       p.item_name.includes('Monthly Pass'),
     );
-    const food = 400;
     const salary = data.prices.find((p) =>
       p.item_name.includes('Average Monthly Net Salary'),
     );
 
+    // The source API exposes no monthly food total (only per-unit grocery prices),
+    // so we no longer add a fabricated flat constant (was `food = 400`, identical for
+    // every city). On this fallback path we sum only sourced components; curated seeds
+    // carry a sourced monthly figure (Numbeo single-person estimate excl. rent).
     const monthlyBudget = {
-      min:
-        (rent?.min || 0) + (utilities?.min || 0) + (transport?.min || 0) + food,
-      avg:
-        (rent?.avg || 0) + (utilities?.avg || 0) + (transport?.avg || 0) + food,
-      max:
-        (rent?.max || 0) + (utilities?.max || 0) + (transport?.max || 0) + food,
+      min: (rent?.min || 0) + (utilities?.min || 0) + (transport?.min || 0),
+      avg: (rent?.avg || 0) + (utilities?.avg || 0) + (transport?.avg || 0),
+      max: (rent?.max || 0) + (utilities?.max || 0) + (transport?.max || 0),
     };
 
     return {

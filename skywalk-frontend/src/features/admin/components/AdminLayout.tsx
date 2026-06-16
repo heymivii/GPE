@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, FolderKanban, ClipboardList, LogOut, ShieldAlert, Menu, X, Globe, MapPin, Compass } from 'lucide-react';
 import { useAuth } from '../../../hooks/useAuth';
+import { Toaster } from 'react-hot-toast';
 
 export default function AdminLayout() {
   const location = useLocation();
@@ -51,6 +52,7 @@ export default function AdminLayout() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row font-outfit">
+      <Toaster position="top-right" />
       {/* Mobile Header */}
       <header className="md:hidden flex items-center justify-between px-4 py-4 bg-slate-900 text-white shadow-md z-30">
         <div className="flex items-center gap-2">
