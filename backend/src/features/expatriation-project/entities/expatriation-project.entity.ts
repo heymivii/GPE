@@ -2,110 +2,89 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  OneToMany,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
-import { ProcedureTracking } from '../../procedure-tracking/entities/procedure-tracking.entity';
-
-export interface ChecklistProgress {
-  [stepId: string]: {
-    completed: boolean;
-    completedAt?: string;
-    substeps?: {
-      [substepId: string]: {
-        completed: boolean;
-        completedAt?: string;
-      };
-    };
-  };
-}
+import { TravelType } from '../../project/travel-type/travel-type.entity';
+import { User } from '../../user/entities/user.entity';
+import { Country } from '../../country/entities/country.entity';
+import { City } from '../../city/entities/city.entity';
 
 @Entity('expatriation_project')
 export class ExpatriationProject {
   @PrimaryGeneratedColumn({ name: 'id_project' })
   idProject: number;
 
-  @Column({ name: 'id_user' })
-  idUser: number;
-
-  @Column({ name: 'id_destination_country' })
-  idDestinationCountry: number;
-
-  @Column({ name: 'id_destination_city', nullable: true })
-  idDestinationCity: number;
-
-  @Column({ name: 'travel_type', length: 50, nullable: true })
-  travelType: string;
-
-  @Column({ name: 'main_objective', length: 100, nullable: true })
-  mainObjective: string;
+  @Column({ name: 'objective', length: 100, nullable: true })
+  objective: string;
 
   @Column({ name: 'expected_duration', nullable: true })
   expectedDuration: number;
 
   @Column({
-    name: 'housing_budget',
+    name: 'budget',
     type: 'decimal',
     precision: 10,
     scale: 2,
     nullable: true,
   })
-  housingBudget: number;
+  budget: number;
 
-  @Column({ name: 'priorities', length: 100, nullable: true })
-  priorities: string;
-
-  @Column({ name: 'steps_done', type: 'text', nullable: true })
-  stepsDone: string;
-
-  @Column({ name: 'needs_support', default: false })
-  needsSupport: boolean;
-
-  @Column({ name: 'project_status', length: 50, default: 'planning' })
-  projectStatus: string;
+  @Column({ name: 'status', length: 50, default: 'planning' })
+  status: string;
 
   @Column({ name: 'expected_departure_date', type: 'date', nullable: true })
   expectedDepartureDate: Date;
 
-  @Column({
-    name: 'checklist_progress',
-    type: 'jsonb',
-    default: '{}',
-    nullable: true,
-  })
-  checklistProgress: ChecklistProgress;
+  @Column({ name: 'user_id' })
+  userId: number;
 
-  @Column({ name: 'language_level', length: 50, nullable: true })
-  languageLevel: string;
+  @ManyToOne(() => User, { nullable: false })
+  @JoinColumn({ name: 'user_id' })
+  user: User;
 
-  @Column({ name: 'id_origin_country', nullable: true })
-  idOriginCountry: number;
+  @Column({ name: 'travel_type_id', nullable: true })
+  travelTypeId: number;
+
+  @ManyToOne(() => TravelType, { nullable: true })
+  @JoinColumn({ name: 'travel_type_id' })
+  travelType: TravelType;
+
+  @Column({ name: 'destination_country_id' })
+  destinationCountryId: number;
+
+  @ManyToOne(() => Country, { nullable: false })
+  @JoinColumn({ name: 'destination_country_id' })
+  destinationCountry: Country;
+
+  @Column({ name: 'destination_city_id', nullable: true })
+  destinationCityId: number;
+
+  @ManyToOne(() => City, { nullable: true })
+  @JoinColumn({ name: 'destination_city_id' })
+  destinationCity: City;
+
+  @Column({ name: 'checklist_progress', type: 'jsonb', nullable: true })
+  checklistProgress: Record<string, unknown> | null;
+
+  @Column({ name: 'priorities', type: 'varchar', length: 100, nullable: true })
+  priorities: string | null;
 
   @Column({ name: 'completed_at', type: 'timestamp', nullable: true })
-  completedAt: Date;
+  completedAt: Date | null;
 
   @Column({ name: 'completed_reason', type: 'text', nullable: true })
-  completedReason: string;
+  completedReason: string | null;
 
   @Column({ name: 'completed_feedback', type: 'text', nullable: true })
-  completedFeedback: string;
+  completedFeedback: string | null;
 
   @Column({ name: 'cancelled_at', type: 'timestamp', nullable: true })
-  cancelledAt: Date;
+  cancelledAt: Date | null;
 
-  @Column({ name: 'cancellation_reason', length: 100, nullable: true })
-  cancellationReason: string;
+  @Column({ name: 'cancellation_reason', type: 'varchar', length: 100, nullable: true })
+  cancellationReason: string | null;
 
   @Column({ name: 'cancellation_details', type: 'text', nullable: true })
-  cancellationDetails: string;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
-
-  @OneToMany(() => ProcedureTracking, (tracking) => tracking.project)
-  processTrackings: ProcedureTracking[];
+  cancellationDetails: string | null;
 }

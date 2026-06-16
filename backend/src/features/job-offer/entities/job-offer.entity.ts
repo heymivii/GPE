@@ -44,20 +44,14 @@ export class JobOffer {
   })
   publicationDate: Date;
 
-  @Column({ name: 'id_city' })
-  idCity: number;
-
-  @Column({ name: 'id_sector', nullable: true })
-  idSector?: number;
-
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
   @ManyToOne(() => City, { nullable: false })
-  @JoinColumn({ name: 'id_city' })
+  @JoinColumn({ name: 'city_id' })
   city: City;
 
   @ManyToOne(() => BusinessSector, { nullable: true })
-  @JoinColumn({ name: 'id_sector' })
+  @JoinColumn({ name: 'sector_id' })
   sector?: BusinessSector;
 }

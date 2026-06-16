@@ -32,7 +32,7 @@ export class CreateGuideDto {
 
   @IsNotEmpty()
   @IsNumber()
-  idCountry: number;
+  countryId: number;
 
   @IsOptional()
   @IsNumber()

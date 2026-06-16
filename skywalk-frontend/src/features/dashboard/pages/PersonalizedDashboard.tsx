@@ -165,7 +165,7 @@ export default function PersonalizedDashboard() {
       destination: {
         fromCountry: originCountryData?.code || 'FR',
         toCountry: countryData?.code || 'XX',
-        targetCity: '',
+        targetCity: activeProject?.destinationCity?.name || '',
         departureYear: activeProject?.expectedDepartureDate
           ? new Date(activeProject.expectedDepartureDate).getFullYear().toString()
           : new Date().getFullYear().toString()

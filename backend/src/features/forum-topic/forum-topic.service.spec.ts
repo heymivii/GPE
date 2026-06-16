@@ -63,16 +63,16 @@ describe('ForumTopicService', () => {
       title: 'Test Topic',
       content: 'This is a test topic content.',
       category: 'question',
-      idUser: 1,
+      idForumTopic: 1,
     };
 
     it('should create a topic and its initial message', async () => {
-      const savedTopic = { topic_id: 1, title: 'Test Topic' };
+      const savedTopic = { idForumTopic: 1, title: 'Test Topic' };
       topicRepo.create.mockReturnValue(savedTopic);
       topicRepo.save.mockResolvedValue(savedTopic);
       messageRepo.create.mockReturnValue({ content: dto.content });
       messageRepo.save.mockResolvedValue({
-        message_id: 1,
+        idForumMessage: 1,
         content: dto.content,
       });
 
@@ -82,7 +82,7 @@ describe('ForumTopicService', () => {
       expect(contentFilter.sanitize).toHaveBeenCalledTimes(2);
       expect(topicRepo.save).toHaveBeenCalled();
       expect(messageRepo.save).toHaveBeenCalled();
-      expect(result.topic_id).toBe(1);
+      expect(result.idForumTopic).toBe(1);
     });
 
     it('should reject topic with bad title', async () => {
@@ -112,20 +112,20 @@ describe('ForumTopicService', () => {
   describe('findOne()', () => {
     it('should return topic with sorted messages', async () => {
       const topic = {
-        topic_id: 1,
+        idForumTopic: 1,
         messages: [
-          { sent_at: '2026-02-10T12:00:00Z' },
-          { sent_at: '2026-02-10T10:00:00Z' },
+          { sentAt: '2026-02-10T12:00:00Z' },
+          { sentAt: '2026-02-10T10:00:00Z' },
         ],
       };
       topicRepo.findOne.mockResolvedValue(topic);
 
       const result = await service.findOne(1);
-      expect(result.topic_id).toBe(1);
+      expect(result.idForumTopic).toBe(1);
       // Messages should be sorted ascending
       expect(
-        new Date(result.messages[0].sent_at).getTime(),
-      ).toBeLessThanOrEqual(new Date(result.messages[1].sent_at).getTime());
+        new Date(result.messages[0].sentAt).getTime(),
+      ).toBeLessThanOrEqual(new Date(result.messages[1].sentAt).getTime());
     });
 
     it('should throw NotFoundException if topic not found', async () => {
@@ -139,7 +139,7 @@ describe('ForumTopicService', () => {
 
   describe('update()', () => {
     it('should update topic title with content filtering', async () => {
-      const topic = { topic_id: 1, title: 'Old Title', messages: [] };
+      const topic = { idForumTopic: 1, title: 'Old Title', messages: [] };
       topicRepo.findOne.mockResolvedValue(topic);
       topicRepo.save.mockResolvedValue({ ...topic, title: 'New Title' });
 
@@ -150,7 +150,7 @@ describe('ForumTopicService', () => {
     });
 
     it('should reject bad title on update', async () => {
-      const topic = { topic_id: 1, title: 'Old', messages: [] };
+      const topic = { idForumTopic: 1, title: 'Old', messages: [] };
       topicRepo.findOne.mockResolvedValue(topic);
       contentFilter.validate.mockResolvedValue({
         ok: false,
@@ -167,21 +167,21 @@ describe('ForumTopicService', () => {
 
   describe('lockTopic()', () => {
     it('should toggle lock on a topic', async () => {
-      const topic = { topic_id: 1, is_locked: false, messages: [] };
+      const topic = { idForumTopic: 1, isLocked: false, messages: [] };
       topicRepo.findOne.mockResolvedValue(topic);
       topicRepo.save.mockImplementation(async (t) => t);
 
       const result = await service.lockTopic(1);
-      expect(result.is_locked).toBe(true);
+      expect(result.isLocked).toBe(true);
     });
 
     it('should unlock an already locked topic', async () => {
-      const topic = { topic_id: 1, is_locked: true, messages: [] };
+      const topic = { idForumTopic: 1, isLocked: true, messages: [] };
       topicRepo.findOne.mockResolvedValue(topic);
       topicRepo.save.mockImplementation(async (t) => t);
 
       const result = await service.lockTopic(1);
-      expect(result.is_locked).toBe(false);
+      expect(result.isLocked).toBe(false);
     });
   });
 
@@ -189,12 +189,12 @@ describe('ForumTopicService', () => {
 
   describe('pinTopic()', () => {
     it('should toggle pin on a topic', async () => {
-      const topic = { topic_id: 1, is_pinned: false, messages: [] };
+      const topic = { idForumTopic: 1, isPinned: false, messages: [] };
       topicRepo.findOne.mockResolvedValue(topic);
       topicRepo.save.mockImplementation(async (t) => t);
 
       const result = await service.pinTopic(1);
-      expect(result.is_pinned).toBe(true);
+      expect(result.isPinned).toBe(true);
     });
   });
 
@@ -202,7 +202,7 @@ describe('ForumTopicService', () => {
 
   describe('moderatorRemove()', () => {
     it('should remove topic as moderator', async () => {
-      const topic = { topic_id: 1, messages: [] };
+      const topic = { idForumTopic: 1, messages: [] };
       topicRepo.findOne.mockResolvedValue(topic);
       topicRepo.remove.mockResolvedValue(topic);
 

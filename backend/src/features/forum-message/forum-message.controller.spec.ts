@@ -39,12 +39,12 @@ describe('ForumMessageController', () => {
 
   describe('create()', () => {
     it('should delegate to service.create', async () => {
-      const dto = { content: 'Hello', idUser: 1, topicId: 1 };
-      service.create.mockResolvedValue({ message_id: 1, content: 'Hello' });
+      const dto = { content: 'Hello', idForumMessage: 1, topicId: 1 };
+      service.create.mockResolvedValue({ idForumMessage: 1, content: 'Hello' });
 
       const result = await controller.create(dto as any);
       expect(service.create).toHaveBeenCalledWith(dto);
-      expect(result.message_id).toBe(1);
+      expect(result.idForumMessage).toBe(1);
     });
   });
 
@@ -52,7 +52,7 @@ describe('ForumMessageController', () => {
 
   describe('findAll()', () => {
     it('should return all messages when no topicId', async () => {
-      service.findAll.mockResolvedValue([{ message_id: 1 }]);
+      service.findAll.mockResolvedValue([{ idForumMessage: 1 }]);
 
       const result = await controller.findAll(undefined);
       expect(service.findAll).toHaveBeenCalled();
@@ -60,7 +60,7 @@ describe('ForumMessageController', () => {
     });
 
     it('should filter by topicId when provided', async () => {
-      service.findByTopic.mockResolvedValue([{ message_id: 2 }]);
+      service.findByTopic.mockResolvedValue([{ idForumMessage: 2 }]);
 
       const result = await controller.findAll('5');
       expect(service.findByTopic).toHaveBeenCalledWith(5);
@@ -72,11 +72,11 @@ describe('ForumMessageController', () => {
 
   describe('findOne()', () => {
     it('should return a single message', async () => {
-      service.findOne.mockResolvedValue({ message_id: 3 });
+      service.findOne.mockResolvedValue({ idForumMessage: 3 });
 
       const result = await controller.findOne('3');
       expect(service.findOne).toHaveBeenCalledWith(3);
-      expect(result.message_id).toBe(3);
+      expect(result.idForumMessage).toBe(3);
     });
   });
 
@@ -86,7 +86,7 @@ describe('ForumMessageController', () => {
     it('should delegate to service.update', async () => {
       const dto = { content: 'Updated content' };
       service.update.mockResolvedValue({
-        message_id: 1,
+        idForumMessage: 1,
         content: 'Updated content',
       });
 

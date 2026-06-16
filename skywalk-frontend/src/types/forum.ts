@@ -12,6 +12,7 @@ export type TopicCategory = typeof TopicCategoryValues[keyof typeof TopicCategor
 export interface ForumTopic {
   topic_id: number;
   title: string;
+  content: string;
   category?: TopicCategory;
   created_at: string;
   views_count?: number;
@@ -41,6 +42,7 @@ export interface ForumMessage {
     idUser: number;
     fullName: string;
     email: string;
+    roles?: string;
   };
 }
 
@@ -53,8 +55,8 @@ export interface CreateForumTopicDto {
   title: string;
   content: string; 
   category?: TopicCategory;
-  idUser: number;
-  idCountry?: number;
+  userId: number;
+  countryId?: number;
 }
 
 export interface UpdateForumTopicDto {
@@ -66,8 +68,8 @@ export interface UpdateForumTopicDto {
 
 export interface CreateForumMessageDto {
   content: string;
-  idTopic: number;
-  idUser: number;
+  topicId: number;
+  userId: number;
 }
 
 
@@ -116,9 +118,9 @@ export interface ForumReport {
 }
 
 export interface CreateReportDto {
-  idReporter: number;
-  idMessage?: number;
-  idTopic?: number;
+  reporterId: number;
+  messageId?: number;
+  topicId?: number;
   reason: ReportReason;
   details?: string;
 }

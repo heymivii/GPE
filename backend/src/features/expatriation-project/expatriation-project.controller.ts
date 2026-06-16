@@ -14,11 +14,10 @@ import {
 import { ExpatriationProjectService } from './expatriation-project.service';
 import { CreateExpatriationProjectDto } from './dto/create-expatriation-project.dto';
 import { UpdateExpatriationProjectDto } from './dto/update-expatriation-project.dto';
-import { UpdateChecklistProgressDto } from './dto/update-checklist-progress.dto';
-import { CompleteProjectDto } from './dto/complete-project.dto';
-import { CancelProjectDto } from './dto/cancel-project.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
 
 @ApiTags('Expatriation Project')
 @Controller('expatriation-project')
@@ -66,44 +65,24 @@ export class ExpatriationProjectController {
     await this.projectService.remove(+id, req.user.userId);
   }
 
-  @Post(':id/complete')
-  async completeProject(
-    @Request() req,
+  // --- Admin Routes ---
+
+  @ApiOperation({ summary: 'List all expatriation projects (Admin only)' })
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  @Get('admin/all')
+  async adminFindAll() {
+    return await this.projectService.findAll();
+  }
+
+  @ApiOperation({ summary: 'Update any expatriation project (Admin only)' })
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  @Patch('admin/:id')
+  async adminUpdate(
     @Param('id') id: string,
-    @Body() dto: CompleteProjectDto,
+    @Body() updateDto: UpdateExpatriationProjectDto,
   ) {
-    return await this.projectService.completeProject(+id, req.user.userId, dto);
-  }
-
-  @Post(':id/cancel')
-  async cancelProject(
-    @Request() req,
-    @Param('id') id: string,
-    @Body() dto: CancelProjectDto,
-  ) {
-    return await this.projectService.cancelProject(+id, req.user.userId, dto);
-  }
-
-  @Post(':id/reactivate')
-  async reactivateProject(@Request() req, @Param('id') id: string) {
-    return await this.projectService.reactivateProject(+id, req.user.userId);
-  }
-
-  @Post(':id/checklist')
-  async updateChecklistProgress(
-    @Request() req,
-    @Param('id') id: string,
-    @Body() dto: UpdateChecklistProgressDto,
-  ) {
-    return await this.projectService.updateChecklistProgress(
-      +id,
-      req.user.userId,
-      dto,
-    );
-  }
-
-  @Get(':id/checklist')
-  async getChecklistProgress(@Request() req, @Param('id') id: string) {
-    return await this.projectService.getChecklistProgress(+id, req.user.userId);
+    return await this.projectService.adminUpdate(+id, updateDto);
   }
 }

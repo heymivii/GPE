@@ -9,6 +9,7 @@ jest.mock('bcrypt');
 
 const mockUserRepo = () => ({
   find: jest.fn(),
+  findAndCount: jest.fn(),
   findOne: jest.fn(),
   create: jest.fn(),
   save: jest.fn(),
@@ -49,7 +50,7 @@ describe('UserService', () => {
     it('should create a new user with hashed password', async () => {
       repo.findOne.mockResolvedValue(null);
       (bcrypt.hash as jest.Mock).mockResolvedValue('hashed-pw');
-      const created = { idUser: 1, ...dto, passwordHash: 'hashed-pw' };
+      const created = { idUser: 1, ...dto, password: 'hashed-pw' };
       repo.create.mockReturnValue(created);
       repo.save.mockResolvedValue(created);
 
@@ -59,7 +60,7 @@ describe('UserService', () => {
       expect(repo.create).toHaveBeenCalledWith(
         expect.objectContaining({
           email: 'john@test.com',
-          passwordHash: 'hashed-pw',
+          password: 'hashed-pw',
         }),
       );
       expect(result.idUser).toBe(1);
@@ -78,11 +79,11 @@ describe('UserService', () => {
 
   describe('findAll()', () => {
     it('should return all users with relations', async () => {
-      repo.find.mockResolvedValue([{ idUser: 1 }, { idUser: 2 }]);
+      repo.findAndCount.mockResolvedValue([[{ idUser: 1 }, { idUser: 2 }], 2]);
 
-      const result = await service.findAll();
-      expect(result).toHaveLength(2);
-      expect(repo.find).toHaveBeenCalledWith(
+      const result = await service.findAll({});
+      expect(result.data).toHaveLength(2);
+      expect(repo.findAndCount).toHaveBeenCalledWith(
         expect.objectContaining({ relations: ['originCountry'] }),
       );
     });
@@ -140,24 +141,24 @@ describe('UserService', () => {
         idUser: 1,
         firstName: 'A',
         lastName: 'B',
-        passwordHash: 'old',
+        password: 'old',
       };
       repo.findOne.mockResolvedValue(user);
       (bcrypt.hash as jest.Mock).mockResolvedValue('new-hashed');
       repo.save.mockImplementation(async (u) => u);
 
       const result = await service.update(1, { password: 'NewPass1' } as any);
-      expect(result.passwordHash).toBe('new-hashed');
+      expect(result.password).toBe('new-hashed');
     });
 
-    it('should rebuild fullName when name changes', async () => {
+    it('should update firstName when name changes', async () => {
       const user = { idUser: 1, firstName: 'Old', lastName: 'Name' };
       repo.findOne.mockResolvedValue(user);
       repo.save.mockImplementation(async (u) => u);
 
       await service.update(1, { firstName: 'New' } as any);
       expect(repo.save).toHaveBeenCalledWith(
-        expect.objectContaining({ fullName: expect.any(String) }),
+        expect.objectContaining({ firstName: 'New' }),
       );
     });
   });

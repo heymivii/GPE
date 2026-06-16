@@ -55,5 +55,6 @@ export class RegisterDto {
 
   @IsOptional()
   @IsInt()
-  idOriginCountry?: number;
+  countryOriginId?: number;
+
 }

@@ -9,6 +9,7 @@ import * as bcrypt from 'bcrypt';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { PaginationDto, PaginatedResponseDto } from '../../common/dto/pagination.dto';
 
 @Injectable()
 export class UserService {
@@ -28,30 +29,38 @@ export class UserService {
 
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
 
-    const fullName = `${createUserDto.firstName} ${createUserDto.lastName}`;
-
     const user = this.userRepository.create({
       firstName: createUserDto.firstName,
       lastName: createUserDto.lastName,
-      fullName: fullName,
       email: createUserDto.email,
-      passwordHash: hashedPassword,
+      password: hashedPassword,
       age: createUserDto.age,
-      status: createUserDto.status,
-      languageLevel: createUserDto.languageLevel,
-      motherTongue: createUserDto.motherTongue,
-      spokenLanguages: createUserDto.spokenLanguages,
-      idOriginCountry: createUserDto.idOriginCountry,
-      userRole: 'user',
+      countryOriginId: createUserDto.countryOriginId,
+      roles: 'user',
     });
 
     return await this.userRepository.save(user);
   }
 
-  async findAll(): Promise<User[]> {
-    return await this.userRepository.find({
+
+  async findAll(paginationDto: PaginationDto): Promise<PaginatedResponseDto<User>> {
+    const { page = 1, limit = 10 } = paginationDto;
+    const skip = (page - 1) * limit;
+
+    const [users, total] = await this.userRepository.findAndCount({
       relations: ['originCountry'],
+      skip,
+      take: limit,
+      order: { idUser: 'DESC' },
     });
+
+    return {
+      data: users,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
   }
 
   async findOne(id: number): Promise<User> {
@@ -76,18 +85,11 @@ export class UserService {
   async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
     const user = await this.findOne(id);
 
-    if (updateUserDto.firstName || updateUserDto.lastName) {
-      const firstName = updateUserDto.firstName || user.firstName || '';
-      const lastName = updateUserDto.lastName || user.lastName || '';
-      updateUserDto['fullName'] = `${firstName} ${lastName}`.trim();
+    if (updateUserDto.password) {
+      updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
     }
 
-    if (updateUserDto.password) {
-      const hashedPassword = await bcrypt.hash(updateUserDto.password, 10);
-      Object.assign(user, { ...updateUserDto, passwordHash: hashedPassword });
-    } else {
-      Object.assign(user, updateUserDto);
-    }
+    Object.assign(user, updateUserDto);
 
     return await this.userRepository.save(user);
   }
@@ -95,5 +97,10 @@ export class UserService {
   async remove(id: number): Promise<void> {
     const user = await this.findOne(id);
     await this.userRepository.remove(user);
+  }
+
+  async getStats(): Promise<{ totalUsers: number }> {
+    const totalUsers = await this.userRepository.count();
+    return { totalUsers };
   }
 }

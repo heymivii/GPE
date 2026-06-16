@@ -31,10 +31,11 @@ export class GlobalSearchService {
   }
 
   async refreshIndex(): Promise<void> {
-    await this.dataSource.query(
-      'REFRESH MATERIALIZED VIEW global_search_index',
-    );
-    this.logger.log('global_search_index materialized view refreshed');
+    // Force le recalcul du search_vector sur toutes les lignes via le trigger BEFORE UPDATE
+    await this.dataSource.query(`
+      UPDATE "global_search_index" SET "title" = "title"
+    `);
+    this.logger.log('global_search_index search vectors refreshed');
   }
 
   private buildTsQuery(raw: string): string {
@@ -99,9 +100,8 @@ export class GlobalSearchService {
 
     if (!category || category === 'country') {
       const countries = await this.dataSource.query(
-        `SELECT id_country::text AS "entityId", country_name AS title, 
-                COALESCE(visa_info,'') AS description, flag_url AS "imageUrl"
-         FROM country WHERE country_name ILIKE $1 LIMIT $2`,
+        `SELECT id::text AS "entityId", name AS title
+         FROM country WHERE name ILIKE $1 LIMIT $2`,
         [like, limit],
       );
       for (const c of countries) {
@@ -109,11 +109,11 @@ export class GlobalSearchService {
           category: 'country',
           entityId: c.entityId,
           title: c.title,
-          description: c.description,
+          description: '',
           extra: '',
           url: null,
           countryName: c.title,
-          imageUrl: c.imageUrl,
+          imageUrl: null,
           rank: 1,
         });
       }
@@ -121,11 +121,10 @@ export class GlobalSearchService {
 
     if (!category || category === 'city') {
       const cities = await this.dataSource.query(
-        `SELECT ci.id_city::text AS "entityId", ci.city_name AS title,
-                COALESCE(ci.description,'') AS description, ci.image_url AS "imageUrl",
-                co.country_name AS "countryName"
-         FROM city ci JOIN country co ON co.id_country = ci.id_country
-         WHERE ci.city_name ILIKE $1 OR co.country_name ILIKE $1
+        `SELECT ci.id::text AS "entityId", ci.name AS title,
+                ci.image_url AS "imageUrl", co.name AS "countryName"
+         FROM city ci JOIN country co ON co.id = ci.country_id
+         WHERE ci.name ILIKE $1 OR co.name ILIKE $1
          LIMIT $2`,
         [like, limit],
       );
@@ -134,62 +133,12 @@ export class GlobalSearchService {
           category: 'city',
           entityId: c.entityId,
           title: c.title,
-          description: c.description,
+          description: '',
           extra: c.countryName,
           url: null,
           countryName: c.countryName,
           imageUrl: c.imageUrl,
           rank: 0.5,
-        });
-      }
-    }
-
-    if (!category || category === 'guide') {
-      const guides = await this.dataSource.query(
-        `SELECT g.guide_id::text AS "entityId", g.title,
-                COALESCE(LEFT(g.content, 200),'') AS description,
-                co.country_name AS "countryName"
-         FROM guide g JOIN country co ON co.id_country = g.country_id
-         WHERE g.title ILIKE $1 OR g.content ILIKE $1
-         LIMIT $2`,
-        [like, limit],
-      );
-      for (const g of guides) {
-        results.push({
-          category: 'guide',
-          entityId: g.entityId,
-          title: g.title,
-          description: g.description,
-          extra: '',
-          url: null,
-          countryName: g.countryName,
-          imageUrl: null,
-          rank: 0.4,
-        });
-      }
-    }
-
-    if (!category || category === 'forum') {
-      const topics = await this.dataSource.query(
-        `SELECT ft.id_topic::text AS "entityId", ft.title,
-                COALESCE(ft.category,'') AS extra,
-                COALESCE(co.country_name,'') AS "countryName"
-         FROM forum_topic ft LEFT JOIN country co ON co.id_country = ft.id_country
-         WHERE ft.title ILIKE $1
-         LIMIT $2`,
-        [like, limit],
-      );
-      for (const t of topics) {
-        results.push({
-          category: 'forum',
-          entityId: t.entityId,
-          title: t.title,
-          description: '',
-          extra: t.extra,
-          url: null,
-          countryName: t.countryName,
-          imageUrl: null,
-          rank: 0.3,
         });
       }
     }

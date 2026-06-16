@@ -9,20 +9,23 @@ import { Country } from '../../country/entities/country.entity';
 
 @Entity({ name: 'admin_procedure' })
 export class AdminProcedure {
-  @PrimaryGeneratedColumn({ name: 'admin_procedure_id' })
-  admin_procedure_id: number;
+  @PrimaryGeneratedColumn({ name: 'id_admin_procedure' })
+  idAdminProcedure: number;
 
   @Column({ name: 'procedure_type', type: 'varchar', length: 100 })
-  procedure_type: string;
+  procedureType: string;
 
   @Column({ name: 'description', type: 'text', nullable: true })
   description?: string;
 
-  @Column({ name: 'required_documents', type: 'text', nullable: true })
-  required_documents?: string;
+  @Column({ name: 'category', type: 'varchar', nullable: true })
+  category?: string;
+
+  @Column({ name: 'step_order', type: 'integer', nullable: true })
+  stepOrder?: number;
 
   @Column({ name: 'average_delay_days', type: 'integer', nullable: true })
-  average_delay_days?: number;
+  averageDelayDays?: number;
 
   @ManyToOne(() => Country, { nullable: false })
   @JoinColumn({ name: 'country_id' })

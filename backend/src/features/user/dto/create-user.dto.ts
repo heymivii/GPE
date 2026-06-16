@@ -4,10 +4,8 @@ import {
   MinLength,
   IsOptional,
   IsInt,
-  IsEnum,
   Min,
   Max,
-  IsArray,
 } from 'class-validator';
 
 export class CreateUserDto {
@@ -28,35 +26,11 @@ export class CreateUserDto {
 
   @IsOptional()
   @IsInt()
-  @Min(18)
+  @Min(1)
   @Max(120)
   age?: number;
 
   @IsOptional()
-  @IsEnum([
-    'student',
-    'employee',
-    'self_employed',
-    'retired',
-    'unemployed',
-    'other',
-  ])
-  status?: string;
-
-  @IsOptional()
-  @IsEnum(['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'native'])
-  languageLevel?: string;
-
-  @IsOptional()
   @IsInt()
-  idOriginCountry?: number;
-
-  @IsOptional()
-  @IsString()
-  motherTongue?: string;
-
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  spokenLanguages?: string[];
+  countryOriginId?: number;
 }

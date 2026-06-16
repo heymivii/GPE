@@ -15,7 +15,7 @@ export interface ExpatriationProject {
   idProject: number;
   idUser: number;
   idDestinationCountry: number;
-  idDestinationCity?: number;
+  idDestinationCity?: number | null;
   idOriginCountry?: number;
   languageLevel?: string;
   travelType?: 'alone' | 'couple' | 'family' | 'friends' | 'other';
@@ -36,11 +36,13 @@ export interface ExpatriationProject {
   cancellationDetails?: string;
   createdAt: string;
   updatedAt: string;
+  destinationCity?: { id: number; name: string; slug: string } | null;
+  destinationCountry?: { idCountry: number; countryName: string; isoCode: string } | null;
 }
 
 export interface CreateExpatriationProjectDto {
   idDestinationCountry: number;
-  idDestinationCity?: number;
+  idDestinationCity?: number | null;
   idOriginCountry?: number;
   languageLevel?: string;
   travelType?: 'alone' | 'couple' | 'family' | 'friends' | 'other';

@@ -26,5 +26,5 @@ export class CreateNotificationDto {
 
   @IsNotEmpty()
   @IsNumber()
-  idUser: number;
+  userId: number;
 }

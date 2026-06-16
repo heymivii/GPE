@@ -1,8 +1,10 @@
+import { Country } from '../../country/entities/country.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
+  OneToMany,
 } from 'typeorm';
 
 @Entity('continent')
@@ -11,12 +13,12 @@ export class Continent {
   idContinent: number;
 
   @Column({
-    name: 'continent_name',
+    name: 'name',
     type: 'varchar',
     length: 100,
     unique: true,
   })
-  continentName: string;
+  name: string;
 
   @Column({
     name: 'iso_code',
@@ -29,4 +31,7 @@ export class Continent {
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
+
+  @OneToMany(() =>Country, (country)=> country.continent)
+  countries:Country[];
 }

@@ -50,9 +50,9 @@ export class ForumTopicService {
     const topic = this.forumTopicRepository.create({
       title: sanitizedTitle,
       category: createForumTopicDto.category,
-      user: { idUser: createForumTopicDto.idUser } as any,
-      country: createForumTopicDto.idCountry
-        ? ({ idCountry: createForumTopicDto.idCountry } as any)
+      user: { idUser: createForumTopicDto.userId } as any,
+      country: createForumTopicDto.countryId
+        ? ({ idCountry: createForumTopicDto.countryId } as any)
         : undefined,
     });
 
@@ -60,8 +60,8 @@ export class ForumTopicService {
 
     const initialMessage = this.forumMessageRepository.create({
       content: sanitizedContent,
-      topic: { topic_id: savedTopic.topic_id } as any,
-      user: { idUser: createForumTopicDto.idUser } as any,
+      topic: { idForumTopic: savedTopic.idForumTopic } as any,
+      user: { idUser: createForumTopicDto.userId } as any,
     });
 
     await this.forumMessageRepository.save(initialMessage);
@@ -71,13 +71,13 @@ export class ForumTopicService {
   async findAll(): Promise<ForumTopic[]> {
     return await this.forumTopicRepository.find({
       relations: ['user', 'country'],
-      order: { created_at: 'DESC' },
+      order: { createdAt: 'DESC' },
     });
   }
 
   async findOne(id: number): Promise<ForumTopic> {
     const topic = await this.forumTopicRepository.findOne({
-      where: { topic_id: id },
+      where: { idForumTopic: id },
       relations: ['user', 'country', 'messages', 'messages.user'],
     });
 
@@ -87,8 +87,8 @@ export class ForumTopicService {
 
     if (topic.messages && topic.messages.length > 0) {
       topic.messages.sort((a, b) => {
-        const dateA = new Date(a.sent_at).getTime();
-        const dateB = new Date(b.sent_at).getTime();
+        const dateA = new Date(a.sentAt).getTime();
+        const dateB = new Date(b.sentAt).getTime();
         return dateA - dateB;
       });
     }
@@ -135,8 +135,8 @@ export class ForumTopicService {
         );
 
         const firstMessage = await this.forumMessageRepository.findOne({
-          where: { topic: { topic_id: id } },
-          order: { sent_at: 'ASC' },
+          where: { topic: { idForumTopic: id } },
+          order: { sentAt: 'ASC' },
         });
 
         if (firstMessage) {
@@ -145,15 +145,15 @@ export class ForumTopicService {
         } else {
           const newMessage = this.forumMessageRepository.create({
             content: sanitizedContent,
-            topic: { topic_id: id } as any,
+            topic: { idForumTopic: id } as any,
             user: topic.user,
           });
           await this.forumMessageRepository.save(newMessage);
         }
       } else {
         const firstMessage = await this.forumMessageRepository.findOne({
-          where: { topic: { topic_id: id } },
-          order: { sent_at: 'ASC' },
+          where: { topic: { idForumTopic: id } },
+          order: { sentAt: 'ASC' },
         });
         if (firstMessage) {
           await this.forumMessageRepository.remove(firstMessage);
@@ -166,13 +166,13 @@ export class ForumTopicService {
 
   async lockTopic(id: number): Promise<ForumTopic> {
     const topic = await this.findOne(id);
-    topic.is_locked = !topic.is_locked;
+    topic.isLocked = !topic.isLocked;
     return this.forumTopicRepository.save(topic);
   }
 
   async pinTopic(id: number): Promise<ForumTopic> {
     const topic = await this.findOne(id);
-    topic.is_pinned = !topic.is_pinned;
+    topic.isPinned = !topic.isPinned;
     return this.forumTopicRepository.save(topic);
   }
 

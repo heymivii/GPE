@@ -9,22 +9,27 @@ import {
 export class CreateAdminProcedureDto {
   @IsNotEmpty()
   @IsString()
-  processType: string;
+  procedureType: string;
+
+  @IsOptional()
+  @IsString()
+  category?: string;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  stepOrder?: number;
 
   @IsOptional()
   @IsString()
   description?: string;
 
   @IsOptional()
-  @IsString()
-  requiredDocuments?: string;
-
-  @IsOptional()
   @IsNumber()
   @Min(0)
-  averageDuration?: number;
+  averageDelayDays?: number;
 
   @IsNotEmpty()
   @IsNumber()
-  idCountry: number;
+  countryId: number;
 }

@@ -40,7 +40,7 @@ export default function ProfilePage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [formData, setFormData] = useState<UpdateProfileDto>({});
 
-  const originCountry = countries.find(c => c.idCountry === profile?.idOriginCountry);
+  const originCountry = countries.find(c => c.idCountry === profile?.countryOriginId);
 
   const availableLanguages = useMemo(() => {
     const languages = new Set<string>()
@@ -63,7 +63,7 @@ export default function ProfilePage() {
         languageLevel: profile.languageLevel,
         motherTongue: profile.motherTongue,
         spokenLanguages: profile.spokenLanguages || [],
-        idOriginCountry: profile.idOriginCountry,
+        countryOriginId: profile.countryOriginId,
       });
       setIsEditing(true);
     }
@@ -395,8 +395,8 @@ export default function ProfilePage() {
                   <SelectField
                     id="originCountry"
                     label={t('profilePage.originCountry')}
-                    value={formData.idOriginCountry || ''}
-                    onChange={(e) => setFormData({ ...formData, idOriginCountry: parseInt(e.target.value) || undefined })}
+                    value={formData.countryOriginId || ''}
+                    onChange={(e) => setFormData({ ...formData, countryOriginId: parseInt(e.target.value) || undefined })}
                   >
                     <option value="">{t('profilePage.selectCountry')}</option>
                     {countries.map((country) => (

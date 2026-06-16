@@ -28,6 +28,10 @@ import { DestinationsModule } from './features/destinations/destinations.module'
 import { GlobalSearchModule } from './features/global-search/global-search.module';
 import { OecdMigrationModule } from './features/oecd-migration/oecd-migration.module';
 import { NewsletterModule } from './features/newsletter/newsletter.module';
+import { VisaRequirementModule } from './features/project/visa/visa-requirement.module';
+import { TravelTypeModule } from './features/project/travel-type/travel-type.module';
+
+import { AdminStatsModule } from './features/admin-stats/admin-stats.module';
 
 @Module({
   imports: [
@@ -63,6 +67,9 @@ import { NewsletterModule } from './features/newsletter/newsletter.module';
     GlobalSearchModule,
     OecdMigrationModule,
     NewsletterModule,
+    VisaRequirementModule,
+    TravelTypeModule,
+    AdminStatsModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
 })

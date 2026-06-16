@@ -11,5 +11,5 @@ export class CreateChecklistDto {
 
   @IsNotEmpty()
   @IsNumber()
-  idCountry: number;
+  countryId: number;
 }

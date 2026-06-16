@@ -16,46 +16,26 @@ export class User {
   @PrimaryGeneratedColumn({ name: 'id_user' })
   idUser: number;
 
-  @Column({ name: 'first_name', type: 'varchar', length: 50, nullable: true })
+  @Column({ name: 'firstname', type: 'varchar', length: 50, nullable: true })
   firstName?: string;
 
-  @Column({ name: 'last_name', type: 'varchar', length: 50, nullable: true })
+  @Column({ name: 'lastname', type: 'varchar', length: 50, nullable: true })
   lastName?: string;
-
-  @Column({ name: 'full_name', type: 'varchar', length: 100 })
-  fullName: string;
 
   @Column({ type: 'varchar', length: 255, unique: true })
   email: string;
 
-  @Column({ name: 'password_hash', type: 'varchar', length: 255 })
-  passwordHash: string;
+  @Column({ name: 'password', type: 'varchar', length: 255 })
+  password: string;
 
-  @Column({ name: 'user_role', type: 'varchar', length: 50, default: 'user' })
-  userRole: string;
+  @Column({ name: 'roles', type: 'varchar', length: 50, default: 'user' })
+  roles: string;
 
   @Column({ type: 'integer', nullable: true })
   age?: number;
 
-  @Column({ type: 'varchar', length: 50, nullable: true })
-  status?: string;
-
-  @Column({
-    name: 'language_level',
-    type: 'varchar',
-    length: 50,
-    nullable: true,
-  })
-  languageLevel?: string;
-
-  @Column({ name: 'mother_tongue', nullable: true })
-  motherTongue: string;
-
-  @Column('text', { name: 'spoken_languages', array: true, nullable: true })
-  spokenLanguages: string[];
-
-  @Column({ name: 'id_origin_country', nullable: true })
-  idOriginCountry?: number;
+  @Column({ name: 'country_origin_id', nullable: true })
+  countryOriginId?: number;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
@@ -64,7 +44,7 @@ export class User {
   updatedAt: Date;
 
   @ManyToOne(() => Country, { nullable: true })
-  @JoinColumn({ name: 'id_origin_country' })
+  @JoinColumn({ name: 'country_origin_id' })
   originCountry?: Country;
 
   @OneToMany(() => ProcedureTracking, (tracking) => tracking.user)

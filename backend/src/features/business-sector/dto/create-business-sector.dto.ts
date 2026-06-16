@@ -4,7 +4,7 @@ export class CreateBusinessSectorDto {
   @IsNotEmpty()
   @IsString()
   @MaxLength(100)
-  sectorName: string;
+  name: string;
 
   @IsOptional()
   @IsString()

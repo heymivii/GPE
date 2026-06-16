@@ -48,10 +48,13 @@ export default function DestinationStep({ data, isEditMode, onNext, onBack }: De
     enabled: !!selectedCountrySlug,
   });
 
-  const cityOptions = countryDetail?.cities?.map(city => ({
-    value: city.name,
-    label: city.name
-  })) || [];
+  const cityOptions = countryDetail?.cities?.map(city => {
+    const cityId = city.id || city.city_id;
+    return {
+      value: cityId ? cityId.toString() : city.name,
+      label: city.name
+    };
+  }) || [];
 
   useEffect(() => {
     if (data) {

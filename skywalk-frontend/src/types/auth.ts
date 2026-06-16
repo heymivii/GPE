@@ -12,7 +12,7 @@ export interface User {
   languageLevel?: string;
   motherTongue?: string;
   spokenLanguages?: string[];
-  idOriginCountry?: number;
+  countryOriginId?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -32,7 +32,7 @@ export interface RegisterDto {
   languageLevel?: string;
   motherTongue?: string;
   spokenLanguages?: string[];
-  idOriginCountry?: number;
+  countryOriginId?: number;
 }
 
 export interface UpdateProfileDto {
@@ -44,7 +44,7 @@ export interface UpdateProfileDto {
   languageLevel?: string;
   motherTongue?: string;
   spokenLanguages?: string[];
-  idOriginCountry?: number;
+  countryOriginId?: number;
   password?: string; 
 }
 

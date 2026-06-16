@@ -4,31 +4,31 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  CreateDateColumn,
 } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 
 @Entity({ name: 'notification' })
 export class Notification {
-  @PrimaryGeneratedColumn({ name: 'notification_id' })
-  notification_id: number;
+  @PrimaryGeneratedColumn({ name: 'id_notification' })
+  idNotification: number;
 
   @Column({ name: 'notif_type', type: 'varchar', length: 50 })
-  notif_type: string;
+  notifType: string;
 
   @Column({ name: 'message', type: 'text' })
   message: string;
 
   @Column({ name: 'is_read', type: 'boolean', default: false })
-  is_read: boolean;
+  isRead: boolean;
 
-  @Column({
-    name: 'sent_at',
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-  })
-  sent_at: Date;
+  @CreateDateColumn({ name: 'sent_at' })
+  sentAt: Date;
+
+  @Column({ name: 'user_id' })
+  userId: number;
 
   @ManyToOne(() => User, { nullable: false })
-  @JoinColumn({ name: 'id_user' })
+  @JoinColumn({ name: 'user_id' })
   user: User;
 }

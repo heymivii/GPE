@@ -26,8 +26,23 @@ interface ChecklistWidgetProps {
   currentSize?: WidgetSize;
 }
 
+interface ChecklistSubstep {
+  id: string;
+  label: string;
+  completed: boolean;
+  isOptional: boolean;
+}
+
+interface ChecklistItem {
+  id: string;
+  title: string;
+  completed: boolean;
+  category: string;
+  substeps: ChecklistSubstep[];
+}
+
 export default function ChecklistWidget({
-  countryData,
+  countryData: _countryData,
   projectId,
   onEdit,
   onHide,
@@ -41,31 +56,19 @@ export default function ChecklistWidget({
 
   const pendingRef = useRef<Set<string>>(new Set());
 
-  const checklist = useMemo(() => {
-    if (!countryData?.expatProjectTemplate) return [];
+  const checklist = useMemo<ChecklistItem[]>(() => {
+    if (!progress || !Array.isArray(progress)) return [];
 
-    return countryData.expatProjectTemplate.steps.map((step) => {
-      const stepId = step.id.toString();
-      const stepProgress = progress[stepId];
-
-      const substeps = step.substeps?.map((sub) => ({
-        ...sub,
-        completed: stepProgress?.substeps?.[sub.id]?.completed || false,
-      }));
-
-      const completed = substeps && substeps.length > 0
-        ? substeps.every((s) => s.completed)
-        : stepProgress?.completed || false;
-
+    return progress.map((t) => {
       return {
-        id: stepId,
-        title: step.title,
-        completed,
-        category: step.category,
-        substeps,
+        id: t.idProcedureTracking.toString(),
+        title: t.admin_procedure?.procedureType || '',
+        completed: t.status === 'completed',
+        category: t.admin_procedure?.category || 'other',
+        substeps: [],
       };
     });
-  }, [countryData, progress]);
+  }, [progress]);
 
   const toggleExpand = useCallback((id: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -85,15 +88,10 @@ export default function ChecklistWidget({
     const newCompleted = !item.completed;
 
     try {
-      if (item.substeps && item.substeps.length > 0) {
-        await Promise.all(
-          item.substeps.map((sub) =>
-            updateStep({ stepId: id, substepId: sub.id, completed: newCompleted })
-          )
-        );
-      } else {
-        await updateStep({ stepId: id, completed: newCompleted });
-      }
+      await updateStep({
+        trackingId: parseInt(id, 10),
+        status: newCompleted ? 'completed' : 'not_started',
+      });
     } catch (error) {
       console.error('Error updating step:', error);
     } finally {
@@ -102,33 +100,12 @@ export default function ChecklistWidget({
   }, [checklist, updateStep]);
 
   const toggleSubstep = useCallback(async (
-    itemId: string,
-    substepId: string,
+    _itemId: string,
+    _substepId: string,
     e: React.MouseEvent,
   ) => {
     e.stopPropagation();
-
-    const key = `${itemId}.${substepId}`;
-    if (pendingRef.current.has(key)) return;
-
-    const item = checklist.find((i) => i.id === itemId);
-    const substep = item?.substeps?.find((s) => s.id === substepId);
-    if (!substep) return;
-
-    pendingRef.current.add(key);
-
-    try {
-      await updateStep({
-        stepId: itemId,
-        substepId,
-        completed: !substep.completed,
-      });
-    } catch (error) {
-      console.error('Error updating substep:', error);
-    } finally {
-      pendingRef.current.delete(key);
-    }
-  }, [checklist, updateStep]);
+  }, []);
 
   const { totalSteps, completedSteps } = useMemo(() => {
     return checklist.reduce(
@@ -159,7 +136,7 @@ export default function ChecklistWidget({
     );
   }
 
-  if (!countryData || checklist.length === 0) {
+  if (checklist.length === 0) {
     return (
       <Widget title={t('dashboard.personalized.widgets.checklist.title')} onEdit={onEdit} onHide={onHide} onResize={onResize} currentSize={currentSize}>
         <div className="text-center py-8 text-gray-500">

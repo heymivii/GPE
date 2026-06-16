@@ -31,12 +31,12 @@ describe('ContinentController', () => {
     it('should create a continent', async () => {
       service.create.mockResolvedValue({
         idContinent: 1,
-        continentName: 'Europe',
+        name: 'Europe',
       });
       const result = await controller.create({
-        continentName: 'Europe',
+        name: 'Europe',
       } as any);
-      expect(result.continentName).toBe('Europe');
+      expect(result.name).toBe('Europe');
     });
   });
 
@@ -64,12 +64,12 @@ describe('ContinentController', () => {
     it('should update a continent', async () => {
       service.update.mockResolvedValue({
         idContinent: 1,
-        continentName: 'Updated',
+        name: 'Updated',
       });
       const result = await controller.update('1', {
-        continentName: 'Updated',
+        name: 'Updated',
       } as any);
-      expect(result.continentName).toBe('Updated');
+      expect(result.name).toBe('Updated');
     });
   });
 

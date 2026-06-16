@@ -85,11 +85,12 @@ export default function NewPostPage() {
         title: formData.title.trim(),
         content: formData.content.trim(),
         category: formData.category,
-        idUser: userId,
-        idCountry: formData.countryId,
+        userId: userId,
+        countryId: formData.countryId,
       });
 
-      navigate(`/forum/post/${newTopic.topic_id}`);
+      const topicId = (newTopic as any).idForumTopic ?? newTopic.topic_id;
+      navigate(`/forum/post/${topicId}`);
     } catch (error: unknown) {
       console.error('Erreur:', error);
       const axiosErr = error as { response?: { data?: { message?: string }; status?: number } };

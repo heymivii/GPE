@@ -18,15 +18,15 @@ export enum ReportReasonEnum {
 export class CreateReportDto {
   @IsNotEmpty()
   @IsNumber()
-  idReporter: number;
+  reporterId: number;
 
   @IsOptional()
   @IsNumber()
-  idMessage?: number;
+  messageId?: number;
 
   @IsOptional()
   @IsNumber()
-  idTopic?: number;
+  topicId?: number;
 
   @IsNotEmpty()
   @IsEnum(ReportReasonEnum)

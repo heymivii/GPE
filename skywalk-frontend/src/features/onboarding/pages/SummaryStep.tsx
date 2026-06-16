@@ -1,9 +1,12 @@
 import { useMemo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CheckCircle } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
 import SummaryCard from '../ui/SummaryCard'
 import WizardNav from '../components/WizardNav'
 import { COUNTRIES } from '../data/constants'
+import { destinationsApi } from '../../../api/destinations'
+import { SUPPORTED_COUNTRIES } from '../../../data/supportedCountries'
 
 interface AllStepsData {
   destination: {
@@ -57,12 +60,33 @@ export default function SummaryStep({ data, onBack, onEdit, onComplete, isSubmit
   const getMultipleTranslatedLabels = useCallback((prefix: string, values: string[]) =>
     values.map(v => getTranslatedLabel(prefix, v)).join(', '), [getTranslatedLabel])
 
+  const selectedCountrySlug = useMemo(() => {
+    return SUPPORTED_COUNTRIES.find(c => c.code === data.destination.toCountry)?.slug;
+  }, [data.destination.toCountry]);
+
+  const { data: countryDetail } = useQuery({
+    queryKey: ['destination', selectedCountrySlug],
+    queryFn: () => destinationsApi.getBySlug(selectedCountrySlug!),
+    enabled: !!selectedCountrySlug,
+  });
+
+  const targetCityName = useMemo(() => {
+    if (!data.destination.targetCity) return t('onboarding.summary.notSpecified');
+    const cityId = parseInt(data.destination.targetCity, 10);
+    if (!isNaN(cityId) && countryDetail?.cities) {
+      const city = countryDetail.cities.find(c => (c.id === cityId || c.city_id === cityId));
+      return city ? city.name : t('onboarding.summary.notSpecified');
+    }
+    // Fallback support for legacy drafts storing the name directly
+    return data.destination.targetCity;
+  }, [data.destination.targetCity, countryDetail, t]);
+
   const destinationItems = useMemo(() => [
     { label: t('onboarding.summary.fromCountry'), value: getCountryLabel(data.destination.fromCountry) },
     { label: t('onboarding.summary.toCountry'), value: getCountryLabel(data.destination.toCountry) },
-    { label: t('onboarding.summary.targetCity'), value: data.destination.targetCity || t('onboarding.summary.notSpecified') },
+    { label: t('onboarding.summary.targetCity'), value: targetCityName },
     { label: t('onboarding.summary.departureYear'), value: data.destination.departureYear }
-  ], [data.destination, t, getCountryLabel])
+  ], [data.destination, t, getCountryLabel, targetCityName])
 
   const profileItems = useMemo(() => [
     { label: t('onboarding.summary.age'), value: t('onboarding.summary.ageYears', { age: data.profile.age }) },

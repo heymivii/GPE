@@ -6,11 +6,15 @@ import {
   Body,
   UseGuards,
   Request,
+  Query,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { PaginationDto } from '../../common/dto/pagination.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiTags('User')
 @Controller('users')
@@ -22,7 +26,7 @@ export class UserController {
   async getProfile(@Request() req) {
     const user = await this.userService.findOne(req.user.userId);
 
-    const { passwordHash: _h1, ...result } = user;
+    const { password: _h1, ...result } = user;
     return result;
   }
 
@@ -34,14 +38,37 @@ export class UserController {
       updateUserDto,
     );
 
-    const { passwordHash: _h2, ...result } = updatedUser;
+    const { password: _h2, ...result } = updatedUser;
     return result;
   }
 
-  @UseGuards(JwtAuthGuard)
   @Delete('me')
   async deleteAccount(@Request() req) {
     await this.userService.remove(req.user.userId);
     return { message: 'Compte supprimé avec succès' };
+  }
+
+
+  @ApiOperation({ summary: 'List all users (Admin only)' })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @Get('admin/all')
+  async findAll(@Query() paginationDto: PaginationDto) {
+    const result = await this.userService.findAll(paginationDto);
+    return {
+      ...result,
+      data: result.data.map((user) => {
+        const { password: _pw, ...sanitized } = user;
+        return sanitized;
+      }),
+    };
+  }
+
+  @ApiOperation({ summary: 'Get user statistics (Admin only)' })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @Get('admin/stats')
+  async getStats() {
+    return this.userService.getStats();
   }
 }

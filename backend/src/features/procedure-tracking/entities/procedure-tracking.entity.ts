@@ -11,8 +11,8 @@ import { ExpatriationProject } from '../../expatriation-project/entities/expatri
 
 @Entity({ name: 'procedure_tracking' })
 export class ProcedureTracking {
-  @PrimaryGeneratedColumn({ name: 'tracking_id' })
-  tracking_id: number;
+  @PrimaryGeneratedColumn({ name: 'id_procedure_tracking' })
+  idProcedureTracking: number;
 
   @Column({
     name: 'status',
@@ -28,11 +28,11 @@ export class ProcedureTracking {
   @Column({ name: 'end_date', type: 'date', nullable: true })
   end_date?: string;
 
-  @Column({ name: 'comment', type: 'text', nullable: true })
-  comment?: string;
+  @Column({ name: 'comments', type: 'text', nullable: true })
+  comments: string | null;
 
   @ManyToOne(() => User, { nullable: false })
-  @JoinColumn({ name: 'id_user' })
+  @JoinColumn({ name: 'user_id' })
   user: User;
 
   @ManyToOne(() => AdminProcedure, { nullable: false })
@@ -40,6 +40,6 @@ export class ProcedureTracking {
   admin_procedure: AdminProcedure;
 
   @ManyToOne(() => ExpatriationProject, { nullable: false })
-  @JoinColumn({ name: 'id_project' })
+  @JoinColumn({ name: 'project_id' })
   project: ExpatriationProject;
 }

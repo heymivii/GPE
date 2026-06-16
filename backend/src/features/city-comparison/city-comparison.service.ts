@@ -1,26 +1,44 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { CityComparison } from './entities/city-comparison.entity';
 import { CreateCityComparisonDto } from './dto/create-city-comparison.dto';
-import { UpdateCityComparisonDto } from './dto/update-city-comparison.dto';
 
 @Injectable()
 export class CityComparisonService {
-  create(_createCityComparisonDto: CreateCityComparisonDto) {
-    return 'This action adds a new cityComparison';
+  constructor(
+    @InjectRepository(CityComparison)
+    private readonly cityComparisonRepository: Repository<CityComparison>,
+  ) {}
+
+  async create(userId: number, createDto: CreateCityComparisonDto): Promise<CityComparison> {
+    const comparison = this.cityComparisonRepository.create({
+      user: { idUser: userId } as any,
+      city: { idCity: createDto.cityId } as any,
+    });
+    return await this.cityComparisonRepository.save(comparison);
   }
 
-  findAll() {
-    return `This action returns all cityComparison`;
+  async findAllByUser(userId: number): Promise<CityComparison[]> {
+    return await this.cityComparisonRepository.find({
+      where: { user: { idUser: userId } },
+      relations: ['city', 'city.country'],
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} cityComparison`;
+  async findOne(id: number): Promise<CityComparison> {
+    const comparison = await this.cityComparisonRepository.findOne({
+      where: { idCityComparison: id },
+      relations: ['city', 'city.country', 'user'],
+    });
+    if (!comparison) {
+      throw new NotFoundException(`City comparison with ID ${id} not found`);
+    }
+    return comparison;
   }
 
-  update(id: number, _updateCityComparisonDto: UpdateCityComparisonDto) {
-    return `This action updates a #${id} cityComparison`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} cityComparison`;
+  async remove(id: number): Promise<void> {
+    const comparison = await this.findOne(id);
+    await this.cityComparisonRepository.remove(comparison);
   }
 }

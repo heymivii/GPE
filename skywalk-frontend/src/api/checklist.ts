@@ -1,36 +1,46 @@
 import api from '../lib/api';
 
-export interface ChecklistProgress {
-  [stepId: string]: {
-    completed: boolean;
-    completedAt?: string;
-    substeps?: {
-      [substepId: string]: {
-        completed: boolean;
-        completedAt?: string;
-      };
-    };
+export interface AdminProcedure {
+  idAdminProcedure: number;
+  procedureType: string;
+  description?: string;
+  category?: string;
+  stepOrder?: number;
+  averageDelayDays?: number;
+}
+
+export interface ProcedureTracking {
+  idProcedureTracking: number;
+  status: 'not_started' | 'in_progress' | 'completed' | 'blocked' | 'cancelled';
+  start_date?: string;
+  end_date?: string;
+  admin_procedure: AdminProcedure;
+  project: {
+    idProject: number;
   };
 }
 
 export interface UpdateChecklistDto {
-  stepId: string;
-  completed: boolean;
-  substepId?: string;
+  trackingId: number;
+  status: 'not_started' | 'in_progress' | 'completed' | 'blocked' | 'cancelled';
 }
 
 export const checklistApi = {
-  getProgress: async (projectId: number): Promise<ChecklistProgress> => {
-    const response = await api.get<ChecklistProgress>(
-      `/expatriation-project/${projectId}/checklist`,
+  getProgress: async (projectId: number): Promise<ProcedureTracking[]> => {
+    const response = await api.get<ProcedureTracking[]>(
+      `/procedure-tracking?projectId=${projectId}`,
     );
     return response.data;
   },
 
   updateProgress: async (
-    projectId: number,
-    dto: UpdateChecklistDto,
-  ): Promise<void> => {
-    await api.post(`/expatriation-project/${projectId}/checklist`, dto);
+    trackingId: number,
+    status: 'not_started' | 'in_progress' | 'completed' | 'blocked' | 'cancelled',
+  ): Promise<ProcedureTracking> => {
+    const response = await api.patch<ProcedureTracking>(
+      `/procedure-tracking/${trackingId}`,
+      { status },
+    );
+    return response.data;
   },
 };

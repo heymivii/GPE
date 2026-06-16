@@ -7,11 +7,11 @@ import {
 
 @Entity('business_sector')
 export class BusinessSector {
-  @PrimaryGeneratedColumn({ name: 'id_sector' })
-  idSector: number;
+  @PrimaryGeneratedColumn({ name: 'id_business_sector' })
+  idBusinessSector: number;
 
-  @Column({ name: 'sector_name', type: 'varchar', length: 100, unique: true })
-  sectorName: string;
+  @Column({ name: 'name', type: 'varchar', length: 100, unique: true })
+  name: string;
 
   @Column({ type: 'text', nullable: true })
   description?: string;

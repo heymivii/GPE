@@ -3,6 +3,7 @@ import {
   IsOptional,
   IsString,
   IsNumber,
+  IsBoolean,
   Min,
 } from 'class-validator';
 import { Type } from 'class-transformer';
@@ -10,7 +11,7 @@ import { Type } from 'class-transformer';
 export class CreateCityDto {
   @IsNotEmpty()
   @IsString()
-  cityName: string;
+  name: string;
 
   @IsOptional()
   @IsNumber()
@@ -27,7 +28,19 @@ export class CreateCityDto {
   @Min(0)
   population?: number;
 
+  @IsOptional()
+  @IsString()
+  timezone?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  isCapital?: boolean;
+
+  @IsOptional()
+  @IsString()
+  imageUrl?: string;
+
   @IsNotEmpty()
   @IsNumber()
-  idCountry: number;
+  countryId: number;
 }

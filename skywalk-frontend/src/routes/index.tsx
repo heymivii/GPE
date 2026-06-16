@@ -27,6 +27,14 @@ import ServicesIndexPage from '../features/services/pages/ServicesIndexPage';
 import CostOfLivingTestPage from '../features/cost-of-living/pages/CostOfLivingTestPage';
 import BlogPage from '../features/blog/pages/BlogPage';
 import BlogArticlePage from '../features/blog/pages/BlogArticlePage';
+import AdminRoute from '../components/AdminRoute';
+import AdminLayout from '../features/admin/components/AdminLayout';
+import AdminDashboard from '../features/admin/pages/AdminDashboard';
+import AdminProjects from '../features/admin/pages/AdminProjects';
+import AdminProcedures from '../features/admin/pages/AdminProcedures';
+import AdminContinents from '../features/admin/pages/AdminContinents';
+import AdminCountries from '../features/admin/pages/AdminCountries';
+import AdminCities from '../features/admin/pages/AdminCities';
 
 export const router = createBrowserRouter([
   {
@@ -119,6 +127,24 @@ export const router = createBrowserRouter([
         element: <MainLayout />,
         children: [
           { index: true, element: <ProfilePage /> },
+        ],
+      },
+    ],
+  },
+  {
+    element: <AdminRoute />,
+    children: [
+      {
+        path: '/admin',
+        element: <AdminLayout />,
+        children: [
+          { index: true, element: <Navigate to="/admin/dashboard" replace /> },
+          { path: 'dashboard', element: <AdminDashboard /> },
+          { path: 'projects', element: <AdminProjects /> },
+          { path: 'procedures', element: <AdminProcedures /> },
+          { path: 'continents', element: <AdminContinents /> },
+          { path: 'countries', element: <AdminCountries /> },
+          { path: 'cities', element: <AdminCities /> },
         ],
       },
     ],

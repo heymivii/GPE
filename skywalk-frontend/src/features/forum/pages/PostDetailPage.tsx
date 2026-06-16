@@ -113,8 +113,8 @@ export default function PostDetailPage() {
 
       await createMessage.mutateAsync({
         content: replyContent.trim(),
-        idTopic: topicId,
-        idUser: userId,
+        topicId: topicId,
+        userId: userId,
       });
 
       setReplyContent('');
@@ -207,9 +207,9 @@ export default function PostDetailPage() {
 
     try {
       await reportContent.mutateAsync({
-        idReporter: userId,
-        idMessage: reportTargetMessageId,
-        idTopic: reportTargetTopicId,
+        reporterId: userId,
+        messageId: reportTargetMessageId,
+        topicId: reportTargetTopicId,
         reason: reportReason,
         details: reportDetails || undefined,
       });

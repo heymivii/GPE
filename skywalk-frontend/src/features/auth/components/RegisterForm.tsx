@@ -38,7 +38,7 @@ export default function RegisterForm() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [age, setAge] = useState(initialAge);
-  const [idOriginCountry, setIdOriginCountry] = useState<number | undefined>();
+  const [countryOriginId, setCountryOriginId] = useState<number | undefined>();
   const [error, setError] = useState("");
 
   const { data: countries = [] } = useQuery({
@@ -96,7 +96,7 @@ export default function RegisterForm() {
       firstName: firstName.trim(),
       lastName: lastName.trim(),
       age: age ? parseInt(age) : undefined,
-      idOriginCountry,
+      countryOriginId,
     });
   };
 
@@ -174,8 +174,8 @@ export default function RegisterForm() {
           <select
             className="mt-1 w-full px-4 py-4 rounded-lg placeholder-black text-black"
             style={{ backgroundColor: "rgba(217, 217, 217, 0.4)" }}
-            value={idOriginCountry || ""}
-            onChange={(e) => setIdOriginCountry(e.target.value ? parseInt(e.target.value) : undefined)}
+            value={countryOriginId || ""}
+            onChange={(e) => setCountryOriginId(e.target.value ? parseInt(e.target.value) : undefined)}
             disabled={registerMutation.isPending}
           >
             <option value="">{t("auth.register.originCountry")}</option>

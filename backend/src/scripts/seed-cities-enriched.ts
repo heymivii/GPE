@@ -261,7 +261,7 @@ async function seedCities() {
 
     for (const target of targetCities) {
       console.log(`\nProcessing ${target.name} (${target.countryCode})...`);
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       const countryInfo = await restCountriesService.getCountryByCode(
         target.countryCode,
@@ -278,13 +278,7 @@ async function seedCities() {
         where: { isoCode: target.countryCode },
       });
 
-      if (country) {
-        country.flagUrl = countryInfo.flags.svg;
-        country.currency = Object.keys(countryInfo.currencies)[0];
-        country.language = Object.values(countryInfo.languages)[0];
-        await countryRepo.save(country);
-        console.log(`Updated country: ${country.countryName}`);
-      } else {
+      if (!country) {
         console.warn(
           `Country ${target.countryCode} does not exist in DB yet. Skipping city.`,
         );
@@ -304,14 +298,11 @@ async function seedCities() {
         console.log(`Updating existing city: ${city.name}`);
       }
 
-      city.slug = slugify(city.name, { lower: true, strict: true });
       city.latitude = target.latitude;
       city.longitude = target.longitude;
       city.population = target.population;
       city.timezone = target.timezone;
       city.isCapital = target.isCapital;
-      city.priority = target.priority;
-      city.description = target.description;
 
       const cityImages: Record<string, string> = {
         Paris:
@@ -332,7 +323,7 @@ async function seedCities() {
       await cityRepo.save(city);
       console.log(`✅ Successfully enriched ${city.name}`);
 
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+      await new Promise((resolve) => setTimeout(resolve, 500));
     }
 
     console.log('\n✨ Seeding completed successfully!');

@@ -1,26 +1,58 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Experience } from './entities/experience.entity';
 import { CreateExperienceDto } from './dto/create-experience.dto';
 import { UpdateExperienceDto } from './dto/update-experience.dto';
 
 @Injectable()
 export class ExperienceService {
-  create(_createExperienceDto: CreateExperienceDto) {
-    return 'This action adds a new experience';
+  constructor(
+    @InjectRepository(Experience)
+    private readonly experienceRepository: Repository<Experience>,
+  ) {}
+
+  async create(userId: number, createDto: CreateExperienceDto): Promise<Experience> {
+    const experience = this.experienceRepository.create({
+      ...createDto,
+      user: { idUser: userId } as any,
+      country: { idCountry: createDto.countryId } as any,
+    });
+    return await this.experienceRepository.save(experience);
   }
 
-  findAll() {
-    return `This action returns all experience`;
+  async findAll(): Promise<Experience[]> {
+    return await this.experienceRepository.find({
+      relations: ['user', 'country'],
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} experience`;
+  async findByCountry(countryId: number): Promise<Experience[]> {
+    return await this.experienceRepository.find({
+      where: { country: { idCountry: countryId } },
+      relations: ['user', 'country'],
+    });
   }
 
-  update(id: number, _updateExperienceDto: UpdateExperienceDto) {
-    return `This action updates a #${id} experience`;
+  async findOne(id: number): Promise<Experience> {
+    const experience = await this.experienceRepository.findOne({
+      where: { idExperience: id },
+      relations: ['user', 'country'],
+    });
+    if (!experience) {
+      throw new NotFoundException(`Experience with ID ${id} not found`);
+    }
+    return experience;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} experience`;
+  async update(id: number, updateDto: UpdateExperienceDto): Promise<Experience> {
+    const experience = await this.findOne(id);
+    Object.assign(experience, updateDto);
+    return await this.experienceRepository.save(experience);
+  }
+
+  async remove(id: number): Promise<void> {
+    const experience = await this.findOne(id);
+    await this.experienceRepository.remove(experience);
   }
 }

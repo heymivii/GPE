@@ -59,10 +59,10 @@ describe('ForumMessageService', () => {
   // ─── create() ──────────────────────────────────────────────────
 
   describe('create()', () => {
-    const dto = { content: 'Hello World', idTopic: 1, idUser: 42 };
+    const dto = { content: 'Hello World', topicId: 1, userId: 42 };
 
     it('should create a message with sanitized content', async () => {
-      const message = { message_id: 1, content: 'Hello World' };
+      const message = { idForumMessage: 1, content: 'Hello World' };
       messageRepo.create.mockReturnValue(message);
       messageRepo.save.mockResolvedValue(message);
 
@@ -103,7 +103,7 @@ describe('ForumMessageService', () => {
 
   describe('findOne()', () => {
     it('should return a message by id', async () => {
-      const message = { message_id: 1, content: 'test' };
+      const message = { idForumMessage: 1, content: 'test' };
       messageRepo.findOne.mockResolvedValue(message);
 
       const result = await service.findOne(1);
@@ -121,7 +121,7 @@ describe('ForumMessageService', () => {
 
   describe('update()', () => {
     it('should update message content with filtering', async () => {
-      const existing = { message_id: 1, content: 'old' };
+      const existing = { idForumMessage: 1, content: 'old' };
       messageRepo.findOne.mockResolvedValue(existing);
       messageRepo.save.mockResolvedValue({
         ...existing,
@@ -136,7 +136,7 @@ describe('ForumMessageService', () => {
     });
 
     it('should throw BadRequestException if updated content is rejected', async () => {
-      const existing = { message_id: 1, content: 'old' };
+      const existing = { idForumMessage: 1, content: 'old' };
       messageRepo.findOne.mockResolvedValue(existing);
       contentFilter.validate.mockResolvedValue({ ok: false, reason: 'spam' });
 
@@ -175,7 +175,7 @@ describe('ForumMessageService', () => {
 
   describe('moderatorRemove()', () => {
     it('should delete any message as moderator', async () => {
-      const message = { message_id: 5, content: 'to delete' };
+      const message = { idForumMessage: 5, content: 'to delete' };
       messageRepo.findOne.mockResolvedValue(message);
       messageRepo.delete.mockResolvedValue({ affected: 1 });
 
@@ -196,8 +196,8 @@ describe('ForumMessageService', () => {
 
   describe('createReport()', () => {
     const dto = {
-      idReporter: 1,
-      idMessage: 10,
+      reporterId: 1,
+      messageId: 10,
       reason: 'spam' as any,
       details: 'This is spam',
     };
@@ -265,8 +265,8 @@ describe('ForumMessageService', () => {
   describe('findByTopic()', () => {
     it('should return messages for a topic', async () => {
       const messages = [
-        { message_id: 1, content: 'first' },
-        { message_id: 2, content: 'second' },
+        { idForumMessage: 1, content: 'first' },
+        { idForumMessage: 2, content: 'second' },
       ];
       messageRepo.find.mockResolvedValue(messages);
 

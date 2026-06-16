@@ -84,14 +84,14 @@ export class CostOfLivingService {
       .createQueryBuilder('c')
       .innerJoinAndSelect('c.country', 'co')
       .where('LOWER(c.name) = LOWER(:cityName)', { cityName: city.trim() })
-      .andWhere('LOWER(co.countryName) = LOWER(:countryName)', {
+      .andWhere('LOWER(co.name) = LOWER(:countryName)', {
         countryName: normalizedCountry,
       })
       .getOne();
 
     if (cityEntity) {
       const cached = await this.cacheRepository.findOne({
-        where: { cityId: cityEntity.city_id },
+        where: { cityId: cityEntity.idCity },
       });
 
       if (cached && new Date(cached.expiresAt) > new Date()) {
@@ -139,7 +139,7 @@ export class CostOfLivingService {
     this.memSet(key, data);
 
     const resolvedCityId = cityEntity
-      ? cityEntity.city_id
+      ? cityEntity.idCity
       : await this.resolveOrCreateCity(city, normalizedCountry).catch((e) => {
         this.logger.warn(`Could not resolve/create city: ${e}`);
         return null;
@@ -159,9 +159,8 @@ export class CostOfLivingService {
   ): Promise<CleanedCostOfLivingData | null> {
     this.logger.log(`🔍 getCachedDataByCityId called with cityId=${cityId} (type: ${typeof cityId})`);
     const cached = await this.cacheRepository.findOne({ where: { cityId } });
-    this.logger.log(`🔍 cached result: ${cached ? `found (id=${cached.id}, cityId=${cached.cityId}, expires=${cached.expiresAt})` : 'NOT FOUND'}`);
+    this.logger.log(`🔍 cached result: ${cached ? `found (idCache=${cached.idCache}, cityId=${cached.cityId}, expires=${cached.expiresAt})` : 'NOT FOUND'}`);
     if (cached && new Date(cached.expiresAt) > new Date()) {
-      this.logger.log(`📦 DB Cache HIT for city_id=${cityId}, salary=${(cached.data as any)?.summary?.averageSalary}`);
       return cached.data as CleanedCostOfLivingData;
     }
     this.logger.warn(`⚠️ DB Cache MISS for city_id=${cityId}`);
@@ -219,6 +218,7 @@ export class CostOfLivingService {
           data,
           cachedAt: new Date(),
           expiresAt,
+          city: { idCity: cityId } as any,
         }),
       );
     }
@@ -371,21 +371,21 @@ export class CostOfLivingService {
       .createQueryBuilder('c')
       .innerJoinAndSelect('c.country', 'co')
       .where('LOWER(c.name) = LOWER(:cityName)', { cityName })
-      .andWhere('LOWER(co.countryName) = LOWER(:countryName)', { countryName })
+      .andWhere('LOWER(co.name) = LOWER(:countryName)', { countryName })
       .getOne();
 
-    if (existing) return existing.city_id;
+    if (existing) return existing.idCity;
 
     let countryEntity = await this.countryRepository.findOne({
-      where: { countryName },
+      where: { countryName: countryName },
     });
 
     if (!countryEntity) {
       countryEntity = await this.countryRepository.save(
-        this.countryRepository.create({ countryName, idContinent: 1 }),
+        this.countryRepository.create({ countryName: countryName, continentId: 1 }),
       );
       this.logger.log(
-        `🌍 Created country: ${countryName} (id=${countryEntity.idCountry})`,
+        `🌍 Created country: ${countryName} (idCountry=${countryEntity.idCountry})`,
       );
     }
 
@@ -393,12 +393,10 @@ export class CostOfLivingService {
       this.cityRepository.create({
         name: cityName,
         country: countryEntity,
-        slug: cityName.toLowerCase().replace(/\s+/g, '-'),
         isCapital: false,
-        priority: 0,
       }),
     );
-    this.logger.log(`🏙️ Created city: ${cityName} (id=${newCity.city_id})`);
-    return newCity.city_id;
+    this.logger.log(`🏙️ Created city: ${cityName} (idCity=${newCity.idCity})`);
+    return newCity.idCity;
   }
 }

@@ -2,20 +2,19 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
   ManyToOne,
   JoinColumn,
   OneToMany,
 } from 'typeorm';
 import { Continent } from '../../continent/entities/continent.entity';
-import { AdminProcedure } from '../../admin-procedure/entities/admin-procedure.entity';
+import { City } from '../../city/entities/city.entity';
 
 @Entity('country')
 export class Country {
   @PrimaryGeneratedColumn({ name: 'id_country' })
   idCountry: number;
 
-  @Column({ name: 'country_name', type: 'varchar', length: 100 })
+  @Column({ name: 'name', type: 'varchar', length: 100 })
   countryName: string;
 
   @Column({
@@ -27,28 +26,13 @@ export class Country {
   })
   isoCode?: string;
 
-  @Column({ type: 'varchar', length: 50, nullable: true })
-  currency?: string;
-
-  @Column({ type: 'varchar', length: 100, nullable: true })
-  language?: string;
-
-  @Column({ name: 'visa_info', type: 'text', nullable: true })
-  visaInfo?: string;
-
-  @Column({ name: 'flag_url', type: 'varchar', length: 255, nullable: true })
-  flagUrl?: string;
-
-  @Column({ name: 'id_continent' })
-  idContinent: number;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
+  @Column({ name: 'continent_id' })
+  continentId: number;
 
   @ManyToOne(() => Continent, { nullable: false })
-  @JoinColumn({ name: 'id_continent' })
+  @JoinColumn({ name: 'continent_id' })
   continent: Continent;
 
-  @OneToMany(() => AdminProcedure, (process) => process.country)
-  administrativeProcedures: AdminProcedure[];
+  @OneToMany(() => City, (city) => city.country)
+  cities: City[];
 }

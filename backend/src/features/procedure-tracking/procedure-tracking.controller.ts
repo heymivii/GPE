@@ -7,6 +7,8 @@ import {
   Param,
   Delete,
   UseGuards,
+  Request,
+  Query,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ProcedureTrackingService } from './procedure-tracking.service';
@@ -23,13 +25,22 @@ export class ProcedureTrackingController {
   ) {}
 
   @Post()
-  create(@Body() createProcedureTrackingDto: CreateProcedureTrackingDto) {
-    return this.procedureTrackingService.create(createProcedureTrackingDto);
+  create(
+    @Request() req,
+    @Body() createProcedureTrackingDto: CreateProcedureTrackingDto,
+  ) {
+    return this.procedureTrackingService.create(
+      req.user.userId,
+      createProcedureTrackingDto,
+    );
   }
 
   @Get()
-  findAll() {
-    return this.procedureTrackingService.findAll();
+  findAll(@Request() req, @Query('projectId') projectId?: string) {
+    return this.procedureTrackingService.findAllByUser(
+      req.user.userId,
+      projectId ? parseInt(projectId, 10) : undefined,
+    );
   }
 
   @Get(':id')

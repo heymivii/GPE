@@ -103,7 +103,6 @@ export class DestinationsService {
       where: {},
       relations: ['country'],
       order: {
-        priority: 'ASC',
         name: 'ASC',
       },
     });
@@ -113,9 +112,7 @@ export class DestinationsService {
     return this.cityRepository
       .createQueryBuilder('city')
       .leftJoinAndSelect('city.country', 'country')
-      .where('city.slug IS NOT NULL')
-      .orderBy('city.priority', 'ASC')
-      .addOrderBy('city.name', 'ASC')
+      .orderBy('city.name', 'ASC')
       .getMany();
   }
 
@@ -123,7 +120,7 @@ export class DestinationsService {
     const countries = await this.countryRepository
       .createQueryBuilder('country')
       .leftJoinAndSelect('country.continent', 'continent')
-      .orderBy('country.countryName', 'ASC')
+      .orderBy('country.name', 'ASC')
       .getMany();
 
     const [forumCounts, projectCounts, resourceCounts] = await Promise.all([
@@ -137,9 +134,9 @@ export class DestinationsService {
 
       this.expatriationProjectRepository
         .createQueryBuilder('ep')
-        .select('ep.id_destination_country', 'countryId')
+        .select('ep.destination_country_id', 'countryId')
         .addSelect('COUNT(*)', 'count')
-        .groupBy('ep.id_destination_country')
+        .groupBy('ep.destination_country_id')
         .getRawMany<{ countryId: number; count: string }>(),
 
       this.resourceRepository
@@ -237,14 +234,14 @@ export class DestinationsService {
     }
 
     const cities = await this.cityRepository.find({
-      where: { country: { idCountry: country.idCountry } },
-      order: { priority: 'ASC', name: 'ASC' },
+      where: { countryId: country.idCountry },
+      order: { name: 'ASC' },
     });
 
     const citiesWithCost = await Promise.all(
       cities.map(async (city) => {
         const cachedCostData =
-          await this.costOfLivingService.getCachedDataByCityId(city.city_id);
+          await this.costOfLivingService.getCachedDataByCityId(city.idCity);
         return {
           ...city,
           imageUrl:
@@ -278,7 +275,7 @@ export class DestinationsService {
           where: { country: { idCountry: country.idCountry } },
         }),
         this.expatriationProjectRepository.count({
-          where: { idDestinationCountry: country.idCountry },
+          where: { destinationCountryId: country.idCountry },
         }),
         adzunaCode
           ? this.adzunaService
@@ -297,7 +294,6 @@ export class DestinationsService {
       cities: citiesWithCost,
       costOfLiving: {
         averageHousing: averageHousingCost,
-        currency: country.currency || 'EUR',
       },
       stats: {
         memberCount,
@@ -309,13 +305,15 @@ export class DestinationsService {
   }
 
   async findOneBySlug(slug: string) {
+    // Note: slug column removed from City to match Drawio.
+    // Falling back to search by name for this method.
     const destination = await this.cityRepository.findOne({
-      where: { slug },
+      where: { name: slug },
       relations: ['country'],
     });
 
     if (!destination) {
-      throw new NotFoundException(`Destination with slug "${slug}" not found`);
+      throw new NotFoundException(`Destination "${slug}" not found`);
     }
 
     return destination;

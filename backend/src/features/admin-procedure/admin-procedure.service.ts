@@ -1,26 +1,61 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { AdminProcedure } from './entities/admin-procedure.entity';
 import { CreateAdminProcedureDto } from './dto/create-admin-procedure.dto';
 import { UpdateAdminProcedureDto } from './dto/update-admin-procedure.dto';
 
 @Injectable()
 export class AdminProcedureService {
-  create(_createAdminProcedureDto: CreateAdminProcedureDto) {
-    return 'This action adds a new adminProcedure';
+  constructor(
+    @InjectRepository(AdminProcedure)
+    private readonly adminProcedureRepository: Repository<AdminProcedure>,
+  ) {}
+
+  async create(createDto: CreateAdminProcedureDto): Promise<AdminProcedure> {
+    const procedure = this.adminProcedureRepository.create({
+      procedureType: createDto.procedureType,
+      category: createDto.category,
+      stepOrder: createDto.stepOrder,
+      description: createDto.description,
+      averageDelayDays: createDto.averageDelayDays,
+      country: { idCountry: createDto.countryId } as any,
+    });
+    return await this.adminProcedureRepository.save(procedure);
   }
 
-  findAll() {
-    return `This action returns all adminProcedure`;
+  async findAll(): Promise<AdminProcedure[]> {
+    return await this.adminProcedureRepository.find({
+      relations: ['country'],
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} adminProcedure`;
+  async findByCountry(countryId: number): Promise<AdminProcedure[]> {
+    return await this.adminProcedureRepository.find({
+      where: { country: { idCountry: countryId } },
+      relations: ['country'],
+    });
   }
 
-  update(id: number, _updateAdminProcedureDto: UpdateAdminProcedureDto) {
-    return `This action updates a #${id} adminProcedure`;
+  async findOne(id: number): Promise<AdminProcedure> {
+    const procedure = await this.adminProcedureRepository.findOne({
+      where: { idAdminProcedure: id },
+      relations: ['country'],
+    });
+    if (!procedure) {
+      throw new NotFoundException(`Procédure administrative avec l'ID ${id} introuvable`);
+    }
+    return procedure;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} adminProcedure`;
+  async update(id: number, updateDto: UpdateAdminProcedureDto): Promise<AdminProcedure> {
+    const procedure = await this.findOne(id);
+    Object.assign(procedure, updateDto);
+    return await this.adminProcedureRepository.save(procedure);
+  }
+
+  async remove(id: number): Promise<void> {
+    const procedure = await this.findOne(id);
+    await this.adminProcedureRepository.remove(procedure);
   }
 }

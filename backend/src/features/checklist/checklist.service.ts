@@ -1,26 +1,58 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Checklist } from './entities/checklist.entity';
 import { CreateChecklistDto } from './dto/create-checklist.dto';
 import { UpdateChecklistDto } from './dto/update-checklist.dto';
 
 @Injectable()
 export class ChecklistService {
-  create(_createChecklistDto: CreateChecklistDto) {
-    return 'This action adds a new checklist';
+  constructor(
+    @InjectRepository(Checklist)
+    private readonly checklistRepository: Repository<Checklist>,
+  ) {}
+
+  async create(createDto: CreateChecklistDto): Promise<Checklist> {
+    const checklist = this.checklistRepository.create({
+      title: createDto.title,
+      steps: createDto.steps,
+      country: { idCountry: createDto.countryId } as any,
+    });
+    return await this.checklistRepository.save(checklist);
   }
 
-  findAll() {
-    return `This action returns all checklist`;
+  async findAll(): Promise<Checklist[]> {
+    return await this.checklistRepository.find({
+      relations: ['country'],
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} checklist`;
+  async findByCountry(countryId: number): Promise<Checklist[]> {
+    return await this.checklistRepository.find({
+      where: { country: { idCountry: countryId } },
+      relations: ['country'],
+    });
   }
 
-  update(id: number, _updateChecklistDto: UpdateChecklistDto) {
-    return `This action updates a #${id} checklist`;
+  async findOne(id: number): Promise<Checklist> {
+    const checklist = await this.checklistRepository.findOne({
+      where: { idChecklist: id },
+      relations: ['country'],
+    });
+    if (!checklist) {
+      throw new NotFoundException(`Checklist with ID ${id} not found`);
+    }
+    return checklist;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} checklist`;
+  async update(id: number, updateDto: UpdateChecklistDto): Promise<Checklist> {
+    const checklist = await this.findOne(id);
+    Object.assign(checklist, updateDto);
+    return await this.checklistRepository.save(checklist);
+  }
+
+  async remove(id: number): Promise<void> {
+    const checklist = await this.findOne(id);
+    await this.checklistRepository.remove(checklist);
   }
 }
