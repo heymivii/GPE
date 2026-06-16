@@ -24,7 +24,9 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "migration:generate": "typeorm-ts-node-commonjs -d src/db/data-source.ts migration:generate",
     "migration:run": "typeorm-ts-node-commonjs -d src/db/data-source.ts migration:run",
-    "migration:create": "typeorm-ts-node-commonjs -d src/db/data-source.ts migration:create"
+    "migration:create": "typeorm-ts-node-commonjs -d src/db/data-source.ts migration:create",
+    "seed:cost-of-living:curated": "ts-node -r tsconfig-paths/register src/scripts/seed-cost-of-living-curated.ts",
+    "col:refresh": "ts-node -r tsconfig-paths/register src/scripts/refresh-cost-of-living.ts"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",

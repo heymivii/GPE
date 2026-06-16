@@ -7,6 +7,12 @@ import { CostOfLivingCache } from './entities/cost-of-living-cache.entity';
 import { City } from '../city/entities/city.entity';
 import { Country } from '../country/entities/country.entity';
 import { CleanedCostOfLivingData } from './types/cost-of-living.types';
+import {
+  fetchNumbeoHtml,
+  parseNumbeo,
+  CityRef,
+  CuratedData,
+} from './numbeo-parser';
 
 @Injectable()
 export class CostOfLivingService {
@@ -16,6 +22,17 @@ export class CostOfLivingService {
   private readonly BASE_URL = `https://${process.env.RAPIDAPI_HOST}`;
 
   private readonly CACHE_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+
+  // Curated (admin/Numbeo) entries are the source of truth, not a live-API cache →
+  // long expiry so the runtime never re-fetches the stale external API for them.
+  private readonly CURATED_TTL_MS = 10 * 365 * 24 * 60 * 60 * 1000;
+
+  private readonly CURRENCY_BY_COUNTRY: Record<string, string> = {
+    France: 'EUR',
+    'United States': 'USD',
+    Japan: 'JPY',
+    Switzerland: 'CHF',
+  };
 
   private readonly memCache = new Map<
     string,
@@ -46,7 +63,7 @@ export class CostOfLivingService {
     private readonly cityRepository: Repository<City>,
     @InjectRepository(Country)
     private readonly countryRepository: Repository<Country>,
-  ) { }
+  ) {}
 
   private memKey(city: string, country: string): string {
     return `${city.toLowerCase().trim()}::${country.toLowerCase().trim()}`;
@@ -141,9 +158,9 @@ export class CostOfLivingService {
     const resolvedCityId = cityEntity
       ? cityEntity.idCity
       : await this.resolveOrCreateCity(city, normalizedCountry).catch((e) => {
-        this.logger.warn(`Could not resolve/create city: ${e}`);
-        return null;
-      });
+          this.logger.warn(`Could not resolve/create city: ${e}`);
+          return null;
+        });
 
     if (resolvedCityId) {
       this.persistToDb(resolvedCityId, data).catch((e) =>
@@ -157,9 +174,13 @@ export class CostOfLivingService {
   async getCachedDataByCityId(
     cityId: number,
   ): Promise<CleanedCostOfLivingData | null> {
-    this.logger.log(`🔍 getCachedDataByCityId called with cityId=${cityId} (type: ${typeof cityId})`);
+    this.logger.log(
+      `🔍 getCachedDataByCityId called with cityId=${cityId} (type: ${typeof cityId})`,
+    );
     const cached = await this.cacheRepository.findOne({ where: { cityId } });
-    this.logger.log(`🔍 cached result: ${cached ? `found (idCache=${cached.idCache}, cityId=${cached.cityId}, expires=${cached.expiresAt})` : 'NOT FOUND'}`);
+    this.logger.log(
+      `🔍 cached result: ${cached ? `found (idCache=${cached.idCache}, cityId=${cached.cityId}, expires=${cached.expiresAt})` : 'NOT FOUND'}`,
+    );
     if (cached && new Date(cached.expiresAt) > new Date()) {
       return cached.data as CleanedCostOfLivingData;
     }
@@ -188,9 +209,13 @@ export class CostOfLivingService {
     const cleanedData = await this.fetchFromApi(cityName, countryName);
 
     // Validate that cleaned data actually contains valid figures before caching
-    const isInvalidData = !cleanedData.summary.averageSalary && !cleanedData.categories.housing.rent.oneBedroom.cityCenter.avg;
+    const isInvalidData =
+      !cleanedData.summary.averageSalary &&
+      !cleanedData.categories.housing.rent.oneBedroom.cityCenter.avg;
     if (isInvalidData) {
-      this.logger.warn(`Returned API data for ${cityName} is mostly empty/zeros. Not caching it.`);
+      this.logger.warn(
+        `Returned API data for ${cityName} is mostly empty/zeros. Not caching it.`,
+      );
       return cleanedData; // return it but don't cache
     }
 
@@ -225,6 +250,124 @@ export class CostOfLivingService {
     this.logger.log(
       `💾 Persisted cost-of-living for city_id=${cityId} (expires ${expiresAt.toISOString()})`,
     );
+  }
+
+  // Admin-triggered: fetch a city's cost of living from Numbeo, parse it deterministically
+  // (NO AI), and store it with a long expiry. Returns a small summary for the admin UI.
+  async fetchAndStoreCuratedCity(input: {
+    city: string;
+    country: string;
+    slug?: string;
+  }): Promise<{
+    cityId: number;
+    city: string;
+    country: string;
+    currency: string;
+    slug: string;
+    pricedFields: number;
+    rentAvg: number;
+    unavailable: string[];
+    summary: CleanedCostOfLivingData['summary'];
+  }> {
+    const country = this.validateCountry(input.country);
+    if (!country) {
+      throw new HttpException(
+        `Country '${input.country}' is not allowed. Allowed: France, USA, Japan, Switzerland.`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const cityName = input.city?.trim();
+    if (!cityName) {
+      throw new HttpException('city is required', HttpStatus.BAD_REQUEST);
+    }
+    const currency = this.CURRENCY_BY_COUNTRY[country] ?? 'EUR';
+    const slug = (input.slug?.trim() || cityName).replace(/\s+/g, '-');
+    const ref: CityRef = { city: cityName, country, currency, slug };
+
+    let html: string;
+    try {
+      html = await fetchNumbeoHtml(slug);
+    } catch (e) {
+      this.logger.error(`Numbeo fetch failed for "${slug}": ${e}`);
+      throw new HttpException(
+        `Could not fetch Numbeo for slug "${slug}". Check the Numbeo slug.`,
+        HttpStatus.BAD_GATEWAY,
+      );
+    }
+
+    const data: CuratedData = parseNumbeo(
+      html,
+      ref,
+      new Date().toISOString().slice(0, 10),
+    );
+
+    // Guard against a wrong slug returning a page with no usable prices.
+    const hasData =
+      !!data.summary.averageSalary ||
+      !!data.categories.housing.rent.oneBedroom.cityCenter.avg;
+    if (!hasData) {
+      throw new HttpException(
+        `No usable cost-of-living data parsed for "${slug}" — likely a wrong Numbeo slug.`,
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
+
+    const cityId = await this.resolveOrCreateCity(cityName, country);
+    await this.persistCurated(cityId, data);
+    this.memCache.delete(this.memKey(cityName, country));
+
+    this.logger.log(
+      `🌐 Admin curated ${cityName}, ${country} (city_id=${cityId}) from Numbeo`,
+    );
+    return {
+      cityId,
+      city: cityName,
+      country,
+      currency,
+      slug,
+      pricedFields: this.countPricedFields(data.categories),
+      rentAvg: data.categories.housing.rent.oneBedroom.cityCenter.avg,
+      unavailable: data.meta.unavailable ?? [],
+      summary: data.summary,
+    };
+  }
+
+  // Count populated price leaves (avg > 0) across all categories — a quick
+  // "how comprehensive is this snapshot" signal for the admin UI.
+  private countPricedFields(node: unknown): number {
+    if (node && typeof node === 'object') {
+      const rec = node as Record<string, unknown>;
+      if (typeof rec.avg === 'number') return rec.avg > 0 ? 1 : 0;
+      return Object.values(rec).reduce<number>(
+        (sum, v) => sum + this.countPricedFields(v),
+        0,
+      );
+    }
+    return 0;
+  }
+
+  private async persistCurated(
+    cityId: number,
+    data: CuratedData,
+  ): Promise<void> {
+    const expiresAt = new Date(Date.now() + this.CURATED_TTL_MS);
+    const existing = await this.cacheRepository.findOne({ where: { cityId } });
+    if (existing) {
+      existing.data = data;
+      existing.cachedAt = new Date();
+      existing.expiresAt = expiresAt;
+      await this.cacheRepository.save(existing);
+    } else {
+      await this.cacheRepository.save(
+        this.cacheRepository.create({
+          cityId,
+          data,
+          cachedAt: new Date(),
+          expiresAt,
+          city: { idCity: cityId } as any,
+        }),
+      );
+    }
   }
 
   private async fetchFromApi(
@@ -382,7 +525,10 @@ export class CostOfLivingService {
 
     if (!countryEntity) {
       countryEntity = await this.countryRepository.save(
-        this.countryRepository.create({ countryName: countryName, continentId: 1 }),
+        this.countryRepository.create({
+          countryName: countryName,
+          continentId: 1,
+        }),
       );
       this.logger.log(
         `🌍 Created country: ${countryName} (idCountry=${countryEntity.idCountry})`,

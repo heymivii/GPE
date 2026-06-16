@@ -126,11 +126,29 @@ export interface CleanedCostOfLivingData {
     };
 }
 
+export interface AdminFetchColResult {
+    cityId: number;
+    city: string;
+    country: string;
+    currency: string;
+    slug: string;
+    pricedFields: number;
+    rentAvg: number;
+    unavailable: string[];
+    summary: CleanedCostOfLivingData['summary'];
+}
+
 export const costOfLivingApi = {
     getCostOfLiving: async (city: string, country: string): Promise<CleanedCostOfLivingData> => {
         const response = await apiClient.get<CleanedCostOfLivingData>('/cost-of-living/search', {
             params: { city, country },
         });
+        return response.data;
+    },
+
+    // Admin: fetch & store a city's cost of living from Numbeo (deterministic parser, no AI).
+    adminFetch: async (input: { city: string; country: string; slug?: string }): Promise<AdminFetchColResult> => {
+        const response = await apiClient.post<AdminFetchColResult>('/cost-of-living/admin/fetch', input);
         return response.data;
     },
 };
