@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ForumTopicService } from './forum-topic.service';
@@ -32,44 +33,49 @@ export class ForumTopicController {
     return this.forumTopicService.findAll();
   }
 
+  @Get('stats')
+  getStats() {
+    return this.forumTopicService.getStats();
+  }
+
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.forumTopicService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.forumTopicService.findOne(id);
   }
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
   update(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateForumTopicDto: UpdateForumTopicDto,
   ) {
-    return this.forumTopicService.update(+id, updateForumTopicDto);
+    return this.forumTopicService.update(id, updateForumTopicDto);
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  remove(@Param('id') id: string) {
-    return this.forumTopicService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.forumTopicService.remove(id);
   }
 
   @Patch(':id/lock')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin', 'moderator')
-  lockTopic(@Param('id') id: string) {
-    return this.forumTopicService.lockTopic(+id);
+  lockTopic(@Param('id', ParseIntPipe) id: number) {
+    return this.forumTopicService.lockTopic(id);
   }
 
   @Patch(':id/pin')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin', 'moderator')
-  pinTopic(@Param('id') id: string) {
-    return this.forumTopicService.pinTopic(+id);
+  pinTopic(@Param('id', ParseIntPipe) id: number) {
+    return this.forumTopicService.pinTopic(id);
   }
 
   @Delete('moderate/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin', 'moderator')
-  moderatorRemove(@Param('id') id: string) {
-    return this.forumTopicService.moderatorRemove(+id);
+  moderatorRemove(@Param('id', ParseIntPipe) id: number) {
+    return this.forumTopicService.moderatorRemove(id);
   }
 }
