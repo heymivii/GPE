@@ -21,6 +21,7 @@ import { DestinationsPage } from '../features/destinations/pages/DestinationsPag
 import { DestinationDetailPage } from '../features/destinations/pages/DestinationDetailPage';
 import ProjectsPage from '../features/projects/pages/ProjectsPage';
 import ProjectDetailPage from '../features/projects/pages/ProjectDetailPage';
+import ChecklistPage from '../features/projects/pages/ChecklistPage'; // ✅ AJOUT
 import CountryComparison from '../features/comparison/pages/CountryComparison';
 import ServicePage from '../features/services/pages/ServicePage';
 import ServicesIndexPage from '../features/services/pages/ServicesIndexPage';
@@ -121,6 +122,7 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <ProjectsPage /> },
           { path: ':id', element: <ProjectDetailPage /> },
+          { path: ':id/checklist', element: <ChecklistPage /> }, // ✅ AJOUT
         ],
       },
       {
