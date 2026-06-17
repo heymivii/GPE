@@ -145,6 +145,10 @@ export const costOfLivingApi = {
         });
         return response.data;
     },
+    updateCostOfLiving: async (cityId: number, data: CleanedCostOfLivingData): Promise<CleanedCostOfLivingData> => {
+        const response = await apiClient.put<CleanedCostOfLivingData>(`/cost-of-living/${cityId}`, data);
+        return response.data;
+    },
 
     // Admin: fetch & store a city's cost of living from Numbeo (deterministic parser, no AI).
     adminFetch: async (input: { city: string; country: string; slug?: string }): Promise<AdminFetchColResult> => {

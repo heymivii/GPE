@@ -4,6 +4,8 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { typeOrmConfigAsync } from './config/typeorm.config';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 
 import { AuthModule } from './features/auth/auth.module';
 import { UserModule } from './features/user/user.module';
@@ -33,6 +35,7 @@ import { VisaRequirementModule } from './features/project/visa/visa-requirement.
 import { TravelTypeModule } from './features/project/travel-type/travel-type.module';
 
 import { AdminStatsModule } from './features/admin-stats/admin-stats.module';
+import { AdminLogModule } from './features/admin-log/admin-log.module';
 
 @Module({
   imports: [
@@ -72,7 +75,9 @@ import { AdminStatsModule } from './features/admin-stats/admin-stats.module';
     VisaRequirementModule,
     TravelTypeModule,
     AdminStatsModule,
+    AdminLogModule,
   ],
-  providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
+  controllers: [AppController],
+  providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
 export class AppModule { }

@@ -7,6 +7,8 @@ import {
   UseGuards,
   Request,
   Query,
+  Param,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { PaginationDto } from '../../common/dto/pagination.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -15,11 +17,15 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { AdminLogService } from '../admin-log/admin-log.service';
 
 @ApiTags('User')
 @Controller('users')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly adminLogService: AdminLogService,
+  ) {}
 
   @UseGuards(JwtAuthGuard)
   @Get('me')
@@ -62,6 +68,28 @@ export class UserController {
         return sanitized;
       }),
     };
+  }
+
+  @ApiOperation({ summary: 'Update user role (Admin only)' })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @Patch('admin/:id/role')
+  async updateRole(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('role') role: string,
+    @Request() req,
+  ) {
+    const targetUser = await this.userService.findOne(id);
+    const updatedUser = await this.userService.updateRole(id, role);
+    await this.adminLogService.log(
+      req.user.userId,
+      'UPDATE',
+      'User',
+      id.toString(),
+      `Changement de rôle de l'utilisateur "${targetUser.firstName || ''} ${targetUser.lastName || ''}" (${targetUser.email}) : "${targetUser.roles}" -> "${role}"`
+    );
+    const { password: _pw, ...result } = updatedUser;
+    return result;
   }
 
   @ApiOperation({ summary: 'Get user statistics (Admin only)' })

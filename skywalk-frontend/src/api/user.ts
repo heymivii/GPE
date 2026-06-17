@@ -15,4 +15,16 @@ export const userApi = {
   deleteAccount: async (): Promise<void> => {
     await apiClient.delete('/users/me');
   },
+
+  getUsersAdmin: async (page = 1, limit = 100): Promise<{ data: any[]; total: number }> => {
+    const response = await apiClient.get<any>('/users/admin/all', {
+      params: { page, limit },
+    });
+    return response.data;
+  },
+
+  updateUserRole: async (userId: number, role: string): Promise<any> => {
+    const response = await apiClient.patch<any>(`/users/admin/${userId}/role`, { role });
+    return response.data;
+  },
 };

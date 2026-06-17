@@ -11,6 +11,7 @@ export interface UpdateCountryDto {
   countryName?: string;
   isoCode?: string;
   continentId?: number;
+  status?: 'active' | 'archived';
 }
 
 export const countryApi = {

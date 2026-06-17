@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ResourceController } from './resource.controller';
 import { ResourceService } from './resource.service';
+import { AdminLogService } from '../admin-log/admin-log.service';
 
 describe('ResourceController', () => {
   let controller: ResourceController;
@@ -12,6 +13,10 @@ describe('ResourceController', () => {
         {
           provide: ResourceService,
           useValue: {},
+        },
+        {
+          provide: AdminLogService,
+          useValue: { log: jest.fn() },
         },
       ],
     }).compile();

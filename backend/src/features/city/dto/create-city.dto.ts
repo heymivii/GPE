@@ -4,6 +4,7 @@ import {
   IsString,
   IsNumber,
   IsBoolean,
+  IsIn,
   Min,
 } from 'class-validator';
 import { Type } from 'class-transformer';
@@ -35,6 +36,10 @@ export class CreateCityDto {
   @IsOptional()
   @IsBoolean()
   isCapital?: boolean;
+
+  @IsOptional()
+  @IsIn(['active', 'archived'])
+  status?: 'active' | 'archived';
 
   @IsOptional()
   @IsString()

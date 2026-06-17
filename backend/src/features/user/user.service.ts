@@ -99,6 +99,12 @@ export class UserService {
     await this.userRepository.remove(user);
   }
 
+  async updateRole(id: number, role: string): Promise<User> {
+    const user = await this.findOne(id);
+    user.roles = role;
+    return await this.userRepository.save(user);
+  }
+
   async getStats(): Promise<{ totalUsers: number }> {
     const totalUsers = await this.userRepository.count();
     return { totalUsers };
