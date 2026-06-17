@@ -318,7 +318,7 @@ export default function ChecklistPage() {
           <div className="space-y-2">
             {displaySteps.map((item) => {
               const isExpanded = expandedIds.has(item.id);
-              const deadline = getStepDeadline(item.daysBeforeDeparture, departureDate);
+
 
               return (
                 <div key={item.id} className="bg-white rounded-xl border border-gray-100 overflow-hidden">
