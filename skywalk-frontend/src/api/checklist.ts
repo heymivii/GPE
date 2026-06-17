@@ -7,6 +7,12 @@ export interface AdminProcedure {
   category?: string;
   stepOrder?: number;
   averageDelayDays?: number;
+  // ✅ Ajouts pour la checklist personnalisée
+  daysBeforeDeparture?: number;
+  onlyFor?: {
+    travelType?: string[];
+    objective?: string[];
+  } | null;
 }
 
 export interface ProcedureTracking {

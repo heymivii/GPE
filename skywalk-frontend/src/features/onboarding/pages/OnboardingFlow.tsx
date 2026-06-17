@@ -235,8 +235,7 @@ export default function OnboardingFlow() {
         try {
           await userApi.updateProfile({
             age: data.profile.age ? parseInt(data.profile.age) : undefined,
-            status: data.profile.status,
-            languageLevel: data.profile.languageLevel,
+            // status et languageLevel sauvegardés dans ExpatriationProject, pas sur User
             motherTongue: data.profile.motherTongue,
             spokenLanguages: data.profile.spokenLanguages,
             countryOriginId: originCountryId,

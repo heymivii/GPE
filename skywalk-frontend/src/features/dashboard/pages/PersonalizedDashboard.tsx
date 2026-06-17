@@ -300,6 +300,12 @@ export default function PersonalizedDashboard() {
             key={widgetId}
             countryData={countryData || null}
             projectId={activeProject?.idProject || 0}
+            project={{
+              travelType: activeProject?.travelType,
+              objective: activeProject?.mainObjective,
+              expectedDepartureDate: activeProject?.expectedDepartureDate,
+              idProject: activeProject?.idProject,
+            }}
             {...commonProps}
           />
         )

@@ -1,5 +1,5 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { useProject, useDeleteProject, useCompleteProject, useCancelProject, useReactivateProject } from '../hooks/useProjectMutations';
+import { useProject, useDeleteProject, useCompleteProject, useCancelProject, useReactivateProject, useUpdateProject } from '../hooks/useProjectMutations';
 import { useQuery } from '@tanstack/react-query';
 import { countryApi } from '../../../api/country';
 import { useState } from 'react';
@@ -53,6 +53,7 @@ export default function ProjectDetailPage() {
   const { mutate: deleteProject } = useDeleteProject();
   const { mutate: completeProject, isPending: isCompleting } = useCompleteProject();
   const { mutate: cancelProject, isPending: isCancelling } = useCancelProject();
+  const { mutate: updateProject } = useUpdateProject();
   const { mutate: reactivateProject, isPending: isReactivating } = useReactivateProject();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showCompleteModal, setShowCompleteModal] = useState(false);
@@ -63,6 +64,8 @@ export default function ProjectDetailPage() {
   const [cancelReason, setCancelReason] = useState('');
   const [cancelDetails, setCancelDetails] = useState('');
   const [deleteReason, setDeleteReason] = useState('');
+  const [showDateModal, setShowDateModal] = useState(false);
+  const [newDepartureDate, setNewDepartureDate] = useState('');
 
   const { data: country } = useQuery({
     queryKey: ['country', project?.idDestinationCountry],
@@ -170,6 +173,16 @@ export default function ProjectDetailPage() {
                   >
                     <CheckCircle2 className="w-4 h-4" />
                     {t('projectDetail.completeProject')}
+                  </button>
+                  <button
+                    onClick={() => {
+                      setNewDepartureDate(project.expectedDepartureDate?.split('T')[0] || '');
+                      setShowDateModal(true);
+                    }}
+                    className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
+                  >
+                    <Calendar className="w-4 h-4" />
+                    Date de départ
                   </button>
                   <button
                     onClick={() => navigate(`/onboarding/${project.idProject}`)}
@@ -633,4 +646,43 @@ export default function ProjectDetailPage() {
       )}
     </div>
   );
+      {/* ✅ Modale modification date de départ */}
+      {showDateModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setShowDateModal(false)}>
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md" onClick={e => e.stopPropagation()}>
+            <h3 className="text-lg font-bold text-gray-900 mb-4">📅 Date de départ</h3>
+            <p className="text-sm text-gray-500 mb-4">
+              Précisez votre date de départ pour voir les deadlines sur chaque étape de votre checklist.
+            </p>
+            <input
+              type="date"
+              value={newDepartureDate}
+              onChange={e => setNewDepartureDate(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-gray-900 mb-4"
+            />
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowDateModal(false)}
+                className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={() => {
+                  if (!newDepartureDate || !project) return;
+                  updateProject({
+                    projectId: project.idProject,
+                    data: { expectedDepartureDate: newDepartureDate }
+                  });
+                  setShowDateModal(false);
+                }}
+                className="flex-1 px-4 py-2.5 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-black"
+              >
+                Enregistrer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
 }
