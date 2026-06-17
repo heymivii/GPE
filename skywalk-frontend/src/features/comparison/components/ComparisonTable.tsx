@@ -11,7 +11,6 @@ import { ComparisonRowWithBar } from './rows/ComparisonRowWithBar'
 import { useTranslation } from 'react-i18next'
 import { useCurrency } from '../../../contexts/CurrencyContext'
 import { useMigrationData } from '../hooks/useMigrationData'
-import { useExchangeRates } from '../../../hooks/useExchangeRates'
 import { getLocale, SUPPORTED_COUNTRIES } from '../../../data/supportedCountries'
 
 interface ComparisonTableProps {
@@ -132,8 +131,6 @@ export default function ComparisonTable({ countries, isAuthenticated = true, all
   const { t, i18n } = useTranslation()
   const { displaySymbol, convert } = useCurrency()
   const { getByIso2 } = useMigrationData()
-  // Live USD-based FX table fed into convert() — the curated data ships empty rates.
-  const { rates: fxRates } = useExchangeRates()
   const colClass = countries.length === 2 ? 'grid-cols-2' : 'grid-cols-3'
   const locale = getLocale(i18n.language)
 
@@ -180,8 +177,8 @@ export default function ComparisonTable({ countries, isAuthenticated = true, all
   const convertAmount = useCallback((amount: number | undefined | null, country: EnrichedCountry): number | null => {
     if (amount == null) return null
     const src = country.sourceCurrencyCode || country.currency || 'EUR'
-    return convert(amount, src, fxRates)
-  }, [convert, fxRates])
+    return convert(amount, src)
+  }, [convert])
 
   const fmt = useCallback((amount: number | undefined | null, country: EnrichedCountry): string => {
     if (amount == null) return t('comparison.fields.notSpecified')
@@ -208,7 +205,7 @@ export default function ComparisonTable({ countries, isAuthenticated = true, all
     v == null ? t('comparison.fields.notSpecified') : `${v.toLocaleString(locale)} %`
   const fmtGdp = (v: number | null | undefined): string => {
     if (v == null) return t('comparison.fields.notSpecified')
-    const converted = convert(v, 'USD', fxRates)
+    const converted = convert(v, 'USD')
     return converted == null
       ? `${v.toLocaleString(locale)} $`
       : `${Math.round(converted).toLocaleString(locale)} ${displaySymbol}`
