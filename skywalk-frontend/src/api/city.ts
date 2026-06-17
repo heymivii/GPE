@@ -10,6 +10,7 @@ export interface City {
   isCapital: boolean;
   imageUrl?: string;
   countryId: number;
+  status?: 'active' | 'archived';
   country?: {
     idCountry: number;
     countryName: string;
@@ -36,6 +37,7 @@ export interface UpdateCityDto {
   isCapital?: boolean;
   imageUrl?: string;
   countryId?: number;
+  status?: 'active' | 'archived';
 }
 
 export const cityApi = {

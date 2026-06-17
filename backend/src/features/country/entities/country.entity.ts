@@ -25,7 +25,8 @@ export class Country {
     nullable: true,
   })
   isoCode?: string;
-
+  @Column({ name: 'status', type: 'varchar', length: 20, default: 'active' })
+  status: 'active' | 'archived';
   @Column({ name: 'continent_id' })
   continentId: number;
 

@@ -36,7 +36,7 @@ export default function AdminProcedures() {
 
   const { data: procedures = [], isLoading: proceduresLoading, refetch, isRefetching } = useQuery({
     queryKey: ['admin-procedures'],
-    queryFn: adminApi.getAllProcedures,
+    queryFn: () => adminApi.getAllProcedures(),
   });
 
   // Set initial country selection once loaded
@@ -271,7 +271,7 @@ export default function AdminProcedures() {
 
                     {/* Category */}
                     <td className="py-4 px-6">
-                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold tracking-wide ${getCategoryColor(proc.category)}`}>
+                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold tracking-wide whitespace-nowrap ${getCategoryColor(proc.category)}`}>
                         {getCategoryLabel(proc.category || '')}
                       </span>
                     </td>

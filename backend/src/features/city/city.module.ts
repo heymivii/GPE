@@ -3,9 +3,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CityService } from './city.service';
 import { CityController } from './city.controller';
 import { City } from './entities/city.entity';
+import { AdminLogModule } from '../admin-log/admin-log.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([City])],
+  imports: [TypeOrmModule.forFeature([City]), AdminLogModule],
   controllers: [CityController],
   providers: [CityService],
   exports: [CityService],

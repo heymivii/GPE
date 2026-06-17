@@ -6,9 +6,13 @@ import { CostOfLivingCleanerService } from './cost-of-living-cleaner.service';
 import { CostOfLivingCache } from './entities/cost-of-living-cache.entity';
 import { City } from '../city/entities/city.entity';
 import { Country } from '../country/entities/country.entity';
+import { AdminLogModule } from '../admin-log/admin-log.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([CostOfLivingCache, City, Country])],
+  imports: [
+    TypeOrmModule.forFeature([CostOfLivingCache, City, Country]),
+    AdminLogModule,
+  ],
   controllers: [CostOfLivingController],
   providers: [CostOfLivingService, CostOfLivingCleanerService],
   exports: [CostOfLivingService],

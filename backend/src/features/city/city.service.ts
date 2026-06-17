@@ -22,6 +22,7 @@ export class CityService {
       timezone: createCityDto.timezone,
       isCapital: createCityDto.isCapital ?? false,
       imageUrl: createCityDto.imageUrl,
+      status: createCityDto.status ?? 'active',
       countryId: createCityDto.countryId,
     });
     return await this.cityRepository.save(city);
@@ -34,7 +35,10 @@ export class CityService {
   }
 
   // Reference list of cities of a country (free, no key — via countriesnow), for admin pickers.
-  getAvailableCities(country: string): Promise<string[]> {
+  async getAvailableCities(country: string): Promise<string[]> {
+    if (!country) {
+      return [];
+    }
     return restCountriesService.getCitiesByCountry(country);
   }
 

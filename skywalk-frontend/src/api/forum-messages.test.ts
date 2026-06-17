@@ -90,10 +90,13 @@ describe('forumMessagesApi', () => {
   });
 
   it('resolveReport() should PATCH /forum-message/reports/:id/resolve', async () => {
-    const dto = { action: 'resolved' };
+    const dto = { status: 'resolved' };
     patch.mockResolvedValue({ data: { idReport: 1, status: 'resolved' } });
     const result = await forumMessagesApi.resolveReport(1, dto as any);
-    expect(patch).toHaveBeenCalledWith('/forum-message/reports/1/resolve', dto);
+    expect(patch).toHaveBeenCalledWith('/forum-message/reports/1/resolve', {
+      action: 'resolved',
+      moderatorNote: undefined,
+    });
     expect(result.status).toBe('resolved');
   });
 });

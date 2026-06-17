@@ -45,6 +45,9 @@ export class City {
   @Column({ name: 'image_url', type: 'text', nullable: true })
   imageUrl: string;
 
+  @Column({ name: 'status', type: 'varchar', length: 20, default: 'active' })
+  status: 'active' | 'archived';
+
   @Column({ name: 'country_id' })
   countryId: number;
 
