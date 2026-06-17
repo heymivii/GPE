@@ -1,12 +1,12 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Inject } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { GovLink } from './entities/gov-link.entity';
 import { buildQuery } from './query-builder';
 import { isOfficialDomain, officialSuffixes } from './official-domains';
-import { TavilySearchProvider } from './search-provider';
+import { SearchProvider } from './search-provider';
 import { LinkVerifier } from './link-verifier';
-import { OllamaRanker } from './llm-ranker';
+import { LlmRanker } from './llm-ranker';
 import { SearchCandidate, GovLinkStatus } from './gov-links.types';
 
 export const SEARCH_PROVIDER = 'SEARCH_PROVIDER';
@@ -23,9 +23,9 @@ export class GovLinksService {
   private readonly logger = new Logger(GovLinksService.name);
   constructor(
     @InjectRepository(GovLink) private readonly repo: Repository<GovLink>,
-    private readonly search: TavilySearchProvider,
+    @Inject(SEARCH_PROVIDER) private readonly search: SearchProvider,
     private readonly verifier: LinkVerifier,
-    private readonly ranker: OllamaRanker,
+    @Inject(LLM_RANKER) private readonly ranker: LlmRanker,
   ) {}
 
   async generate(countryCode: string, category: string): Promise<GovLinkResult> {
