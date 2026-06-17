@@ -286,7 +286,7 @@ export default function ProjectDetailPage() {
                     <p className="text-sm text-gray-500 mb-1">{t('projectDetail.departureDate')}</p>
                     <p className="font-medium text-gray-900">
                       {project.expectedDepartureDate 
-                        ? new Date(project.expectedDepartureDate).toLocaleDateString(dateLocale, { month: 'long', year: 'numeric' })
+                        ? new Date(project.expectedDepartureDate).toLocaleDateString(dateLocale, { day: 'numeric', month: 'long', year: 'numeric' })
                         : t('projectDetail.notDefinedFem')}
                     </p>
                   </div>
@@ -644,8 +644,6 @@ export default function ProjectDetailPage() {
           </div>
         </div>
       )}
-    </div>
-  );
       {/* ✅ Modale modification date de départ */}
       {showDateModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setShowDateModal(false)}>
@@ -684,5 +682,6 @@ export default function ProjectDetailPage() {
           </div>
         </div>
       )}
-
+    </div>
+  );
 }

@@ -14,7 +14,6 @@ async function seedProcedures() {
     const countryRepo = AppDataSource.getRepository(Country);
     const adminProcRepo = AppDataSource.getRepository(AdminProcedure);
 
-    // Read countries-data.json from frontend
     const frontendDataPath = path.join(__dirname, '../../../skywalk-frontend/src/data/countries-data.json');
     if (!fs.existsSync(frontendDataPath)) {
       throw new Error(`Frontend data file not found at ${frontendDataPath}`);
@@ -24,7 +23,6 @@ async function seedProcedures() {
     const { countries: frontendCountries } = JSON.parse(fileContent);
 
     for (const feCountry of frontendCountries) {
-      // Find country in database by ISO code
       const dbCountry = await countryRepo.findOne({ where: { isoCode: feCountry.code } });
       if (!dbCountry) {
         console.log(`⚠️ Country ${feCountry.name} (${feCountry.code}) not found in database. Skipping.`);
@@ -35,7 +33,6 @@ async function seedProcedures() {
       console.log(`Seeding ${steps.length} steps for ${dbCountry.countryName} (${dbCountry.isoCode})...`);
 
       for (const step of steps) {
-        // Check if procedure already exists to avoid duplicates
         let procedure = await adminProcRepo.findOne({
           where: {
             procedureType: step.title,
@@ -49,17 +46,19 @@ async function seedProcedures() {
             description: step.description,
             category: step.category,
             stepOrder: step.order,
-            averageDelayDays: 30, // Default delay
+            averageDelayDays: 30,
+            daysBeforeDeparture: step.daysBeforeDeparture ?? null, // ✅ AJOUT
             country: dbCountry,
           });
           await adminProcRepo.save(procedure);
-          console.log(`  ✅ Created step: "${step.title}" (${step.category})`);
+          console.log(`  ✅ Created step: "${step.title}" (${step.category}) - daysBeforeDeparture: ${step.daysBeforeDeparture}`);
         } else {
-          // Update existing steps just in case description/category/order changed
           procedure.description = step.description;
           procedure.category = step.category;
           procedure.stepOrder = step.order;
+          procedure.daysBeforeDeparture = step.daysBeforeDeparture ?? null; // ✅ AJOUT
           await adminProcRepo.save(procedure);
+          console.log(`  🔄 Updated step: "${step.title}" - daysBeforeDeparture: ${step.daysBeforeDeparture}`);
         }
       }
     }

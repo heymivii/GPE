@@ -18,19 +18,21 @@ function DeadlineBadge({ daysBeforeDeparture, departureDate }: {
   const deadline = getStepDeadline(daysBeforeDeparture, departureDate);
   if (!deadline.date) return null;
 
+  const dateStr = deadline.date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+
   if (deadline.isLate) return (
     <span className="text-[11px] px-2 py-0.5 rounded-full bg-red-100 text-red-700 font-medium">
-      🔴 En retard
+      🔴 En retard — deadline : {dateStr}
     </span>
   );
   if (deadline.isUrgent) return (
     <span className="text-[11px] px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 font-medium">
-      🟠 {deadline.daysLeft}j restants
+      🟠 {deadline.daysLeft}j restants — deadline : {dateStr}
     </span>
   );
   return (
     <span className="text-[11px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">
-      📅 {deadline.date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
+      📅 deadline : {dateStr}
     </span>
   );
 }
@@ -93,6 +95,7 @@ export default function ChecklistPage() {
       id: t.idProcedureTracking.toString(),
       title: t.admin_procedure?.procedureType || '',
       completed: t.status === 'completed',
+      completedAt: t.end_date || null, // ✅ date de complétion
       category: t.admin_procedure?.category || 'other',
       substeps: [] as any[],
       daysBeforeDeparture: t.admin_procedure?.daysBeforeDeparture,
@@ -349,6 +352,11 @@ export default function ChecklistPage() {
                             daysBeforeDeparture={item.daysBeforeDeparture}
                             departureDate={departureDate}
                           />
+                        )}
+                        {item.completed && item.completedAt && (
+                          <span className="text-[11px] text-green-600 bg-green-50 px-2 py-0.5 rounded-full font-medium">
+                            ✅ Complété le {new Date(item.completedAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                          </span>
                         )}
                       </div>
 

@@ -27,19 +27,21 @@ function DeadlineBadge({ daysBeforeDeparture, departureDate }: {
   const deadline = getStepDeadline(daysBeforeDeparture, departureDate);
   if (!deadline.date) return null;
 
+  const dateStr = deadline.date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+
   if (deadline.isLate) return (
     <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-red-100 text-red-700 font-medium whitespace-nowrap">
-      🔴 En retard
+      🔴 En retard — {dateStr}
     </span>
   );
   if (deadline.isUrgent) return (
     <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-orange-100 text-orange-700 font-medium whitespace-nowrap">
-      🟠 {deadline.daysLeft}j
+      🟠 {deadline.daysLeft}j — {dateStr}
     </span>
   );
   return (
     <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-500 whitespace-nowrap">
-      📅 {deadline.date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
+      📅 {dateStr}
     </span>
   );
 }

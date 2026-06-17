@@ -27,6 +27,10 @@ export class AdminProcedure {
   @Column({ name: 'average_delay_days', type: 'integer', nullable: true })
   averageDelayDays?: number;
 
+  // ✅ Ajout pour les deadlines checklist
+  @Column({ name: 'days_before_departure', type: 'integer', nullable: true })
+  daysBeforeDeparture?: number;
+
   @ManyToOne(() => Country, { nullable: false })
   @JoinColumn({ name: 'country_id' })
   country: Country;
