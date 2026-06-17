@@ -16,7 +16,7 @@ export class AddGovLink1781960000000 implements MigrationInterface {
         "verified_at"  TIMESTAMP     NULL,
         "status"       VARCHAR(20)   NOT NULL DEFAULT 'active',
         CONSTRAINT "PK_gov_link" PRIMARY KEY ("id_gov_link"),
-        CONSTRAINT "UQ_gov_link_country_cat_url" UNIQUE ("country_code","category","url")
+        CONSTRAINT "UQ_gov_link_country_cat" UNIQUE ("country_code","category")
       )
     `);
   }

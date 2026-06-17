@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { PageReader, LocalPageReader, extractText } from './page-reader';
+import { PageReader, LocalPageReader } from './page-reader';
 
 export { extractText } from './page-reader';
 export interface ProbeResult { ok: boolean; finalUrl: string; text: string; }

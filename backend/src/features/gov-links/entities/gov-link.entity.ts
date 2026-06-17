@@ -1,6 +1,9 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, Unique } from 'typeorm';
 
+// One canonical link per (country, category): the service upserts on this pair,
+// so the DB enforces the same invariant the code relies on.
 @Entity({ name: 'gov_link' })
+@Unique('UQ_gov_link_country_cat', ['countryCode', 'category'])
 export class GovLink {
   @PrimaryGeneratedColumn({ name: 'id_gov_link' })
   id: number;
