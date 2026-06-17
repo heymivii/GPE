@@ -39,9 +39,14 @@ Unicité logique : (country_code, category, url). **Seed initial** depuis les fi
 
 **Unités isolées (testables seules) :** `QueryBuilder` · `OfficialDomainAllowlist` · `SearchProvider` (interface) · `LinkVerifier` · `LlmRanker` (interface) · `GovLinksService`.
 
+## Décisions actées
+- **LLM (tri) :** Ollama **`qwen2.5:7b-instruct`** en dev (`http://localhost:11434/v1`) — meilleur suivi d'instructions + JSON fiable + multilingue à 7B ; swappable cloud en prod.
+- **Recherche :** **Tavily** (free tier orienté grounding) — 1 clé `TAVILY_API_KEY`.
+- **Scope MVP :** 4 pays supportés (FR/US/JP/CH) × catégories `visa · demarches · logement · sante`.
+
 ## Abstractions (swap dev↔prod sans réécriture)
-- **`LlmRanker`** : impl OpenAI-compatible (base URL + modèle via env). **Ollama** en dev (`http://localhost:11434/v1`, ex. llama3.1:8b), **LLM cloud bas coût** en prod. Tâche = tri seulement → petit modèle suffit, coût quasi nul (génération rare + cache BDD).
-- **`SearchProvider`** : API de recherche (**Tavily** recommandé, free tier orienté grounding ; Brave possible). 1 clé. (Le `WebSearch` du spike n'est pas dispo dans NestJS.)
+- **`LlmRanker`** : impl OpenAI-compatible (base URL + modèle via env). **Ollama `qwen2.5:7b-instruct`** en dev, **LLM cloud bas coût** en prod. Tâche = tri seulement → petit modèle suffit, coût quasi nul (génération rare + cache BDD).
+- **`SearchProvider`** : interface ; impl **Tavily** (free tier). (Le `WebSearch` du spike n'est pas dispo dans NestJS.)
 
 ## Où ça tourne
 Ollama est **local** → pipeline exécuté en **outil admin/local** (la machine a internet + Ollama) qui **écrit dans la BDD**. La **prod lit la BDD**. Migration future vers exécution serveur quand LLM cloud (grâce aux abstractions).
