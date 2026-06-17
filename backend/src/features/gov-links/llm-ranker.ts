@@ -57,7 +57,7 @@ export class OllamaRanker implements LlmRanker {
   ): Promise<string[]> {
     const text = (pageText ?? '').slice(0, 4000);
     if (!text.trim()) return [];
-    const prompt = `Contenu d'une page gouvernementale officielle (pays: ${context.country}, thème: ${context.category}):\n"""${text}"""\n\nExtrais 3 à 5 faits pratiques essentiels qu'un nouvel arrivant doit connaître (ex: démarche obligatoire, gratuit ou payant, documents requis, organisme compétent). RÈGLES STRICTES: utilise UNIQUEMENT des informations présentes dans le texte ci-dessus; n'invente RIEN; si une info n'est pas dans le texte, ne la mets pas; chaque fait = une phrase courte en français. Réponds en JSON STRICT {"points": ["...", "..."]}.`;
+    const prompt = `Contenu d'une page gouvernementale officielle (pays: ${context.country}, thème: ${context.category}):\n"""${text}"""\n\nExtrais les informations pratiques essentielles qu'un expatrié doit connaître. Couvre, SEULEMENT si présent dans le texte: les démarches/étapes obligatoires, le coût (gratuit ou montant précis), les documents requis, les délais, les conditions d'éligibilité, et l'organisme compétent. RÈGLES STRICTES: utilise UNIQUEMENT des informations présentes dans le texte ci-dessus; n'invente RIEN; si une info n'est pas dans le texte, ne la mets pas; chaque fait = une phrase courte, concrète et autonome en français; donne 3 à 7 faits, les plus utiles d'abord. Réponds en JSON STRICT {"points": ["...", "..."]}.`;
     try {
       const { data } = await axios.post<{
         choices: Array<{ message: { content: string } }>;
@@ -78,7 +78,7 @@ export class OllamaRanker implements LlmRanker {
         ? parsed.points
             .map((p) => String(p))
             .filter((p) => p.trim())
-            .slice(0, 5)
+            .slice(0, 7)
         : [];
     } catch {
       return [];
