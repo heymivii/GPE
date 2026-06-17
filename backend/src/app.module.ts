@@ -11,6 +11,7 @@ import { AuthModule } from './features/auth/auth.module';
 import { UserModule } from './features/user/user.module';
 import { CostOfLivingModule } from './features/cost-of-living/cost-of-living.module';
 import { PropertyInvestmentModule } from './features/property-investment/property-investment.module';
+import { QualityOfLifeModule } from './features/quality-of-life/quality-of-life.module';
 import { ResourceModule } from './features/resource/resource.module';
 import { BusinessSectorModule } from './features/business-sector/business-sector.module';
 import { CityModule } from './features/city/city.module';
@@ -60,6 +61,7 @@ import { AdminLogModule } from './features/admin-log/admin-log.module';
     ResourceModule,
     CostOfLivingModule,
     PropertyInvestmentModule,
+    QualityOfLifeModule,
     JobOfferModule,
     AdminProcedureModule,
     ProcedureTrackingModule,
