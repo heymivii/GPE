@@ -1,7 +1,7 @@
 import { GovLinksService } from './gov-links.service';
 
 const candidate = (url: string) => ({ url, title: 't', snippet: 's' });
-function makeRepo() { return { findOne: jest.fn(), create: jest.fn((x) => ({ ...x })), save: jest.fn(async (e) => ({ ...e, id: 1 })) }; }
+function makeRepo() { return { findOne: jest.fn(), find: jest.fn(async () => [{ id: 1 }]), create: jest.fn((x) => ({ ...x })), save: jest.fn(async (e) => ({ ...e, id: 1 })) }; }
 
 describe('GovLinksService.generate', () => {
   it('returns needs_review when no candidate is verified', async () => {
@@ -52,6 +52,17 @@ describe('GovLinksService.generate', () => {
     expect(res.status).toBe('active');
     expect(res.url).toBe('https://france-visas.gouv.fr/x');
     expect(repo.save).toHaveBeenCalled();
+  });
+
+  it('list({ countryCode: "fr", status: "active" }) calls repo.find with uppercased country and returns result', async () => {
+    const repo = makeRepo();
+    const search = { search: jest.fn() };
+    const verifier = { verify: jest.fn() };
+    const ranker = { pickBest: jest.fn() };
+    const svc = new GovLinksService(repo as never, search as never, verifier as never, ranker as never);
+    const result = await svc.list({ countryCode: 'fr', status: 'active' });
+    expect(repo.find).toHaveBeenCalledWith({ where: { countryCode: 'FR', status: 'active' }, order: { countryCode: 'ASC', category: 'ASC' } });
+    expect(result).toEqual([{ id: 1 }]);
   });
 
   // FIX 2: upsert updates existing row (id: 7) rather than creating a duplicate

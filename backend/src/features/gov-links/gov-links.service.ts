@@ -30,6 +30,14 @@ export class GovLinksService {
     @Inject(LLM_RANKER) private readonly ranker: LlmRanker,
   ) {}
 
+  async list(filter: { countryCode?: string; category?: string; status?: string }): Promise<GovLink[]> {
+    const where: Record<string, string> = {};
+    if (filter.countryCode) where.countryCode = filter.countryCode.toUpperCase();
+    if (filter.category) where.category = filter.category;
+    if (filter.status) where.status = filter.status;
+    return this.repo.find({ where, order: { countryCode: 'ASC', category: 'ASC' } });
+  }
+
   async generate(countryCode: string, category: string): Promise<GovLinkResult> {
     const { query, keywords } = buildQuery(this.countryName(countryCode), category);
     const raw = await this.search.search(query, officialSuffixes(countryCode));

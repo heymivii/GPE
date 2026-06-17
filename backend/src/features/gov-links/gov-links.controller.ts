@@ -1,4 +1,4 @@
-import { BadRequestException, Controller, Post, Query, UseGuards } from '@nestjs/common';
+import { BadRequestException, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { GovLinksService } from './gov-links.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -10,6 +10,16 @@ import { CANONICAL_CATEGORIES, SUPPORTED_COUNTRIES } from './gov-links.types';
 @Controller('gov-links')
 export class GovLinksController {
   constructor(private readonly service: GovLinksService) {}
+
+  @Get()
+  @UseGuards(JwtAuthGuard)
+  list(
+    @Query('country') country?: string,
+    @Query('category') category?: string,
+    @Query('status') status?: string,
+  ) {
+    return this.service.list({ countryCode: country, category, status });
+  }
 
   @Post('generate')
   @UseGuards(JwtAuthGuard, RolesGuard)
