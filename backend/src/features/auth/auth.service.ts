@@ -74,6 +74,9 @@ export class AuthService {
       throw new UnauthorizedException('Email ou mot de passe incorrect');
     }
 
+    user.lastLoginAt = new Date();
+    await this.userRepository.save(user);
+
     const token = this.generateToken(user);
     const refreshToken = this.generateRefreshToken(user);
 

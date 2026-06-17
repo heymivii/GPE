@@ -7,6 +7,8 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
+  Request,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AdminProcedureService } from './admin-procedure.service';
@@ -15,21 +17,36 @@ import { UpdateAdminProcedureDto } from './dto/update-admin-procedure.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { AdminLogService } from '../admin-log/admin-log.service';
 
 @ApiTags('Admin Procedure')
 @Controller('admin-procedure')
 export class AdminProcedureController {
-  constructor(private readonly adminProcedureService: AdminProcedureService) {}
+  constructor(
+    private readonly adminProcedureService: AdminProcedureService,
+    private readonly adminLogService: AdminLogService,
+  ) {}
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
-  create(@Body() createAdminProcedureDto: CreateAdminProcedureDto) {
-    return this.adminProcedureService.create(createAdminProcedureDto);
+  async create(@Body() createAdminProcedureDto: CreateAdminProcedureDto, @Request() req) {
+    const procedure = await this.adminProcedureService.create(createAdminProcedureDto);
+    await this.adminLogService.log(
+      req.user.userId,
+      'CREATE',
+      'AdminProcedure',
+      procedure.idAdminProcedure.toString(),
+      `Création de la démarche "${procedure.procedureType}"`
+    );
+    return procedure;
   }
 
   @Get()
-  findAll() {
+  findAll(@Query('countryId') countryId?: string) {
+    if (countryId) {
+      return this.adminProcedureService.findByCountry(+countryId);
+    }
     return this.adminProcedureService.findAll();
   }
 
@@ -41,17 +58,34 @@ export class AdminProcedureController {
   @Patch(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateAdminProcedureDto: UpdateAdminProcedureDto,
+    @Request() req,
   ) {
-    return this.adminProcedureService.update(+id, updateAdminProcedureDto);
+    const procedure = await this.adminProcedureService.update(+id, updateAdminProcedureDto);
+    await this.adminLogService.log(
+      req.user.userId,
+      'UPDATE',
+      'AdminProcedure',
+      procedure.idAdminProcedure.toString(),
+      `Modification de la démarche "${procedure.procedureType}"`
+    );
+    return procedure;
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
-  remove(@Param('id') id: string) {
-    return this.adminProcedureService.remove(+id);
+  async remove(@Param('id') id: string, @Request() req) {
+    const procedure = await this.adminProcedureService.findOne(+id);
+    await this.adminProcedureService.remove(+id);
+    await this.adminLogService.log(
+      req.user.userId,
+      'DELETE',
+      'AdminProcedure',
+      id,
+      `Suppression de la démarche "${procedure.procedureType}"`
+    );
   }
 }

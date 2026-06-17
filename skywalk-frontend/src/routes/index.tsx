@@ -35,6 +35,7 @@ import AdminProcedures from '../features/admin/pages/AdminProcedures';
 import AdminContinents from '../features/admin/pages/AdminContinents';
 import AdminCountries from '../features/admin/pages/AdminCountries';
 import AdminCities from '../features/admin/pages/AdminCities';
+import AdminRoles from '../features/admin/pages/AdminRoles';
 
 export const router = createBrowserRouter([
   {
@@ -140,6 +141,7 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <Navigate to="/admin/dashboard" replace /> },
           { path: 'dashboard', element: <AdminDashboard /> },
+          { path: 'roles', element: <AdminRoles /> },
           { path: 'projects', element: <AdminProjects /> },
           { path: 'procedures', element: <AdminProcedures /> },
           { path: 'continents', element: <AdminContinents /> },

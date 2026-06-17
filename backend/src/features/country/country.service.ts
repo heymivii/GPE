@@ -14,7 +14,10 @@ export class CountryService {
   ) {}
 
   async create(createDto: CreateCountryDto): Promise<Country> {
-    const country = this.countryRepository.create(createDto);
+    const country = this.countryRepository.create({
+      ...createDto,
+      status: createDto.status ?? 'active',
+    });
     return await this.countryRepository.save(country);
   }
 

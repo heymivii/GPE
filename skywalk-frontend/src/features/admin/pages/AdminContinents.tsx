@@ -3,8 +3,10 @@ import { continentApi } from '../../../api/continent';
 import { useState } from 'react';
 import { Plus, Edit2, Trash2, RefreshCw, X } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 export default function AdminContinents() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [modalOpen, setModalOpen] = useState(false);
   const [editingContinent, setEditingContinent] = useState<any | null>(null);
@@ -162,7 +164,7 @@ export default function AdminContinents() {
                         {continent.idContinent}
                       </td>
                       <td className="py-4 px-6 font-semibold text-gray-900">
-                        {continent.name}
+                        {t(`comparison.data.continents.${continent.name}`, { defaultValue: continent.name })}
                       </td>
                       <td className="py-4 px-6">
                         {continent.isoCode ? (
