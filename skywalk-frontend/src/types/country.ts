@@ -6,7 +6,7 @@ export interface Country {
   language?: string;
   visaInfo?: string;
   flagUrl?: string;
-  idContinent: number;
+  continentId: number; // FK to continent (matches the backend Country entity)
   status?: 'active' | 'archived';
   createdAt: string;
   capital?: string;
