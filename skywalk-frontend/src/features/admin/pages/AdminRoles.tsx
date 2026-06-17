@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { userApi } from '../../../api/user';
 import { useAuth } from '../../../hooks/useAuth';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import toast from 'react-hot-toast';
 import { Search, RefreshCw, Shield, Users } from 'lucide-react';
 
@@ -38,6 +38,23 @@ export default function AdminRoles() {
     const fullName = `${u.firstName || ''} ${u.lastName || ''}`.toLowerCase();
     return fullName.includes(q) || u.email?.toLowerCase().includes(q);
   });
+
+  const sortedUsers = useMemo(() => {
+    const list = [...filteredUsers];
+    list.sort((a: any, b: any) => {
+      const nameA = `${a.firstName || ''} ${a.lastName || ''}`.trim();
+      const nameB = `${b.firstName || ''} ${b.lastName || ''}`.trim();
+
+      const isA = nameA.toLowerCase() === 'admin skywalk';
+      const isB = nameB.toLowerCase() === 'admin skywalk';
+
+      if (isA && !isB) return -1;
+      if (!isA && isB) return 1;
+
+      return nameA.localeCompare(nameB, 'fr', { sensitivity: 'base' });
+    });
+    return list;
+  }, [filteredUsers]);
 
   return (
     <div className="space-y-6" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
@@ -104,7 +121,7 @@ export default function AdminRoles() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50 text-xs text-gray-600">
-                {filteredUsers.map((u: any) => {
+                {sortedUsers.map((u: any) => {
                   const fullName = `${u.firstName || ''} ${u.lastName || ''}`.trim() || 'Sans nom';
                   const initials = fullName.slice(0, 2).toUpperCase();
                   const isSelf = u.idUser === currentUserId;
