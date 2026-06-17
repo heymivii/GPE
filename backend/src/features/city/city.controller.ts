@@ -8,7 +8,6 @@ import {
   Delete,
   Query,
   UseGuards,
-  Query,
   Request,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -53,7 +52,7 @@ export class CityController {
 
   // Cities of a country (for the admin city picker): GET /city/available?country=France
   @Get('available')
-  getAvailable(@Query('country') country: string) {
+  getAvailable(@Query('country') country = '') {
     return this.cityService.getAvailableCities(country);
   }
 

@@ -60,17 +60,6 @@ export default function AdminCountries() {
   const [continentId, setContinentId] = useState<number | ''>('');
 
   // Fetch Countries & Continents
-  const [archivedCountryIds, setArchivedCountryIds] = useState<number[]>(() => {
-    try {
-      return JSON.parse(localStorage.getItem('archived_country_ids') || '[]');
-    } catch {
-      return [];
-    }
-  });
-
-  useEffect(() => {
-    localStorage.setItem('archived_country_ids', JSON.stringify(archivedCountryIds));
-  }, [archivedCountryIds]);
 
   const { data: countries = [] as any[], isLoading: countriesLoading, refetch, isRefetching } = useQuery<any[]>({
     queryKey: ['admin-countries-list'],
@@ -460,6 +449,19 @@ export default function AdminCountries() {
     },
   });
 
+  const archiveMutation = useMutation({
+    mutationFn: ({ id, status }: { id: number; status: 'active' | 'archived' }) =>
+      countryApi.update(id, { status }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-countries-list'] });
+      queryClient.invalidateQueries({ queryKey: ['destinations-list'] });
+    },
+    onError: (err: any) => {
+      const msg = err.response?.data?.message || 'Erreur lors de l\'archivage.';
+      toast.error(msg);
+    },
+  });
+
   const openCreateModal = () => {
     setEditingCountry(null);
     setCountryName('');
@@ -508,13 +510,11 @@ export default function AdminCountries() {
   const handleToggleArchive = (id: number, isArchived: boolean) => {
     if (isArchived) {
       if (window.confirm('Voulez-vous réactiver ce pays ?')) {
-        setArchivedCountryIds(prev => prev.filter(x => x !== id));
-        toast.success('Pays réactivé avec succès.');
+        archiveMutation.mutate({ id, status: 'active' });
       }
     } else {
       if (window.confirm('Voulez-vous vraiment archiver ce pays ? Les données associées seront conservées mais le pays sera désactivé.')) {
-        setArchivedCountryIds(prev => [...prev, id]);
-        toast.success('Pays archivé avec succès.');
+        archiveMutation.mutate({ id, status: 'archived' });
       }
     }
   };
@@ -1544,7 +1544,7 @@ export default function AdminCountries() {
                         {country.continent?.name ? t(`comparison.data.continents.${country.continent.name}`, { defaultValue: country.continent.name }) : <span className="text-gray-400 italic">Inconnu</span>}
                       </td>
                       <td className="py-4 px-6">
-                        {archivedCountryIds.includes(country.idCountry) ? (
+                        {country.status === 'archived' ? (
                           <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wide bg-amber-100 text-amber-800">
                             Archivé
                           </span>
@@ -1572,10 +1572,10 @@ export default function AdminCountries() {
                           >
                             <Edit2 className="w-4 h-4" />
                           </button>
-                          {archivedCountryIds.includes(country.idCountry) ? (
+                          {country.status === 'archived' ? (
                             <button
                               onClick={() => handleToggleArchive(country.idCountry, true)}
-                              disabled={isPending}
+                              disabled={archiveMutation.isPending}
                               className="p-1.5 hover:bg-emerald-50 text-gray-650 hover:text-emerald-600 rounded-lg transition-colors"
                               title="Réactiver"
                             >
@@ -1584,7 +1584,7 @@ export default function AdminCountries() {
                           ) : (
                             <button
                               onClick={() => handleToggleArchive(country.idCountry, false)}
-                              disabled={isPending}
+                              disabled={archiveMutation.isPending}
                               className="p-1.5 hover:bg-amber-50 text-gray-650 hover:text-amber-600 rounded-lg transition-colors"
                               title="Archiver"
                             >

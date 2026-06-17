@@ -3,7 +3,7 @@ import { cityApi, type City } from '../../../api/city';
 import { countryApi } from '../../../api/country';
 import { costOfLivingApi } from '../../../api/costOfLiving';
 import { useState, useMemo, useEffect } from 'react';
-import { Plus, Edit2, Trash2, Globe, RefreshCw, X, Search, Eye, ChevronRight, ArrowLeft, Save, Coins, Building2, Utensils, Car, Loader2, Globe2, ShoppingBag, Shirt, Baby, Activity, Archive, ArchiveRestore } from 'lucide-react';
+import { Plus, Edit2, Globe, RefreshCw, X, Search, Eye, ChevronRight, ArrowLeft, Save, Coins, Building2, Utensils, Car, Loader2, Globe2, ShoppingBag, Shirt, Baby, Activity, Archive, ArchiveRestore } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import Combobox from '../components/Combobox';
@@ -39,19 +39,6 @@ export default function AdminCities() {
   // dead page, the real slug is "Ajaccio-France"), which the auto-derived slug can't guess.
   const [colCity, setColCity] = useState<City | null>(null);
   const [colSlug, setColSlug] = useState('');
-
-  // Fetch Cities & Countries
-  const [archivedCityIds, setArchivedCityIds] = useState<number[]>(() => {
-    try {
-      return JSON.parse(localStorage.getItem('archived_city_ids') || '[]');
-    } catch {
-      return [];
-    }
-  });
-
-  useEffect(() => {
-    localStorage.setItem('archived_city_ids', JSON.stringify(archivedCityIds));
-  }, [archivedCityIds]);
 
   const { data: cities = [], isLoading: citiesLoading, refetch, isRefetching } = useQuery({
     queryKey: ['admin-cities-list'],
@@ -400,16 +387,27 @@ export default function AdminCities() {
     }
   };
 
+  const archiveMutation = useMutation({
+    mutationFn: ({ id, status }: { id: number; status: 'active' | 'archived' }) =>
+      cityApi.update(id, { status }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-cities-list'] });
+      queryClient.invalidateQueries({ queryKey: ['destinations-list'] });
+    },
+    onError: (err: any) => {
+      const msg = err.response?.data?.message || 'Erreur lors de l\'archivage.';
+      toast.error(msg);
+    },
+  });
+
   const handleToggleArchive = (id: number, isArchived: boolean) => {
     if (isArchived) {
       if (window.confirm('Voulez-vous réactiver cette ville ?')) {
-        setArchivedCityIds(prev => prev.filter(x => x !== id));
-        toast.success('Ville réactivée avec succès.');
+        archiveMutation.mutate({ id, status: 'active' });
       }
     } else {
       if (window.confirm('Voulez-vous vraiment archiver cette ville ? Les données associées seront conservées mais la ville sera désactivée.')) {
-        setArchivedCityIds(prev => [...prev, id]);
-        toast.success('Ville archivée avec succès.');
+        archiveMutation.mutate({ id, status: 'archived' });
       }
     }
   };
@@ -1312,7 +1310,7 @@ export default function AdminCities() {
                         )}
                       </td>
                       <td className="py-4 px-6">
-                        {archivedCityIds.includes(city.idCity) ? (
+                        {city.status === 'archived' ? (
                           <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wide bg-amber-100 text-amber-800">
                             Archivé
                           </span>
@@ -1352,10 +1350,10 @@ export default function AdminCities() {
                           >
                             <Edit2 className="w-4 h-4" />
                           </button>
-                          {archivedCityIds.includes(city.idCity) ? (
+                          {city.status === 'archived' ? (
                             <button
                               onClick={() => handleToggleArchive(city.idCity, true)}
-                              disabled={isPending}
+                              disabled={archiveMutation.isPending}
                               className="p-1.5 hover:bg-emerald-50 text-gray-650 hover:text-emerald-600 rounded-lg transition-colors"
                               title="Réactiver"
                             >
@@ -1364,7 +1362,7 @@ export default function AdminCities() {
                           ) : (
                             <button
                               onClick={() => handleToggleArchive(city.idCity, false)}
-                              disabled={isPending}
+                              disabled={archiveMutation.isPending}
                               className="p-1.5 hover:bg-amber-50 text-gray-650 hover:text-amber-600 rounded-lg transition-colors"
                               title="Archiver"
                             >

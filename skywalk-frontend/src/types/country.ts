@@ -7,6 +7,7 @@ export interface Country {
   visaInfo?: string;
   flagUrl?: string;
   idContinent: number;
+  status?: 'active' | 'archived';
   createdAt: string;
   capital?: string;
   continent?: {

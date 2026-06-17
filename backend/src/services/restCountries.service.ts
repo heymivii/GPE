@@ -92,6 +92,10 @@ class RestCountriesService {
   // Cities of a country (free, no API key — countriesnow.space). Expects the English
   // country name. Cached 24h.
   async getCitiesByCountry(country: string): Promise<string[]> {
+    if (!country) {
+      return [];
+    }
+
     const cacheKey = `cities:${country.toLowerCase()}`;
     const cached = this.cache.get<string[]>(cacheKey);
     if (cached) return cached;
