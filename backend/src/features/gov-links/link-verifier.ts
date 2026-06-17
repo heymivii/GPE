@@ -3,6 +3,17 @@ import axios from 'axios';
 export interface ProbeResult { ok: boolean; finalUrl: string; text: string; }
 export type HttpProbe = (url: string) => Promise<ProbeResult>;
 
+export function extractText(html: string): string {
+  return html
+    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&[a-z]+;/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase();
+}
+
 const defaultProbe: HttpProbe = async (url) => {
   try {
     const res = await axios.get<string>(url, {
@@ -25,7 +36,7 @@ export class LinkVerifier {
   async verify(url: string, keywords: string[]): Promise<{ live: boolean; finalUrl: string; matched: boolean }> {
     const r = await this.probe(url);
     if (!r.ok) return { live: false, finalUrl: '', matched: false };
-    const hay = `${r.text}`.toLowerCase();
+    const hay = extractText(r.text);
     const matched = keywords.length === 0 || keywords.some((k) => hay.includes(k.toLowerCase()));
     return { live: true, finalUrl: r.finalUrl || url, matched };
   }
