@@ -35,14 +35,19 @@ export class GovLinksService {
     const raw = await this.search.search(query, officialSuffixes(countryCode));
     const official = raw.filter((c) => isOfficialDomain(c.url, countryCode));
 
-    const verified: SearchCandidate[] = [];
-    for (const c of official) {
-      const v = await this.verifier.verify(c.url, keywords);
-      // FIX 1: also re-validate the post-redirect finalUrl against the official-domain allowlist
-      if (v.live && v.matched && isOfficialDomain(v.finalUrl, countryCode)) {
-        verified.push({ ...c, url: v.finalUrl, snippet: v.text || c.snippet });
-      }
-    }
+    // Verify candidates concurrently: each does a live HTTP fetch (up to ~10s), so running
+    // them in parallel turns admin generation time from sum-of-fetches into ~the slowest one.
+    // Promise.all preserves order, so verified[0] (the fallback pick) stays deterministic.
+    const checked = await Promise.all(
+      official.map(async (c) => {
+        const v = await this.verifier.verify(c.url, keywords);
+        // FIX 1: also re-validate the post-redirect finalUrl against the official-domain allowlist
+        return v.live && v.matched && isOfficialDomain(v.finalUrl, countryCode)
+          ? { ...c, url: v.finalUrl, snippet: v.text || c.snippet }
+          : null;
+      }),
+    );
+    const verified: SearchCandidate[] = checked.filter((c): c is SearchCandidate => c !== null);
 
     if (verified.length === 0) {
       return this.persist(countryCode, category, null, null, 0, 'needs_review', query);
