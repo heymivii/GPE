@@ -1,8 +1,10 @@
 import Widget from './Widget';
-import { CheckCircle, Circle, ChevronDown, ChevronRight } from 'lucide-react';
+import { CheckCircle, Circle, ChevronDown, ChevronRight, ExternalLink, ArrowRight } from 'lucide-react';
 import { useState, useMemo, useCallback, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import type { CountryData } from '../../../hooks/useCountryData';
-import { useChecklistProgress } from '../hooks/useChecklistProgress';
+import { useChecklistProgress, getStepDeadline, filterStepsForProject } from '../hooks/useChecklistProgress';
+import { getLinksForStep } from '../../../data/checklist-links';
 import { useTranslation } from 'react-i18next';
 import type { WidgetSize } from '../hooks/useDashboardPreferences';
 
@@ -17,9 +19,77 @@ const CATEGORY_LABELS: Record<string, string> = {
   integration: 'dashboard.personalized.widgets.checklist.categories.integration',
 };
 
+// ✅ Badge deadline
+function DeadlineBadge({ daysBeforeDeparture, departureDate }: {
+  daysBeforeDeparture?: number;
+  departureDate?: string | Date | null;
+}) {
+  const deadline = getStepDeadline(daysBeforeDeparture, departureDate);
+  if (!deadline.date) return null;
+
+  const dateStr = deadline.date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+
+  if (deadline.isLate) return (
+    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-red-100 text-red-700 font-medium whitespace-nowrap">
+      🔴 En retard — {dateStr}
+    </span>
+  );
+  if (deadline.isUrgent) return (
+    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-orange-100 text-orange-700 font-medium whitespace-nowrap">
+      🟠 {deadline.daysLeft}j — {dateStr}
+    </span>
+  );
+  return (
+    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-500 whitespace-nowrap">
+      📅 {dateStr}
+    </span>
+  );
+}
+
+// ✅ Liens officiels par étape
+function StepLinks({ category, countryCode }: { category: string; countryCode?: string }) {
+  const links = getLinksForStep(category, countryCode);
+  if (!links) return null;
+
+  const hasLinks = links.serviceLink || (links.externalLinks && links.externalLinks.length > 0);
+  if (!hasLinks) return null;
+
+  return (
+    <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+      {links.serviceLink && (
+        <Link
+          to={links.serviceLink}
+          onClick={(e) => e.stopPropagation()}
+          className="text-[10px] text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-0.5"
+        >
+          Voir le service <ArrowRight className="w-2.5 h-2.5" />
+        </Link>
+      )}
+      {links.externalLinks?.map((link) => (
+        <a
+          key={link.url}
+          href={link.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={(e) => e.stopPropagation()}
+          className="text-[10px] text-gray-400 hover:text-gray-600 flex items-center gap-0.5"
+        >
+          {link.label} <ExternalLink className="w-2.5 h-2.5" />
+        </a>
+      ))}
+    </div>
+  );
+}
+
 interface ChecklistWidgetProps {
   countryData: CountryData | null;
   projectId: number;
+  project?: {
+    travelType?: string | null;
+    objective?: string | null;
+    expectedDepartureDate?: string | Date | null;
+    idProject?: number;
+  };
   onEdit?: () => void;
   onHide?: () => void;
   onResize?: (size: WidgetSize) => void;
@@ -39,11 +109,14 @@ interface ChecklistItem {
   completed: boolean;
   category: string;
   substeps: ChecklistSubstep[];
+  daysBeforeDeparture?: number;
+  onlyFor?: { travelType?: string[]; objective?: string[] } | null;
 }
 
 export default function ChecklistWidget({
   countryData: _countryData,
   projectId,
+  project,
   onEdit,
   onHide,
   onResize,
@@ -53,22 +126,53 @@ export default function ChecklistWidget({
   const { progress, updateStep, isLoading } = useChecklistProgress(projectId);
 
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
-
   const pendingRef = useRef<Set<string>>(new Set());
 
-  const checklist = useMemo<ChecklistItem[]>(() => {
+  // Récupérer le code ISO du pays depuis countryData
+  const countryCode = (_countryData as any)?.isoCode || (_countryData as any)?.code;
+  const departureDate = project?.expectedDepartureDate;
+
+  const allChecklist = useMemo<ChecklistItem[]>(() => {
     if (!progress || !Array.isArray(progress)) return [];
 
-    return progress.map((t) => {
-      return {
-        id: t.idProcedureTracking.toString(),
-        title: t.admin_procedure?.procedureType || '',
-        completed: t.status === 'completed',
-        category: t.admin_procedure?.category || 'other',
-        substeps: [],
-      };
-    });
+    return progress.map((t) => ({
+      id: t.idProcedureTracking.toString(),
+      title: t.admin_procedure?.procedureType || '',
+      completed: t.status === 'completed',
+      category: t.admin_procedure?.category || 'other',
+      substeps: [],
+      daysBeforeDeparture: t.admin_procedure?.daysBeforeDeparture,
+      onlyFor: t.admin_procedure?.onlyFor ?? null,
+    }));
   }, [progress]);
+
+  // ✅ Filtrage selon le profil du projet
+  const checklist = useMemo(() => {
+    return filterStepsForProject(allChecklist, {
+      travelType: project?.travelType,
+      objective: project?.objective,
+    });
+  }, [allChecklist, project?.travelType, project?.objective]);
+
+  // ✅ Les 3 étapes urgentes/en retard pour l'aperçu widget
+  const urgentSteps = useMemo(() => {
+    return checklist
+      .filter((item) => !item.completed)
+      .map((item) => ({
+        ...item,
+        deadline: getStepDeadline(item.daysBeforeDeparture, departureDate),
+      }))
+      .filter((item) => item.deadline.isLate || item.deadline.isUrgent || item.deadline.date !== null)
+      .sort((a, b) => {
+        if (a.deadline.isLate && !b.deadline.isLate) return -1;
+        if (!a.deadline.isLate && b.deadline.isLate) return 1;
+        if (a.deadline.daysLeft !== null && b.deadline.daysLeft !== null) {
+          return a.deadline.daysLeft - b.deadline.daysLeft;
+        }
+        return 0;
+      })
+      .slice(0, 3);
+  }, [checklist, departureDate]);
 
   const toggleExpand = useCallback((id: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -149,6 +253,7 @@ export default function ChecklistWidget({
   return (
     <Widget title={t('dashboard.personalized.widgets.checklist.title')} onEdit={onEdit} onHide={onHide} onResize={onResize} currentSize={currentSize}>
       <div className="space-y-4">
+        {/* Barre de progression */}
         <div className="bg-gray-50 rounded-lg p-3">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium text-gray-700">
@@ -170,7 +275,38 @@ export default function ChecklistWidget({
           </div>
         </div>
 
-        <div className="space-y-1.5 max-h-[28rem] overflow-y-auto pr-1">
+        {/* ✅ Alerte date de départ manquante */}
+        {!departureDate && (
+          <div className="text-xs text-orange-600 bg-orange-50 border border-orange-100 rounded-lg px-3 py-2">
+            Ajoutez votre date de départ pour voir les deadlines de chaque étape.
+          </div>
+        )}
+
+        {/* ✅ Aperçu : 3 étapes urgentes */}
+        {urgentSteps.length > 0 && (
+          <div className="space-y-1.5">
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              À faire en priorité
+            </p>
+            {urgentSteps.map((item) => (
+              <div
+                key={item.id}
+                className="flex items-center gap-3 p-2.5 rounded-lg border border-gray-100 hover:bg-gray-50 cursor-pointer"
+                onClick={() => toggleItem(item.id)}
+              >
+                <Circle className="w-4 h-4 text-gray-300 flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm text-gray-900 font-medium truncate">{item.title}</p>
+                  <StepLinks category={item.category} countryCode={countryCode} />
+                </div>
+                <DeadlineBadge daysBeforeDeparture={item.daysBeforeDeparture} departureDate={departureDate} />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Liste complète */}
+        <div className="space-y-1.5 max-h-[24rem] overflow-y-auto pr-1">
           {checklist.map((item) => {
             const isExpanded = expandedIds.has(item.id);
             const substepsDone = item.substeps?.filter((s) => s.completed).length ?? 0;
@@ -199,7 +335,7 @@ export default function ChecklistWidget({
                       {item.title}
                     </p>
 
-                    <div className="flex items-center gap-2 mt-1.5">
+                    <div className="flex items-center gap-2 mt-1.5 flex-wrap">
                       <span className="text-[11px] text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full font-medium">
                         {t(CATEGORY_LABELS[item.category] || item.category)}
                       </span>
@@ -208,7 +344,19 @@ export default function ChecklistWidget({
                           {substepsDone}/{substepsTotal}
                         </span>
                       )}
+                      {/* ✅ Badge deadline */}
+                      {!item.completed && (
+                        <DeadlineBadge
+                          daysBeforeDeparture={item.daysBeforeDeparture}
+                          departureDate={departureDate}
+                        />
+                      )}
                     </div>
+
+                    {/* ✅ Liens officiels */}
+                    {!item.completed && (
+                      <StepLinks category={item.category} countryCode={countryCode} />
+                    )}
                   </div>
 
                   {item.substeps && item.substeps.length > 0 && (
@@ -232,9 +380,7 @@ export default function ChecklistWidget({
                         key={substep.id}
                         onClick={(e) => toggleSubstep(item.id, substep.id, e)}
                         className={`flex items-start gap-2.5 px-2.5 py-2 rounded-md cursor-pointer transition-colors ${
-                          substep.completed
-                            ? 'bg-gray-100/60'
-                            : 'hover:bg-gray-100'
+                          substep.completed ? 'bg-gray-100/60' : 'hover:bg-gray-100'
                         }`}
                       >
                         <span className="flex-shrink-0 mt-0.5">
@@ -262,6 +408,17 @@ export default function ChecklistWidget({
             );
           })}
         </div>
+
+        {/* ✅ Lien vers la page dédiée */}
+        {project?.idProject && (
+          <Link
+            to={`/projects/${project.idProject}/checklist`}
+            className="flex items-center justify-center gap-1.5 w-full py-2 text-sm text-gray-500 hover:text-gray-900 border border-gray-100 hover:border-gray-300 rounded-lg transition-colors"
+          >
+            Voir toute la checklist
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        )}
       </div>
     </Widget>
   );

@@ -4,6 +4,7 @@ import {
   MinLength,
   IsOptional,
   IsInt,
+  IsEnum,
   Min,
   Max,
 } from 'class-validator';
@@ -33,4 +34,13 @@ export class CreateUserDto {
   @IsOptional()
   @IsInt()
   countryOriginId?: number;
+
+  // ✅ Ajouts pour l'onboarding
+  @IsOptional()
+  @IsEnum(['student', 'employee', 'self_employed', 'retired', 'unemployed', 'other'])
+  status?: string;
+
+  @IsOptional()
+  @IsEnum(['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'native', 'intermediate'])
+  languageLevel?: string;
 }

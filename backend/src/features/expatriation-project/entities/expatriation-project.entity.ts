@@ -10,6 +10,20 @@ import { User } from '../../user/entities/user.entity';
 import { Country } from '../../country/entities/country.entity';
 import { City } from '../../city/entities/city.entity';
 
+// ✅ Typage fort de la progression checklist
+export interface ChecklistSubstepProgress {
+  completed: boolean;
+  completedAt?: string; // ISO date string
+}
+
+export interface ChecklistStepProgress {
+  completed: boolean;
+  completedAt?: string;
+  substeps?: Record<string, ChecklistSubstepProgress>;
+}
+
+export type ChecklistProgress = Record<string, ChecklistStepProgress>;
+
 @Entity('expatriation_project')
 export class ExpatriationProject {
   @PrimaryGeneratedColumn({ name: 'id_project' })
@@ -64,8 +78,9 @@ export class ExpatriationProject {
   @JoinColumn({ name: 'destination_city_id' })
   destinationCity: City;
 
+  // ✅ Typage fort remplacé (était Record<string, unknown> | null)
   @Column({ name: 'checklist_progress', type: 'jsonb', nullable: true })
-  checklistProgress: Record<string, unknown> | null;
+  checklistProgress: ChecklistProgress | null;
 
   @Column({ name: 'priorities', type: 'varchar', length: 100, nullable: true })
   priorities: string | null;
