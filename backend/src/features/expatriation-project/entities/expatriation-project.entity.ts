@@ -63,4 +63,28 @@ export class ExpatriationProject {
   @ManyToOne(() => City, { nullable: true })
   @JoinColumn({ name: 'destination_city_id' })
   destinationCity: City;
+
+  @Column({ name: 'checklist_progress', type: 'jsonb', nullable: true })
+  checklistProgress: Record<string, unknown> | null;
+
+  @Column({ name: 'priorities', type: 'varchar', length: 100, nullable: true })
+  priorities: string | null;
+
+  @Column({ name: 'completed_at', type: 'timestamp', nullable: true })
+  completedAt: Date | null;
+
+  @Column({ name: 'completed_reason', type: 'text', nullable: true })
+  completedReason: string | null;
+
+  @Column({ name: 'completed_feedback', type: 'text', nullable: true })
+  completedFeedback: string | null;
+
+  @Column({ name: 'cancelled_at', type: 'timestamp', nullable: true })
+  cancelledAt: Date | null;
+
+  @Column({ name: 'cancellation_reason', type: 'varchar', length: 100, nullable: true })
+  cancellationReason: string | null;
+
+  @Column({ name: 'cancellation_details', type: 'text', nullable: true })
+  cancellationDetails: string | null;
 }

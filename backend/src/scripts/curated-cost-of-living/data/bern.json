@@ -1,0 +1,389 @@
+{
+  "meta": {
+    "curated": true,
+    "source": "Numbeo",
+    "sourceUrl": "https://www.numbeo.com/cost-of-living/in/Bern",
+    "capturedAt": "2026-06-16",
+    "sourceLastUpdate": "14 June 2026",
+    "sample": "621 contributions / 53 contributors (last 12 months)",
+    "notes": [
+      "summary.monthlyBudget = one-bedroom city-centre rent + 1377.6 (Numbeo single-person monthly estimate excl. rent).",
+      "categories.utilities.mobileMinute holds the Numbeo monthly mobile plan (per-minute item discontinued upstream).",
+      "currency.exchangeRates intentionally empty — FX is a separate concern."
+    ],
+    "unavailable": []
+  },
+  "city": {
+    "id": 0,
+    "name": "Bern",
+    "country": "Switzerland"
+  },
+  "currency": {
+    "code": "CHF",
+    "exchangeRates": {},
+    "lastUpdated": "14 June 2026"
+  },
+  "categories": {
+    "housing": {
+      "rent": {
+        "oneBedroom": {
+          "cityCenter": {
+            "min": 1000,
+            "avg": 1534.17,
+            "max": 2400,
+            "currency": "CHF"
+          },
+          "outsideCenter": {
+            "min": 792,
+            "avg": 1131.33,
+            "max": 1700,
+            "currency": "CHF"
+          }
+        },
+        "threeBedroom": {
+          "cityCenter": {
+            "min": 2000,
+            "avg": 2922.22,
+            "max": 4500,
+            "currency": "CHF"
+          },
+          "outsideCenter": {
+            "min": 1700,
+            "avg": 2033.33,
+            "max": 3000,
+            "currency": "CHF"
+          }
+        }
+      },
+      "buy": {
+        "pricePerSqm": {
+          "cityCenter": {
+            "min": 10820,
+            "avg": 13944.15,
+            "max": 23650,
+            "currency": "CHF"
+          },
+          "outsideCenter": {
+            "min": 7960,
+            "avg": 10952.31,
+            "max": 19500,
+            "currency": "CHF"
+          }
+        }
+      }
+    },
+    "food": {
+      "markets": {
+        "milk1L": {
+          "min": 1.5,
+          "avg": 1.82,
+          "max": 2,
+          "currency": "CHF"
+        },
+        "bread500g": {
+          "min": 1.2,
+          "avg": 2.41,
+          "max": 4.59,
+          "currency": "CHF"
+        },
+        "eggs12": {
+          "min": 3.36,
+          "avg": 6.45,
+          "max": 9.6,
+          "currency": "CHF"
+        },
+        "chicken1kg": {
+          "min": 15,
+          "avg": 24.25,
+          "max": 33,
+          "currency": "CHF"
+        },
+        "beef1kg": {
+          "min": 18,
+          "avg": 32.31,
+          "max": 34.5,
+          "currency": "CHF"
+        },
+        "cheese1kg": {
+          "min": 17,
+          "avg": 20.59,
+          "max": 50,
+          "currency": "CHF"
+        },
+        "rice1kg": {
+          "min": 1.35,
+          "avg": 2.65,
+          "max": 3.49,
+          "currency": "CHF"
+        },
+        "potato1kg": {
+          "min": 1,
+          "avg": 1.52,
+          "max": 3,
+          "currency": "CHF"
+        },
+        "tomato1kg": {
+          "min": 3,
+          "avg": 3.97,
+          "max": 5.99,
+          "currency": "CHF"
+        },
+        "onion1kg": {
+          "min": 1.5,
+          "avg": 1.74,
+          "max": 2,
+          "currency": "CHF"
+        },
+        "apple1kg": {
+          "min": 2.8,
+          "avg": 3.24,
+          "max": 4,
+          "currency": "CHF"
+        },
+        "banana1kg": {
+          "min": 1.2,
+          "avg": 1.85,
+          "max": 3.99,
+          "currency": "CHF"
+        },
+        "orange1kg": {
+          "min": 1.5,
+          "avg": 2.39,
+          "max": 4,
+          "currency": "CHF"
+        },
+        "lettuce": {
+          "min": 1.2,
+          "avg": 1.86,
+          "max": 2.1,
+          "currency": "CHF"
+        },
+        "water15L": {
+          "min": 0.45,
+          "avg": 1.08,
+          "max": 1.65,
+          "currency": "CHF"
+        },
+        "wine": {
+          "min": 8.5,
+          "avg": 10,
+          "max": 12.44,
+          "currency": "CHF"
+        },
+        "domesticBeer": {
+          "min": 0.6,
+          "avg": 1.84,
+          "max": 4,
+          "currency": "CHF"
+        },
+        "importedBeer": {
+          "min": 1,
+          "avg": 2,
+          "max": 2.6,
+          "currency": "CHF"
+        },
+        "cigarettes": {
+          "min": 9,
+          "avg": 9.36,
+          "max": 9.4,
+          "currency": "CHF"
+        }
+      }
+    },
+    "transportation": {
+      "publicTransport": {
+        "oneWayTicket": {
+          "min": 3,
+          "avg": 5.1,
+          "max": 5.2,
+          "currency": "CHF"
+        },
+        "monthlyPass": {
+          "min": 80,
+          "avg": 82,
+          "max": 82,
+          "currency": "CHF"
+        }
+      },
+      "taxi": {
+        "start": {
+          "min": 6.8,
+          "avg": 6.8,
+          "max": 6.8,
+          "currency": "CHF"
+        },
+        "per1km": {
+          "min": 3.8,
+          "avg": 3.8,
+          "max": 3.8,
+          "currency": "CHF"
+        },
+        "waitingHour": {
+          "min": 90,
+          "avg": 90,
+          "max": 90,
+          "currency": "CHF"
+        }
+      },
+      "personal": {
+        "gasoline1L": {
+          "min": 1.71,
+          "avg": 1.81,
+          "max": 1.89,
+          "currency": "CHF"
+        },
+        "newCar": {
+          "min": 28900,
+          "avg": 35500,
+          "max": 35500,
+          "currency": "CHF"
+        }
+      }
+    },
+    "utilities": {
+      "basic85m2": {
+        "min": 148.75,
+        "avg": 237.22,
+        "max": 350,
+        "currency": "CHF"
+      },
+      "internet": {
+        "min": 39.95,
+        "avg": 45.5,
+        "max": 60,
+        "currency": "CHF"
+      },
+      "mobileMinute": {
+        "min": 14.9,
+        "avg": 23.38,
+        "max": 35,
+        "currency": "CHF"
+      }
+    },
+    "restaurants": {
+      "inexpensiveMeal": {
+        "min": 16.95,
+        "avg": 23.02,
+        "max": 30,
+        "currency": "CHF"
+      },
+      "midRangeMeal2People": {
+        "min": 77.4,
+        "avg": 100.5,
+        "max": 175,
+        "currency": "CHF"
+      },
+      "mcMeal": {
+        "min": 12.9,
+        "avg": 13,
+        "max": 15,
+        "currency": "CHF"
+      },
+      "cappuccino": {
+        "min": 3,
+        "avg": 5.53,
+        "max": 6.5,
+        "currency": "CHF"
+      },
+      "cocaCola": {
+        "min": 4.5,
+        "avg": 5.06,
+        "max": 6.5,
+        "currency": "CHF"
+      },
+      "domesticBeer": {
+        "min": 5.4,
+        "avg": 7.5,
+        "max": 8.1,
+        "currency": "CHF"
+      },
+      "importedBeer": {
+        "min": 3,
+        "avg": 7.5,
+        "max": 9,
+        "currency": "CHF"
+      }
+    },
+    "clothing": {
+      "jeans": {
+        "min": 90,
+        "avg": 118.32,
+        "max": 130,
+        "currency": "CHF"
+      },
+      "summerDress": {
+        "min": 30,
+        "avg": 54.15,
+        "max": 75,
+        "currency": "CHF"
+      },
+      "runningShoes": {
+        "min": 80,
+        "avg": 135.51,
+        "max": 170,
+        "currency": "CHF"
+      },
+      "leatherShoes": {
+        "min": 99,
+        "avg": 196,
+        "max": 300,
+        "currency": "CHF"
+      }
+    },
+    "childcare": {
+      "preschool": {
+        "min": 2100,
+        "avg": 2604.44,
+        "max": 2973,
+        "currency": "CHF"
+      },
+      "primarySchool": {
+        "min": 14330,
+        "avg": 25386.11,
+        "max": 39215,
+        "currency": "CHF"
+      }
+    },
+    "sports": {
+      "cinema": {
+        "min": 18,
+        "avg": 21.95,
+        "max": 25,
+        "currency": "CHF"
+      },
+      "gym": {
+        "min": 45,
+        "avg": 77.65,
+        "max": 125,
+        "currency": "CHF"
+      },
+      "tennis": {
+        "min": 30,
+        "avg": 39.17,
+        "max": 49,
+        "currency": "CHF"
+      }
+    },
+    "salary": {
+      "averageMonthly": {
+        "min": 5844.37,
+        "avg": 5844.37,
+        "max": 5844.37,
+        "currency": "CHF"
+      },
+      "mortgageRate": {
+        "min": 1.8,
+        "avg": 2.14,
+        "max": 3.65
+      }
+    }
+  },
+  "summary": {
+    "monthlyBudget": {
+      "min": 2377.6,
+      "avg": 2911.77,
+      "max": 3777.6
+    },
+    "averageSalary": 5844.37
+  }
+}

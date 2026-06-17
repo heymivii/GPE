@@ -37,6 +37,8 @@ services:
         sync: false
       - key: RAPIDAPI_HOST
         value: cost-of-living-and-prices.p.rapidapi.com
+      - key: OPENAI_API_KEY
+        sync: false
       - key: NODE_OPTIONS
         value: "--experimental-global-webcrypto"
 

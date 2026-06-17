@@ -1449,7 +1449,7 @@
             "message": "Données de marché non disponibles pour ce pays."
           },
           "avgSalary": "Salaire moyen local",
-          "sourceLive": "Données en temps réel — {{city}}",
+          "sourceLive": "Données de marché (en cache) — {{city}}",
           "sourceStatic": "Données estimatives"
         },
         "localTime": {

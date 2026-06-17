@@ -1,9 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { cityApi } from '../../../api/city';
+import { cityApi, type City } from '../../../api/city';
 import { countryApi } from '../../../api/country';
 import { costOfLivingApi } from '../../../api/costOfLiving';
 import { useState, useMemo, useEffect } from 'react';
-import { Plus, Edit2, Globe, RefreshCw, X, Search, Eye, ChevronRight, ArrowLeft, Save, Coins, Building2, Utensils, Car, Loader2, Globe2, ShoppingBag, Shirt, Baby, Activity, Archive, ArchiveRestore } from 'lucide-react';
+import { Plus, Edit2, Trash2, Globe, RefreshCw, X, Search, Eye, ChevronRight, ArrowLeft, Save, Coins, Building2, Utensils, Car, Loader2, Globe2, ShoppingBag, Shirt, Baby, Activity, Archive, ArchiveRestore } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 
@@ -32,6 +32,7 @@ export default function AdminCities() {
   const [isCapital, setIsCapital] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
   const [countryId, setCountryId] = useState<number | ''>('');
+  const [fetchingColId, setFetchingColId] = useState<number | null>(null);
 
   // Fetch Cities & Countries
   const [archivedCityIds, setArchivedCityIds] = useState<number[]>(() => {
@@ -275,6 +276,39 @@ export default function AdminCities() {
       const msg = err.response?.data?.message || 'Erreur lors de la suppression.';
       toast.error(msg);
     },
+  });
+
+  // Resolve the English country name the cost-of-living service expects.
+  const countryNameOf = (city: City): string =>
+    city.country?.countryName ||
+    countries.find((c) => c.idCountry === city.countryId)?.countryName ||
+    '';
+
+  // Admin: pull a city's cost of living from Numbeo (deterministic parser, no AI).
+  const fetchColMutation = useMutation({
+    mutationFn: (city: City) =>
+      costOfLivingApi.adminFetch({
+        city: city.name,
+        country: countryNameOf(city),
+      }),
+    onMutate: (city: City) => setFetchingColId(city.idCity),
+    onSuccess: (res) => {
+      queryClient.invalidateQueries({ queryKey: ['destinations-list'] });
+      const miss = res.unavailable?.length ?? 0;
+      toast.success(
+        `${res.city} : ${res.pricedFields} prix récupérés — loyer ${res.rentAvg} ${res.currency}, budget ${res.summary.monthlyBudget.avg} ${res.currency}, salaire ${res.summary.averageSalary} ${res.currency}${
+          miss ? ` (${miss} non dispo)` : ''
+        }.`,
+        { duration: 6000 },
+      );
+    },
+    onError: (err: any) => {
+      toast.error(
+        err.response?.data?.message ||
+          'Échec — ville introuvable sur Numbeo (vérifie le nom) ?',
+      );
+    },
+    onSettled: () => setFetchingColId(null),
   });
 
   const openCreateModal = () => {
@@ -1268,6 +1302,18 @@ export default function AdminCities() {
                             title="Voir la fiche"
                           >
                             <Eye className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => fetchColMutation.mutate(city)}
+                            disabled={fetchingColId === city.idCity}
+                            className="p-1.5 hover:bg-emerald-50 text-gray-600 hover:text-emerald-600 rounded-lg transition-colors disabled:opacity-50"
+                            title="Récupérer le coût de la vie (Numbeo)"
+                          >
+                            {fetchingColId === city.idCity ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <Coins className="w-4 h-4" />
+                            )}
                           </button>
                           <button
                             onClick={() => openEditModal(city)}

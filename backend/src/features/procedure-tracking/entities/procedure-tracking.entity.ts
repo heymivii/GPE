@@ -28,6 +28,8 @@ export class ProcedureTracking {
   @Column({ name: 'end_date', type: 'date', nullable: true })
   end_date?: string;
 
+  @Column({ name: 'comments', type: 'text', nullable: true })
+  comments: string | null;
 
   @ManyToOne(() => User, { nullable: false })
   @JoinColumn({ name: 'user_id' })

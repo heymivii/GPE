@@ -31,10 +31,11 @@ export class GlobalSearchService {
   }
 
   async refreshIndex(): Promise<void> {
-    await this.dataSource.query(
-      'REFRESH MATERIALIZED VIEW global_search_index',
-    );
-    this.logger.log('global_search_index materialized view refreshed');
+    // Force le recalcul du search_vector sur toutes les lignes via le trigger BEFORE UPDATE
+    await this.dataSource.query(`
+      UPDATE "global_search_index" SET "title" = "title"
+    `);
+    this.logger.log('global_search_index search vectors refreshed');
   }
 
   private buildTsQuery(raw: string): string {

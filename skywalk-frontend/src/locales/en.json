@@ -1449,7 +1449,7 @@
             "message": "Market data not available for this country."
           },
           "avgSalary": "Average local salary",
-          "sourceLive": "Live data — {{city}}",
+          "sourceLive": "Cached market data — {{city}}",
           "sourceStatic": "Estimated data"
         },
         "localTime": {
