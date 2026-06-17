@@ -38,3 +38,30 @@ describe('OllamaRanker.health()', () => {
     expect(await ranker.health()).toBe(false);
   });
 });
+
+describe('OllamaRanker.summarize()', () => {
+  const mockedAxios = axios as jest.Mocked<typeof axios>;
+  beforeEach(() => jest.clearAllMocks());
+
+  it('returns the grounded points parsed from the model', async () => {
+    mockedAxios.post = jest.fn().mockResolvedValue({
+      data: { choices: [{ message: { content: JSON.stringify({ points: ['Inscription obligatoire', 'Gratuit'] }) } }] },
+    });
+    const ranker = new OllamaRanker('http://localhost:11434/v1', 'm', 'ollama');
+    expect(await ranker.summarize('Page parlant de sécurité sociale...', { country: 'France', category: 'sante' }))
+      .toEqual(['Inscription obligatoire', 'Gratuit']);
+  });
+
+  it('returns [] for empty page text WITHOUT calling the model', async () => {
+    mockedAxios.post = jest.fn();
+    const ranker = new OllamaRanker('http://localhost:11434/v1', 'm', 'ollama');
+    expect(await ranker.summarize('   ', { country: 'France', category: 'sante' })).toEqual([]);
+    expect(mockedAxios.post).not.toHaveBeenCalled();
+  });
+
+  it('returns [] when the model call rejects', async () => {
+    mockedAxios.post = jest.fn().mockRejectedValue(new Error('down'));
+    const ranker = new OllamaRanker('http://localhost:11434/v1', 'm', 'ollama');
+    expect(await ranker.summarize('du contenu réel', { country: 'France', category: 'sante' })).toEqual([]);
+  });
+});

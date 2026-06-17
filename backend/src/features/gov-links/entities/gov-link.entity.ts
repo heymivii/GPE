@@ -31,4 +31,8 @@ export class GovLink {
 
   @Column({ name: 'status', type: 'varchar', length: 20, default: 'active' })
   status: string;
+
+  // Grounded key facts extracted from the verified official page (LLM summary of real content).
+  @Column({ name: 'summary', type: 'jsonb', nullable: true })
+  summary?: string[];
 }

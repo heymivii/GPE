@@ -33,6 +33,6 @@ export class LinkVerifier {
     const finalUrl = r.finalUrl || url;
     const hay = await this.reader.read(finalUrl, r.text);
     const matched = keywords.length === 0 || keywords.some((k) => hay.includes(k.toLowerCase()));
-    return { live: true, finalUrl, matched, text: hay.slice(0, 600) };
+    return { live: true, finalUrl, matched, text: hay.slice(0, 4000) };
   }
 }

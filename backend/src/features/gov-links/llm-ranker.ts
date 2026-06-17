@@ -6,6 +6,10 @@ export interface LlmRanker {
     query: string,
     candidates: SearchCandidate[],
   ): Promise<RankResult | null>;
+  summarize(
+    pageText: string,
+    context: { country: string; category: string },
+  ): Promise<string[]>;
   health(): Promise<boolean>;
 }
 
@@ -44,6 +48,40 @@ export class OllamaRanker implements LlmRanker {
       return true;
     } catch {
       return false;
+    }
+  }
+
+  async summarize(
+    pageText: string,
+    context: { country: string; category: string },
+  ): Promise<string[]> {
+    const text = (pageText ?? '').slice(0, 4000);
+    if (!text.trim()) return [];
+    const prompt = `Contenu d'une page gouvernementale officielle (pays: ${context.country}, thème: ${context.category}):\n"""${text}"""\n\nExtrais 3 à 5 faits pratiques essentiels qu'un nouvel arrivant doit connaître (ex: démarche obligatoire, gratuit ou payant, documents requis, organisme compétent). RÈGLES STRICTES: utilise UNIQUEMENT des informations présentes dans le texte ci-dessus; n'invente RIEN; si une info n'est pas dans le texte, ne la mets pas; chaque fait = une phrase courte en français. Réponds en JSON STRICT {"points": ["...", "..."]}.`;
+    try {
+      const { data } = await axios.post<{
+        choices: Array<{ message: { content: string } }>;
+      }>(
+        `${this.baseUrl}/chat/completions`,
+        {
+          model: this.model,
+          messages: [{ role: 'user', content: prompt }],
+          temperature: 0,
+          response_format: { type: 'json_object' },
+        },
+        { timeout: 30000, headers: { Authorization: `Bearer ${this.apiKey}` } },
+      );
+      const parsed = JSON.parse(data.choices[0].message.content) as {
+        points?: unknown;
+      };
+      return Array.isArray(parsed.points)
+        ? parsed.points
+            .map((p) => String(p))
+            .filter((p) => p.trim())
+            .slice(0, 5)
+        : [];
+    } catch {
+      return [];
     }
   }
 
