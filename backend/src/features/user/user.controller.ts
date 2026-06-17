@@ -9,6 +9,7 @@ import {
   Query,
   Param,
   ParseIntPipe,
+  ForbiddenException,
 } from '@nestjs/common';
 import { PaginationDto } from '../../common/dto/pagination.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -17,6 +18,7 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateRoleDto } from './dto/update-role.dto';
 import { AdminLogService } from '../admin-log/admin-log.service';
 
 @ApiTags('User')
@@ -76,17 +78,21 @@ export class UserController {
   @Patch('admin/:id/role')
   async updateRole(
     @Param('id', ParseIntPipe) id: number,
-    @Body('role') role: string,
+    @Body() dto: UpdateRoleDto,
     @Request() req,
   ) {
+    // Prevent an admin from changing their own role (self-lockout / accidental self-demotion).
+    if (id === req.user.userId) {
+      throw new ForbiddenException('Vous ne pouvez pas modifier votre propre rôle.');
+    }
     const targetUser = await this.userService.findOne(id);
-    const updatedUser = await this.userService.updateRole(id, role);
+    const updatedUser = await this.userService.updateRole(id, dto.role);
     await this.adminLogService.log(
       req.user.userId,
       'UPDATE',
       'User',
       id.toString(),
-      `Changement de rôle de l'utilisateur "${targetUser.firstName || ''} ${targetUser.lastName || ''}" (${targetUser.email}) : "${targetUser.roles}" -> "${role}"`
+      `Changement de rôle de l'utilisateur "${targetUser.firstName || ''} ${targetUser.lastName || ''}" (${targetUser.email}) : "${targetUser.roles}" -> "${dto.role}"`
     );
     const { password: _pw, ...result } = updatedUser;
     return result;
