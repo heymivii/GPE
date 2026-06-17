@@ -4,7 +4,7 @@ import {
   ConflictException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -103,6 +103,11 @@ export class UserService {
     const user = await this.findOne(id);
     user.roles = role;
     return await this.userRepository.save(user);
+  }
+
+  // How many users currently hold any of the given roles (e.g. admin-level roles).
+  async countByRoles(roles: string[]): Promise<number> {
+    return this.userRepository.count({ where: { roles: In(roles) } });
   }
 
   async getStats(): Promise<{ totalUsers: number }> {

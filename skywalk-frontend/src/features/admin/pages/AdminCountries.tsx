@@ -1127,7 +1127,9 @@ export default function AdminCountries() {
                                 </>
                               )}
                             </div>
-                            <p className="text-gray-400 text-xs line-clamp-2 mt-1 max-w-2xl" dangerouslySetInnerHTML={{ __html: job.description }} />
+                            <p className="text-gray-400 text-xs line-clamp-2 mt-1 max-w-2xl">
+                              {(job.description || '').replace(/<[^>]*>/g, '')}
+                            </p>
                           </div>
                           <a
                             href={job.redirect_url}
