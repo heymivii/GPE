@@ -31,7 +31,7 @@ export default function AdminProjects() {
     return projects.filter((p: any) => {
       const search = searchTerm.toLowerCase();
       const userEmail = p.user?.email?.toLowerCase() || '';
-      const userName = `${p.user?.firstname || ''} ${p.user?.lastname || ''}`.toLowerCase();
+      const userName = `${p.user?.firstName || ''} ${p.user?.lastName || ''}`.toLowerCase();
       const country = p.destinationCountry?.countryName?.toLowerCase() || '';
       const city = p.destinationCity?.name?.toLowerCase() || '';
       return userEmail.includes(search) || userName.includes(search) || country.includes(search) || city.includes(search);
@@ -157,7 +157,7 @@ export default function AdminProjects() {
                       </div>
                       <div className="min-w-0">
                         <p className="font-semibold text-gray-950 truncate">
-                          {project.user?.firstname ? `${project.user.firstname} ${project.user.lastname || ''}` : 'Utilisateur'}
+                          {project.user?.firstName ? `${project.user.firstName} ${project.user.lastName || ''}` : 'Utilisateur'}
                         </p>
                         <p className="text-xs text-gray-400 flex items-center gap-1 mt-0.5">
                           <User className="w-3.5 h-3.5" />
