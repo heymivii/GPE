@@ -40,7 +40,7 @@ export class GovLinksService {
       const v = await this.verifier.verify(c.url, keywords);
       // FIX 1: also re-validate the post-redirect finalUrl against the official-domain allowlist
       if (v.live && v.matched && isOfficialDomain(v.finalUrl, countryCode)) {
-        verified.push({ ...c, url: v.finalUrl });
+        verified.push({ ...c, url: v.finalUrl, snippet: v.text || c.snippet });
       }
     }
 

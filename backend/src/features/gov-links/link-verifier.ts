@@ -1,18 +1,9 @@
 import axios from 'axios';
+import { PageReader, LocalPageReader, extractText } from './page-reader';
 
+export { extractText } from './page-reader';
 export interface ProbeResult { ok: boolean; finalUrl: string; text: string; }
 export type HttpProbe = (url: string) => Promise<ProbeResult>;
-
-export function extractText(html: string): string {
-  return html
-    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
-    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/&[a-z]+;/gi, ' ')
-    .replace(/\s+/g, ' ')
-    .trim()
-    .toLowerCase();
-}
 
 const defaultProbe: HttpProbe = async (url) => {
   try {
@@ -31,13 +22,17 @@ const defaultProbe: HttpProbe = async (url) => {
 };
 
 export class LinkVerifier {
-  constructor(private readonly probe: HttpProbe = defaultProbe) {}
+  constructor(
+    private readonly probe: HttpProbe = defaultProbe,
+    private readonly reader: PageReader = new LocalPageReader(),
+  ) {}
 
-  async verify(url: string, keywords: string[]): Promise<{ live: boolean; finalUrl: string; matched: boolean }> {
+  async verify(url: string, keywords: string[]): Promise<{ live: boolean; finalUrl: string; matched: boolean; text: string }> {
     const r = await this.probe(url);
-    if (!r.ok) return { live: false, finalUrl: '', matched: false };
-    const hay = extractText(r.text);
+    if (!r.ok) return { live: false, finalUrl: '', matched: false, text: '' };
+    const finalUrl = r.finalUrl || url;
+    const hay = await this.reader.read(finalUrl, r.text);
     const matched = keywords.length === 0 || keywords.some((k) => hay.includes(k.toLowerCase()));
-    return { live: true, finalUrl: r.finalUrl || url, matched };
+    return { live: true, finalUrl, matched, text: hay.slice(0, 600) };
   }
 }
