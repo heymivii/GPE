@@ -19,6 +19,14 @@ export const countryApi = {
     return response.data;
   },
 
+  // Reference list of all countries (name + ISO2) for the admin picker.
+  getAvailable: async (): Promise<{ code: string; name: string }[]> => {
+    const response = await apiClient.get<{ code: string; name: string }[]>(
+      '/country/available',
+    );
+    return response.data;
+  },
+
   getById: async (id: number): Promise<Country> => {
     const response = await apiClient.get<Country>(`/country/${id}`);
     return response.data;

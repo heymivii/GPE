@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -31,6 +32,12 @@ export class CityController {
   @Get()
   findAll() {
     return this.cityService.findAll();
+  }
+
+  // Cities of a country (for the admin city picker): GET /city/available?country=France
+  @Get('available')
+  getAvailable(@Query('country') country: string) {
+    return this.cityService.getAvailableCities(country);
   }
 
   @Get(':id')

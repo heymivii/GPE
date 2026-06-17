@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Country } from './entities/country.entity';
 import { CreateCountryDto } from './dto/create-country.dto';
 import { UpdateCountryDto } from './dto/update-country.dto';
+import restCountriesService from '../../services/restCountries.service';
 
 @Injectable()
 export class CountryService {
@@ -21,6 +22,11 @@ export class CountryService {
     return await this.countryRepository.find({
       relations: ['continent'],
     });
+  }
+
+  // Reference list of all ~250 countries (name + ISO + region + flag) for admin pickers.
+  getAvailableCountries() {
+    return restCountriesService.getAllCountries();
   }
 
   async findOne(id: number): Promise<Country> {

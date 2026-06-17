@@ -37,6 +37,22 @@ export class User {
   @Column({ name: 'country_origin_id', nullable: true })
   countryOriginId?: number;
 
+  // Profil renseigné à l'onboarding (étape "Profil").
+  // status: student | employee | self_employed | unemployed | retired | other
+  @Column({ name: 'status', type: 'varchar', length: 50, nullable: true })
+  status?: string;
+
+  // languageLevel: niveau CECRL dans la langue du pays cible (none | A1 | A2 | B1 | B2 | C1 | C2).
+  @Column({ name: 'language_level', type: 'varchar', length: 10, nullable: true })
+  languageLevel?: string;
+
+  @Column({ name: 'mother_tongue', type: 'varchar', length: 100, nullable: true })
+  motherTongue?: string;
+
+  // Tableau natif Postgres (text[]) — évite le bug du simple-array où [] se relit en [''].
+  @Column({ name: 'spoken_languages', type: 'text', array: true, nullable: true })
+  spokenLanguages?: string[];
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 

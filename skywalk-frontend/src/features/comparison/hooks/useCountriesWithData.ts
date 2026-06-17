@@ -5,6 +5,7 @@ import type { Country } from '../../../types/country'
 import type { CostOfLivingData } from '../../destinations/types'
 import countriesDataJson from '../../../data/countries-data.json'
 import { SUPPORTED_COUNTRY_CODES } from '../../../data/supportedCountries'
+import { propertyInvestmentApi, type PropertyInvestmentData } from '../../../api/propertyInvestment'
 
 interface CountryDataFromJson {
   id: number
@@ -88,6 +89,7 @@ export interface EnrichedCountry {
       category: string
     }>
   }
+  propertyInvestment?: PropertyInvestmentData | null
   uniqueId?: string
   isCity?: boolean
   parentId?: number
@@ -148,7 +150,7 @@ function extractCostOfLivingFromCache(
 }
 
 export function useCountriesWithData() {
-  const { data: apiCountries, isLoading: isLoadingCountries, error } = useQuery({
+  const { data: apiCountries, isLoading: isLoadingCountries, error, refetch } = useQuery({
     queryKey: ['countries'],
     queryFn: countryApi.getAll,
   })
@@ -156,11 +158,17 @@ export function useCountriesWithData() {
   const { data: destinationDetails, isLoading: isLoadingDetails } = useQuery({
     queryKey: ['country-destinations-details'],
     queryFn: async () => {
-      const results: Record<string, { capitalData: CostOfLivingData | null; currency: string; exchangeRates?: Record<string, number>; cities?: import('../../destinations/types').CityDestination[] }> = {}
+      const results: Record<string, { capitalData: CostOfLivingData | null; currency: string; exchangeRates?: Record<string, number>; cities?: import('../../destinations/types').CityDestination[]; propertyInvestment?: PropertyInvestmentData | null }> = {}
       await Promise.all(
         SUPPORTED_COUNTRY_CODES.map(async (code) => {
-          try {
-            const detail = await destinationsApi.getBySlug(code)
+          // Independent fetches: a property-investment failure must not drop cost-of-living, and vice versa.
+          const [detailRes, piRes] = await Promise.allSettled([
+            destinationsApi.getBySlug(code),
+            propertyInvestmentApi.get(code),
+          ])
+          const propertyInvestment = piRes.status === 'fulfilled' ? piRes.value : null
+          if (detailRes.status === 'fulfilled') {
+            const detail = detailRes.value
             const capitalCity =
               detail.cities.find(c => c.isCapital && c.costOfLiving) ||
               detail.cities.find(c => c.costOfLiving)
@@ -169,9 +177,10 @@ export function useCountriesWithData() {
               currency: detail.currency || 'EUR',
               exchangeRates: capitalCity?.costOfLiving?.currency?.exchangeRates,
               cities: detail.cities,
+              propertyInvestment,
             }
-          } catch {
-            results[code] = { capitalData: null, currency: 'EUR', cities: [] }
+          } else {
+            results[code] = { capitalData: null, currency: 'EUR', cities: [], propertyInvestment }
           }
         }),
       )
@@ -230,17 +239,21 @@ export function useCountriesWithData() {
       expatProjectTemplate: jsonData
         ? ((jsonData as unknown as Record<string, unknown>).expatProjectTemplate as EnrichedCountry['expatProjectTemplate'])
         : undefined,
+      propertyInvestment: detailData?.propertyInvestment ?? null,
     }
 
     enrichedCountries.push(baseCountry)
 
     detailData?.cities?.forEach((city) => {
       if (!city.costOfLiving) return
-      const cityId = city.id || city.city_id || Math.random()
+      // Stable, deterministic id. The backend returns `idCity`; fall back to a
+      // name+country composite — never Math.random(), which would change the
+      // uniqueId on every render and break selection / URL hydration.
+      const cityKey = city.idCity ?? city.id ?? city.city_id ?? `${countryCode}-${city.name}`
 
       enrichedCountries.push({
         ...baseCountry,
-        uniqueId: `city-${cityId}`,
+        uniqueId: `city-${cityKey}`,
         isCity: true,
         parentId: country.idCountry,
         countryName: city.name,
@@ -257,5 +270,6 @@ export function useCountriesWithData() {
     data: enrichedCountries,
     isLoading,
     error,
+    refetch,
   }
 }
