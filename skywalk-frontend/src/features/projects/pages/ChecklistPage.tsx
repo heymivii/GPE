@@ -4,6 +4,8 @@ import { CheckCircle, Circle, ChevronDown, ChevronRight, ExternalLink, ArrowLeft
 import { useProject } from '../hooks/useProjectMutations';
 import { useChecklistProgress, getStepDeadline, filterStepsForProject } from '../../dashboard/hooks/useChecklistProgress';
 import { getLinksForStep } from '../../../data/checklist-links';
+import { useGovLink } from '../../../api/useGovLink';
+import OfficialLinkCard from '../../../components/OfficialLinkCard';
 
 // ---- Types ----
 type FilterType = 'all' | 'todo' | 'urgent' | 'late' | 'completed';
@@ -38,34 +40,45 @@ function DeadlineBadge({ daysBeforeDeparture, departureDate }: {
 }
 
 function StepLinks({ category, countryCode }: { category: string; countryCode?: string }) {
+  const { link: govLink } = useGovLink(countryCode, category);
   const links = getLinksForStep(category, countryCode);
-  if (!links) return null;
-  const hasLinks = links.serviceLink || (links.externalLinks && links.externalLinks.length > 0);
-  if (!hasLinks) return null;
+  const hasLinks = links && (links.serviceLink || (links.externalLinks && links.externalLinks.length > 0));
+  if (!govLink && !hasLinks) return null;
 
   return (
-    <div className="flex items-center gap-3 mt-2 flex-wrap">
-      {links.serviceLink && (
-        <Link
-          to={links.serviceLink}
-          onClick={(e) => e.stopPropagation()}
-          className="text-xs text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1"
-        >
-          Voir le service <ArrowRight className="w-3 h-3" />
-        </Link>
+    <div className="flex flex-col gap-2 mt-2">
+      {govLink && (
+        <OfficialLinkCard
+          label={govLink.label}
+          url={govLink.url}
+          verifiedAt={govLink.verifiedAt}
+        />
       )}
-      {links.externalLinks?.map((link) => (
-        <a
-          key={link.url}
-          href={link.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={(e) => e.stopPropagation()}
-          className="text-xs text-gray-400 hover:text-gray-600 flex items-center gap-1"
-        >
-          {link.label} <ExternalLink className="w-3 h-3" />
-        </a>
-      ))}
+      {hasLinks && (
+        <div className="flex items-center gap-3 flex-wrap">
+          {links!.serviceLink && (
+            <Link
+              to={links!.serviceLink}
+              onClick={(e) => e.stopPropagation()}
+              className="text-xs text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1"
+            >
+              Voir le service <ArrowRight className="w-3 h-3" />
+            </Link>
+          )}
+          {links!.externalLinks?.map((link) => (
+            <a
+              key={link.url}
+              href={link.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="text-xs text-gray-400 hover:text-gray-600 flex items-center gap-1"
+            >
+              {link.label} <ExternalLink className="w-3 h-3" />
+            </a>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
