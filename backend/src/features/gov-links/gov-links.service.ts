@@ -21,6 +21,8 @@ export interface GovLinkResult {
 @Injectable()
 export class GovLinksService {
   private readonly logger = new Logger(GovLinksService.name);
+  private static readonly FALLBACK_CONFIDENCE = 0.5;
+
   constructor(
     @InjectRepository(GovLink) private readonly repo: Repository<GovLink>,
     @Inject(SEARCH_PROVIDER) private readonly search: SearchProvider,
@@ -36,16 +38,21 @@ export class GovLinksService {
     const verified: SearchCandidate[] = [];
     for (const c of official) {
       const v = await this.verifier.verify(c.url, keywords);
-      if (v.live && v.matched) verified.push({ ...c, url: v.finalUrl });
+      // FIX 1: also re-validate the post-redirect finalUrl against the official-domain allowlist
+      if (v.live && v.matched && isOfficialDomain(v.finalUrl, countryCode)) {
+        verified.push({ ...c, url: v.finalUrl });
+      }
     }
 
     if (verified.length === 0) {
       return this.persist(countryCode, category, null, null, 0, 'needs_review', query);
     }
     const picked = await this.ranker.pickBest(query, verified);
+    // FIX 4: log the fallback and use named constant
     if (!picked) {
+      this.logger.warn(`LLM ranker unavailable for ${countryCode}/${category}; using top verified official link as fallback.`);
       const top = verified[0];
-      return this.persist(countryCode, category, top.url, top.title, 0.5, 'active', query);
+      return this.persist(countryCode, category, top.url, top.title, GovLinksService.FALLBACK_CONFIDENCE, 'active', query);
     }
     const chosen = verified[picked.index];
     return this.persist(countryCode, category, chosen.url, picked.label || chosen.title, picked.confidence, 'active', query);
@@ -56,11 +63,13 @@ export class GovLinksService {
     confidence: number, status: GovLinkStatus, query: string,
   ): Promise<GovLinkResult> {
     if (url) {
-      const entity = this.repo.create({
+      // FIX 2: upsert by (countryCode, category) — one row per pair, no duplicates
+      const data = {
         countryCode, category, url, label: label ?? url, sourceQuery: query,
         confidence, verifiedAt: new Date(), status,
-      });
-      await this.repo.save(entity);
+      };
+      const existing = await this.repo.findOne({ where: { countryCode, category } });
+      await this.repo.save(existing ? { ...existing, ...data } : this.repo.create(data));
     }
     return { countryCode, category, url, label, confidence, status };
   }
