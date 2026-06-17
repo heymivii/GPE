@@ -1,7 +1,7 @@
 import { useMemo, useCallback } from 'react'
 import {
   MapPin, DollarSign, Globe, TrendingUp, Lock,
-  Thermometer, Receipt, Zap, ArrowRightLeft, Users, Home, Activity
+  Thermometer, Receipt, Zap, Users, Home, Activity
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import type { EnrichedCountry } from '../hooks/useCountriesWithData'
@@ -9,7 +9,7 @@ import { ComparisonSection } from './ComparisonSection'
 import { ComparisonRow } from './rows/ComparisonRow'
 import { ComparisonRowWithBar } from './rows/ComparisonRowWithBar'
 import { useTranslation } from 'react-i18next'
-import { useCurrency, DISPLAY_CURRENCIES } from '../../../contexts/CurrencyContext'
+import { useCurrency } from '../../../contexts/CurrencyContext'
 import { useMigrationData } from '../hooks/useMigrationData'
 import { useExchangeRates } from '../../../hooks/useExchangeRates'
 import { getLocale, SUPPORTED_COUNTRIES } from '../../../data/supportedCountries'
@@ -130,10 +130,10 @@ function RadarChart({ data, countryNames, colors }: {
 
 export default function ComparisonTable({ countries, isAuthenticated = true, allDestinations = [] }: ComparisonTableProps) {
   const { t, i18n } = useTranslation()
-  const { displayCurrency, setDisplayCurrency, displaySymbol, convert } = useCurrency()
+  const { displaySymbol, convert } = useCurrency()
   const { getByIso2 } = useMigrationData()
   // Live USD-based FX table fed into convert() — the curated data ships empty rates.
-  const { rates: fxRates, error: fxError } = useExchangeRates()
+  const { rates: fxRates } = useExchangeRates()
   const colClass = countries.length === 2 ? 'grid-cols-2' : 'grid-cols-3'
   const locale = getLocale(i18n.language)
 
@@ -325,32 +325,6 @@ export default function ComparisonTable({ countries, isAuthenticated = true, all
             ))}
           </div>
         </div>
-      </div>
-
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 flex flex-wrap items-center gap-3">
-        <div className="flex items-center gap-2 text-sm font-medium text-gray-500">
-          <ArrowRightLeft className="w-4 h-4" />
-          <span>{t('comparison.currencyLabel')}</span>
-        </div>
-        <div className="flex flex-wrap gap-1.5">
-          {DISPLAY_CURRENCIES.map(cur => (
-            <button
-              key={cur.code}
-              onClick={() => setDisplayCurrency(cur.code)}
-              className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-all ${displayCurrency === cur.code
-                ? 'bg-[#5EA3C0] text-white shadow-sm'
-                : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
-                }`}
-            >
-              {cur.symbol} {cur.code}
-            </button>
-          ))}
-        </div>
-        {fxError && (
-          <span className="w-full text-xs text-amber-600">
-            {t('comparison.fxUnavailable', { defaultValue: 'Taux de change indisponibles — montants affichés en devise locale.' })}
-          </span>
-        )}
       </div>
 
       <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-8">

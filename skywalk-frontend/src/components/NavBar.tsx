@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Search, Menu, X, ChevronDown, Globe, LogOut, User, LayoutDashboard, FolderKanban, Compass, BarChart3, MapPin, Briefcase, BookOpen, ShieldAlert } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import GlobalSearchModal from './GlobalSearchModal';
+import CurrencySelector from './CurrencySelector';
 
 const languages = [
   { code: 'fr', label: 'Français', flag: '🇫🇷' },
@@ -168,6 +169,8 @@ export default function NavBar() {
               </kbd>
             </button>
 
+            <CurrencySelector />
+
             <div className="relative hidden sm:block" ref={langRef}>
               <button
                 className="flex items-center gap-1.5 px-2.5 py-2 border border-gray-200 rounded-lg bg-white hover:bg-gray-50 text-gray-600 text-sm"
@@ -318,6 +321,10 @@ export default function NavBar() {
                   {lang.label}
                 </button>
               ))}
+            </div>
+
+            <div className="pt-3 border-t border-gray-100">
+              <CurrencySelector />
             </div>
 
             <div className="pt-3 border-t border-gray-100">

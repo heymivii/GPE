@@ -14,10 +14,8 @@ import { getVisaDataForCountry } from '../../../data/visa-data';
 import type { VisaCountryData } from '../../../data/visa-data';
 import { useAuth } from '../../../hooks/useAuth';
 import { SUPPORTED_COUNTRIES, getCountryMapping } from '../../../data/supportedCountries';
-import CurrencySelector from '../../../components/CurrencySelector';
 import { useCurrency } from '../../../contexts/CurrencyContext';
 import { expatriationProjectApi } from '../../../api/expatriation-project';
-import { costOfLivingApi } from '../../../api/costOfLiving';
 import countriesData from '../../../data/countries-data.json';
 
 function parseAmount(raw: string): number | null {
@@ -76,21 +74,11 @@ export default function VisaStats({ countryName }: VisaStatsProps) {
   const localCur = countryCode === 'US' ? 'USD' : countryCode === 'CH' ? 'CHF' : countryCode === 'JP' ? 'JPY' : 'EUR';
   const same = isSameCurrency(localCur);
 
-  const { data: colData } = useQuery({
-    queryKey: ['cost-of-living', mapping.city, mapping.country],
-    queryFn: () => costOfLivingApi.getCostOfLiving(mapping.city, mapping.country),
-    staleTime: 60 * 60 * 1000,
-    gcTime: 2 * 60 * 60 * 1000,
-    retry: 1,
-    enabled: !isGeneral,
-  });
-  const rates = colData?.currency?.exchangeRates ?? null;
-
   const fmtCost = (raw: string): string => {
-    if (same || !rates) return raw;
+    if (same) return raw;
     const num = parseAmount(raw);
     if (num === null) return raw;
-    return formatPrice(num, localCur, rates);
+    return formatPrice(num, localCur);
   };
 
   const [visaData, setVisaData] = useState<VisaCountryData | undefined>(
@@ -174,7 +162,6 @@ export default function VisaStats({ countryName }: VisaStatsProps) {
           {visaData.flag} {t('visa.visaTypes')} — {visaData.countryName}
         </h2>
         <div className="flex items-center gap-2 flex-wrap justify-end">
-          <CurrencySelector />
           {!same && (
             <div className="flex items-center space-x-1.5 px-3 py-1.5 bg-gray-100 rounded-full">
               <ArrowRightLeft className="w-3.5 h-3.5 text-gray-500" />
