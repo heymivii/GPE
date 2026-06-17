@@ -35,7 +35,10 @@ export class CityController {
   }
 
   // Cities of a country (for the admin city picker): GET /city/available?country=France
+  // Admin-only: it triggers outbound calls to a third-party geo API.
   @Get('available')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   getAvailable(@Query('country') country: string) {
     return this.cityService.getAvailableCities(country);
   }

@@ -37,7 +37,10 @@ export class CountryController {
   }
 
   // All ~250 countries from restCountries (for the admin country picker).
+  // Admin-only: it triggers outbound calls to a third-party geo API.
   @Get('available')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   getAvailable() {
     return this.countryService.getAvailableCountries();
   }
