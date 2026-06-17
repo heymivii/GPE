@@ -498,7 +498,7 @@
       }
     },
     {
-      "id": 2,
+      "id": 5,
       "name": "Canada",
       "code": "CA",
       "currency": "CAD",
@@ -1025,7 +1025,7 @@
       }
     },
     {
-      "id": 3,
+      "id": 2,
       "name": "Suisse",
       "code": "CH",
       "currency": "CHF",
@@ -4610,7 +4610,7 @@
       }
     },
     {
-      "id": 16,
+      "id": 4,
       "name": "Japon",
       "code": "JP",
       "currency": "JPY",
@@ -6178,7 +6178,7 @@
       }
     },
     {
-      "id": 13,
+      "id": 3,
       "name": "États-Unis",
       "code": "US",
       "currency": "USD",
