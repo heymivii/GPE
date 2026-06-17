@@ -1,7 +1,7 @@
 import { useMemo, useCallback } from 'react'
 import {
   MapPin, DollarSign, Globe, TrendingUp, Lock,
-  Thermometer, Receipt, Zap, ArrowRightLeft, Users, Home
+  Thermometer, Receipt, Zap, ArrowRightLeft, Users, Home, Activity
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import type { EnrichedCountry } from '../hooks/useCountriesWithData'
@@ -199,6 +199,9 @@ export default function ComparisonTable({ countries, isAuthenticated = true, all
 
   // Property-investment formatters (ratios, percentages, GDP→display currency).
   const pi = (c: EnrichedCountry) => c.propertyInvestment
+  const qol = (c: EnrichedCountry) => c.qualityOfLife
+  const fmtIndex = (v: number | null | undefined): string =>
+    v == null ? t('comparison.fields.notSpecified') : v.toLocaleString(locale)
   const fmtRatio = (v: number | null | undefined): string =>
     v == null ? t('comparison.fields.notSpecified') : v.toLocaleString(locale)
   const fmtPct = (v: number | null | undefined): string =>
@@ -572,6 +575,48 @@ export default function ComparisonTable({ countries, isAuthenticated = true, all
                   <p className="text-[10px] sm:text-xs text-gray-400 flex items-center gap-1.5">
                     <Home className="w-3.5 h-3.5" />
                     {t('comparison.numbeoPropertySource', { defaultValue: 'Source : Numbeo (property investment) — indicateurs au niveau pays.' })}
+                  </p>
+                </div>
+              </ComparisonSection>
+
+              <ComparisonSection
+                title={t('comparison.sections.qualityOfLife', { defaultValue: 'Qualité de vie' })}
+                icon={<Activity className="w-5 h-5" />}
+              >
+                <ComparisonRowWithBar countries={countries}
+                  label={t('comparison.fields.qualityOfLifeIndex', { defaultValue: 'Indice qualité de vie' })}
+                  values={countries.map(c => ({ raw: qol(c)?.qualityOfLife ?? null, display: fmtIndex(qol(c)?.qualityOfLife) }))}
+                  highlightBest="highest" colClass={colClass} colors={RADAR_COLORS}
+                />
+                <ComparisonRowWithBar countries={countries}
+                  label={t('comparison.fields.purchasingPower', { defaultValue: "Pouvoir d'achat" })}
+                  values={countries.map(c => ({ raw: qol(c)?.purchasingPower ?? null, display: fmtIndex(qol(c)?.purchasingPower) }))}
+                  highlightBest="highest" colClass={colClass} colors={RADAR_COLORS}
+                />
+                <ComparisonRowWithBar countries={countries}
+                  label={t('comparison.fields.safetyIndex', { defaultValue: 'Sécurité' })}
+                  values={countries.map(c => ({ raw: qol(c)?.safety ?? null, display: fmtIndex(qol(c)?.safety) }))}
+                  highlightBest="highest" colClass={colClass} colors={RADAR_COLORS}
+                />
+                <ComparisonRowWithBar countries={countries}
+                  label={t('comparison.fields.healthCareIndex', { defaultValue: 'Santé' })}
+                  values={countries.map(c => ({ raw: qol(c)?.healthCare ?? null, display: fmtIndex(qol(c)?.healthCare) }))}
+                  highlightBest="highest" colClass={colClass} colors={RADAR_COLORS}
+                />
+                <ComparisonRowWithBar countries={countries}
+                  label={t('comparison.fields.pollutionIndex', { defaultValue: 'Pollution' })}
+                  values={countries.map(c => ({ raw: qol(c)?.pollution ?? null, display: fmtIndex(qol(c)?.pollution) }))}
+                  highlightBest="lowest" colClass={colClass} colors={RADAR_COLORS}
+                />
+                <ComparisonRowWithBar countries={countries}
+                  label={t('comparison.fields.climateIndex', { defaultValue: 'Climat' })}
+                  values={countries.map(c => ({ raw: qol(c)?.climate ?? null, display: fmtIndex(qol(c)?.climate) }))}
+                  highlightBest="highest" colClass={colClass} colors={RADAR_COLORS}
+                />
+                <div className="px-4 sm:px-8 py-3 bg-gray-50/50 border-t border-gray-100">
+                  <p className="text-[10px] sm:text-xs text-gray-400 flex items-center gap-1.5">
+                    <Activity className="w-3.5 h-3.5" />
+                    {t('comparison.numbeoQolSource', { defaultValue: 'Source : Numbeo (quality of life) — indices au niveau pays.' })}
                   </p>
                 </div>
               </ComparisonSection>

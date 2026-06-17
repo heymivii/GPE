@@ -6,6 +6,7 @@ import type { CostOfLivingData } from '../../destinations/types'
 import countriesDataJson from '../../../data/countries-data.json'
 import { SUPPORTED_COUNTRY_CODES } from '../../../data/supportedCountries'
 import { propertyInvestmentApi, type PropertyInvestmentData } from '../../../api/propertyInvestment'
+import { qualityOfLifeApi, type QualityOfLifeData } from '../../../api/qualityOfLife'
 
 interface CountryDataFromJson {
   id: number
@@ -90,6 +91,7 @@ export interface EnrichedCountry {
     }>
   }
   propertyInvestment?: PropertyInvestmentData | null
+  qualityOfLife?: QualityOfLifeData | null
   uniqueId?: string
   isCity?: boolean
   parentId?: number
@@ -158,15 +160,17 @@ export function useCountriesWithData() {
   const { data: destinationDetails, isLoading: isLoadingDetails } = useQuery({
     queryKey: ['country-destinations-details'],
     queryFn: async () => {
-      const results: Record<string, { capitalData: CostOfLivingData | null; currency: string; exchangeRates?: Record<string, number>; cities?: import('../../destinations/types').CityDestination[]; propertyInvestment?: PropertyInvestmentData | null }> = {}
+      const results: Record<string, { capitalData: CostOfLivingData | null; currency: string; exchangeRates?: Record<string, number>; cities?: import('../../destinations/types').CityDestination[]; propertyInvestment?: PropertyInvestmentData | null; qualityOfLife?: QualityOfLifeData | null }> = {}
       await Promise.all(
         SUPPORTED_COUNTRY_CODES.map(async (code) => {
-          // Independent fetches: a property-investment failure must not drop cost-of-living, and vice versa.
-          const [detailRes, piRes] = await Promise.allSettled([
+          // Independent fetches: one source failing must not drop the others.
+          const [detailRes, piRes, qolRes] = await Promise.allSettled([
             destinationsApi.getBySlug(code),
             propertyInvestmentApi.get(code),
+            qualityOfLifeApi.get(code),
           ])
           const propertyInvestment = piRes.status === 'fulfilled' ? piRes.value : null
+          const qualityOfLife = qolRes.status === 'fulfilled' ? qolRes.value : null
           if (detailRes.status === 'fulfilled') {
             const detail = detailRes.value
             const capitalCity =
@@ -178,9 +182,10 @@ export function useCountriesWithData() {
               exchangeRates: capitalCity?.costOfLiving?.currency?.exchangeRates,
               cities: detail.cities,
               propertyInvestment,
+              qualityOfLife,
             }
           } else {
-            results[code] = { capitalData: null, currency: 'EUR', cities: [], propertyInvestment }
+            results[code] = { capitalData: null, currency: 'EUR', cities: [], propertyInvestment, qualityOfLife }
           }
         }),
       )
@@ -240,6 +245,7 @@ export function useCountriesWithData() {
         ? ((jsonData as unknown as Record<string, unknown>).expatProjectTemplate as EnrichedCountry['expatProjectTemplate'])
         : undefined,
       propertyInvestment: detailData?.propertyInvestment ?? null,
+      qualityOfLife: detailData?.qualityOfLife ?? null,
     }
 
     enrichedCountries.push(baseCountry)
