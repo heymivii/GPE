@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { countryApi } from '../../../api/country';
+import { countryApi, type UpdateCountryDto } from '../../../api/country';
+import type { Country } from '../../../types/country';
 import { continentApi } from '../../../api/continent';
 import { adminApi } from '../../../api/admin';
 import { cityApi } from '../../../api/city';
@@ -48,7 +49,7 @@ export default function AdminCountries() {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [modalOpen, setModalOpen] = useState(false);
-  const [editingCountry, setEditingCountry] = useState<any | null>(null);
+  const [editingCountry, setEditingCountry] = useState<Country | null>(null);
 
   // Filters & Search
   const [searchQuery, setSearchQuery] = useState('');
@@ -60,10 +61,9 @@ export default function AdminCountries() {
   const [continentId, setContinentId] = useState<number | ''>('');
 
   // Fetch Countries & Continents
-
-  const { data: countries = [] as any[], isLoading: countriesLoading, refetch, isRefetching } = useQuery<any[]>({
+  const { data: countries = [], isLoading: countriesLoading, refetch, isRefetching } = useQuery({
     queryKey: ['admin-countries-list'],
-    queryFn: countryApi.getAll as any,
+    queryFn: countryApi.getAll,
   });
 
   const { data: continents = [], isLoading: continentsLoading } = useQuery({
@@ -398,7 +398,7 @@ export default function AdminCountries() {
 
   // Filter & Search Logic
   const filteredCountries = useMemo(() => {
-    return countries.filter((c: any) => {
+    return countries.filter((c) => {
       const matchesSearch = c.countryName.toLowerCase().includes(searchQuery.toLowerCase()) || 
         (c.isoCode && c.isoCode.toLowerCase().includes(searchQuery.toLowerCase()));
       const matchesContinent = selectedContinentFilter === 'all' || 
@@ -423,7 +423,7 @@ export default function AdminCountries() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: number; data: any }) => countryApi.update(id, data),
+    mutationFn: ({ id, data }: { id: number; data: UpdateCountryDto }) => countryApi.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-countries-list'] });
       queryClient.invalidateQueries({ queryKey: ['destinations-list'] });
@@ -470,7 +470,7 @@ export default function AdminCountries() {
     setModalOpen(true);
   };
 
-  const openEditModal = (country: any) => {
+  const openEditModal = (country: Country) => {
     setEditingCountry(country);
     setCountryName(country.countryName);
     setIsoCode(country.isoCode || '');

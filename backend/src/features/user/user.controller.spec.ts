@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
+import { AdminLogService } from '../admin-log/admin-log.service';
 
 const mockService = () => ({
   findOne: jest.fn(),
@@ -16,7 +17,10 @@ describe('UserController', () => {
     service = mockService();
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UserController],
-      providers: [{ provide: UserService, useValue: service }],
+      providers: [
+        { provide: UserService, useValue: service },
+        { provide: AdminLogService, useValue: { log: jest.fn() } },
+      ],
     }).compile();
     controller = module.get<UserController>(UserController);
   });
