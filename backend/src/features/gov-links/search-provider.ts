@@ -5,6 +5,18 @@ export interface SearchProvider {
   search(query: string, allowedDomains: string[]): Promise<SearchCandidate[]>;
 }
 
+export class SearxngSearchProvider implements SearchProvider {
+  constructor(private readonly baseUrl = process.env.SEARXNG_BASE_URL ?? 'http://localhost:8888') {}
+
+  async search(query: string, _allowedDomains: string[]): Promise<SearchCandidate[]> {
+    const { data } = await axios.get<{ results?: Array<{ url: string; title: string; content: string }> }>(
+      `${this.baseUrl}/search`,
+      { params: { q: query, format: 'json' }, timeout: 15000 },
+    );
+    return (data.results ?? []).map((r) => ({ url: r.url, title: r.title, snippet: r.content }));
+  }
+}
+
 export class TavilySearchProvider implements SearchProvider {
   constructor(
     private readonly apiKey = process.env.TAVILY_API_KEY ?? '',
