@@ -38,6 +38,22 @@ export class GovLinksService {
     return this.repo.find({ where, order: { countryCode: 'ASC', category: 'ASC' } });
   }
 
+  // Reachability of the local AI (Ollama) and the search engine, for the admin UI.
+  async checkHealth(): Promise<{
+    llm: { ok: boolean; model: string; baseUrl: string };
+    search: { ok: boolean; provider: string };
+  }> {
+    const [llmOk, searchOk] = await Promise.all([this.ranker.health(), this.search.health()]);
+    return {
+      llm: {
+        ok: llmOk,
+        model: process.env.LLM_MODEL ?? 'qwen2.5:7b-instruct',
+        baseUrl: process.env.LLM_BASE_URL ?? 'http://localhost:11434/v1',
+      },
+      search: { ok: searchOk, provider: process.env.SEARCH_PROVIDER === 'tavily' ? 'tavily' : 'searxng' },
+    };
+  }
+
   async generate(countryCode: string, category: string): Promise<GovLinkResult> {
     const { query, keywords } = buildQuery(this.countryName(countryCode), category);
     const raw = await this.search.search(query, officialSuffixes(countryCode));

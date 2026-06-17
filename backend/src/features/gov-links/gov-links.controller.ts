@@ -11,6 +11,13 @@ import { CANONICAL_CATEGORIES, SUPPORTED_COUNTRIES } from './gov-links.types';
 export class GovLinksController {
   constructor(private readonly service: GovLinksService) {}
 
+  @Get('health')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  health() {
+    return this.service.checkHealth();
+  }
+
   @Get()
   @UseGuards(JwtAuthGuard)
   list(

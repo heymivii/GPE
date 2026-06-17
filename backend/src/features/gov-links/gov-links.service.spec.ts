@@ -65,6 +65,19 @@ describe('GovLinksService.generate', () => {
     expect(result).toEqual([{ id: 1 }]);
   });
 
+  it('checkHealth aggregates provider health + labels', async () => {
+    const repo = makeRepo();
+    const search = { search: jest.fn(), health: jest.fn(async () => false) };
+    const verifier = { verify: jest.fn() };
+    const ranker = { pickBest: jest.fn(), health: jest.fn(async () => true) };
+    const svc = new GovLinksService(repo as never, search as never, verifier as never, ranker as never);
+    const res = await svc.checkHealth();
+    expect(res.llm.ok).toBe(true);
+    expect(res.search.ok).toBe(false);
+    expect(res.search.provider).toBe('searxng');
+    expect(typeof res.llm.model).toBe('string');
+  });
+
   // FIX 2: upsert updates existing row (id: 7) rather than creating a duplicate
   it('upsert updates existing row', async () => {
     const existingRow = { id: 7, countryCode: 'FR', category: 'visa' };

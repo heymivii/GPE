@@ -5,6 +5,7 @@ describe('GovLinksController', () => {
   const mockService = {
     generate: jest.fn(async (cc: string, cat: string) => ({ countryCode: cc, category: cat, url: null, label: null, confidence: 0, status: 'needs_review' })),
     list: jest.fn(async (filter: object) => [{ id: 1, ...filter }]),
+    checkHealth: jest.fn(async () => ({ llm: { ok: true, model: 'm', baseUrl: 'b' }, search: { ok: false, provider: 'searxng' } })),
   };
   let ctrl: GovLinksController;
 
@@ -30,5 +31,11 @@ describe('GovLinksController', () => {
     const result = await ctrl.list('FR', 'visa', 'active');
     expect(mockService.list).toHaveBeenCalledWith({ countryCode: 'FR', category: 'visa', status: 'active' });
     expect(result).toEqual([{ id: 1, countryCode: 'FR', category: 'visa', status: 'active' }]);
+  });
+
+  it('health delegates to service.checkHealth', async () => {
+    const result = await ctrl.health();
+    expect(mockService.checkHealth).toHaveBeenCalled();
+    expect(result).toEqual({ llm: { ok: true, model: 'm', baseUrl: 'b' }, search: { ok: false, provider: 'searxng' } });
   });
 });

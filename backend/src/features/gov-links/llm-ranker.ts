@@ -6,6 +6,7 @@ export interface LlmRanker {
     query: string,
     candidates: SearchCandidate[],
   ): Promise<RankResult | null>;
+  health(): Promise<boolean>;
 }
 
 // Anti-hallucination guard: the model may only return an index INTO the candidate list.
@@ -33,6 +34,18 @@ export class OllamaRanker implements LlmRanker {
     private readonly model = process.env.LLM_MODEL ?? 'qwen2.5:7b-instruct',
     private readonly apiKey = process.env.LLM_API_KEY ?? 'ollama',
   ) {}
+
+  async health(): Promise<boolean> {
+    try {
+      await axios.get(`${this.baseUrl}/models`, {
+        timeout: 3000,
+        headers: { Authorization: `Bearer ${this.apiKey}` },
+      });
+      return true;
+    } catch {
+      return false;
+    }
+  }
 
   async pickBest(
     query: string,

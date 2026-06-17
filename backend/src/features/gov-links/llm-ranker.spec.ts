@@ -1,4 +1,7 @@
-import { clampRankResult } from './llm-ranker';
+import axios from 'axios';
+import { clampRankResult, OllamaRanker } from './llm-ranker';
+
+jest.mock('axios');
 
 describe('clampRankResult', () => {
   const candidates = [{ url: 'a', title: 't', snippet: 's' }, { url: 'b', title: 't', snippet: 's' }];
@@ -11,5 +14,27 @@ describe('clampRankResult', () => {
   });
   it('clamps confidence to 0..1', () => {
     expect(clampRankResult({ index: 0, label: 'A', confidence: 5 }, candidates)?.confidence).toBe(1);
+  });
+});
+
+describe('OllamaRanker.health()', () => {
+  const mockedAxios = axios as jest.Mocked<typeof axios>;
+
+  beforeEach(() => jest.clearAllMocks());
+
+  it('returns true when GET /models resolves', async () => {
+    mockedAxios.get = jest.fn().mockResolvedValue({ data: {} });
+    const ranker = new OllamaRanker('http://localhost:11434/v1', 'qwen2.5:7b-instruct', 'ollama');
+    expect(await ranker.health()).toBe(true);
+    expect(mockedAxios.get).toHaveBeenCalledWith(
+      'http://localhost:11434/v1/models',
+      expect.objectContaining({ timeout: 3000 }),
+    );
+  });
+
+  it('returns false when GET /models rejects', async () => {
+    mockedAxios.get = jest.fn().mockRejectedValue(new Error('ECONNREFUSED'));
+    const ranker = new OllamaRanker('http://localhost:11434/v1', 'qwen2.5:7b-instruct', 'ollama');
+    expect(await ranker.health()).toBe(false);
   });
 });
