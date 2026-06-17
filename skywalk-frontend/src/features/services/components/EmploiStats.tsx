@@ -10,6 +10,7 @@ import type { CleanedCostOfLivingData } from '../../../api/costOfLiving';
 import type { AdzunaSearchResponse, AdzunaJobDto } from '../../../features/search/types/job';
 import { useCurrency } from '../../../contexts/CurrencyContext';
 import { getCountryMapping, getCurrentLocale } from '../../../data/supportedCountries';
+import { adzunaCodeFromSlug } from '../../../data/countryMappings';
 import { formatNumber, formatCompact } from '../../../lib/formatters';
 import {
   emploiDataByCountry,
@@ -24,24 +25,6 @@ interface EmploiStatsProps {
   countryName?: string;
   cityName?: string;
 }
-
-const SLUG_TO_ADZUNA: Record<string, string> = {
-  france: 'fr',
-  'royaume-uni': 'gb',
-  suisse: 'ch',
-  'etats-unis': 'us',
-  canada: 'ca',
-  allemagne: 'de',
-  espagne: 'es',
-  italie: 'it',
-  belgique: 'be',
-  'pays-bas': 'nl',
-  australie: 'au',
-  'nouvelle-zelande': 'nz',
-  bresil: 'br',
-  mexique: 'mx',
-  singapour: 'sg',
-};
 
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
@@ -58,7 +41,7 @@ export default function EmploiStats({ countryName, cityName }: EmploiStatsProps)
   const { t } = useTranslation();
   const countryKey = countryName || 'france';
   const mapping = getCountryMapping(countryName);
-  const adzunaCode = SLUG_TO_ADZUNA[countryKey];
+  const adzunaCode = adzunaCodeFromSlug(countryKey);
   const { formatPrice, isSameCurrency, displayCurrency } = useCurrency();
 
   const apiCity = cityName || mapping.city;
