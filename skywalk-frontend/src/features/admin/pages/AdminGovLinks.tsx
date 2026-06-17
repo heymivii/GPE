@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { govLinksApi, type GovLink } from '../../../api/govLinks';
 import { SUPPORTED_COUNTRIES } from '../../../data/supportedCountries';
 import { useState, useMemo } from 'react';
-import { Loader2, RefreshCw, Link2, ExternalLink } from 'lucide-react';
+import { Loader2, RefreshCw, Link2, ExternalLink, CheckCircle2, XCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const CATEGORIES = ['visa', 'demarches', 'logement', 'sante'] as const;
@@ -34,6 +34,12 @@ export default function AdminGovLinks() {
   const [activeGenKey, setActiveGenKey] = useState<string | null>(null);
 
   const [filterCountry, setFilterCountry] = useState<string>('all');
+
+  const { data: health } = useQuery({
+    queryKey: ['gov-links-health'],
+    queryFn: govLinksApi.health,
+    refetchInterval: 20000,
+  });
 
   const { data: links = [], isLoading, isError } = useQuery({
     queryKey: ['admin-gov-links'],
@@ -104,6 +110,55 @@ export default function AdminGovLinks() {
             </p>
           </div>
         </div>
+      </div>
+
+      {/* Services status banner */}
+      <div className="bg-white rounded-2xl border border-gray-150 shadow-sm p-4 space-y-2">
+        <h2 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">État des services</h2>
+        <div className="flex flex-wrap gap-3">
+          {/* LLM status */}
+          {health === undefined ? (
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-500">
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              Vérification…
+            </span>
+          ) : health.llm.ok ? (
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-green-100 text-green-700">
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              IA locale connectée — {health.llm.model}
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-red-100 text-red-700">
+              <XCircle className="w-3.5 h-3.5" />
+              IA locale non connectée — lancez Ollama
+            </span>
+          )}
+
+          {/* Search status */}
+          {health === undefined ? (
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-500">
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              Vérification…
+            </span>
+          ) : health.search.ok ? (
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-green-100 text-green-700">
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              Recherche ({health.search.provider}) connectée
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-red-100 text-red-700">
+              <XCircle className="w-3.5 h-3.5" />
+              Recherche ({health.search.provider}) non connectée
+            </span>
+          )}
+        </div>
+
+        {/* Fallback note when LLM is down */}
+        {health !== undefined && !health.llm.ok && (
+          <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-4 py-2 mt-2">
+            Sans IA locale, la génération reste possible mais le lien est choisi par repli (1ᵉʳ lien officiel vérifié), sans tri par l'IA.
+          </p>
+        )}
       </div>
 
       {/* Generation Panel */}

@@ -21,6 +21,11 @@ export interface GovLinkGenerateResult {
   status: string;
 }
 
+export interface GovLinksHealth {
+  llm: { ok: boolean; model: string; baseUrl: string };
+  search: { ok: boolean; provider: string };
+}
+
 export const govLinksApi = {
   list: async (params?: { country?: string; category?: string; status?: string }): Promise<GovLink[]> => {
     const { data } = await apiClient.get<GovLink[]>('/gov-links', { params });
@@ -28,6 +33,10 @@ export const govLinksApi = {
   },
   generate: async (country: string, category: string): Promise<GovLinkGenerateResult> => {
     const { data } = await apiClient.post<GovLinkGenerateResult>('/gov-links/generate', null, { params: { country, category } });
+    return data;
+  },
+  health: async (): Promise<GovLinksHealth> => {
+    const { data } = await apiClient.get<GovLinksHealth>('/gov-links/health');
     return data;
   },
 };
