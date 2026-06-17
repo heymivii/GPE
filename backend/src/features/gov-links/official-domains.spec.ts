@@ -15,4 +15,19 @@ describe('isOfficialDomain', () => {
   it('returns false on a malformed url', () => {
     expect(isOfficialDomain('not a url', 'FR')).toBe(false);
   });
+
+  // Allowlist-bypass guard: a look-alike suffix WITHOUT the dot boundary must be rejected.
+  it('rejects look-alike domains that only share the suffix (no dot boundary)', () => {
+    expect(isOfficialDomain('https://evilgouv.fr/visa', 'FR')).toBe(false);
+    expect(isOfficialDomain('https://notservice-public.fr', 'FR')).toBe(false);
+    expect(isOfficialDomain('https://fakego.jp', 'JP')).toBe(false);
+    expect(isOfficialDomain('https://notadmin.ch', 'CH')).toBe(false);
+    expect(isOfficialDomain('https://mygov.com', 'US')).toBe(false);
+  });
+
+  it('still accepts the bare official host itself and real subdomains', () => {
+    expect(isOfficialDomain('https://gouv.fr', 'FR')).toBe(true);
+    expect(isOfficialDomain('https://www.moj.go.jp/abc', 'JP')).toBe(true);
+    expect(isOfficialDomain('https://sem.admin.ch', 'CH')).toBe(true);
+  });
 });

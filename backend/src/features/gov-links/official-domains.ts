@@ -17,7 +17,10 @@ export function isOfficialDomain(url: string, countryCode: string): boolean {
   } catch {
     return false;
   }
-  return officialSuffixes(countryCode).some(
-    (sfx) => host === sfx || host.endsWith(sfx.startsWith('.') ? sfx : `.${sfx}`) || host.endsWith(sfx),
-  );
+  // Match exact host OR a proper subdomain only. The dot boundary is critical:
+  // a bare `endsWith('gouv.fr')` would wrongly accept `evilgouv.fr`.
+  return officialSuffixes(countryCode).some((sfx) => {
+    const bare = sfx.replace(/^\./, '');
+    return host === bare || host.endsWith(`.${bare}`);
+  });
 }
