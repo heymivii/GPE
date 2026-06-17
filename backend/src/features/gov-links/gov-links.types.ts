@@ -18,3 +18,6 @@ export const CANONICAL_CATEGORIES = [
   'education', 'culture', 'business', 'visa', 'banque', 'demarches-admin',
 ] as const;
 export type Category = (typeof CANONICAL_CATEGORIES)[number];
+
+export const SUPPORTED_COUNTRIES = ['FR', 'US', 'JP', 'CH'] as const;
+export type SupportedCountry = (typeof SUPPORTED_COUNTRIES)[number];

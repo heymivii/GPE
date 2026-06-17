@@ -1,9 +1,10 @@
-import { Controller, Post, Query, UseGuards } from '@nestjs/common';
+import { BadRequestException, Controller, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { GovLinksService } from './gov-links.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { CANONICAL_CATEGORIES, SUPPORTED_COUNTRIES } from './gov-links.types';
 
 @ApiTags('Gov Links')
 @Controller('gov-links')
@@ -14,6 +15,13 @@ export class GovLinksController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   generate(@Query('country') country: string, @Query('category') category: string) {
-    return this.service.generate(country, category);
+    const cc = (country ?? '').toUpperCase();
+    if (!(SUPPORTED_COUNTRIES as readonly string[]).includes(cc)) {
+      throw new BadRequestException(`Unsupported country: ${country ?? ''}`);
+    }
+    if (!(CANONICAL_CATEGORIES as readonly string[]).includes(category)) {
+      throw new BadRequestException(`Unknown category: ${category ?? ''}`);
+    }
+    return this.service.generate(cc, category);
   }
 }
