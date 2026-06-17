@@ -5,6 +5,14 @@ import { IsOptional, IsString, IsArray } from 'class-validator';
 export class UpdateUserDto extends PartialType(CreateUserDto) {
   @IsOptional()
   @IsString()
+  status?: string;
+
+  @IsOptional()
+  @IsString()
+  languageLevel?: string;
+
+  @IsOptional()
+  @IsString()
   motherTongue?: string;
 
   @IsOptional()

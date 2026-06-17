@@ -44,6 +44,14 @@ export const cityApi = {
     return response.data;
   },
 
+  // Reference list of a country's cities (free geo source) for the admin picker.
+  getAvailable: async (country: string): Promise<string[]> => {
+    const response = await apiClient.get<string[]>('/city/available', {
+      params: { country },
+    });
+    return response.data;
+  },
+
   getById: async (id: number): Promise<City> => {
     const response = await apiClient.get<City>(`/city/${id}`);
     return response.data;

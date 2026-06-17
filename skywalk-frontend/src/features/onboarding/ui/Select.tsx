@@ -45,6 +45,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(({
         onChange={handleChange}
         disabled={disabled}
         aria-describedby={ariaDescribedBy}
+        autoComplete="off"
         className={`
           w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm
           bg-white text-gray-900 placeholder-gray-500
