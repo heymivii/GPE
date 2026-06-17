@@ -1,5 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../../hooks/useAuth';
 import { useQuery } from '@tanstack/react-query';
@@ -8,6 +7,7 @@ import { destinationsApi } from '../../../api/destinations';
 import type { ServiceConfig, ServiceGuide } from '../../../data/services-config';
 import { getCountryContent } from '../../../data/services-content-by-country';
 import type { CityDestination } from '../../destinations/types';
+import { useDestination } from '../../../contexts/DestinationContext';
 
 interface UseServiceContentParams {
   service: ServiceConfig;
@@ -17,16 +17,12 @@ interface UseServiceContentParams {
 export function useServiceContent({ service, category }: UseServiceContentParams) {
   const { isAuthenticated } = useAuth();
   const { t } = useTranslation();
-  const [searchParams] = useSearchParams();
-  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
-  const [selectedCity, setSelectedCity] = useState<string | null>(null);
-
-  useEffect(() => {
-    const countryParam = searchParams.get('country');
-    if (countryParam) {
-      setSelectedCountry(countryParam.toLowerCase());
-    }
-  }, [searchParams]);
+  const {
+    countrySlug: selectedCountry,
+    setCountrySlug: setSelectedCountry,
+    citySlug: selectedCity,
+    setCitySlug: setSelectedCity,
+  } = useDestination();
 
   const { data: projects } = useQuery({
     queryKey: ['expatriation-projects'],
