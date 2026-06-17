@@ -5,7 +5,8 @@ import type { Country } from '../../../types/country'
 import type { CostOfLivingData } from '../../destinations/types'
 import countriesDataJson from '../../../data/countries-data.json'
 import { SUPPORTED_COUNTRY_CODES } from '../../../data/supportedCountries'
-import { propertyInvestmentApi, type PropertyInvestmentData } from '../../../api/propertyInvestment'
+import type { PropertyInvestmentData } from '../../../api/propertyInvestment'
+import type { QualityOfLifeData } from '../../../api/qualityOfLife'
 
 interface CountryDataFromJson {
   id: number
@@ -90,6 +91,7 @@ export interface EnrichedCountry {
     }>
   }
   propertyInvestment?: PropertyInvestmentData | null
+  qualityOfLife?: QualityOfLifeData | null
   uniqueId?: string
   isCity?: boolean
   parentId?: number
@@ -158,17 +160,14 @@ export function useCountriesWithData() {
   const { data: destinationDetails, isLoading: isLoadingDetails } = useQuery({
     queryKey: ['country-destinations-details'],
     queryFn: async () => {
-      const results: Record<string, { capitalData: CostOfLivingData | null; currency: string; exchangeRates?: Record<string, number>; cities?: import('../../destinations/types').CityDestination[]; propertyInvestment?: PropertyInvestmentData | null }> = {}
+      // Only cost-of-living/cities here (needed for the selector + radar reference).
+      // Property-investment & quality-of-life are fetched lazily per SELECTED country
+      // (see useComparisonExtras) — not eagerly for all 4 on every page load.
+      const results: Record<string, { capitalData: CostOfLivingData | null; currency: string; exchangeRates?: Record<string, number>; cities?: import('../../destinations/types').CityDestination[] }> = {}
       await Promise.all(
         SUPPORTED_COUNTRY_CODES.map(async (code) => {
-          // Independent fetches: a property-investment failure must not drop cost-of-living, and vice versa.
-          const [detailRes, piRes] = await Promise.allSettled([
-            destinationsApi.getBySlug(code),
-            propertyInvestmentApi.get(code),
-          ])
-          const propertyInvestment = piRes.status === 'fulfilled' ? piRes.value : null
-          if (detailRes.status === 'fulfilled') {
-            const detail = detailRes.value
+          try {
+            const detail = await destinationsApi.getBySlug(code)
             const capitalCity =
               detail.cities.find(c => c.isCapital && c.costOfLiving) ||
               detail.cities.find(c => c.costOfLiving)
@@ -177,10 +176,9 @@ export function useCountriesWithData() {
               currency: detail.currency || 'EUR',
               exchangeRates: capitalCity?.costOfLiving?.currency?.exchangeRates,
               cities: detail.cities,
-              propertyInvestment,
             }
-          } else {
-            results[code] = { capitalData: null, currency: 'EUR', cities: [], propertyInvestment }
+          } catch {
+            results[code] = { capitalData: null, currency: 'EUR', cities: [] }
           }
         }),
       )
@@ -239,7 +237,8 @@ export function useCountriesWithData() {
       expatProjectTemplate: jsonData
         ? ((jsonData as unknown as Record<string, unknown>).expatProjectTemplate as EnrichedCountry['expatProjectTemplate'])
         : undefined,
-      propertyInvestment: detailData?.propertyInvestment ?? null,
+      // propertyInvestment & qualityOfLife are attached lazily for selected countries
+      // by useComparisonExtras — not fetched eagerly here.
     }
 
     enrichedCountries.push(baseCountry)

@@ -38,7 +38,9 @@ class RestCountriesService {
     }
 
     try {
-      const response = await axios.get(`${this.baseURL}/alpha/${countryCode}`);
+      const response = await axios.get(`${this.baseURL}/alpha/${countryCode}`, {
+        timeout: 10000,
+      });
       const country = response.data[0];
 
       this.cache.set(cacheKey, country);
@@ -57,9 +59,9 @@ class RestCountriesService {
       capital: country.capital?.[0] || '',
       currency: Object.values(country.currencies || {})[0],
       primaryLanguage: Object.values(country.languages || {})[0],
-      continent: country.continents[0],
-      timezone: country.timezones[0],
-      flag: country.flags.svg,
+      continent: country.continents?.[0] ?? '',
+      timezone: country.timezones?.[0] ?? '',
+      flag: country.flags?.svg ?? '',
     };
   }
 
@@ -73,6 +75,7 @@ class RestCountriesService {
     try {
       const response = await axios.get(
         'https://countriesnow.space/api/v0.1/countries/iso',
+        { timeout: 10000 },
       );
       const raw =
         (response.data as { data?: Array<{ name?: string; Iso2?: string }> })
@@ -92,10 +95,7 @@ class RestCountriesService {
   // Cities of a country (free, no API key — countriesnow.space). Expects the English
   // country name. Cached 24h.
   async getCitiesByCountry(country: string): Promise<string[]> {
-    if (!country) {
-      return [];
-    }
-
+    if (!country?.trim()) return [];
     const cacheKey = `cities:${country.toLowerCase()}`;
     const cached = this.cache.get<string[]>(cacheKey);
     if (cached) return cached;
@@ -104,6 +104,7 @@ class RestCountriesService {
       const response = await axios.post(
         'https://countriesnow.space/api/v0.1/countries/cities',
         { country },
+        { timeout: 10000 },
       );
       const raw = (response.data as { data?: unknown[] })?.data ?? [];
       const cities = raw

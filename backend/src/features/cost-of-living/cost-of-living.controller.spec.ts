@@ -1,6 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
 import { CostOfLivingController } from './cost-of-living.controller';
 import { CostOfLivingService } from './cost-of-living.service';
+import { AdminLogService } from '../admin-log/admin-log.service';
+import { City } from '../city/entities/city.entity';
 
 describe('CostOfLivingController', () => {
   let controller: CostOfLivingController;
@@ -15,6 +18,14 @@ describe('CostOfLivingController', () => {
             getCostOfLiving: jest.fn(),
             compareCities: jest.fn(),
           },
+        },
+        {
+          provide: AdminLogService,
+          useValue: { log: jest.fn() },
+        },
+        {
+          provide: getRepositoryToken(City),
+          useValue: {},
         },
       ],
     }).compile();

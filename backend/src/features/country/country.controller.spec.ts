@@ -1,6 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CountryController } from './country.controller';
 import { CountryService } from './country.service';
+import { AdminLogService } from '../admin-log/admin-log.service';
+
+// Controllers now take @Request() req (admin-log audit); a minimal mock user suffices.
+const mockReq = { user: { userId: 1 } } as any;
 
 const mockService = () => ({
   create: jest.fn(),
@@ -18,7 +22,10 @@ describe('CountryController', () => {
     service = mockService();
     const module: TestingModule = await Test.createTestingModule({
       controllers: [CountryController],
-      providers: [{ provide: CountryService, useValue: service }],
+      providers: [
+        { provide: CountryService, useValue: service },
+        { provide: AdminLogService, useValue: { log: jest.fn() } },
+      ],
     }).compile();
     controller = module.get<CountryController>(CountryController);
   });
@@ -30,7 +37,7 @@ describe('CountryController', () => {
   describe('create()', () => {
     it('should create a country', async () => {
       service.create.mockResolvedValue({ idCountry: 1, countryName: 'France' });
-      const result = await controller.create({ countryName: 'France' } as any);
+      const result = await controller.create({ countryName: 'France' } as any, mockReq);
       expect(result.countryName).toBe('France');
     });
   });
@@ -60,15 +67,16 @@ describe('CountryController', () => {
       });
       const result = await controller.update('1', {
         countryName: 'Updated',
-      } as any);
+      } as any, mockReq);
       expect(result.countryName).toBe('Updated');
     });
   });
 
   describe('remove()', () => {
     it('should remove a country', async () => {
+      service.findOne.mockResolvedValue({ idCountry: 3, countryName: 'X' });
       service.remove.mockResolvedValue(undefined);
-      await controller.remove('3');
+      await controller.remove('3', mockReq);
       expect(service.remove).toHaveBeenCalledWith(3);
     });
   });

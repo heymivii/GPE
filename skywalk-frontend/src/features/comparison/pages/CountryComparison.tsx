@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { AlertCircle, RotateCcw, Trash2 } from 'lucide-react'
 import { useCountriesWithData } from '../hooks/useCountriesWithData'
+import { useComparisonExtras } from '../hooks/useComparisonExtras'
 import CountrySelector from '../components/CountrySelector'
 import ComparisonTable from '../components/ComparisonTable'
 import { useAuth } from '../../../hooks/useAuth'
@@ -79,6 +80,10 @@ export default function CountryComparison() {
   const selectedCountriesData = countries?.filter(c =>
     selectedCountries.includes(c.uniqueId!)
   ) || []
+
+  // Lazily attach Numbeo property-investment + quality-of-life to the SELECTED countries
+  // only (no eager fetch of all 4 on page load). Hook runs before the early returns below.
+  const comparisonData = useComparisonExtras(selectedCountriesData)
 
   // --- Loading state: keep the page chrome, show skeletons instead of an empty shell.
   if (isLoading) {
@@ -191,7 +196,7 @@ export default function CountryComparison() {
               <h2 className="text-xl font-bold text-gray-900">{t('comparison.detailedAnalysis')}</h2>
               <div className="h-px flex-1 bg-gray-200"></div>
             </div>
-            <ComparisonTable countries={selectedCountriesData} isAuthenticated={isAuthenticated} allDestinations={countries || []} />
+            <ComparisonTable countries={comparisonData} isAuthenticated={isAuthenticated} allDestinations={countries || []} />
           </div>
         ) : (
           <div className="mt-8 sm:mt-12 border-2 border-dashed border-gray-200 rounded-2xl sm:rounded-3xl p-6 sm:p-12 text-center bg-white/50">
