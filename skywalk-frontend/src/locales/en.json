@@ -1755,7 +1755,7 @@
       "toCountry": "Destination country",
       "targetCity": "Target city (optional)",
       "targetCityHelper": "If you already have a city in mind",
-      "targetCityPlaceholder": "E.g. Zurich, Toronto, Lisbon...",
+      "targetCityPlaceholder": "Select a city",
       "departureYear": "Expected departure year",
       "fromCountryPlaceholder": "Select your departure country",
       "toCountryPlaceholder": "Select your destination country",

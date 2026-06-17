@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
   UseGuards,
   Query,
   Request,
@@ -48,6 +49,12 @@ export class CityController {
       return this.cityService.findByCountry(+countryId);
     }
     return this.cityService.findAll();
+  }
+
+  // Cities of a country (for the admin city picker): GET /city/available?country=France
+  @Get('available')
+  getAvailable(@Query('country') country: string) {
+    return this.cityService.getAvailableCities(country);
   }
 
   @Get(':id')

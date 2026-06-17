@@ -49,6 +49,12 @@ export class CountryController {
     return this.countryService.findAll();
   }
 
+  // All ~250 countries from restCountries (for the admin country picker).
+  @Get('available')
+  getAvailable() {
+    return this.countryService.getAvailableCountries();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.countryService.findOne(+id);

@@ -85,6 +85,7 @@ export interface CostOfLivingData {
 }
 
 export interface CityDestination {
+  idCity?: number; // actual field returned by the backend (City entity primary key)
   city_id?: number;
   id?: number;
   name: string;

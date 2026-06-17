@@ -1,5 +1,6 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useState, useEffect, useRef } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
+import { AlertCircle, RotateCcw, Trash2 } from 'lucide-react'
 import { useCountriesWithData } from '../hooks/useCountriesWithData'
 import CountrySelector from '../components/CountrySelector'
 import ComparisonTable from '../components/ComparisonTable'
@@ -11,26 +12,66 @@ export default function CountryComparison() {
   const { t } = useTranslation()
   const [selectedCountries, setSelectedCountries] = useState<string[]>([])
   const { isAuthenticated } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams()
 
-  const { data: countries } = useCountriesWithData()
+  const { data: countries, isLoading, error, refetch } = useCountriesWithData()
 
   const maxCountries = isAuthenticated ? 3 : 2;
+
+  // Hydrate the selection from the URL (?ids=country-1,country-2) once the data
+  // is loaded. A ref guards this so it runs a single time and never fights the
+  // state -> URL sync below.
+  const hydratedRef = useRef(false)
+  useEffect(() => {
+    if (hydratedRef.current) return
+    if (!countries || countries.length === 0) return
+
+    const idsParam = searchParams.get('ids')
+    if (idsParam) {
+      const valid: string[] = []
+      let typeIsCity: boolean | null = null
+      for (const id of idsParam.split(',')) {
+        const match = countries.find((c) => c.uniqueId === id)
+        if (!match) continue
+        // Comparison only allows all-cities or all-countries, not a mix.
+        if (typeIsCity === null) typeIsCity = !!match.isCity
+        else if (!!match.isCity !== typeIsCity) continue
+        if (valid.length >= maxCountries) break
+        valid.push(id)
+      }
+      if (valid.length) setSelectedCountries(valid)
+    }
+    hydratedRef.current = true
+  }, [countries, maxCountries, searchParams])
+
+  // Keep the URL in sync with the selection (shareable + survives refresh).
+  useEffect(() => {
+    if (!hydratedRef.current) return
+    const current = searchParams.get('ids') ?? ''
+    const next = selectedCountries.join(',')
+    if (current === next) return
+    const params = new URLSearchParams(searchParams)
+    if (next) params.set('ids', next)
+    else params.delete('ids')
+    setSearchParams(params, { replace: true })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCountries])
 
   const handleCountryToggle = (countryId: string) => {
     if (selectedCountries.includes(countryId)) {
       setSelectedCountries(selectedCountries.filter(id => id !== countryId))
     } else if (selectedCountries.length < maxCountries) {
       const newSelection = countries?.find(c => c.uniqueId === countryId);
-      
+
       if (selectedCountries.length > 0 && newSelection) {
         const firstSelection = countries?.find(c => c.uniqueId === selectedCountries[0]);
-        
+
         if (firstSelection && firstSelection.isCity !== newSelection.isCity) {
           setSelectedCountries([countryId]);
           return;
         }
       }
-      
+
       setSelectedCountries([...selectedCountries, countryId])
     }
   }
@@ -39,21 +80,78 @@ export default function CountryComparison() {
     selectedCountries.includes(c.uniqueId!)
   ) || []
 
+  // --- Loading state: keep the page chrome, show skeletons instead of an empty shell.
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50/50 pb-20">
+        <PageHeader title={t('comparison.title')} description={t('comparison.description')} />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
+          <div className="h-16 bg-white border border-gray-200 rounded-2xl animate-pulse" />
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div className="h-40 bg-white border border-gray-100 rounded-2xl animate-pulse" />
+            <div className="h-40 bg-white border border-gray-100 rounded-2xl animate-pulse" />
+          </div>
+          <div className="h-72 bg-white border border-gray-100 rounded-2xl animate-pulse" />
+        </div>
+      </div>
+    )
+  }
+
+  // --- Error state: explicit message + retry instead of a silently empty page.
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50/50 pb-20">
+        <PageHeader title={t('comparison.title')} description={t('comparison.description')} />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="max-w-md mx-auto text-center bg-white border border-gray-200 rounded-2xl p-8 shadow-sm">
+            <div className="w-14 h-14 rounded-full bg-red-50 text-red-500 flex items-center justify-center mx-auto mb-4">
+              <AlertCircle className="w-7 h-7" />
+            </div>
+            <h3 className="text-lg font-bold text-gray-900 mb-1">
+              {t('comparison.error.title', { defaultValue: 'Impossible de charger les données' })}
+            </h3>
+            <p className="text-sm text-gray-500 mb-6">
+              {t('comparison.error.message', { defaultValue: 'Une erreur est survenue. Réessaie dans un instant.' })}
+            </p>
+            <button
+              onClick={() => refetch()}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-[#5EA3C0] hover:bg-[#4891b0] text-white rounded-lg text-sm font-semibold transition-colors"
+            >
+              <RotateCcw className="w-4 h-4" />
+              {t('common.retry', { defaultValue: 'Réessayer' })}
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gray-50/50 pb-20">
       <PageHeader
         title={t('comparison.title')}
         description={t('comparison.description')}
       >
-        <div className="mb-6 inline-flex items-center gap-3 bg-white px-4 py-2 rounded-full border border-gray-200 shadow-sm">
-          <span className="text-sm font-medium text-gray-600">{t('comparison.selection')}</span>
-          <div className="flex items-center gap-1">
-            <span className={`text-lg font-bold ${selectedCountries.length === maxCountries ? 'text-amber-600' : 'text-[#5EA3C0]'}`}>
-              {selectedCountries.length}
-            </span>
-            <span className="text-gray-400">/</span>
-            <span className="text-gray-400">{maxCountries}</span>
+        <div className="mb-6 flex flex-wrap items-center gap-3">
+          <div className="inline-flex items-center gap-3 bg-white px-4 py-2 rounded-full border border-gray-200 shadow-sm">
+            <span className="text-sm font-medium text-gray-600">{t('comparison.selection')}</span>
+            <div className="flex items-center gap-1">
+              <span className={`text-lg font-bold ${selectedCountries.length === maxCountries ? 'text-amber-600' : 'text-[#5EA3C0]'}`}>
+                {selectedCountries.length}
+              </span>
+              <span className="text-gray-400">/</span>
+              <span className="text-gray-400">{maxCountries}</span>
+            </div>
           </div>
+          {selectedCountries.length > 0 && (
+            <button
+              onClick={() => setSelectedCountries([])}
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-red-500 transition-colors"
+            >
+              <Trash2 className="w-4 h-4" />
+              {t('comparison.clearAll', { defaultValue: 'Tout effacer' })}
+            </button>
+          )}
         </div>
       </PageHeader>
 
@@ -93,7 +191,7 @@ export default function CountryComparison() {
               <h2 className="text-xl font-bold text-gray-900">{t('comparison.detailedAnalysis')}</h2>
               <div className="h-px flex-1 bg-gray-200"></div>
             </div>
-            <ComparisonTable countries={selectedCountriesData} isAuthenticated={isAuthenticated} />
+            <ComparisonTable countries={selectedCountriesData} isAuthenticated={isAuthenticated} allDestinations={countries || []} />
           </div>
         ) : (
           <div className="mt-8 sm:mt-12 border-2 border-dashed border-gray-200 rounded-2xl sm:rounded-3xl p-6 sm:p-12 text-center bg-white/50">

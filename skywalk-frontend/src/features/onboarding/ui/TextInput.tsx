@@ -46,6 +46,7 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(({
       min={min}
       max={max}
       aria-describedby={ariaDescribedBy}
+      autoComplete="off"
       className={`
         w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm
         bg-white text-gray-900 placeholder-gray-500

@@ -6,6 +6,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { Plus, Edit2, Trash2, Globe, RefreshCw, X, Search, Eye, ChevronRight, ArrowLeft, Save, Coins, Building2, Utensils, Car, Loader2, Globe2, ShoppingBag, Shirt, Baby, Activity, Archive, ArchiveRestore } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
+import Combobox from '../components/Combobox';
 
 const getCountryTranslationKey = (name: string): string => {
   if (!name) return '';
@@ -33,6 +34,11 @@ export default function AdminCities() {
   const [imageUrl, setImageUrl] = useState('');
   const [countryId, setCountryId] = useState<number | ''>('');
   const [fetchingColId, setFetchingColId] = useState<number | null>(null);
+  // Cost-of-living fetch modal: lets the admin correct the Numbeo slug before fetching.
+  // Numbeo disambiguates secondary cities by country in the URL (e.g. "Ajaccio" is a
+  // dead page, the real slug is "Ajaccio-France"), which the auto-derived slug can't guess.
+  const [colCity, setColCity] = useState<City | null>(null);
+  const [colSlug, setColSlug] = useState('');
 
   // Fetch Cities & Countries
   const [archivedCityIds, setArchivedCityIds] = useState<number[]>(() => {
@@ -224,6 +230,17 @@ export default function AdminCities() {
     }
   };
 
+  // Cities of the currently-selected country (geo source), for the picker autocomplete.
+  const selectedCountryName = useMemo(
+    () => countries.find((c) => c.idCountry === countryId)?.countryName ?? '',
+    [countries, countryId],
+  );
+  const { data: availableCities = [] } = useQuery({
+    queryKey: ['geo-cities', selectedCountryName],
+    queryFn: () => cityApi.getAvailable(selectedCountryName),
+    enabled: !!selectedCountryName && modalOpen,
+    staleTime: 1000 * 60 * 60,
+  });
 
   const filteredCities = useMemo(() => {
     return cities
@@ -286,12 +303,14 @@ export default function AdminCities() {
 
   // Admin: pull a city's cost of living from Numbeo (deterministic parser, no AI).
   const fetchColMutation = useMutation({
-    mutationFn: (city: City) =>
+    mutationFn: ({ city, slug }: { city: City; slug?: string }) =>
       costOfLivingApi.adminFetch({
         city: city.name,
         country: countryNameOf(city),
+        slug: slug?.trim() || undefined,
       }),
-    onMutate: (city: City) => setFetchingColId(city.idCity),
+    onMutate: ({ city }: { city: City; slug?: string }) =>
+      setFetchingColId(city.idCity),
     onSuccess: (res) => {
       queryClient.invalidateQueries({ queryKey: ['destinations-list'] });
       const miss = res.unavailable?.length ?? 0;
@@ -301,15 +320,25 @@ export default function AdminCities() {
         }.`,
         { duration: 6000 },
       );
+      closeColModal();
     },
     onError: (err: any) => {
+      // Keep the modal open so the admin can correct the slug and retry.
       toast.error(
         err.response?.data?.message ||
-          'Échec — ville introuvable sur Numbeo (vérifie le nom) ?',
+          'Échec — ville introuvable sur Numbeo (vérifie le slug) ?',
       );
     },
     onSettled: () => setFetchingColId(null),
   });
+
+  // Pre-fill with the same slug the backend derives by default (name, spaces → hyphens),
+  // so the admin sees what's tried and only edits when Numbeo needs a country suffix.
+  const openColModal = (city: City) => {
+    setColCity(city);
+    setColSlug(city.name.trim().replace(/\s+/g, '-'));
+  };
+  const closeColModal = () => setColCity(null);
 
   const openCreateModal = () => {
     setEditingCity(null);
@@ -1304,7 +1333,7 @@ export default function AdminCities() {
                             <Eye className="w-4 h-4" />
                           </button>
                           <button
-                            onClick={() => fetchColMutation.mutate(city)}
+                            onClick={() => openColModal(city)}
                             disabled={fetchingColId === city.idCity}
                             className="p-1.5 hover:bg-emerald-50 text-gray-600 hover:text-emerald-600 rounded-lg transition-colors disabled:opacity-50"
                             title="Récupérer le coût de la vie (Numbeo)"
@@ -1371,13 +1400,18 @@ export default function AdminCities() {
                   <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
                     Nom de la Ville *
                   </label>
-                  <input
-                    type="text"
+                  <Combobox
+                    id="city-name"
                     required
+                    options={availableCities}
                     value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="ex. Montréal, Kyoto..."
-                    className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#5EA3C0] focus:ring-1 focus:ring-[#5EA3C0] text-sm text-gray-900"
+                    onChange={setName}
+                    disabled={!countryId}
+                    placeholder={
+                      countryId
+                        ? 'Tape ou choisis une ville…'
+                        : "Choisis d'abord un pays"
+                    }
                   />
                 </div>
 
@@ -1495,6 +1529,90 @@ export default function AdminCities() {
                   className="px-4 py-2 bg-[#5EA3C0] hover:bg-[#4891b0] text-white rounded-lg text-sm font-semibold transition-colors shadow-sm disabled:opacity-50"
                 >
                   {isPending ? 'Enregistrement...' : 'Enregistrer'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Cost-of-Living Fetch Modal (editable Numbeo slug) */}
+      {colCity && (
+        <div className="fixed inset-0 bg-black/45 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full border border-gray-100 shadow-xl overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
+              <h3 className="font-bold tracking-wide flex items-center gap-2">
+                <Coins className="w-4 h-4" />
+                Coût de la vie — {colCity.name}
+              </h3>
+              <button onClick={closeColModal} className="p-1 hover:bg-slate-800 rounded-lg transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (!colSlug.trim()) {
+                  toast.error('Le slug Numbeo est requis.');
+                  return;
+                }
+                fetchColMutation.mutate({ city: colCity, slug: colSlug });
+              }}
+              className="p-6 space-y-4"
+            >
+              <p className="text-sm text-gray-500">
+                Pays : <span className="font-semibold text-gray-800">{countryNameOf(colCity) || 'Inconnu'}</span>
+              </p>
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                  Slug Numbeo
+                </label>
+                <input
+                  type="text"
+                  required
+                  autoFocus
+                  value={colSlug}
+                  onChange={(e) => setColSlug(e.target.value)}
+                  placeholder="ex. Paris, New-York, Ajaccio-France"
+                  className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#5EA3C0] focus:ring-1 focus:ring-[#5EA3C0] text-sm text-gray-900 font-mono"
+                />
+                <p className="text-xs text-gray-400 mt-1.5 leading-relaxed">
+                  Pour les villes secondaires, Numbeo ajoute le pays au slug (ex.{' '}
+                  <span className="font-mono text-gray-600">Ajaccio-France</span>). Vérifie la page avant :
+                </p>
+                <a
+                  href={`https://www.numbeo.com/cost-of-living/in/${encodeURIComponent(colSlug.trim())}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs font-mono text-[#5EA3C0] hover:underline break-all"
+                >
+                  numbeo.com/cost-of-living/in/{colSlug.trim() || '…'}
+                </a>
+              </div>
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-150">
+                <button
+                  type="button"
+                  onClick={closeColModal}
+                  className="px-4 py-2 border border-gray-200 text-gray-500 hover:bg-gray-50 rounded-lg text-sm font-semibold transition-colors"
+                >
+                  Annuler
+                </button>
+                <button
+                  type="submit"
+                  disabled={fetchingColId === colCity.idCity || !colSlug.trim()}
+                  className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-semibold transition-colors shadow-sm disabled:opacity-50"
+                >
+                  {fetchingColId === colCity.idCity ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Récupération…
+                    </>
+                  ) : (
+                    <>
+                      <Coins className="w-4 h-4" />
+                      Récupérer
+                    </>
+                  )}
                 </button>
               </div>
             </form>

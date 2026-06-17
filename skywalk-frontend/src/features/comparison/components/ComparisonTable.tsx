@@ -1,7 +1,7 @@
 import { useMemo, useCallback } from 'react'
 import {
   MapPin, DollarSign, Globe, TrendingUp, Lock,
-  Thermometer, Receipt, Zap, ArrowRightLeft, Users
+  Thermometer, Receipt, Zap, ArrowRightLeft, Users, Home
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import type { EnrichedCountry } from '../hooks/useCountriesWithData'
@@ -11,11 +11,14 @@ import { ComparisonRowWithBar } from './rows/ComparisonRowWithBar'
 import { useTranslation } from 'react-i18next'
 import { useCurrency, DISPLAY_CURRENCIES } from '../../../contexts/CurrencyContext'
 import { useMigrationData } from '../hooks/useMigrationData'
+import { useExchangeRates } from '../../../hooks/useExchangeRates'
 import { getLocale, SUPPORTED_COUNTRIES } from '../../../data/supportedCountries'
 
 interface ComparisonTableProps {
   countries: EnrichedCountry[]
   isAuthenticated?: boolean
+  // Full pool of available destinations — used as the absolute reference scale for the radar.
+  allDestinations?: EnrichedCountry[]
 }
 
 
@@ -46,10 +49,16 @@ function RadarChart({ data, countryNames, colors }: {
 
   return (
     <div className="flex flex-col items-center">
-      <svg viewBox="-60 -60 420 420" className="w-full max-w-md overflow-visible">
+      <svg
+        viewBox="-60 -60 420 420"
+        className="w-full max-w-md overflow-visible"
+        role="img"
+        aria-label={`Radar — ${countryNames.join(' / ')}`}
+      >
+        <title>{`Radar — ${countryNames.join(' / ')}`}</title>
         {gridLevels.map(level => (
           <polygon
-            key={level}
+            key={`grid-${level}`}
             points={Array.from({ length: n }, (_, i) => {
               const p = point(i, R * level)
               return `${p.x},${p.y}`
@@ -61,7 +70,7 @@ function RadarChart({ data, countryNames, colors }: {
         ))}
         {Array.from({ length: n }, (_, i) => {
           const p = point(i, R)
-          return <line key={i} x1={cx} y1={cy} x2={p.x} y2={p.y} stroke="#e5e7eb" strokeWidth={0.8} />
+          return <line key={`axis-${i}`} x1={cx} y1={cy} x2={p.x} y2={p.y} stroke="#e5e7eb" strokeWidth={0.8} />
         })}
         {countryNames.map((_, ci) => {
           const pts = data.map((d, i) => {
@@ -71,7 +80,7 @@ function RadarChart({ data, countryNames, colors }: {
           }).join(' ')
           return (
             <polygon
-              key={ci}
+              key={`area-${ci}`}
               points={pts}
               fill={colors[ci]}
               fillOpacity={0.15}
@@ -84,14 +93,14 @@ function RadarChart({ data, countryNames, colors }: {
           data.map((d, i) => {
             const r = (d.values[ci] / 100) * R
             const p = point(i, r)
-            return <circle key={`${ci}-${i}`} cx={p.x} cy={p.y} r={3} fill={colors[ci]} />
+            return <circle key={`dot-${ci}-${i}`} cx={p.x} cy={p.y} r={3} fill={colors[ci]} />
           })
         )}
         {data.map((d, i) => {
           const p = point(i, R + 30)
           return (
             <text
-              key={i}
+              key={`label-${i}`}
               x={p.x}
               y={p.y}
               textAnchor="middle"
@@ -119,10 +128,12 @@ function RadarChart({ data, countryNames, colors }: {
 
 
 
-export default function ComparisonTable({ countries, isAuthenticated = true }: ComparisonTableProps) {
+export default function ComparisonTable({ countries, isAuthenticated = true, allDestinations = [] }: ComparisonTableProps) {
   const { t, i18n } = useTranslation()
   const { displayCurrency, setDisplayCurrency, displaySymbol, convert } = useCurrency()
   const { getByIso2 } = useMigrationData()
+  // Live USD-based FX table fed into convert() — the curated data ships empty rates.
+  const { rates: fxRates, error: fxError } = useExchangeRates()
   const colClass = countries.length === 2 ? 'grid-cols-2' : 'grid-cols-3'
   const locale = getLocale(i18n.language)
 
@@ -169,9 +180,8 @@ export default function ComparisonTable({ countries, isAuthenticated = true }: C
   const convertAmount = useCallback((amount: number | undefined | null, country: EnrichedCountry): number | null => {
     if (amount == null) return null
     const src = country.sourceCurrencyCode || country.currency || 'EUR'
-    const rates = country.exchangeRates
-    return convert(amount, src, rates)
-  }, [convert])
+    return convert(amount, src, fxRates)
+  }, [convert, fxRates])
 
   const fmt = useCallback((amount: number | undefined | null, country: EnrichedCountry): string => {
     if (amount == null) return t('comparison.fields.notSpecified')
@@ -187,48 +197,94 @@ export default function ComparisonTable({ countries, isAuthenticated = true }: C
     return value.toLocaleString(locale)
   }, [locale, t])
 
+  // Property-investment formatters (ratios, percentages, GDP→display currency).
+  const pi = (c: EnrichedCountry) => c.propertyInvestment
+  const fmtRatio = (v: number | null | undefined): string =>
+    v == null ? t('comparison.fields.notSpecified') : v.toLocaleString(locale)
+  const fmtPct = (v: number | null | undefined): string =>
+    v == null ? t('comparison.fields.notSpecified') : `${v.toLocaleString(locale)} %`
+  const fmtGdp = (v: number | null | undefined): string => {
+    if (v == null) return t('comparison.fields.notSpecified')
+    const converted = convert(v, 'USD', fxRates)
+    return converted == null
+      ? `${v.toLocaleString(locale)} $`
+      : `${Math.round(converted).toLocaleString(locale)} ${displaySymbol}`
+  }
+
   const radarData = useMemo<RadarDataPoint[]>(() => {
-    const convertedSalaries = countries.map(c => convertAmount(c.costOfLiving?.averageSalary, c) ?? 0)
-    const convertedRents = countries.map(c => convertAmount(c.costOfLiving?.averageRent?.oneBedroom, c) ?? 0)
-    const convertedFood = countries.map(c => convertAmount(c.costOfLiving?.food?.restaurantMeal, c) ?? 0)
-    const convertedTransport = countries.map(c => convertAmount(c.costOfLiving?.transportMonthly, c) ?? 0)
-    
-    const maxSalary = Math.max(...convertedSalaries)
-    const maxRent = Math.max(...convertedRents)
-    const maxFood = Math.max(...convertedFood)
-    const maxTransport = Math.max(...convertedTransport)
+    // Absolute reference: all available destinations of the SAME type (cities vs
+    // countries) as the current selection — so each axis reflects a destination's
+    // real standing across the whole dataset, not just a relative duel.
+    const sel0 = countries[0]
+    const basePool = allDestinations.length ? allDestinations : countries
+    const pool = sel0 ? basePool.filter(c => c.isCity === sel0.isCity) : basePool
+
+    const refMax = (pick: (c: EnrichedCountry) => number | undefined | null): number => {
+      const vals = pool.map(c => convertAmount(pick(c), c) ?? 0).filter(v => v > 0)
+      return vals.length ? Math.max(...vals) : 0
+    }
+    const refSalary = refMax(c => c.costOfLiving?.averageSalary)
+    const refRent = refMax(c => c.costOfLiving?.averageRent?.oneBedroom)
+    const refFood = refMax(c => c.costOfLiving?.food?.restaurantMeal)
+    const refTransport = refMax(c => c.costOfLiving?.transportMonthly)
+
+    // Consistent 0–100 scaling against the absolute reference max.
+    const higher = (v: number, ref: number) => (ref ? Math.min(v / ref, 1) * 100 : 0) // more = better (salary)
+    const lower = (v: number, ref: number) => (ref ? (1 - Math.min(v / ref, 1)) * 100 : 0) // less = better (cost)
+
+    const sal = (c: EnrichedCountry) => convertAmount(c.costOfLiving?.averageSalary, c) ?? 0
+    const rent = (c: EnrichedCountry) => convertAmount(c.costOfLiving?.averageRent?.oneBedroom, c) ?? 0
+    const food = (c: EnrichedCountry) => convertAmount(c.costOfLiving?.food?.restaurantMeal, c) ?? 0
+    const transport = (c: EnrichedCountry) => convertAmount(c.costOfLiving?.transportMonthly, c) ?? 0
 
     return [
       {
         label: t('comparison.radar.salary', { defaultValue: 'Salaire' }),
-        values: convertedSalaries.map(s => maxSalary ? (s / maxSalary) * 100 : 0)
+        values: countries.map(c => higher(sal(c), refSalary)),
       },
       {
         label: t('comparison.radar.affordability', { defaultValue: 'Logement' }),
-        values: convertedRents.map(r => maxRent
-          ? (1 - r / maxRent) * 80 + 20
-          : 50
-        )
+        values: countries.map(c => lower(rent(c), refRent)),
       },
       {
         label: t('comparison.radar.food', { defaultValue: 'Nourriture' }),
-        values: convertedFood.map(f => maxFood
-          ? (1 - f / maxFood) * 80 + 20
-          : 50
-        )
+        values: countries.map(c => lower(food(c), refFood)),
       },
       {
         label: t('comparison.radar.transport', { defaultValue: 'Transport' }),
-        values: convertedTransport.map(t => maxTransport
-          ? (1 - t / maxTransport) * 80 + 20
-          : 50
-        )
-      }
+        values: countries.map(c => lower(transport(c), refTransport)),
+      },
     ]
-  }, [countries, t, convertAmount])
+  }, [countries, allDestinations, t, convertAmount])
 
   return (
     <div className="space-y-8">
+      {/* Mobile-only sticky header: keeps each column's country identity visible while scrolling the long table. */}
+      <div className="sm:hidden sticky top-16 z-20 bg-white/95 backdrop-blur-xl border-b border-gray-200/80 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] -mx-4 px-4 py-3">
+        <div className={`grid gap-3 ${colClass}`}>
+          {countries.map((country, idx) => (
+            <div key={country.uniqueId} className="flex items-center gap-2 min-w-0">
+              <div className="w-7 h-7 rounded-lg overflow-hidden shadow-sm ring-1 ring-gray-900/5 bg-white p-0.5 flex-shrink-0">
+                <div className="w-full h-full rounded-md overflow-hidden">
+                  {country.flagUrl ? (
+                    <img src={country.flagUrl} alt={country.countryName} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full bg-gray-50 flex items-center justify-center text-sm">
+                      {country.flagEmoji || '🌍'}
+                    </div>
+                  )}
+                </div>
+              </div>
+              <span
+                className="w-2 h-2 rounded-full flex-shrink-0 ring-2 ring-white"
+                style={{ backgroundColor: RADAR_COLORS[idx] }}
+              />
+              <span className="font-bold text-xs text-gray-900 truncate">{tdCountryName(country)}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
       <div className="hidden sm:block sticky top-16 md:top-20 z-20 bg-white/95 backdrop-blur-xl border-b border-gray-200/80 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] py-4 sm:py-6 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 transition-all overflow-x-auto">
         <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr] lg:grid-cols-[200px_1fr] gap-4 sm:gap-8 max-w-7xl mx-auto items-end min-w-0 px-4 sm:px-8">
           <div className="hidden sm:block pb-2 text-xs font-bold text-gray-400 uppercase tracking-widest">
@@ -236,7 +292,7 @@ export default function ComparisonTable({ countries, isAuthenticated = true }: C
           </div>
           <div className={`grid gap-4 sm:gap-8 ${colClass}`}>
             {countries.map((country, idx) => (
-              <div key={country.idCountry} className="flex items-center gap-2 sm:flex-col sm:items-start sm:gap-3">
+              <div key={country.uniqueId} className="flex items-center gap-2 sm:flex-col sm:items-start sm:gap-3">
                 <div className="flex items-center gap-2 sm:gap-3">
                   <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl overflow-hidden shadow-sm ring-1 ring-gray-900/5 bg-white p-0.5">
                     <div className="w-full h-full rounded-lg sm:rounded-xl overflow-hidden">
@@ -287,6 +343,11 @@ export default function ComparisonTable({ countries, isAuthenticated = true }: C
             </button>
           ))}
         </div>
+        {fxError && (
+          <span className="w-full text-xs text-amber-600">
+            {t('comparison.fxUnavailable', { defaultValue: 'Taux de change indisponibles — montants affichés en devise locale.' })}
+          </span>
+        )}
       </div>
 
       <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-8">
@@ -448,6 +509,71 @@ export default function ComparisonTable({ countries, isAuthenticated = true }: C
                   values={countries.map(c => c.taxation?.vat || t('comparison.fields.notSpecified'))}
                   colClass={colClass}
                 />
+              </ComparisonSection>
+
+              <ComparisonSection
+                title={t('comparison.sections.property', { defaultValue: 'Immobilier & Investissement' })}
+                icon={<Home className="w-5 h-5" />}
+              >
+                <ComparisonRowWithBar countries={countries}
+                  label={t('comparison.fields.priceToIncome', { defaultValue: 'Prix / revenu' })}
+                  values={countries.map(c => ({ raw: pi(c)?.priceToIncomeRatio ?? null, display: fmtRatio(pi(c)?.priceToIncomeRatio) }))}
+                  highlightBest="lowest"
+                  colClass={colClass}
+                  colors={RADAR_COLORS}
+                />
+                <ComparisonRowWithBar countries={countries}
+                  label={t('comparison.fields.grossRentalYield', { defaultValue: 'Rendement locatif brut (centre)' })}
+                  values={countries.map(c => ({ raw: pi(c)?.grossRentalYieldCityCentre ?? null, display: fmtPct(pi(c)?.grossRentalYieldCityCentre) }))}
+                  highlightBest="highest"
+                  colClass={colClass}
+                  colors={RADAR_COLORS}
+                />
+                <ComparisonRowWithBar countries={countries}
+                  label={t('comparison.fields.mortgagePctIncome', { defaultValue: 'Crédit / revenu' })}
+                  values={countries.map(c => ({ raw: pi(c)?.mortgageAsPctIncome ?? null, display: fmtPct(pi(c)?.mortgageAsPctIncome) }))}
+                  highlightBest="lowest"
+                  colClass={colClass}
+                  colors={RADAR_COLORS}
+                />
+                <ComparisonRowWithBar countries={countries}
+                  label={t('comparison.fields.loanAffordability', { defaultValue: "Indice d'accessibilité au crédit" })}
+                  values={countries.map(c => ({ raw: pi(c)?.loanAffordabilityIndex ?? null, display: fmtRatio(pi(c)?.loanAffordabilityIndex) }))}
+                  highlightBest="highest"
+                  colClass={colClass}
+                  colors={RADAR_COLORS}
+                />
+                <ComparisonRowWithBar countries={countries}
+                  label={t('comparison.fields.priceToRent', { defaultValue: 'Prix / loyer (centre)' })}
+                  values={countries.map(c => ({ raw: pi(c)?.priceToRentCityCentre ?? null, display: fmtRatio(pi(c)?.priceToRentCityCentre) }))}
+                  highlightBest="lowest"
+                  colClass={colClass}
+                  colors={RADAR_COLORS}
+                />
+                <ComparisonRowWithBar countries={countries}
+                  label={t('comparison.fields.gdpPerCapita', { defaultValue: 'PIB par habitant' })}
+                  values={countries.map(c => ({ raw: pi(c)?.gdpPerCapita ?? null, display: fmtGdp(pi(c)?.gdpPerCapita) }))}
+                  highlightBest="highest"
+                  colClass={colClass}
+                  colors={RADAR_COLORS}
+                />
+                <ComparisonRow countries={countries}
+                  label={t('comparison.fields.gdpGrowth', { defaultValue: 'Croissance du PIB' })}
+                  values={countries.map(c => fmtPct(pi(c)?.gdpGrowthRate))}
+                  colClass={colClass}
+                />
+                <ComparisonRow countries={countries}
+                  label={t('comparison.fields.populationGrowth', { defaultValue: 'Croissance démographique' })}
+                  values={countries.map(c => fmtPct(pi(c)?.populationGrowthRate))}
+                  colClass={colClass}
+                />
+
+                <div className="px-4 sm:px-8 py-3 bg-gray-50/50 border-t border-gray-100">
+                  <p className="text-[10px] sm:text-xs text-gray-400 flex items-center gap-1.5">
+                    <Home className="w-3.5 h-3.5" />
+                    {t('comparison.numbeoPropertySource', { defaultValue: 'Source : Numbeo (property investment) — indicateurs au niveau pays.' })}
+                  </p>
+                </div>
               </ComparisonSection>
 
               <ComparisonSection

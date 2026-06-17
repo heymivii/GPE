@@ -400,6 +400,13 @@ export default function AdminCountries() {
     }
   };
 
+  // Reference list of all countries (name + ISO) for the picker autocomplete.
+  const { data: availableCountries = [] } = useQuery({
+    queryKey: ['geo-available-countries'],
+    queryFn: countryApi.getAvailable,
+    staleTime: 1000 * 60 * 60,
+  });
+
   // Filter & Search Logic
   const filteredCountries = useMemo(() => {
     return countries.filter((c: any) => {
@@ -1615,11 +1622,24 @@ export default function AdminCountries() {
                 <input
                   type="text"
                   required
+                  list="rc-countries"
                   value={countryName}
-                  onChange={(e) => setCountryName(e.target.value)}
-                  placeholder="ex. Canada, France..."
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    setCountryName(v);
+                    const match = availableCountries.find(
+                      (c) => c.name.toLowerCase() === v.toLowerCase(),
+                    );
+                    if (match) setIsoCode(match.code);
+                  }}
+                  placeholder="Tape ou choisis un pays (ex. Canada)..."
                   className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#5EA3C0] focus:ring-1 focus:ring-[#5EA3C0] text-sm text-gray-900"
                 />
+                <datalist id="rc-countries">
+                  {availableCountries.map((c) => (
+                    <option key={c.code} value={c.name} />
+                  ))}
+                </datalist>
               </div>
 
               <div>

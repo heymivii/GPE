@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { City } from './entities/city.entity';
 import { CreateCityDto } from './dto/create-city.dto';
 import { UpdateCityDto } from './dto/update-city.dto';
+import restCountriesService from '../../services/restCountries.service';
 
 @Injectable()
 export class CityService {
@@ -30,6 +31,11 @@ export class CityService {
     return await this.cityRepository.find({
       relations: ['country'],
     });
+  }
+
+  // Reference list of cities of a country (free, no key — via countriesnow), for admin pickers.
+  getAvailableCities(country: string): Promise<string[]> {
+    return restCountriesService.getCitiesByCountry(country);
   }
 
   async findByCountry(countryId: number): Promise<City[]> {
