@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, FolderKanban, ClipboardList, LogOut, ShieldAlert, Menu, X, Globe, MapPin, Compass, Users } from 'lucide-react';
+import { LayoutDashboard, FolderKanban, ClipboardList, LogOut, ShieldAlert, Menu, X, Globe, MapPin, Compass, Users, Link2 } from 'lucide-react';
 import { useAuth } from '../../../hooks/useAuth';
 import { Toaster } from 'react-hot-toast';
 
@@ -45,6 +45,11 @@ export default function AdminLayout() {
       path: '/admin/cities',
       label: 'Gestion Villes',
       icon: Compass,
+    },
+    {
+      path: '/admin/gov-links',
+      label: 'Liens Gouvernementaux',
+      icon: Link2,
     },
   ];
 
