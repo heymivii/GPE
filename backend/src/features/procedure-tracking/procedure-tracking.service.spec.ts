@@ -2,6 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { ProcedureTrackingService } from './procedure-tracking.service';
 import { ProcedureTracking } from './entities/procedure-tracking.entity';
+import { ExpatriationProject } from '../expatriation-project/entities/expatriation-project.entity';
+import { AdminProcedure } from '../admin-procedure/entities/admin-procedure.entity';
 
 describe('ProcedureTrackingService', () => {
   let service: ProcedureTrackingService;
@@ -12,6 +14,14 @@ describe('ProcedureTrackingService', () => {
         ProcedureTrackingService,
         {
           provide: getRepositoryToken(ProcedureTracking),
+          useValue: {},
+        },
+        {
+          provide: getRepositoryToken(ExpatriationProject),
+          useValue: {},
+        },
+        {
+          provide: getRepositoryToken(AdminProcedure),
           useValue: {},
         },
       ],

@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AdminProcedureController } from './admin-procedure.controller';
 import { AdminProcedureService } from './admin-procedure.service';
+import { AdminLogService } from '../admin-log/admin-log.service';
 
 describe('AdminProcedureController', () => {
   let controller: AdminProcedureController;
@@ -12,6 +13,10 @@ describe('AdminProcedureController', () => {
         {
           provide: AdminProcedureService,
           useValue: {},
+        },
+        {
+          provide: AdminLogService,
+          useValue: { log: jest.fn() },
         },
       ],
     }).compile();

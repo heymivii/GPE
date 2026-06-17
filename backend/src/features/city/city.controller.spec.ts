@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CityController } from './city.controller';
 import { CityService } from './city.service';
+import { AdminLogService } from '../admin-log/admin-log.service';
 
 describe('CityController', () => {
   let controller: CityController;
@@ -12,6 +13,10 @@ describe('CityController', () => {
         {
           provide: CityService,
           useValue: {},
+        },
+        {
+          provide: AdminLogService,
+          useValue: { log: jest.fn() },
         },
       ],
     }).compile();
