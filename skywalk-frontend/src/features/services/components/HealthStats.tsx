@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { costOfLivingApi } from '../../../api/costOfLiving';
 import type { CleanedCostOfLivingData } from '../../../api/costOfLiving';
 import { useCurrency } from '../../../contexts/CurrencyContext';
-import CurrencySelector from '../../../components/CurrencySelector';
 import { getCountryMapping, getCurrentLocale } from '../../../data/supportedCountries';
+import { formatNumber } from '../../../lib/formatters';
 
 interface HealthSystemMeta {
   systemTypeKey: string;
@@ -81,9 +81,6 @@ interface HealthStatsProps {
   cityName?: string;
 }
 
-const fmtNum = (v: number, d = 0) =>
-  v.toLocaleString(getCurrentLocale(), { minimumFractionDigits: d, maximumFractionDigits: d });
-
 export default function HealthStats({ countryName, cityName }: HealthStatsProps) {
   const { t } = useTranslation();
   const countryKey = countryName || 'france';
@@ -128,9 +125,8 @@ export default function HealthStats({ countryName, cityName }: HealthStatsProps)
 
   const localCur = data.currency.code;
   const numbeoCityName = data.city.name;
-  const rates = data.currency.exchangeRates ?? null;
   const same = isSameCurrency(localCur);
-  const fp = (v?: number) => formatPrice(v, localCur, rates);
+  const fp = (v?: number) => formatPrice(v, localCur);
 
   const monthlyBudgetAvg = data.summary.monthlyBudget.avg;
   const avgSalary = data.summary.averageSalary;
@@ -149,7 +145,7 @@ export default function HealthStats({ countryName, cityName }: HealthStatsProps)
         {fp(value)}{suffix}
       </p>
       {!same && value != null && value > 0 && (
-        <p className="text-xs text-gray-400 mt-0.5">{fmtNum(value, 0)} {localCur}{suffix}</p>
+        <p className="text-xs text-gray-400 mt-0.5">{formatNumber(value, 0)} {localCur}{suffix}</p>
       )}
     </>
   );
@@ -161,7 +157,6 @@ export default function HealthStats({ countryName, cityName }: HealthStatsProps)
           {t('services.stats.health.title', { city: mapping.displayName })}
         </h2>
         <div className="flex items-center gap-2 flex-wrap justify-end">
-          <CurrencySelector />
           {!same && (
             <div className="flex items-center space-x-1.5 px-3 py-1.5 bg-amber-50 rounded-full">
               <ArrowRightLeft className="w-3.5 h-3.5 text-amber-600" />
@@ -236,7 +231,7 @@ export default function HealthStats({ countryName, cityName }: HealthStatsProps)
             value={insuranceMonthly}
             suffix={t('services.stats.common.perMonth')}
             localCur={localCur}
-            exchangeRates={rates}
+            
           />
           {complementaryMonthly > 0 && (
             <PriceRow
@@ -244,7 +239,7 @@ export default function HealthStats({ countryName, cityName }: HealthStatsProps)
               value={complementaryMonthly}
               suffix={t('services.stats.common.perMonth')}
               localCur={localCur}
-              exchangeRates={rates}
+              
             />
           )}
           <PriceRow
@@ -252,7 +247,7 @@ export default function HealthStats({ countryName, cityName }: HealthStatsProps)
             value={totalHealthMonthly}
             suffix={t('services.stats.common.perMonth')}
             localCur={localCur}
-            exchangeRates={rates}
+            
             bold
           />
           <PriceRow
@@ -260,7 +255,7 @@ export default function HealthStats({ countryName, cityName }: HealthStatsProps)
             value={totalHealthMonthly * 12}
             suffix={t('services.stats.common.perYear')}
             localCur={localCur}
-            exchangeRates={rates}
+            
             bold
           />
         </div>
@@ -275,14 +270,14 @@ export default function HealthStats({ countryName, cityName }: HealthStatsProps)
             value={avgSalary}
             suffix={t('services.stats.common.perMonth')}
             localCur={localCur}
-            exchangeRates={rates}
+            
           />
           <PriceRow
             label={t('services.stats.health.averageMonthlyBudget')}
             value={monthlyBudgetAvg}
             suffix={t('services.stats.common.perMonth')}
             localCur={localCur}
-            exchangeRates={rates}
+            
           />
           {preschool != null && preschool > 0 && (
             <PriceRow
@@ -290,7 +285,7 @@ export default function HealthStats({ countryName, cityName }: HealthStatsProps)
               value={preschool}
               suffix={t('services.stats.common.perMonth')}
               localCur={localCur}
-              exchangeRates={rates}
+              
             />
           )}
           {healthPctOfSalary != null && (
@@ -334,9 +329,9 @@ export default function HealthStats({ countryName, cityName }: HealthStatsProps)
   );
 }
 
-function PriceRow({ label, value, suffix, localCur, exchangeRates, bold }: {
+function PriceRow({ label, value, suffix, localCur, bold }: {
   label: string; value?: number; suffix?: string;
-  localCur: string; exchangeRates: Record<string, number> | null;
+  localCur: string;
   bold?: boolean;
 }) {
   const { formatPrice, isSameCurrency } = useCurrency();
@@ -346,10 +341,10 @@ function PriceRow({ label, value, suffix, localCur, exchangeRates, bold }: {
       <div className="flex justify-between items-center">
         <span className={`text-sm ${bold ? 'font-bold text-gray-900' : 'text-gray-600'}`}>{label}</span>
         <span className={`text-sm text-gray-900 ${bold ? 'font-bold text-base' : 'font-semibold'}`}>
-          {formatPrice(value, localCur, exchangeRates)}{suffix}
+          {formatPrice(value, localCur)}{suffix}
           {!same && value != null && value > 0 && (
             <span className="text-gray-400 text-xs font-normal ml-1.5">
-              ({fmtNum(value, 0)} {localCur})
+              ({formatNumber(value, 0)} {localCur})
             </span>
           )}
         </span>

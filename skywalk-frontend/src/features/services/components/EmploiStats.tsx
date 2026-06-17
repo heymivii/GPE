@@ -9,8 +9,8 @@ import { costOfLivingApi } from '../../../api/costOfLiving';
 import type { CleanedCostOfLivingData } from '../../../api/costOfLiving';
 import type { AdzunaSearchResponse, AdzunaJobDto } from '../../../features/search/types/job';
 import { useCurrency } from '../../../contexts/CurrencyContext';
-import CurrencySelector from '../../../components/CurrencySelector';
 import { getCountryMapping, getCurrentLocale } from '../../../data/supportedCountries';
+import { formatNumber, formatCompact } from '../../../lib/formatters';
 import {
   emploiDataByCountry,
   inDemandSectorsByCountry,
@@ -41,15 +41,6 @@ const SLUG_TO_ADZUNA: Record<string, string> = {
   bresil: 'br',
   mexique: 'mx',
   singapour: 'sg',
-};
-
-const fmtNum = (n: number): string =>
-  n.toLocaleString(getCurrentLocale());
-
-const fmtCompact = (n: number): string => {
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1).replace(/\.0$/, '')}M`;
-  if (n >= 1_000) return `${(n / 1_000).toFixed(n >= 10_000 ? 0 : 1).replace(/\.0$/, '')}k`;
-  return n.toLocaleString(getCurrentLocale());
 };
 
 function timeAgo(dateStr: string): string {
@@ -112,7 +103,6 @@ export default function EmploiStats({ countryName, cityName }: EmploiStatsProps)
   const realSalaryMin = colData?.categories?.salary?.averageMonthly?.min;
   const realSalaryMax = colData?.categories?.salary?.averageMonthly?.max;
   const localCur = colData?.currency?.code || 'EUR';
-  const rates = colData?.currency?.exchangeRates ?? null;
   const same = isSameCurrency(localCur);
 
   const totalJobs = adzunaData?.total ?? 0;
@@ -152,7 +142,6 @@ export default function EmploiStats({ countryName, cityName }: EmploiStatsProps)
           )}
         </div>
         <div className="flex items-center gap-2 flex-wrap justify-end">
-          <CurrencySelector />
           {!same && (
             <div className="flex items-center space-x-1.5 px-3 py-1.5 bg-amber-50 rounded-full">
               <ArrowRightLeft className="w-3.5 h-3.5 text-amber-600" />
@@ -178,7 +167,7 @@ export default function EmploiStats({ countryName, cityName }: EmploiStatsProps)
             {t('services.stats.emploi.availableOffers')}
           </p>
           <p className="text-3xl font-bold text-blue-700 tracking-tight mb-1">
-            {totalJobs > 0 ? fmtCompact(totalJobs) : '—'}
+            {totalJobs > 0 ? formatCompact(totalJobs) : '—'}
           </p>
           <p className="text-xs text-gray-500">
             {adzunaCode ? t('services.stats.emploi.viaAdzuna') : t('services.stats.emploi.unavailableCountry')}
@@ -194,12 +183,12 @@ export default function EmploiStats({ countryName, cityName }: EmploiStatsProps)
           </p>
           <p className="text-3xl font-bold text-gray-900 tracking-tight mb-1">
             {realSalaryAvg
-              ? formatPrice(realSalaryAvg, localCur, rates)
-              : staticData ? `${fmtNum(staticData.avgSalaryNet)}€` : '—'}
+              ? formatPrice(realSalaryAvg, localCur)
+              : staticData ? `${formatNumber(staticData.avgSalaryNet)}€` : '—'}
           </p>
           {!same && realSalaryAvg != null && realSalaryAvg > 0 && (
             <p className="text-xs text-gray-400">
-              {fmtNum(Math.round(realSalaryAvg))} {localCur}/{t('services.stats.emploi.perMonth', 'mo')}
+              {formatNumber(Math.round(realSalaryAvg))} {localCur}/{t('services.stats.emploi.perMonth', 'mo')}
             </p>
           )}
           {same && (
@@ -207,7 +196,7 @@ export default function EmploiStats({ countryName, cityName }: EmploiStatsProps)
           )}
           {realSalaryMin != null && realSalaryMax != null && (
             <p className="text-[10px] text-gray-400 mt-1">
-              min {formatPrice(realSalaryMin, localCur, rates)} — max {formatPrice(realSalaryMax, localCur, rates)}
+              min {formatPrice(realSalaryMin, localCur)} — max {formatPrice(realSalaryMax, localCur)}
             </p>
           )}
         </div>
@@ -250,7 +239,7 @@ export default function EmploiStats({ countryName, cityName }: EmploiStatsProps)
           <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
             <Briefcase className="w-5 h-5 text-blue-600" />
             {t('services.stats.emploi.recentOffers')}
-            <span className="text-xs font-normal text-gray-400 ml-auto">{t('services.stats.emploi.totalOffers', { count: String(fmtCompact(totalJobs)) } as Record<string, string>)}</span>
+            <span className="text-xs font-normal text-gray-400 ml-auto">{t('services.stats.emploi.totalOffers', { count: String(formatCompact(totalJobs)) } as Record<string, string>)}</span>
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {sampleJobs.map((job: AdzunaJobDto) => (
@@ -277,7 +266,7 @@ export default function EmploiStats({ countryName, cityName }: EmploiStatsProps)
                 </p>
                 {job.salary && (
                   <p className="text-xs font-medium text-emerald-600 mb-2">
-                    💰 {fmtNum(Math.round(job.salary.min))} – {fmtNum(Math.round(job.salary.max))} {job.salary.currency}/an
+                    💰 {formatNumber(Math.round(job.salary.min))} – {formatNumber(Math.round(job.salary.max))} {job.salary.currency}/an
                   </p>
                 )}
                 <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-50">
