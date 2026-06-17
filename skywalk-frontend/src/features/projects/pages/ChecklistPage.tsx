@@ -52,6 +52,7 @@ function StepLinks({ category, countryCode }: { category: string; countryCode?: 
           label={govLink.label}
           url={govLink.url}
           verifiedAt={govLink.verifiedAt}
+          summary={govLink.summary}
         />
       )}
       {hasLinks && (

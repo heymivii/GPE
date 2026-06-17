@@ -10,6 +10,7 @@ export interface GovLink {
   confidence: number;
   verifiedAt?: string;
   status: 'active' | 'needs_review' | 'dead';
+  summary?: string[];
 }
 
 export interface GovLinkGenerateResult {

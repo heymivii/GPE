@@ -211,6 +211,7 @@ export default function ServicePage() {
                 label={govLink.label}
                 url={govLink.url}
                 verifiedAt={govLink.verifiedAt}
+                summary={govLink.summary}
               />
             )}
 
