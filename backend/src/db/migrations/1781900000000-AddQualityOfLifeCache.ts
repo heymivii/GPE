@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class AddQualityOfLifeCache1781800000000 implements MigrationInterface {
-  name = 'AddQualityOfLifeCache1781800000000';
+export class AddQualityOfLifeCache1781900000000 implements MigrationInterface {
+  name = 'AddQualityOfLifeCache1781900000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
