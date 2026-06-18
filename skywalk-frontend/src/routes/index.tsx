@@ -37,6 +37,7 @@ import AdminContinents from '../features/admin/pages/AdminContinents';
 import AdminCountries from '../features/admin/pages/AdminCountries';
 import AdminCities from '../features/admin/pages/AdminCities';
 import AdminRoles from '../features/admin/pages/AdminRoles';
+import AdminGovLinks from '../features/admin/pages/AdminGovLinks';
 
 export const router = createBrowserRouter([
   {
@@ -149,6 +150,7 @@ export const router = createBrowserRouter([
           { path: 'continents', element: <AdminContinents /> },
           { path: 'countries', element: <AdminCountries /> },
           { path: 'cities', element: <AdminCities /> },
+          { path: 'gov-links', element: <AdminGovLinks /> },
         ],
       },
     ],

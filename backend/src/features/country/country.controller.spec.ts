@@ -43,10 +43,18 @@ describe('CountryController', () => {
   });
 
   describe('findAll()', () => {
-    it('should return all countries', async () => {
+    it('should return all countries when no status filter', async () => {
       service.findAll.mockResolvedValue([{ idCountry: 1 }]);
       const result = await controller.findAll();
       expect(result).toHaveLength(1);
+      expect(service.findAll).toHaveBeenCalledWith(undefined);
+    });
+
+    it('should pass status query param to service', async () => {
+      service.findAll.mockResolvedValue([{ idCountry: 2, status: 'active' }]);
+      const result = await controller.findAll('active');
+      expect(result).toHaveLength(1);
+      expect(service.findAll).toHaveBeenCalledWith('active');
     });
   });
 

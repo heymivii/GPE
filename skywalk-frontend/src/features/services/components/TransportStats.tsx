@@ -4,18 +4,13 @@ import { useTranslation } from 'react-i18next';
 import { costOfLivingApi } from '../../../api/costOfLiving';
 import type { CleanedCostOfLivingData } from '../../../api/costOfLiving';
 import { useCurrency } from '../../../contexts/CurrencyContext';
-import CurrencySelector from '../../../components/CurrencySelector';
 import { getCountryMapping, getCurrentLocale } from '../../../data/supportedCountries';
+import { formatNumber } from '../../../lib/formatters';
 
 interface TransportStatsProps {
   countryName?: string;
   cityName?: string;
 }
-
-const fmtPrice = (v: number | undefined | null, decimals = 0): string =>
-  v != null && v !== 0
-    ? v.toLocaleString(getCurrentLocale(), { minimumFractionDigits: decimals, maximumFractionDigits: decimals })
-    : '—';
 
 export default function TransportStats({ countryName, cityName }: TransportStatsProps) {
   const { t } = useTranslation();
@@ -60,10 +55,9 @@ export default function TransportStats({ countryName, cityName }: TransportStats
   const transport = data.categories.transportation;
   const localCur = data.currency.code;
   const numbeoCityName = data.city.name;
-  const rates = data.currency.exchangeRates ?? null;
 
   const same = isSameCurrency(localCur);
-  const fp = (v?: number) => formatPrice(v, localCur, rates);
+  const fp = (v?: number) => formatPrice(v, localCur);
 
   const gasoline = transport.personal.gasoline1L.avg;
   const monthlyPass = transport.publicTransport.monthlyPass.avg;
@@ -81,7 +75,7 @@ export default function TransportStats({ countryName, cityName }: TransportStats
         {prefix}{fp(value)}{suffix}
       </p>
       {!same && value != null && value > 0 && (
-        <p className="text-xs text-gray-400 mt-0.5">{prefix}{fmtPrice(value, 2)} {localCur}{suffix}</p>
+        <p className="text-xs text-gray-400 mt-0.5">{prefix}{formatNumber(value, 2)} {localCur}{suffix}</p>
       )}
     </>
   );
@@ -93,7 +87,6 @@ export default function TransportStats({ countryName, cityName }: TransportStats
           {t('services.stats.transport.title', { city: mapping.displayName })}
         </h2>
         <div className="flex items-center gap-2 flex-wrap justify-end">
-          <CurrencySelector />
           {!same && (
             <div className="flex items-center space-x-1.5 px-3 py-1.5 bg-amber-50 rounded-full">
               <ArrowRightLeft className="w-3.5 h-3.5 text-amber-600" />
@@ -151,8 +144,8 @@ export default function TransportStats({ countryName, cityName }: TransportStats
             <Bus className="w-5 h-5 text-blue-600" />
             <h3 className="font-semibold text-gray-900">{t('services.stats.transport.publicTransport')}</h3>
           </div>
-          <PriceRow label={t('services.stats.transport.singleTicketLabel')} avg={oneWayTicket} min={transport.publicTransport.oneWayTicket.min} max={transport.publicTransport.oneWayTicket.max} localCur={localCur} exchangeRates={rates} />
-          <PriceRow label={t('services.stats.transport.monthlyPassLabel')} avg={monthlyPass} min={transport.publicTransport.monthlyPass.min} max={transport.publicTransport.monthlyPass.max} localCur={localCur} exchangeRates={rates} />
+          <PriceRow label={t('services.stats.transport.singleTicketLabel')} avg={oneWayTicket} min={transport.publicTransport.oneWayTicket.min} max={transport.publicTransport.oneWayTicket.max} localCur={localCur} />
+          <PriceRow label={t('services.stats.transport.monthlyPassLabel')} avg={monthlyPass} min={transport.publicTransport.monthlyPass.min} max={transport.publicTransport.monthlyPass.max} localCur={localCur} />
         </div>
 
         <div className="bg-white rounded-xl p-6 border border-gray-200">
@@ -160,9 +153,9 @@ export default function TransportStats({ countryName, cityName }: TransportStats
             <Car className="w-5 h-5 text-yellow-600" />
             <h3 className="font-semibold text-gray-900">{t('services.stats.transport.taxi')}</h3>
           </div>
-          <PriceRow label={t('services.stats.transport.taxiStart')} avg={taxiStart} min={transport.taxi.start.min} max={transport.taxi.start.max} localCur={localCur} exchangeRates={rates} />
-          <PriceRow label={t('services.stats.transport.taxiPerKm')} avg={taxiPerKm} min={transport.taxi.per1km.min} max={transport.taxi.per1km.max} localCur={localCur} exchangeRates={rates} />
-          <PriceRow label={t('services.stats.transport.taxiWaiting')} avg={taxiWait} min={transport.taxi.waitingHour.min} max={transport.taxi.waitingHour.max} localCur={localCur} exchangeRates={rates} />
+          <PriceRow label={t('services.stats.transport.taxiStart')} avg={taxiStart} min={transport.taxi.start.min} max={transport.taxi.start.max} localCur={localCur} />
+          <PriceRow label={t('services.stats.transport.taxiPerKm')} avg={taxiPerKm} min={transport.taxi.per1km.min} max={transport.taxi.per1km.max} localCur={localCur} />
+          <PriceRow label={t('services.stats.transport.taxiWaiting')} avg={taxiWait} min={transport.taxi.waitingHour.min} max={transport.taxi.waitingHour.max} localCur={localCur} />
         </div>
       </div>
 
@@ -172,8 +165,8 @@ export default function TransportStats({ countryName, cityName }: TransportStats
             <Fuel className="w-5 h-5 text-orange-600" />
             <h3 className="font-semibold text-gray-900">{t('services.stats.transport.personalVehicle')}</h3>
           </div>
-          <PriceRow label={t('services.stats.transport.gasoline1L')} avg={gasoline} min={transport.personal.gasoline1L.min} max={transport.personal.gasoline1L.max} localCur={localCur} exchangeRates={rates} />
-          <PriceRow label={t('services.stats.transport.newCar')} avg={newCar} min={transport.personal.newCar.min} max={transport.personal.newCar.max} localCur={localCur} exchangeRates={rates} />
+          <PriceRow label={t('services.stats.transport.gasoline1L')} avg={gasoline} min={transport.personal.gasoline1L.min} max={transport.personal.gasoline1L.max} localCur={localCur} />
+          <PriceRow label={t('services.stats.transport.newCar')} avg={newCar} min={transport.personal.newCar.min} max={transport.personal.newCar.max} localCur={localCur} />
         </div>
 
         <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 flex flex-col justify-center">
@@ -220,9 +213,9 @@ export default function TransportStats({ countryName, cityName }: TransportStats
   );
 }
 
-function PriceRow({ label, avg, min, max, localCur, exchangeRates }: {
+function PriceRow({ label, avg, min, max, localCur }: {
   label: string; avg?: number; min?: number; max?: number;
-  localCur: string; exchangeRates: Record<string, number> | null;
+  localCur: string;
 }) {
   const { formatPrice, isSameCurrency } = useCurrency();
   const same = isSameCurrency(localCur);
@@ -231,16 +224,16 @@ function PriceRow({ label, avg, min, max, localCur, exchangeRates }: {
       <div className="flex justify-between items-center">
         <span className="text-gray-600 text-sm">{label}</span>
         <span className="font-semibold text-sm text-gray-900">
-          {formatPrice(avg, localCur, exchangeRates)}
+          {formatPrice(avg, localCur)}
           {!same && avg != null && avg > 0 && (
-            <span className="text-gray-400 text-xs font-normal ml-1.5">({fmtPrice(avg, 2)} {localCur})</span>
+            <span className="text-gray-400 text-xs font-normal ml-1.5">({formatNumber(avg, 2)} {localCur})</span>
           )}
         </span>
       </div>
       {min != null && max != null && min !== 0 && max !== 0 && (
         <div className="flex justify-end gap-3 mt-0.5">
-          <span className="text-xs text-gray-400">min {formatPrice(min, localCur, exchangeRates)}</span>
-          <span className="text-xs text-gray-400">max {formatPrice(max, localCur, exchangeRates)}</span>
+          <span className="text-xs text-gray-400">min {formatPrice(min, localCur)}</span>
+          <span className="text-xs text-gray-400">max {formatPrice(max, localCur)}</span>
         </div>
       )}
     </div>

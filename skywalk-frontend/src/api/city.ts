@@ -46,6 +46,14 @@ export const cityApi = {
     return response.data;
   },
 
+  /** Fetch only admin-activated cities (status=active), including their country relation. */
+  getActive: async (): Promise<City[]> => {
+    const response = await apiClient.get<City[]>('/city', {
+      params: { status: 'active' },
+    });
+    return response.data;
+  },
+
   // Reference list of a country's cities (free geo source) for the admin picker.
   getAvailable: async (country: string): Promise<string[]> => {
     const response = await apiClient.get<string[]>('/city/available', {

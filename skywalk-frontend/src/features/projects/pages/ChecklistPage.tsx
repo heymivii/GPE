@@ -1,9 +1,11 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { CheckCircle, Circle, ChevronDown, ChevronRight, ExternalLink, ArrowLeft, ArrowRight, List, Calendar } from 'lucide-react';
 import { useProject } from '../hooks/useProjectMutations';
 import { useChecklistProgress, getStepDeadline, filterStepsForProject } from '../../dashboard/hooks/useChecklistProgress';
 import { getLinksForStep } from '../../../data/checklist-links';
+import { useGovLink } from '../../../api/useGovLink';
+import OfficialLinkCard from '../../../components/OfficialLinkCard';
 
 // ---- Types ----
 type FilterType = 'all' | 'todo' | 'urgent' | 'late' | 'completed';
@@ -38,34 +40,46 @@ function DeadlineBadge({ daysBeforeDeparture, departureDate }: {
 }
 
 function StepLinks({ category, countryCode }: { category: string; countryCode?: string }) {
+  const { link: govLink } = useGovLink(countryCode, category);
   const links = getLinksForStep(category, countryCode);
-  if (!links) return null;
-  const hasLinks = links.serviceLink || (links.externalLinks && links.externalLinks.length > 0);
-  if (!hasLinks) return null;
+  const hasLinks = links && (links.serviceLink || (links.externalLinks && links.externalLinks.length > 0));
+  if (!govLink && !hasLinks) return null;
 
   return (
-    <div className="flex items-center gap-3 mt-2 flex-wrap">
-      {links.serviceLink && (
-        <Link
-          to={links.serviceLink}
-          onClick={(e) => e.stopPropagation()}
-          className="text-xs text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1"
-        >
-          Voir le service <ArrowRight className="w-3 h-3" />
-        </Link>
+    <div className="flex flex-col gap-2 mt-2">
+      {govLink && (
+        <OfficialLinkCard
+          label={govLink.label}
+          url={govLink.url}
+          verifiedAt={govLink.verifiedAt}
+          summary={govLink.summary}
+        />
       )}
-      {links.externalLinks?.map((link) => (
-        <a
-          key={link.url}
-          href={link.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={(e) => e.stopPropagation()}
-          className="text-xs text-gray-400 hover:text-gray-600 flex items-center gap-1"
-        >
-          {link.label} <ExternalLink className="w-3 h-3" />
-        </a>
-      ))}
+      {hasLinks && (
+        <div className="flex items-center gap-3 flex-wrap">
+          {links!.serviceLink && (
+            <Link
+              to={links!.serviceLink}
+              onClick={(e) => e.stopPropagation()}
+              className="text-xs text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1"
+            >
+              Voir le service <ArrowRight className="w-3 h-3" />
+            </Link>
+          )}
+          {links!.externalLinks?.map((link) => (
+            <a
+              key={link.url}
+              href={link.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="text-xs text-gray-400 hover:text-gray-600 flex items-center gap-1"
+            >
+              {link.label} <ExternalLink className="w-3 h-3" />
+            </a>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -77,7 +91,7 @@ export default function ChecklistPage() {
   const projectId = parseInt(id || '0', 10);
 
   const { data: project } = useProject(projectId);
-  const { progress, updateStep, isLoading } = useChecklistProgress(projectId);
+  const { progress, updateStep, updateFacts, isLoading } = useChecklistProgress(projectId);
   // countryCode récupéré directement depuis la relation chargée
 
   const [filter, setFilter] = useState<FilterType>('all');
@@ -91,16 +105,35 @@ export default function ChecklistPage() {
   // Construire la liste depuis progress
   const allSteps = useMemo(() => {
     if (!progress || !Array.isArray(progress)) return [];
-    return progress.map((t) => ({
-      id: t.idProcedureTracking.toString(),
-      title: t.admin_procedure?.procedureType || '',
-      completed: t.status === 'completed',
-      completedAt: t.end_date || null, // ✅ date de complétion
-      category: t.admin_procedure?.category || 'other',
-      substeps: [] as any[],
-      daysBeforeDeparture: t.admin_procedure?.daysBeforeDeparture,
-      onlyFor: t.admin_procedure?.onlyFor ?? null,
-    }));
+    return progress.map((t) => {
+      const trackingId = t.idProcedureTracking;
+      const completedFacts = t.completedFacts ?? [];
+      const keyFacts = t.admin_procedure?.keyFacts ?? [];
+      const actionItems = t.admin_procedure?.actionItems ?? [];
+
+      // Checkable sub-steps = concrete ACTIONS to do; keyFacts stay as read-only "à savoir".
+      const substeps = actionItems.map((action, i) => ({
+        id: `${trackingId}-${i}`,
+        label: action,
+        completed: completedFacts.includes(i),
+      }));
+
+      return {
+        id: trackingId.toString(),
+        trackingId,
+        title: t.admin_procedure?.procedureType || '',
+        completed: t.status === 'completed',
+        completedAt: t.end_date || null, // ✅ date de complétion
+        category: t.admin_procedure?.category || 'other',
+        substeps,
+        completedFacts,
+        daysBeforeDeparture: t.admin_procedure?.daysBeforeDeparture,
+        onlyFor: t.admin_procedure?.onlyFor ?? null,
+        // ✅ Gov-link enrichment
+        sourceUrl: t.admin_procedure?.sourceUrl,
+        keyFacts,
+      };
+    });
   }, [progress]);
 
   // Filtrage profil
@@ -178,6 +211,32 @@ export default function ChecklistPage() {
       status: item.completed ? 'not_started' : 'completed',
     });
   };
+
+  const toggleSubstep = useCallback(async (
+    itemId: string,
+    substepId: string,
+    e: React.MouseEvent,
+  ) => {
+    e.stopPropagation();
+
+    const item = profileSteps.find((i) => i.id === itemId);
+    if (!item) return;
+
+    // substepId is `${trackingId}-${factIndex}`
+    const factIndex = parseInt(substepId.split('-').pop() ?? '', 10);
+    if (isNaN(factIndex)) return;
+
+    const current = item.completedFacts;
+    const next = current.includes(factIndex)
+      ? current.filter((f) => f !== factIndex)
+      : [...current, factIndex];
+
+    try {
+      await updateFacts({ trackingId: item.trackingId, completedFacts: next });
+    } catch (error) {
+      console.error('Error updating fact:', error);
+    }
+  }, [profileSteps, updateFacts]);
 
   const displaySteps = view === 'timeline' ? timelineSteps : filteredSteps;
 
@@ -318,7 +377,8 @@ export default function ChecklistPage() {
           <div className="space-y-2">
             {displaySteps.map((item) => {
               const isExpanded = expandedIds.has(item.id);
-
+              const substepsTotal = item.substeps.length;
+              const substepsDone = item.substeps.filter((s) => s.completed).length;
 
               return (
                 <div key={item.id} className="bg-white rounded-xl border border-gray-100 overflow-hidden">
@@ -326,9 +386,12 @@ export default function ChecklistPage() {
                     className={`flex items-start gap-3 p-4 cursor-pointer transition-colors ${
                       item.completed ? 'bg-gray-50' : 'hover:bg-gray-50'
                     }`}
-                    onClick={() => toggleItem(item.id)}
+                    onClick={() => substepsTotal > 0 ? toggleExpand(item.id) : toggleItem(item.id)}
                   >
-                    <button className="mt-0.5 flex-shrink-0">
+                    <button
+                      className="mt-0.5 flex-shrink-0"
+                      onClick={(e) => { e.stopPropagation(); toggleItem(item.id); }}
+                    >
                       {item.completed ? (
                         <CheckCircle className="w-5 h-5 text-gray-900" />
                       ) : (
@@ -347,6 +410,11 @@ export default function ChecklistPage() {
                         <span className="text-[11px] text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full font-medium">
                           {item.category}
                         </span>
+                        {substepsTotal > 0 && (
+                          <span className="text-[11px] text-gray-400">
+                            {substepsDone}/{substepsTotal} tâches
+                          </span>
+                        )}
                         {!item.completed && (
                           <DeadlineBadge
                             daysBeforeDeparture={item.daysBeforeDeparture}
@@ -360,12 +428,25 @@ export default function ChecklistPage() {
                         )}
                       </div>
 
-                      {!item.completed && (
-                        <StepLinks category={item.category} countryCode={countryCode} />
+                      {!item.completed && substepsTotal === 0 && (
+                        <>
+                          {(item.sourceUrl || item.keyFacts.length > 0) ? null : (
+                            <StepLinks category={item.category} countryCode={countryCode} />
+                          )}
+                        </>
+                      )}
+
+                      {!item.completed && substepsTotal === 0 && item.sourceUrl && (
+                        <div className="mt-2">
+                          <OfficialLinkCard
+                            label={item.title || 'Source officielle'}
+                            url={item.sourceUrl || '#'}
+                          />
+                        </div>
                       )}
                     </div>
 
-                    {item.substeps && item.substeps.length > 0 && (
+                    {substepsTotal > 0 && (
                       <button
                         onClick={(e) => { e.stopPropagation(); toggleExpand(item.id); }}
                         className="flex-shrink-0 p-1 rounded-md hover:bg-gray-200 transition-colors"
@@ -378,12 +459,13 @@ export default function ChecklistPage() {
                     )}
                   </div>
 
-                  {isExpanded && item.substeps && item.substeps.length > 0 && (
+                  {isExpanded && substepsTotal > 0 && (
                     <div className="border-t border-gray-100 bg-gray-50/50 px-4 py-2 space-y-1">
-                      {item.substeps.map((substep: any) => (
+                      {item.substeps.map((substep) => (
                         <div
                           key={substep.id}
-                          className={`flex items-start gap-2.5 px-2 py-2 rounded-md ${
+                          onClick={(e) => toggleSubstep(item.id, substep.id, e)}
+                          className={`flex items-start gap-2.5 px-2 py-2 rounded-md cursor-pointer transition-colors ${
                             substep.completed ? 'bg-gray-100/60' : 'hover:bg-gray-100'
                           }`}
                         >

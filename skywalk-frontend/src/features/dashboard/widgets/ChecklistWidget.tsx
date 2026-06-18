@@ -105,10 +105,12 @@ interface ChecklistSubstep {
 
 interface ChecklistItem {
   id: string;
+  trackingId: number;
   title: string;
   completed: boolean;
   category: string;
   substeps: ChecklistSubstep[];
+  completedFacts: number[];
   daysBeforeDeparture?: number;
   onlyFor?: { travelType?: string[]; objective?: string[] } | null;
 }
@@ -123,7 +125,7 @@ export default function ChecklistWidget({
   currentSize,
 }: ChecklistWidgetProps) {
   const { t } = useTranslation();
-  const { progress, updateStep, isLoading } = useChecklistProgress(projectId);
+  const { progress, updateStep, updateFacts, isLoading } = useChecklistProgress(projectId);
 
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const pendingRef = useRef<Set<string>>(new Set());
@@ -135,15 +137,31 @@ export default function ChecklistWidget({
   const allChecklist = useMemo<ChecklistItem[]>(() => {
     if (!progress || !Array.isArray(progress)) return [];
 
-    return progress.map((t) => ({
-      id: t.idProcedureTracking.toString(),
-      title: t.admin_procedure?.procedureType || '',
-      completed: t.status === 'completed',
-      category: t.admin_procedure?.category || 'other',
-      substeps: [],
-      daysBeforeDeparture: t.admin_procedure?.daysBeforeDeparture,
-      onlyFor: t.admin_procedure?.onlyFor ?? null,
-    }));
+    return progress.map((t) => {
+      const trackingId = t.idProcedureTracking;
+      const completedFacts = t.completedFacts ?? [];
+      const actionItems = t.admin_procedure?.actionItems ?? [];
+
+      // Checkable sub-steps = concrete ACTIONS to do (not descriptive facts).
+      const substeps: ChecklistSubstep[] = actionItems.map((action, i) => ({
+        id: `${trackingId}-${i}`,
+        label: action,
+        completed: completedFacts.includes(i),
+        isOptional: false,
+      }));
+
+      return {
+        id: trackingId.toString(),
+        trackingId,
+        title: t.admin_procedure?.procedureType || '',
+        completed: t.status === 'completed',
+        category: t.admin_procedure?.category || 'other',
+        substeps,
+        completedFacts,
+        daysBeforeDeparture: t.admin_procedure?.daysBeforeDeparture,
+        onlyFor: t.admin_procedure?.onlyFor ?? null,
+      };
+    });
   }, [progress]);
 
   // ✅ Filtrage selon le profil du projet
@@ -173,6 +191,13 @@ export default function ChecklistWidget({
       })
       .slice(0, 3);
   }, [checklist, departureDate]);
+
+  // Avoid showing the priority-preview items again in the full list below.
+  const urgentIds = useMemo(() => new Set(urgentSteps.map((s) => s.id)), [urgentSteps]);
+  const remainingChecklist = useMemo(
+    () => checklist.filter((item) => !urgentIds.has(item.id)),
+    [checklist, urgentIds],
+  );
 
   const toggleExpand = useCallback((id: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -204,12 +229,30 @@ export default function ChecklistWidget({
   }, [checklist, updateStep]);
 
   const toggleSubstep = useCallback(async (
-    _itemId: string,
-    _substepId: string,
+    itemId: string,
+    substepId: string,
     e: React.MouseEvent,
   ) => {
     e.stopPropagation();
-  }, []);
+
+    const item = checklist.find((i) => i.id === itemId);
+    if (!item) return;
+
+    // substepId is `${trackingId}-${factIndex}`
+    const factIndex = parseInt(substepId.split('-').pop() ?? '', 10);
+    if (isNaN(factIndex)) return;
+
+    const current = item.completedFacts;
+    const next = current.includes(factIndex)
+      ? current.filter((f) => f !== factIndex)
+      : [...current, factIndex];
+
+    try {
+      await updateFacts({ trackingId: item.trackingId, completedFacts: next });
+    } catch (error) {
+      console.error('Error updating fact:', error);
+    }
+  }, [checklist, updateFacts]);
 
   const { totalSteps, completedSteps } = useMemo(() => {
     return checklist.reduce(
@@ -307,7 +350,7 @@ export default function ChecklistWidget({
 
         {/* Liste complète */}
         <div className="space-y-1.5 max-h-[24rem] overflow-y-auto pr-1">
-          {checklist.map((item) => {
+          {remainingChecklist.map((item) => {
             const isExpanded = expandedIds.has(item.id);
             const substepsDone = item.substeps?.filter((s) => s.completed).length ?? 0;
             const substepsTotal = item.substeps?.length ?? 0;
@@ -318,9 +361,12 @@ export default function ChecklistWidget({
                   className={`flex items-start gap-3 p-3 cursor-pointer transition-colors ${
                     item.completed ? 'bg-gray-50' : 'hover:bg-gray-50'
                   }`}
-                  onClick={() => toggleItem(item.id)}
+                  onClick={() => substepsTotal === 0 ? toggleItem(item.id) : toggleExpand(item.id, { stopPropagation: () => {} } as React.MouseEvent)}
                 >
-                  <button className="mt-0.5 flex-shrink-0">
+                  <button
+                    className="mt-0.5 flex-shrink-0"
+                    onClick={(e) => { e.stopPropagation(); toggleItem(item.id); }}
+                  >
                     {item.completed ? (
                       <CheckCircle className="w-5 h-5 text-gray-900" />
                     ) : (
@@ -353,13 +399,13 @@ export default function ChecklistWidget({
                       )}
                     </div>
 
-                    {/* ✅ Liens officiels */}
-                    {!item.completed && (
+                    {/* ✅ Liens officiels (seulement si pas de substeps) */}
+                    {!item.completed && substepsTotal === 0 && (
                       <StepLinks category={item.category} countryCode={countryCode} />
                     )}
                   </div>
 
-                  {item.substeps && item.substeps.length > 0 && (
+                  {substepsTotal > 0 && (
                     <button
                       onClick={(e) => toggleExpand(item.id, e)}
                       className="flex-shrink-0 mt-1 p-1 rounded-md hover:bg-gray-200 transition-colors"
@@ -373,7 +419,7 @@ export default function ChecklistWidget({
                   )}
                 </div>
 
-                {isExpanded && item.substeps && item.substeps.length > 0 && (
+                {isExpanded && substepsTotal > 0 && (
                   <div className="border-t border-gray-100 bg-gray-50/50 px-3 py-2 space-y-1">
                     {item.substeps.map((substep) => (
                       <div

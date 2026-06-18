@@ -37,6 +37,7 @@ import { TravelTypeModule } from './features/project/travel-type/travel-type.mod
 
 import { AdminStatsModule } from './features/admin-stats/admin-stats.module';
 import { AdminLogModule } from './features/admin-log/admin-log.module';
+import { GovLinksModule } from './features/gov-links/gov-links.module';
 
 @Module({
   imports: [
@@ -78,6 +79,7 @@ import { AdminLogModule } from './features/admin-log/admin-log.module';
     TravelTypeModule,
     AdminStatsModule,
     AdminLogModule,
+    GovLinksModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],

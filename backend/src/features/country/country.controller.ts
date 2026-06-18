@@ -10,6 +10,7 @@ import {
   HttpStatus,
   UseGuards,
   Request,
+  Query,
 } from '@nestjs/common';
 import { CountryService } from './country.service';
 import { CreateCountryDto } from './dto/create-country.dto';
@@ -45,8 +46,8 @@ export class CountryController {
   }
 
   @Get()
-  findAll() {
-    return this.countryService.findAll();
+  findAll(@Query('status') status?: string) {
+    return this.countryService.findAll(status);
   }
 
   // All ~250 countries from restCountries (for the admin country picker).

@@ -1,11 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useQuery } from '@tanstack/react-query'
 import FormField from '../ui/FormField'
 import Select from '../ui/Select'
 import TextInput from '../ui/TextInput'
 import WizardNav from '../components/WizardNav'
-import { destinationsApi } from '../../../api/destinations'
 
 interface DestinationStepData {
   fromCountry: string
@@ -21,11 +19,11 @@ interface DestinationStepProps {
   onBack?: () => void
 }
 
-import { useCostOfLiving } from '../../../contexts/CostOfLivingContext';
+import { useSupportedCountries } from '../../../hooks/useSupportedCountries';
 
 export default function DestinationStep({ data, isEditMode, onNext, onBack }: DestinationStepProps) {
   const { t } = useTranslation()
-  const { supportedCountries } = useCostOfLiving();
+  const { countries: supportedCountries, citiesByCode, isLoading: isLoadingCities } = useSupportedCountries();
 
   const [formData, setFormData] = useState<DestinationStepData>({
     fromCountry: data?.fromCountry || '',
@@ -37,24 +35,15 @@ export default function DestinationStep({ data, isEditMode, onNext, onBack }: De
 
   const countryOptions = supportedCountries.map(c => ({
     value: c.code,
-    label: t(c.i18nKey)
+    label: t(c.i18nKey, { defaultValue: c.name })
   }));
 
-  const selectedCountrySlug = supportedCountries.find(c => c.code === formData.toCountry)?.slug;
-
-  const { data: countryDetail, isLoading: isLoadingCities } = useQuery({
-    queryKey: ['destination', selectedCountrySlug],
-    queryFn: () => destinationsApi.getBySlug(selectedCountrySlug!),
-    enabled: !!selectedCountrySlug,
-  });
-
-  const cityOptions = countryDetail?.cities?.map(city => {
-    const cityId = city.id || city.city_id;
-    return {
-      value: cityId ? cityId.toString() : city.name,
-      label: city.name
-    };
-  }) || [];
+  // Active cities (admin-managed `city` table) for the selected destination country.
+  // value = idCity so it matches the project's idDestinationCity FK.
+  const cityOptions = (citiesByCode[formData.toCountry] ?? []).map(city => ({
+    value: city.idCity.toString(),
+    label: city.name,
+  }));
 
   useEffect(() => {
     if (data) {

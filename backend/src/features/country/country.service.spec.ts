@@ -44,13 +44,32 @@ describe('CountryService', () => {
   });
 
   describe('findAll()', () => {
-    it('should return countries with continent relation', async () => {
+    it('should return countries with continent relation (no status filter)', async () => {
       repo.find.mockResolvedValue([{ idCountry: 1 }]);
       const result = await service.findAll();
       expect(result).toHaveLength(1);
       expect(repo.find).toHaveBeenCalledWith(
         expect.objectContaining({ relations: ['continent'] }),
       );
+      // No where.status when no arg passed
+      const callArg = repo.find.mock.calls[0][0];
+      expect(callArg.where).toBeUndefined();
+    });
+
+    it('should filter by status when status arg is provided', async () => {
+      repo.find.mockResolvedValue([{ idCountry: 2, status: 'active' }]);
+      const result = await service.findAll('active');
+      expect(result).toHaveLength(1);
+      expect(repo.find).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { status: 'active' } }),
+      );
+    });
+
+    it('should not apply status filter when status is undefined', async () => {
+      repo.find.mockResolvedValue([{ idCountry: 1 }, { idCountry: 2 }]);
+      await service.findAll(undefined);
+      const callArg = repo.find.mock.calls[0][0];
+      expect(callArg.where).toBeUndefined();
     });
   });
 

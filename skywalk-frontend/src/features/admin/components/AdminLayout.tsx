@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, FolderKanban, ClipboardList, LogOut, ShieldAlert, Menu, X, Globe, MapPin, Compass, Users } from 'lucide-react';
+import { LayoutDashboard, FolderKanban, ClipboardList, LogOut, ShieldAlert, Menu, X, Globe, MapPin, Compass, Users, Link2, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../../../hooks/useAuth';
 import { Toaster } from 'react-hot-toast';
 
@@ -45,6 +45,11 @@ export default function AdminLayout() {
       path: '/admin/cities',
       label: 'Gestion Villes',
       icon: Compass,
+    },
+    {
+      path: '/admin/gov-links',
+      label: 'Liens Gouvernementaux',
+      icon: Link2,
     },
   ];
 
@@ -126,7 +131,15 @@ export default function AdminLayout() {
         </div>
 
         {/* Footer actions */}
-        <div className="p-4 border-t border-slate-800 flex-shrink-0">
+        <div className="p-4 border-t border-slate-800 flex-shrink-0 space-y-1">
+          <Link
+            to="/dashboard"
+            onClick={() => setMobileMenuOpen(false)}
+            className="flex items-center gap-3 w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5 flex-shrink-0" />
+            Retour à la plateforme
+          </Link>
           <button
             onClick={handleLogout}
             className="flex items-center gap-3 w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-red-400 hover:bg-red-950/20 hover:text-red-300 transition-colors"

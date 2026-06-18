@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AdminProcedureService } from './admin-procedure.service';
+import { AdminProcedureGeneratorService } from './admin-procedure-generator.service';
 import { CreateAdminProcedureDto } from './dto/create-admin-procedure.dto';
 import { UpdateAdminProcedureDto } from './dto/update-admin-procedure.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -24,8 +25,24 @@ import { AdminLogService } from '../admin-log/admin-log.service';
 export class AdminProcedureController {
   constructor(
     private readonly adminProcedureService: AdminProcedureService,
+    private readonly adminProcedureGeneratorService: AdminProcedureGeneratorService,
     private readonly adminLogService: AdminLogService,
   ) {}
+
+  @Post('generate')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  async generateFromGovLinks(@Query('country') country: string, @Request() req) {
+    const procedures = await this.adminProcedureGeneratorService.generateFromGovLinks(country);
+    await this.adminLogService.log(
+      req.user.userId,
+      'GENERATE',
+      'AdminProcedure',
+      country,
+      `Génération de ${procedures.length} démarche(s) depuis gov_links pour ${country}`,
+    );
+    return procedures;
+  }
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)

@@ -28,9 +28,10 @@ export class CityService {
     return await this.cityRepository.save(city);
   }
 
-  async findAll(): Promise<City[]> {
+  async findAll(status?: string): Promise<City[]> {
     return await this.cityRepository.find({
       relations: ['country'],
+      ...(status !== undefined && { where: { status: status as 'active' | 'archived' } }),
     });
   }
 
@@ -42,9 +43,12 @@ export class CityService {
     return restCountriesService.getCitiesByCountry(country);
   }
 
-  async findByCountry(countryId: number): Promise<City[]> {
+  async findByCountry(countryId: number, status?: string): Promise<City[]> {
     return await this.cityRepository.find({
-      where: { countryId: countryId },
+      where: {
+        countryId,
+        ...(status !== undefined && { status: status as 'active' | 'archived' }),
+      },
     });
   }
 

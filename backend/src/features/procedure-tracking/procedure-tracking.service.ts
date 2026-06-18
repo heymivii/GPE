@@ -39,8 +39,17 @@ export class ProcedureTrackingService {
         throw new NotFoundException(`Projet avec l'ID ${projectId} introuvable`);
       }
 
-      const adminProcedures = await this.adminProcedureRepository.find({
+      const allAdminProcedures = await this.adminProcedureRepository.find({
         where: { country: { idCountry: project.destinationCountryId } },
+      });
+
+      // Filter by project objective: keep procedures that apply to everyone
+      // (null/empty objectives) OR explicitly target this project's objective.
+      const projectObjective = project.objective;
+      const adminProcedures = allAdminProcedures.filter((ap) => {
+        if (!ap.objectives || ap.objectives.length === 0) return true;
+        if (!projectObjective) return true;
+        return ap.objectives.includes(projectObjective);
       });
 
       const existingTrackings = await this.trackingRepository.find({
@@ -95,7 +104,14 @@ export class ProcedureTrackingService {
 
   async update(id: number, updateDto: UpdateProcedureTrackingDto): Promise<ProcedureTracking> {
     const tracking = await this.findOne(id);
-    Object.assign(tracking, updateDto);
+
+    if (updateDto.status !== undefined) {
+      tracking.status = updateDto.status;
+    }
+
+    if (updateDto.completedFacts !== undefined) {
+      tracking.completedFacts = updateDto.completedFacts;
+    }
 
     // ✅ Remplir automatiquement end_date quand l'étape est complétée
     if (updateDto.status === 'completed' && !tracking.end_date) {

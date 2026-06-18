@@ -94,6 +94,13 @@ export const adminApi = {
     await apiClient.delete(`/admin-procedure/${id}`);
   },
 
+  generateFromGovLinks: async (country: string): Promise<AdminProcedure[]> => {
+    const response = await apiClient.post<AdminProcedure[]>('/admin-procedure/generate', null, {
+      params: { country },
+    });
+    return response.data;
+  },
+
   getLogs: async (): Promise<any[]> => {
     const response = await apiClient.get<any[]>('/admin-logs');
     return response.data;
