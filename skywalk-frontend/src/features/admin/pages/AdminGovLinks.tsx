@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { govLinksApi, type GovLink } from '../../../api/govLinks';
+import { useSupportedCountries } from '../../../hooks/useSupportedCountries';
 import { SUPPORTED_COUNTRIES } from '../../../data/supportedCountries';
 import { useState, useMemo } from 'react';
 import { Loader2, RefreshCw, Link2, ExternalLink, CheckCircle2, XCircle } from 'lucide-react';
@@ -28,8 +29,9 @@ function StatusBadge({ status }: { status: GovLink['status'] }) {
 
 export default function AdminGovLinks() {
   const queryClient = useQueryClient();
+  const { countries } = useSupportedCountries();
 
-  const [genCountry, setGenCountry] = useState<string>(SUPPORTED_COUNTRIES[0].code);
+  const [genCountry, setGenCountry] = useState<string>(() => countries[0]?.code ?? SUPPORTED_COUNTRIES[0].code);
   const [genCategory, setGenCategory] = useState<Category>('visa');
   const [activeGenKey, setActiveGenKey] = useState<string | null>(null);
 
@@ -182,7 +184,7 @@ export default function AdminGovLinks() {
               disabled={generateMutation.isPending}
               className="px-3.5 py-2 border border-gray-200 bg-white rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900 min-w-[160px] disabled:opacity-60"
             >
-              {SUPPORTED_COUNTRIES.map((c) => (
+              {countries.map((c) => (
                 <option key={c.code} value={c.code}>
                   {c.flag} {c.name}
                 </option>
@@ -241,7 +243,7 @@ export default function AdminGovLinks() {
             >
               Tous
             </button>
-            {SUPPORTED_COUNTRIES.map((c) => (
+            {countries.map((c) => (
               <button
                 key={c.code}
                 onClick={() => setFilterCountry(c.code)}
@@ -288,7 +290,7 @@ export default function AdminGovLinks() {
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {filteredLinks.map((link) => {
-                  const country = SUPPORTED_COUNTRIES.find((c) => c.code === link.countryCode);
+                  const country = countries.find((c) => c.code === link.countryCode);
                   const pending = isRowPending(link.countryCode, link.category);
                   return (
                     <tr key={link.id} className="hover:bg-gray-50/60 transition-colors">

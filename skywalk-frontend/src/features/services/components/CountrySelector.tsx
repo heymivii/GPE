@@ -1,15 +1,7 @@
 import { useState } from 'react';
 import { Globe, ChevronDown, Check } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-
-import { SUPPORTED_COUNTRIES } from '../../../data/supportedCountries';
-
-const AVAILABLE_COUNTRIES = SUPPORTED_COUNTRIES.map(c => ({
-  slug: c.slug,
-  name: c.name,
-  i18nKey: c.i18nKey,
-  flag: c.flag
-}));
+import { useSupportedCountries } from '../../../hooks/useSupportedCountries';
 
 interface CountrySelectorProps {
   selectedCountry: string | null;
@@ -24,8 +16,16 @@ export default function CountrySelector({
 }: CountrySelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { t } = useTranslation();
+  const { countries } = useSupportedCountries();
 
-  const selectedCountryData = AVAILABLE_COUNTRIES.find(
+  const availableCountries = countries.map(c => ({
+    slug: c.slug,
+    name: c.name,
+    i18nKey: c.i18nKey,
+    flag: c.flag,
+  }));
+
+  const selectedCountryData = availableCountries.find(
     (c) => c.slug === selectedCountry
   );
 
@@ -87,7 +87,7 @@ export default function CountrySelector({
               {showGenericOption && <div className="my-2 border-t border-gray-100" />}
 
               <div className="space-y-1">
-                {AVAILABLE_COUNTRIES.map((country) => (
+                {availableCountries.map((country) => (
                   <button
                     key={country.slug}
                     onClick={() => handleSelect(country.slug)}

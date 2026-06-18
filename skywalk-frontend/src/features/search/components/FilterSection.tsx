@@ -2,6 +2,7 @@ import { useState, useRef, useCallback } from 'react'
 import { MapPin, Calendar, DollarSign, Tag, X, Briefcase } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { SearchFilters } from '../types'
+import { useSupportedCountries } from '../../../hooks/useSupportedCountries'
 
 interface FilterSectionProps {
   filters: SearchFilters
@@ -28,17 +29,15 @@ const categoryColors: Record<string, string> = {
 
 const contractTypeIds = ['permanent', 'contract', 'full_time', 'part_time'] as const
 
-import { SUPPORTED_COUNTRIES, CITIES_BY_COUNTRY } from '../../../data/supportedCountries'
-
-const countries = SUPPORTED_COUNTRIES.map(c => ({
-  code: c.code,
-  name: c.name,
-  i18nKey: c.i18nKey,
-  flag: c.flag
-}))
-
 export default function FilterSection({ filters, onFiltersChange }: FilterSectionProps) {
   const { t } = useTranslation()
+  const { countries: supportedCountries, citiesByCountry } = useSupportedCountries()
+  const countries = supportedCountries.map(c => ({
+    code: c.code,
+    name: c.name,
+    i18nKey: c.i18nKey,
+    flag: c.flag,
+  }))
   const [isPriceExpanded, setIsPriceExpanded] = useState(false)
   const [isDateExpanded, setIsDateExpanded] = useState(false)
   const cityDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -306,14 +305,14 @@ export default function FilterSection({ filters, onFiltersChange }: FilterSectio
         </div>
       </div>
 
-      {filters.country && (CITIES_BY_COUNTRY[filters.country]?.length ?? 0) > 0 && (
+      {filters.country && (citiesByCountry[filters.country]?.length ?? 0) > 0 && (
         <div className="pt-4 border-t">
           <div className="flex items-center gap-2 mb-3">
             <MapPin className="w-4 h-4 text-gray-500" />
             <label className="font-medium text-gray-700">{t('searchPage.filter.city')}</label>
           </div>
           <div className="flex flex-wrap gap-2">
-            {CITIES_BY_COUNTRY[filters.country].map((city) => (
+            {citiesByCountry[filters.country].map((city) => (
               <button
                 key={city}
                 onClick={() => handleCityChange(filters.city === city ? '' : city)}
