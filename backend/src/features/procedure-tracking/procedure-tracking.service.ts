@@ -114,4 +114,34 @@ export class ProcedureTrackingService {
     const tracking = await this.findOne(id);
     await this.trackingRepository.remove(tracking);
   }
+
+  async getBuddies(
+    procedureId: number,
+    countryId: number,
+    currentUserId: number,
+  ): Promise<{ firstname: string; originCountry: string; completedAt: string }[]> {
+    const trackings = await this.trackingRepository.find({
+      where: {
+        admin_procedure: { idAdminProcedure: procedureId },
+        status: 'completed',
+        project: { destinationCountryId: countryId },
+      },
+      relations: ['user', 'user.originCountry', 'project'],
+      order: { end_date: 'DESC' },
+      take: 4,
+    });
+
+    return trackings
+      .filter((t) => {
+        if (t.user?.idUser === currentUserId) return false;
+        if (!t.end_date) return false;
+        return true;
+      })
+      .slice(0, 3)
+      .map((t) => ({
+        firstname: t.user?.firstName ?? 'Quelqu\'un',
+        originCountry: t.user?.originCountry?.countryName ?? '',
+        completedAt: t.end_date!,
+      }));
+  }
 }
