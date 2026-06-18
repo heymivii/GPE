@@ -1,6 +1,11 @@
 import axios from 'axios';
 import { SearchCandidate, RankResult } from './gov-links.types';
 
+export interface SummarizeResult {
+  facts: string[];
+  actions: string[];
+}
+
 export interface LlmRanker {
   pickBest(
     query: string,
@@ -9,7 +14,7 @@ export interface LlmRanker {
   summarize(
     pageText: string,
     context: { country: string; category: string },
-  ): Promise<string[]>;
+  ): Promise<SummarizeResult>;
   health(): Promise<boolean>;
 }
 
@@ -54,10 +59,11 @@ export class OllamaRanker implements LlmRanker {
   async summarize(
     pageText: string,
     context: { country: string; category: string },
-  ): Promise<string[]> {
+  ): Promise<SummarizeResult> {
+    const empty: SummarizeResult = { facts: [], actions: [] };
     const text = (pageText ?? '').slice(0, 4000);
-    if (!text.trim()) return [];
-    const prompt = `Contenu d'une page gouvernementale officielle (pays: ${context.country}, thème: ${context.category}):\n"""${text}"""\n\nExtrais les informations pratiques essentielles qu'un expatrié doit connaître. Couvre, SEULEMENT si présent dans le texte: les démarches/étapes obligatoires, le coût (gratuit ou montant précis), les documents requis, les délais, les conditions d'éligibilité, et l'organisme compétent. RÈGLES STRICTES: utilise UNIQUEMENT des informations présentes dans le texte ci-dessus; n'invente RIEN; si une info n'est pas dans le texte, ne la mets pas; chaque fait = une phrase courte, concrète et autonome en français; donne 3 à 7 faits, les plus utiles d'abord. Réponds en JSON STRICT {"points": ["...", "..."]}.`;
+    if (!text.trim()) return empty;
+    const prompt = `Contenu d'une page gouvernementale officielle (pays: ${context.country}, thème: ${context.category}):\n"""${text}"""\n\nAnalyse ce contenu et retourne STRICTEMENT le JSON suivant:\n{"facts": ["..."], "actions": ["..."]}\n\n- "facts": 3 à 5 phrases DESCRIPTIVES courtes qu'un expatrié doit SAVOIR (coût, délais, conditions, organisme compétent). UNIQUEMENT ce qui est dans le texte.\n- "actions": 3 à 7 TÂCHES CONCRÈTES à l'IMPÉRATIF que l'expatrié doit FAIRE (ex: "Préparer un passeport valide ≥ 6 mois", "Remplir le formulaire de demande", "Prendre rendez-vous au consulat", "Rassembler les justificatifs de domicile", "Déposer la demande à [lieu]"). Chaque action = phrase impérative courte, concrète, ancrée dans le contenu de la page. Pas d'actions vagues.\nRÈGLES STRICTES: utilise UNIQUEMENT les informations présentes dans le texte; n'invente RIEN; si une info n'est pas dans le texte, ne la mets pas.`;
     try {
       const { data } = await axios.post<{
         choices: Array<{ message: { content: string } }>;
@@ -72,16 +78,24 @@ export class OllamaRanker implements LlmRanker {
         { timeout: 30000, headers: { Authorization: `Bearer ${this.apiKey}` } },
       );
       const parsed = JSON.parse(data.choices[0].message.content) as {
-        points?: unknown;
+        facts?: unknown;
+        actions?: unknown;
       };
-      return Array.isArray(parsed.points)
-        ? parsed.points
+      const facts = Array.isArray(parsed.facts)
+        ? parsed.facts
+            .map((p) => String(p))
+            .filter((p) => p.trim())
+            .slice(0, 5)
+        : [];
+      const actions = Array.isArray(parsed.actions)
+        ? parsed.actions
             .map((p) => String(p))
             .filter((p) => p.trim())
             .slice(0, 7)
         : [];
+      return { facts, actions };
     } catch {
-      return [];
+      return empty;
     }
   }
 
