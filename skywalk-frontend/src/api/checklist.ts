@@ -23,6 +23,7 @@ export interface ProcedureTracking {
   status: 'not_started' | 'in_progress' | 'completed' | 'blocked' | 'cancelled';
   start_date?: string;
   end_date?: string;
+  completedFacts?: number[];
   admin_procedure: AdminProcedure;
   project: {
     idProject: number;
@@ -49,6 +50,17 @@ export const checklistApi = {
     const response = await api.patch<ProcedureTracking>(
       `/procedure-tracking/${trackingId}`,
       { status },
+    );
+    return response.data;
+  },
+
+  updateCompletedFacts: async (
+    trackingId: number,
+    completedFacts: number[],
+  ): Promise<ProcedureTracking> => {
+    const response = await api.patch<ProcedureTracking>(
+      `/procedure-tracking/${trackingId}`,
+      { completedFacts },
     );
     return response.data;
   },
