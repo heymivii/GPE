@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AdminProcedureController } from './admin-procedure.controller';
 import { AdminProcedureService } from './admin-procedure.service';
+import { AdminProcedureGeneratorService } from './admin-procedure-generator.service';
 import { AdminLogService } from '../admin-log/admin-log.service';
 
 describe('AdminProcedureController', () => {
@@ -13,6 +14,10 @@ describe('AdminProcedureController', () => {
         {
           provide: AdminProcedureService,
           useValue: {},
+        },
+        {
+          provide: AdminProcedureGeneratorService,
+          useValue: { generateFromGovLinks: jest.fn() },
         },
         {
           provide: AdminLogService,
