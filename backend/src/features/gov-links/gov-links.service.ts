@@ -57,7 +57,7 @@ export class GovLinksService {
   }
 
   async generate(countryCode: string, category: string): Promise<GovLinkResult> {
-    const { query, keywords } = buildQuery(this.countryName(countryCode), category);
+    const { query, keywords } = buildQuery(this.countryName(countryCode), category, countryCode);
     const raw = await this.search.search(query, officialSuffixes(countryCode));
     const official = raw.filter((c) => isOfficialDomain(c.url, countryCode));
 
