@@ -46,6 +46,39 @@ export const CATEGORY_OBJECTIVES_MAP: Record<string, string[]> = {
   education: ['study'],
 };
 
+/**
+ * French display title per category — used as procedureType in admin_procedure.
+ * Never derived from the gov_link label (which may be English or arbitrary).
+ */
+export const CATEGORY_FR_TITLE_MAP: Record<string, string> = {
+  visa: 'Visa & entrée',
+  demarches: 'Titre de séjour',
+  'demarches-admin': 'Démarches administratives',
+  logement: 'Logement',
+  sante: 'Assurance maladie & santé',
+  emploi: 'Travail & emploi',
+  banque: 'Compte bancaire',
+  transport: 'Transport & permis de conduire',
+  education: 'Études',
+};
+
+/**
+ * Phase per category:
+ *   'before'     → must be handled before departure
+ *   'on_arrival' → handled once arrived in the destination country
+ */
+export const CATEGORY_PHASE_MAP: Record<string, 'before' | 'on_arrival'> = {
+  visa: 'before',
+  demarches: 'on_arrival',
+  'demarches-admin': 'on_arrival',
+  logement: 'on_arrival',
+  sante: 'on_arrival',
+  emploi: 'on_arrival',
+  banque: 'on_arrival',
+  transport: 'on_arrival',
+  education: 'on_arrival',
+};
+
 function defaultDaysBeforeDeparture(category: string): number {
   return DAYS_BEFORE_DEPARTURE_MAP[category] ?? 60;
 }
@@ -56,6 +89,14 @@ function defaultStepOrder(category: string): number {
 
 function objectivesForCategory(category: string): string[] {
   return CATEGORY_OBJECTIVES_MAP[category] ?? [];
+}
+
+function frTitleForCategory(category: string): string {
+  return CATEGORY_FR_TITLE_MAP[category] ?? category.charAt(0).toUpperCase() + category.slice(1);
+}
+
+function phaseForCategory(category: string): 'before' | 'on_arrival' {
+  return CATEGORY_PHASE_MAP[category] ?? 'on_arrival';
 }
 
 @Injectable()
@@ -99,7 +140,8 @@ export class AdminProcedureGeneratorService {
       });
 
       const fields: Partial<AdminProcedure> = {
-        procedureType: link.label,
+        // French category title — never the raw gov_link label (avoids English/arbitrary strings)
+        procedureType: frTitleForCategory(category),
         description: link.summary?.[0] ?? `Démarche officielle : ${category}`,
         category,
         sourceUrl: link.url,
@@ -108,6 +150,7 @@ export class AdminProcedureGeneratorService {
         objectives: objectivesForCategory(category),
         daysBeforeDeparture: defaultDaysBeforeDeparture(category),
         stepOrder: defaultStepOrder(category),
+        phase: phaseForCategory(category),
       };
 
       if (procedure) {

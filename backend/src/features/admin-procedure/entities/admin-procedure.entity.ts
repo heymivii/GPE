@@ -45,6 +45,10 @@ export class AdminProcedure {
   @Column({ name: 'action_items', type: 'jsonb', nullable: true })
   actionItems?: string[];
 
+  /** When this step must be done: 'before' departure or 'on_arrival'. */
+  @Column({ name: 'phase', type: 'varchar', length: 20, nullable: true })
+  phase?: string;
+
   @ManyToOne(() => Country, { nullable: false })
   @JoinColumn({ name: 'country_id' })
   country: Country;
