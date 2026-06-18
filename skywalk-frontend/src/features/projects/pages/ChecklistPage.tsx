@@ -39,6 +39,28 @@ function DeadlineBadge({ daysBeforeDeparture, departureDate }: {
   );
 }
 
+// ---- Lien officiel + faits clés issus de la démarche générée ----
+function ProcedureOfficialCard({
+  sourceUrl,
+  keyFacts,
+  title,
+}: {
+  sourceUrl?: string;
+  keyFacts?: string[];
+  title?: string;
+}) {
+  if (!sourceUrl && (!keyFacts || keyFacts.length === 0)) return null;
+  return (
+    <div className="mt-2">
+      <OfficialLinkCard
+        label={title || 'Source officielle'}
+        url={sourceUrl || '#'}
+        summary={keyFacts}
+      />
+    </div>
+  );
+}
+
 function StepLinks({ category, countryCode }: { category: string; countryCode?: string }) {
   const { link: govLink } = useGovLink(countryCode, category);
   const links = getLinksForStep(category, countryCode);
@@ -114,6 +136,9 @@ export default function ChecklistPage() {
       substeps: [] as any[],
       daysBeforeDeparture: t.admin_procedure?.daysBeforeDeparture,
       onlyFor: t.admin_procedure?.onlyFor ?? null,
+      // ✅ Gov-link enrichment
+      sourceUrl: t.admin_procedure?.sourceUrl,
+      keyFacts: t.admin_procedure?.keyFacts,
     }));
   }, [progress]);
 
@@ -375,7 +400,17 @@ export default function ChecklistPage() {
                       </div>
 
                       {!item.completed && (
-                        <StepLinks category={item.category} countryCode={countryCode} />
+                        <>
+                          {(item.sourceUrl || (item.keyFacts && item.keyFacts.length > 0)) ? (
+                            <ProcedureOfficialCard
+                              sourceUrl={item.sourceUrl}
+                              keyFacts={item.keyFacts}
+                              title={item.title}
+                            />
+                          ) : (
+                            <StepLinks category={item.category} countryCode={countryCode} />
+                          )}
+                        </>
                       )}
                     </div>
 
