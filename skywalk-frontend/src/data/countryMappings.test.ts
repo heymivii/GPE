@@ -7,7 +7,58 @@ import {
     codeFromName,
     adzunaCodeFromSlug,
     SLUG_TO_ADZUNA_CODE,
+    flagEmoji,
+    slugify,
 } from './countryMappings';
+
+describe('flagEmoji', () => {
+    it('converts ISO2 to regional-indicator flag emoji', () => {
+        expect(flagEmoji('FR')).toBe('🇫🇷');
+        expect(flagEmoji('US')).toBe('🇺🇸');
+        expect(flagEmoji('JP')).toBe('🇯🇵');
+        expect(flagEmoji('CH')).toBe('🇨🇭');
+    });
+
+    it('is case-insensitive', () => {
+        expect(flagEmoji('fr')).toBe('🇫🇷');
+        expect(flagEmoji('us')).toBe('🇺🇸');
+    });
+
+    it('returns empty string for invalid input', () => {
+        expect(flagEmoji('')).toBe('');
+        expect(flagEmoji('F')).toBe('');
+        expect(flagEmoji('FRA')).toBe('');
+        expect(flagEmoji('12')).toBe('');
+    });
+});
+
+describe('slugify', () => {
+    it('maps the 4 seed countries to their expected slugs', () => {
+        expect(slugify('France')).toBe('france');
+        expect(slugify('États-Unis')).toBe('etats-unis');
+        expect(slugify('Japon')).toBe('japon');
+        expect(slugify('Suisse')).toBe('suisse');
+    });
+
+    it('strips diacritics', () => {
+        expect(slugify('Éléphant')).toBe('elephant');
+        expect(slugify('Côte d\'Ivoire')).toBe('cote-d-ivoire');
+    });
+
+    it('converts spaces and underscores to hyphens', () => {
+        expect(slugify('United States')).toBe('united-states');
+        expect(slugify('New_Zealand')).toBe('new-zealand');
+    });
+
+    it('removes non-alphanumeric-hyphen characters', () => {
+        expect(slugify('Royaume-Uni')).toBe('royaume-uni');
+        expect(slugify("Côte d'Ivoire")).toBe('cote-d-ivoire');
+    });
+
+    it('collapses consecutive hyphens', () => {
+        expect(slugify('A  B')).toBe('a-b');
+    });
+});
 
 describe('resolveCountry', () => {
     it('resolves by slug', () => {
