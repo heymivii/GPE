@@ -140,11 +140,12 @@ export default function ChecklistWidget({
     return progress.map((t) => {
       const trackingId = t.idProcedureTracking;
       const completedFacts = t.completedFacts ?? [];
-      const keyFacts = t.admin_procedure?.keyFacts ?? [];
+      const actionItems = t.admin_procedure?.actionItems ?? [];
 
-      const substeps: ChecklistSubstep[] = keyFacts.map((fact, i) => ({
+      // Checkable sub-steps = concrete ACTIONS to do (not descriptive facts).
+      const substeps: ChecklistSubstep[] = actionItems.map((action, i) => ({
         id: `${trackingId}-${i}`,
-        label: fact,
+        label: action,
         completed: completedFacts.includes(i),
         isOptional: false,
       }));

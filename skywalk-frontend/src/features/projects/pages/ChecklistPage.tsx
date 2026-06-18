@@ -109,10 +109,12 @@ export default function ChecklistPage() {
       const trackingId = t.idProcedureTracking;
       const completedFacts = t.completedFacts ?? [];
       const keyFacts = t.admin_procedure?.keyFacts ?? [];
+      const actionItems = t.admin_procedure?.actionItems ?? [];
 
-      const substeps = keyFacts.map((fact, i) => ({
+      // Checkable sub-steps = concrete ACTIONS to do; keyFacts stay as read-only "à savoir".
+      const substeps = actionItems.map((action, i) => ({
         id: `${trackingId}-${i}`,
-        label: fact,
+        label: action,
         completed: completedFacts.includes(i),
       }));
 
@@ -410,7 +412,7 @@ export default function ChecklistPage() {
                         </span>
                         {substepsTotal > 0 && (
                           <span className="text-[11px] text-gray-400">
-                            {substepsDone}/{substepsTotal} faits
+                            {substepsDone}/{substepsTotal} tâches
                           </span>
                         )}
                         {!item.completed && (

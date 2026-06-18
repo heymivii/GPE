@@ -16,6 +16,7 @@ export interface AdminProcedure {
   // ✅ Gov-link enrichment (rempli lors de la génération depuis les liens officiels)
   sourceUrl?: string;
   keyFacts?: string[];
+  actionItems?: string[];
 }
 
 export interface ProcedureTracking {
