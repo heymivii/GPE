@@ -33,6 +33,8 @@ export type CitiesByCountry = Record<string, string[]>;
 export interface UseSupportedCountriesResult {
     countries: SupportedCountry[];
     citiesByCountry: CitiesByCountry;
+    /** Active cities (full DB records) grouped by ISO2 country code — for value=idCity dropdowns. */
+    citiesByCode: Record<string, City[]>;
     isLoading: boolean;
     error: Error | null;
 }
@@ -179,6 +181,21 @@ export function useSupportedCountries(): UseSupportedCountriesResult {
         return buildCitiesByCountry(countries, dbCities);
     })();
 
+    // Active cities (full records) grouped by ISO2 code — for value=idCity dropdowns.
+    const citiesByCode: Record<string, City[]> = (() => {
+        if (!countriesQuery.data || !citiesQuery.data) return {};
+        const codeByCountryId = new Map<number, string>(
+            dbCountries.map(c => [c.idCountry, (c.isoCode ?? '').toUpperCase()]),
+        );
+        const result: Record<string, City[]> = {};
+        for (const city of dbCities) {
+            const code = codeByCountryId.get(city.countryId);
+            if (!code) continue;
+            (result[code] ??= []).push(city);
+        }
+        return result;
+    })();
+
     // Hydrate the synchronous registry once the merged list is ready.
     useEffect(() => {
         if (!isLoading && !error && countriesQuery.data) {
@@ -186,5 +203,5 @@ export function useSupportedCountries(): UseSupportedCountriesResult {
         }
     }, [countries, isLoading, error, countriesQuery.data]);
 
-    return { countries, citiesByCountry, isLoading, error };
+    return { countries, citiesByCountry, citiesByCode, isLoading, error };
 }
