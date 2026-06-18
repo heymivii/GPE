@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { MapPin, ChevronDown, Check } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import type { CityDestination } from '../../destinations/types';
+import type { ServiceCity } from '../hooks/useServiceContent';
 
 interface CitySelectorProps {
     selectedCity: string | null;
     onCityChange: (citySlug: string) => void;
-    availableCities: CityDestination[];
+    availableCities: ServiceCity[];
 }
 
 export default function CitySelector({

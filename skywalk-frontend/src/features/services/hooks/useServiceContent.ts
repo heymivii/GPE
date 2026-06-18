@@ -3,11 +3,19 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../../hooks/useAuth';
 import { useQuery } from '@tanstack/react-query';
 import { expatriationProjectApi } from '../../../api/expatriation-project';
-import { destinationsApi } from '../../../api/destinations';
 import type { ServiceConfig, ServiceGuide } from '../../../data/services-config';
 import { getCountryContent } from '../../../data/services-content-by-country';
-import type { CityDestination } from '../../destinations/types';
 import { useDestination } from '../../../contexts/DestinationContext';
+import { useSupportedCountries } from '../../../hooks/useSupportedCountries';
+import { resolveCountry, slugify } from '../../../data/countryMappings';
+
+// Lightweight city shape for the service-page selector (admin-managed `city` table).
+export interface ServiceCity {
+  slug: string;
+  name: string;
+  isCapital: boolean;
+  priority: number;
+}
 
 interface UseServiceContentParams {
   service: ServiceConfig;
@@ -30,19 +38,16 @@ export function useServiceContent({ service, category }: UseServiceContentParams
     enabled: isAuthenticated,
   });
 
-  const { data: countryData } = useQuery({
-    queryKey: ['country-details', selectedCountry],
-    queryFn: () => destinationsApi.getBySlug(selectedCountry!),
-    enabled: !!selectedCountry && isAuthenticated,
-  });
+  // Cities come from the admin-managed `city` table (active) — same source as the onboarding step.
+  const { citiesByCode } = useSupportedCountries();
+  const countryCode = resolveCountry(selectedCountry)?.code;
 
-  const availableCities = useMemo((): CityDestination[] => {
-    if (!countryData || !countryData.cities) return [];
-    return [...countryData.cities].sort((a, b) => {
-      if (a.priority !== b.priority) return a.priority - b.priority;
-      return a.name.localeCompare(b.name);
-    });
-  }, [countryData]);
+  const availableCities = useMemo((): ServiceCity[] => {
+    const cities = (countryCode && citiesByCode[countryCode]) || [];
+    return cities
+      .map((c) => ({ slug: slugify(c.name), name: c.name, isCapital: c.isCapital, priority: c.isCapital ? 0 : 1 }))
+      .sort((a, b) => (a.priority !== b.priority ? a.priority - b.priority : a.name.localeCompare(b.name)));
+  }, [citiesByCode, countryCode]);
 
   useEffect(() => {
     if (availableCities.length > 0) {
