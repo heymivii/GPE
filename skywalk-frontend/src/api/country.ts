@@ -20,6 +20,14 @@ export const countryApi = {
     return response.data;
   },
 
+  /** Fetch only admin-activated countries (status=active). */
+  getActive: async (): Promise<Country[]> => {
+    const response = await apiClient.get<Country[]>('/country', {
+      params: { status: 'active' },
+    });
+    return response.data;
+  },
+
   // Reference list of all countries (name + ISO2) for the admin picker.
   getAvailable: async (): Promise<{ code: string; name: string }[]> => {
     const response = await apiClient.get<{ code: string; name: string }[]>(

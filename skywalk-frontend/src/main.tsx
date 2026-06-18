@@ -11,15 +11,29 @@ import {
   QueryClientProvider,
 } from '@tanstack/react-query';
 
-const queryClient = new QueryClient();
-
 import { CostOfLivingProvider } from './contexts/CostOfLivingContext';
 import { CurrencyProvider } from './contexts/CurrencyContext';
+import { useSupportedCountries } from './hooks/useSupportedCountries';
+
+const queryClient = new QueryClient();
+
+/**
+ * Invisible component that runs useSupportedCountries() once at app startup.
+ * This triggers the fetch of active countries/cities and calls hydrateCountries()
+ * so that all synchronous consumers (resolveCountry, slugFromCode, etc.) reflect
+ * the admin-activated list as soon as the data arrives.
+ * Must be rendered inside QueryClientProvider.
+ */
+function CountriesHydrator(): null {
+  useSupportedCountries();
+  return null;
+}
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <AuthProvider>
       <QueryClientProvider client={queryClient}>
+        <CountriesHydrator />
         <CurrencyProvider>
           <CostOfLivingProvider>
             <RouterProvider router={router} />
