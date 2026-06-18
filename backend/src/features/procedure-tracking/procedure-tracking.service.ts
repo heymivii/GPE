@@ -104,7 +104,14 @@ export class ProcedureTrackingService {
 
   async update(id: number, updateDto: UpdateProcedureTrackingDto): Promise<ProcedureTracking> {
     const tracking = await this.findOne(id);
-    Object.assign(tracking, updateDto);
+
+    if (updateDto.status !== undefined) {
+      tracking.status = updateDto.status;
+    }
+
+    if (updateDto.completedFacts !== undefined) {
+      tracking.completedFacts = updateDto.completedFacts;
+    }
 
     // ✅ Remplir automatiquement end_date quand l'étape est complétée
     if (updateDto.status === 'completed' && !tracking.end_date) {

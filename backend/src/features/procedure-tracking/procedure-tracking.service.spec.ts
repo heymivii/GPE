@@ -141,4 +141,54 @@ describe('ProcedureTrackingService', () => {
       await expect(service.findAllByUser(userId, 999)).rejects.toThrow(NotFoundException);
     });
   });
+
+  describe('update – completedFacts', () => {
+    const trackingId = 42;
+
+    function stubFindOne(extra: Partial<Record<string, unknown>> = {}) {
+      const tracking = {
+        idProcedureTracking: trackingId,
+        status: 'not_started',
+        completedFacts: [] as number[],
+        end_date: null as string | null,
+        user: { idUser: 1 },
+        admin_procedure: { idAdminProcedure: 1 },
+        project: { idProject: 10 },
+        ...extra,
+      };
+      // findOne is called inside service.findOne → trackingRepository.findOne
+      trackingRepo.findOne.mockResolvedValue(tracking);
+      trackingRepo.save.mockImplementation(async (t: typeof tracking) => t);
+      return tracking;
+    }
+
+    it('persists completedFacts = [0, 2] when provided', async () => {
+      stubFindOne();
+
+      const result = await service.update(trackingId, { completedFacts: [0, 2] });
+
+      expect(trackingRepo.save).toHaveBeenCalledTimes(1);
+      expect(result.completedFacts).toEqual([0, 2]);
+    });
+
+    it('does not overwrite completedFacts when not provided in dto', async () => {
+      stubFindOne({ completedFacts: [1] });
+
+      const result = await service.update(trackingId, { status: 'in_progress' });
+
+      expect(result.completedFacts).toEqual([1]);
+    });
+
+    it('updates status alongside completedFacts in the same call', async () => {
+      stubFindOne();
+
+      const result = await service.update(trackingId, {
+        status: 'in_progress',
+        completedFacts: [0],
+      });
+
+      expect(result.status).toBe('in_progress');
+      expect(result.completedFacts).toEqual([0]);
+    });
+  });
 });
