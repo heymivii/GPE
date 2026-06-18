@@ -13,6 +13,9 @@ export interface AdminProcedure {
     travelType?: string[];
     objective?: string[];
   } | null;
+  // ✅ Gov-link enrichment (rempli lors de la génération depuis les liens officiels)
+  sourceUrl?: string;
+  keyFacts?: string[];
 }
 
 export interface ProcedureTracking {
