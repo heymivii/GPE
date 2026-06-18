@@ -43,11 +43,14 @@ export class CityController {
   }
 
   @Get()
-  findAll(@Query('countryId') countryId?: string) {
+  findAll(
+    @Query('countryId') countryId?: string,
+    @Query('status') status?: string,
+  ) {
     if (countryId) {
-      return this.cityService.findByCountry(+countryId);
+      return this.cityService.findByCountry(+countryId, status);
     }
-    return this.cityService.findAll();
+    return this.cityService.findAll(status);
   }
 
   // Cities of a country (for the admin city picker): GET /city/available?country=France
