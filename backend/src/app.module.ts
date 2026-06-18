@@ -36,6 +36,7 @@ import { VisaRequirementModule } from './features/project/visa/visa-requirement.
 import { TravelTypeModule } from './features/project/travel-type/travel-type.module';
 
 import { AdminStatsModule } from './features/admin-stats/admin-stats.module';
+import { BuddyContactModule } from './features/buddy-contact/buddy-contact.module';
 import { AdminLogModule } from './features/admin-log/admin-log.module';
 
 @Module({
@@ -78,6 +79,7 @@ import { AdminLogModule } from './features/admin-log/admin-log.module';
     TravelTypeModule,
     AdminStatsModule,
     AdminLogModule,
+    BuddyContactModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],

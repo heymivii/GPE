@@ -97,12 +97,10 @@ export class ProcedureTrackingService {
     const tracking = await this.findOne(id);
     Object.assign(tracking, updateDto);
 
-    // ✅ Remplir automatiquement end_date quand l'étape est complétée
     if (updateDto.status === 'completed' && !tracking.end_date) {
-      tracking.end_date = new Date().toISOString().split('T')[0]; // format YYYY-MM-DD
+      tracking.end_date = new Date().toISOString().split('T')[0];
     }
 
-    // ✅ Vider end_date si l'étape est décochée
     if (updateDto.status === 'not_started' || updateDto.status === 'in_progress') {
       tracking.end_date = null;
     }
@@ -119,7 +117,7 @@ export class ProcedureTrackingService {
     procedureId: number,
     countryId: number,
     currentUserId: number,
-  ): Promise<{ firstname: string; originCountry: string; completedAt: string }[]> {
+  ): Promise<{ idUser: number; firstname: string; originCountry: string; completedAt: string }[]> {
     const trackings = await this.trackingRepository.find({
       where: {
         admin_procedure: { idAdminProcedure: procedureId },
@@ -139,6 +137,7 @@ export class ProcedureTrackingService {
       })
       .slice(0, 3)
       .map((t) => ({
+        idUser: t.user?.idUser,
         firstname: t.user?.firstName ?? 'Quelqu\'un',
         originCountry: t.user?.originCountry?.countryName ?? '',
         completedAt: t.end_date!,
