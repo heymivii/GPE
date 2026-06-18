@@ -17,6 +17,7 @@ export interface GovLinkResult {
   url: string | null; label: string | null;
   confidence: number; status: GovLinkStatus;
   summary?: string[];
+  actions?: string[];
 }
 
 @Injectable()
@@ -82,29 +83,31 @@ export class GovLinksService {
     if (!picked) {
       this.logger.warn(`LLM ranker unavailable for ${countryCode}/${category}; using top verified official link as fallback.`);
       const top = verified[0];
-      const summary = await this.ranker.summarize(top.snippet ?? '', { country: this.countryName(countryCode), category });
-      return this.persist(countryCode, category, top.url, top.title, GovLinksService.FALLBACK_CONFIDENCE, 'active', query, summary);
+      const { facts, actions } = await this.ranker.summarize(top.snippet ?? '', { country: this.countryName(countryCode), category });
+      return this.persist(countryCode, category, top.url, top.title, GovLinksService.FALLBACK_CONFIDENCE, 'active', query, facts, actions);
     }
     const chosen = verified[picked.index];
     // Grounded summary of the chosen official page's real content (anti-hallucination: from the page text only).
-    const summary = await this.ranker.summarize(chosen.snippet ?? '', { country: this.countryName(countryCode), category });
-    return this.persist(countryCode, category, chosen.url, picked.label || chosen.title, picked.confidence, 'active', query, summary);
+    const { facts, actions } = await this.ranker.summarize(chosen.snippet ?? '', { country: this.countryName(countryCode), category });
+    return this.persist(countryCode, category, chosen.url, picked.label || chosen.title, picked.confidence, 'active', query, facts, actions);
   }
 
   private async persist(
     countryCode: string, category: string, url: string | null, label: string | null,
-    confidence: number, status: GovLinkStatus, query: string, summary?: string[],
+    confidence: number, status: GovLinkStatus, query: string, summary?: string[], actions?: string[],
   ): Promise<GovLinkResult> {
     if (url) {
       // FIX 2: upsert by (countryCode, category) — one row per pair, no duplicates
       const data = {
         countryCode, category, url, label: label ?? url, sourceQuery: query,
-        confidence, verifiedAt: new Date(), status, summary: summary?.length ? summary : null,
+        confidence, verifiedAt: new Date(), status,
+        summary: summary?.length ? summary : null,
+        actions: actions?.length ? actions : null,
       };
       const existing = await this.repo.findOne({ where: { countryCode, category } });
       await this.repo.save(existing ? { ...existing, ...data } : this.repo.create(data));
     }
-    return { countryCode, category, url, label, confidence, status, summary };
+    return { countryCode, category, url, label, confidence, status, summary, actions };
   }
 
   private countryName(code: string): string {

@@ -35,4 +35,8 @@ export class GovLink {
   // Grounded key facts extracted from the verified official page (LLM summary of real content).
   @Column({ name: 'summary', type: 'jsonb', nullable: true })
   summary?: string[];
+
+  // Concrete actionable tasks the expat must DO to complete this procedure.
+  @Column({ name: 'actions', type: 'jsonb', nullable: true })
+  actions?: string[];
 }
