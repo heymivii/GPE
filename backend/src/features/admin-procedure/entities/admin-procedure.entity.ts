@@ -41,6 +41,10 @@ export class AdminProcedure {
   @Column({ name: 'key_facts', type: 'jsonb', nullable: true })
   keyFacts?: string[];
 
+  // Concrete actionable tasks copied from the gov_link (what the expat must DO).
+  @Column({ name: 'action_items', type: 'jsonb', nullable: true })
+  actionItems?: string[];
+
   @ManyToOne(() => Country, { nullable: false })
   @JoinColumn({ name: 'country_id' })
   country: Country;

@@ -104,6 +104,7 @@ export class AdminProcedureGeneratorService {
         category,
         sourceUrl: link.url,
         keyFacts: link.summary ?? [],
+        actionItems: link.actions ?? [],
         objectives: objectivesForCategory(category),
         daysBeforeDeparture: defaultDaysBeforeDeparture(category),
         stepOrder: defaultStepOrder(category),

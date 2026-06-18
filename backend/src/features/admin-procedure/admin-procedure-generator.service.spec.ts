@@ -27,6 +27,7 @@ const mockGovLinkVisa: GovLink = {
   url: 'https://france-visas.gouv.fr',
   status: 'active',
   summary: ['Visa long séjour requis', 'Délai traitement 3 semaines'],
+  actions: ['Préparer un passeport valide ≥ 6 mois', 'Remplir le formulaire de demande', 'Prendre rendez-vous au consulat'],
   confidence: 0.95,
 } as GovLink;
 
@@ -38,6 +39,7 @@ const mockGovLinkEmploi: GovLink = {
   url: 'https://travail.gouv.fr',
   status: 'active',
   summary: ['Permis de travail nécessaire', 'Convention collective applicable'],
+  actions: ['Obtenir un permis de travail', 'Contacter l\'employeur pour le contrat'],
   confidence: 0.9,
 } as GovLink;
 
@@ -112,6 +114,39 @@ describe('AdminProcedureGeneratorService', () => {
 
       expect(result.sourceUrl).toBe('https://france-visas.gouv.fr');
       expect(result.keyFacts).toEqual(['Visa long séjour requis', 'Délai traitement 3 semaines']);
+    });
+
+    it('copies actionItems from gov_link.actions', async () => {
+      countryRepo.findOne.mockResolvedValue(mockCountry);
+      govLinkRepo.find.mockResolvedValue([mockGovLinkVisa]);
+      adminProcedureRepo.findOne.mockResolvedValue(null);
+      adminProcedureRepo.create.mockImplementation((data) => ({ ...data }));
+      adminProcedureRepo.save.mockImplementation((proc) =>
+        Promise.resolve({ ...proc, idAdminProcedure: 1 }),
+      );
+
+      const [result] = await service.generateFromGovLinks('FR');
+
+      expect(result.actionItems).toEqual([
+        'Préparer un passeport valide ≥ 6 mois',
+        'Remplir le formulaire de demande',
+        'Prendre rendez-vous au consulat',
+      ]);
+    });
+
+    it('sets actionItems to [] when gov_link has no actions', async () => {
+      const linkWithoutActions: GovLink = { ...mockGovLinkVisa, actions: undefined } as GovLink;
+      countryRepo.findOne.mockResolvedValue(mockCountry);
+      govLinkRepo.find.mockResolvedValue([linkWithoutActions]);
+      adminProcedureRepo.findOne.mockResolvedValue(null);
+      adminProcedureRepo.create.mockImplementation((data) => ({ ...data }));
+      adminProcedureRepo.save.mockImplementation((proc) =>
+        Promise.resolve({ ...proc, idAdminProcedure: 1 }),
+      );
+
+      const [result] = await service.generateFromGovLinks('FR');
+
+      expect(result.actionItems).toEqual([]);
     });
 
     it('assigns objectives=[] for visa category', async () => {
