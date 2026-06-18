@@ -133,6 +133,7 @@ export class ProcedureTrackingService {
       .filter((t) => {
         if (t.user?.idUser === currentUserId) return false;
         if (!t.end_date) return false;
+        if (t.user?.buddyOptIn === false) return false;
         return true;
       })
       .slice(0, 3)

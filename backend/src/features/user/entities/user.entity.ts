@@ -66,6 +66,13 @@ export class User {
   @JoinColumn({ name: 'country_origin_id' })
   originCountry?: Country;
 
+  @Column({ name: 'buddy_opt_in', type: 'boolean', default: true })
+  buddyOptIn: boolean;
+
+  @Column({ name: 'buddy_contact_opt_in', type: 'boolean', default: true })
+  buddyContactOptIn: boolean;
+
   @OneToMany(() => ProcedureTracking, (tracking) => tracking.user)
   processTrackings: ProcedureTracking[];
 }
+// -- Buddy System opt-ins (ajoutés par feature/buddy-privacy) --

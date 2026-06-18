@@ -34,7 +34,6 @@ export class UserController {
   @Get('me')
   async getProfile(@Request() req) {
     const user = await this.userService.findOne(req.user.userId);
-
     const { password: _h1, ...result } = user;
     return result;
   }
@@ -46,9 +45,21 @@ export class UserController {
       req.user.userId,
       updateUserDto,
     );
-
     const { password: _h2, ...result } = updatedUser;
     return result;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('me/privacy')
+  async updatePrivacy(
+    @Request() req,
+    @Body() body: { buddyOptIn: boolean; buddyContactOptIn: boolean },
+  ) {
+    return this.userService.updatePrivacy(
+      req.user.userId,
+      body.buddyOptIn,
+      body.buddyContactOptIn,
+    );
   }
 
   @Delete('me')
@@ -56,7 +67,6 @@ export class UserController {
     await this.userService.remove(req.user.userId);
     return { message: 'Compte supprimé avec succès' };
   }
-
 
   @ApiOperation({ summary: 'List all users (Admin only)' })
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -82,12 +92,10 @@ export class UserController {
     @Body() dto: UpdateRoleDto,
     @Request() req,
   ) {
-    // Prevent an admin from changing their own role (self-lockout / accidental self-demotion).
     if (id === req.user.userId) {
       throw new ForbiddenException('Vous ne pouvez pas modifier votre propre rôle.');
     }
     const targetUser = await this.userService.findOne(id);
-    // Never let the system lose its last admin via a demotion.
     const isDemotingAdmin =
       ADMIN_LEVEL_ROLES.includes(targetUser.roles) &&
       !ADMIN_LEVEL_ROLES.includes(dto.role);

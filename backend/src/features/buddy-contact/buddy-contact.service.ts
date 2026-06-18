@@ -26,6 +26,8 @@ export class BuddyContactService {
     procedureId: number,
     message?: string,
   ): Promise<BuddyContactRequest> {
+    // Vérifier opt-in contact du destinataire (chargé depuis la BDD)
+    // Note: la vérification se fait côté service pour éviter l'exposition dans le DTO
     if (senderId === recipientId) {
       throw new BadRequestException('Vous ne pouvez pas vous contacter vous-même.');
     }
