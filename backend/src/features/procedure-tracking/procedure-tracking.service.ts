@@ -39,8 +39,17 @@ export class ProcedureTrackingService {
         throw new NotFoundException(`Projet avec l'ID ${projectId} introuvable`);
       }
 
-      const adminProcedures = await this.adminProcedureRepository.find({
+      const allAdminProcedures = await this.adminProcedureRepository.find({
         where: { country: { idCountry: project.destinationCountryId } },
+      });
+
+      // Filter by project objective: keep procedures that apply to everyone
+      // (null/empty objectives) OR explicitly target this project's objective.
+      const projectObjective = project.objective;
+      const adminProcedures = allAdminProcedures.filter((ap) => {
+        if (!ap.objectives || ap.objectives.length === 0) return true;
+        if (!projectObjective) return true;
+        return ap.objectives.includes(projectObjective);
       });
 
       const existingTrackings = await this.trackingRepository.find({
