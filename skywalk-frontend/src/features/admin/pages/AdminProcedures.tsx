@@ -2,13 +2,18 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { adminApi } from '../../../api/admin';
 import { destinationsApi } from '../../../api/destinations';
 import { useState, useMemo, useEffect } from 'react';
-import { Plus, Edit2, Trash2, Globe, RefreshCw, X } from 'lucide-react';
+import { Plus, Edit2, Trash2, Globe, RefreshCw, X, Sparkles } from 'lucide-react';
 import toast from 'react-hot-toast';
 import type { CountryDestination } from '../../destinations/types';
+import { useSupportedCountries } from '../../../hooks/useSupportedCountries';
 
 export default function AdminProcedures() {
   const queryClient = useQueryClient();
   const [selectedCountryId, setSelectedCountryId] = useState<number | null>(null);
+
+  // Generate from gov-links state
+  const { countries: supportedCountries } = useSupportedCountries();
+  const [genCountry, setGenCountry] = useState<string>('');
 
   // Modal State
   const [modalOpen, setModalOpen] = useState(false);
@@ -96,6 +101,26 @@ export default function AdminProcedures() {
     },
   });
 
+  const generateMutation = useMutation({
+    mutationFn: (country: string) => adminApi.generateFromGovLinks(country),
+    onSuccess: (generated) => {
+      queryClient.invalidateQueries({ queryKey: ['admin-procedures'] });
+      queryClient.invalidateQueries({ queryKey: ['checklist-progress'] });
+      toast.success(`${generated.length} démarche(s) générée(s) — vérifiez la liste ci-dessous.`);
+    },
+    onError: (err: any) => {
+      const msg = err.response?.data?.message || 'Erreur lors de la génération.';
+      toast.error(msg);
+    },
+  });
+
+  // Initialise genCountry once supportedCountries are loaded
+  useEffect(() => {
+    if (supportedCountries.length > 0 && !genCountry) {
+      setGenCountry(supportedCountries[0].code);
+    }
+  }, [supportedCountries, genCountry]);
+
   // Actions
   const openCreateModal = () => {
     setEditingProcedure(null);
@@ -177,7 +202,7 @@ export default function AdminProcedures() {
     }
   };
 
-  const isPending = createMutation.isPending || updateMutation.isPending || deleteMutation.isPending;
+  const isPending = createMutation.isPending || updateMutation.isPending || deleteMutation.isPending || generateMutation.isPending;
 
   return (
     <div className="space-y-8 animate-in fade-in duration-300">
@@ -230,6 +255,44 @@ export default function AdminProcedures() {
         <span className="text-xs text-gray-400 font-medium">
           {filteredProcedures.length} étape(s) configurée(s) pour ce pays.
         </span>
+      </div>
+
+      {/* Generate from official links */}
+      <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-5 space-y-3">
+        <div className="flex items-start gap-3">
+          <Sparkles className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-emerald-900">Générer la checklist depuis les liens officiels</p>
+            <p className="text-xs text-emerald-700 mt-0.5">
+              Génère les démarches officielles (lien vérifié + faits clés) pour le pays choisi. Vous pouvez ensuite les éditer.
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-3 flex-wrap">
+          <select
+            value={genCountry}
+            onChange={(e) => setGenCountry(e.target.value)}
+            disabled={generateMutation.isPending}
+            className="bg-white border border-emerald-300 rounded-lg text-sm font-semibold text-gray-800 px-3 py-2 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 disabled:opacity-50"
+          >
+            {supportedCountries.map((c) => (
+              <option key={c.code} value={c.code}>
+                {c.name} ({c.code})
+              </option>
+            ))}
+          </select>
+          <button
+            onClick={() => genCountry && generateMutation.mutate(genCountry)}
+            disabled={generateMutation.isPending || !genCountry}
+            className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 text-white px-4 py-2 rounded-lg font-semibold text-sm transition-colors shadow-sm"
+          >
+            {generateMutation.isPending
+              ? <RefreshCw className="w-4 h-4 animate-spin" />
+              : <Sparkles className="w-4 h-4" />
+            }
+            Générer
+          </button>
+        </div>
       </div>
 
       {/* Procedures Table */}
