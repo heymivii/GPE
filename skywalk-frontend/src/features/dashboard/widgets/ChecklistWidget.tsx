@@ -174,6 +174,13 @@ export default function ChecklistWidget({
       .slice(0, 3);
   }, [checklist, departureDate]);
 
+  // Avoid showing the priority-preview items again in the full list below.
+  const urgentIds = useMemo(() => new Set(urgentSteps.map((s) => s.id)), [urgentSteps]);
+  const remainingChecklist = useMemo(
+    () => checklist.filter((item) => !urgentIds.has(item.id)),
+    [checklist, urgentIds],
+  );
+
   const toggleExpand = useCallback((id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     setExpandedIds((prev) => {
@@ -307,7 +314,7 @@ export default function ChecklistWidget({
 
         {/* Liste complète */}
         <div className="space-y-1.5 max-h-[24rem] overflow-y-auto pr-1">
-          {checklist.map((item) => {
+          {remainingChecklist.map((item) => {
             const isExpanded = expandedIds.has(item.id);
             const substepsDone = item.substeps?.filter((s) => s.completed).length ?? 0;
             const substepsTotal = item.substeps?.length ?? 0;
