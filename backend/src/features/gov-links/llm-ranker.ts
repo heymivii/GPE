@@ -63,7 +63,23 @@ export class OllamaRanker implements LlmRanker {
     const empty: SummarizeResult = { facts: [], actions: [] };
     const text = (pageText ?? '').slice(0, 4000);
     if (!text.trim()) return empty;
-    const prompt = `Contenu d'une page gouvernementale officielle (pays: ${context.country}, thème: ${context.category}):\n"""${text}"""\n\nAnalyse ce contenu et retourne STRICTEMENT le JSON suivant:\n{"facts": ["..."], "actions": ["..."]}\n\n- "facts": 3 à 5 phrases DESCRIPTIVES courtes qu'un expatrié doit SAVOIR (coût, délais, conditions, organisme compétent). UNIQUEMENT ce qui est dans le texte.\n- "actions": 3 à 7 TÂCHES CONCRÈTES à l'IMPÉRATIF que l'expatrié doit FAIRE (ex: "Préparer un passeport valide ≥ 6 mois", "Remplir le formulaire de demande", "Prendre rendez-vous au consulat", "Rassembler les justificatifs de domicile", "Déposer la demande à [lieu]"). Chaque action = phrase impérative courte, concrète, ancrée dans le contenu de la page. Pas d'actions vagues.\nRÈGLES STRICTES: utilise UNIQUEMENT les informations présentes dans le texte; n'invente RIEN; si une info n'est pas dans le texte, ne la mets pas.`;
+    const prompt = `Tu es un assistant de traitement de texte. Voici le contenu brut d'une page gouvernementale officielle (pays: ${context.country}, thème: ${context.category}) :
+"""
+${text}
+"""
+
+RÈGLES ABSOLUES — à respecter sans exception :
+1. Utilise EXCLUSIVEMENT les informations présentes dans le texte de la page ci-dessus.
+2. N'utilise AUCUNE connaissance externe. N'invente RIEN.
+3. Si une démarche ou une information n'est pas explicitement décrite sur cette page, ne la mentionne pas — il vaut mieux renvoyer MOINS d'éléments (voire des listes vides) que des éléments inventés ou supposés.
+4. Ne déduis pas d'étapes « classiques » de mémoire (ex : ne mentionne PAS l'AME, la CMU, ni aucun dispositif non cité dans le texte).
+5. La réponse doit être en FRANÇAIS, même si le texte source est en anglais.
+
+Retourne STRICTEMENT le JSON suivant, sans texte avant ni après :
+{"facts": ["..."], "actions": ["..."]}
+
+- "facts" : 0 à 5 phrases DESCRIPTIVES courtes qu'un expatrié doit SAVOIR d'après ce texte (coût, délais, conditions d'éligibilité, organisme compétent). Si rien de précis n'est dans le texte, renvoie [].
+- "actions" : 0 à 7 TÂCHES CONCRÈTES à l'IMPÉRATIF tirées du texte (ex : "Préparer un passeport valide ≥ 6 mois", "Remplir le formulaire de demande", "Prendre rendez-vous au consulat"). Chaque action = phrase impérative courte, ancrée dans le contenu de la page. Si rien de précis n'est dans le texte, renvoie [].`;
     try {
       const { data } = await axios.post<{
         choices: Array<{ message: { content: string } }>;
