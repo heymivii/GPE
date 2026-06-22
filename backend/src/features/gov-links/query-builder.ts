@@ -74,6 +74,14 @@ const CATEGORY_TERMS: Record<string, CategoryEntry> = {
     fr: { terms: 'inscription études étudiant étranger université',         keywords: ['inscription', 'étudiant', 'études'] },
     en: { terms: 'enrollment foreign student university official',           keywords: ['education', 'enrollment'] },
   },
+  culture: {
+    fr: { terms: 'vie culturelle et associative étranger',                  keywords: ['culture', 'associations'] },
+    en: { terms: 'cultural life community foreigner official',               keywords: ['culture', 'community'] },
+  },
+  business: {
+    fr: { terms: 'créer une entreprise s\'installer comme indépendant étranger', keywords: ['entreprise', 'indépendant', 'société'] },
+    en: { terms: 'start a business self-employment foreigner official',      keywords: ['business', 'company', 'self-employed'] },
+  },
 };
 
 export function buildQuery(
@@ -92,8 +100,9 @@ export function buildQuery(
   }
 
   const { terms, keywords } = entry[lang];
+  const qualifier = lang === 'fr' ? 'site officiel' : 'official government site';
   return {
-    query: `${countryName} ${terms} site officiel`,
+    query: `${countryName} ${terms} ${qualifier}`,
     keywords,
   };
 }

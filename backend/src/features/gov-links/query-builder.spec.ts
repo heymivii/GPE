@@ -93,6 +93,70 @@ describe('buildQuery', () => {
     expect(query).not.toContain('séjour');
   });
 
+  // ── Language-aware trailing qualifier ────────────────────────────────────────
+
+  it('appends "site officiel" for French-language queries (FR)', () => {
+    const { query } = buildQuery('France', 'visa', 'FR');
+    expect(query).toContain('site officiel');
+    expect(query).not.toContain('official government site');
+  });
+
+  it('appends "official government site" for English-language queries (US)', () => {
+    const { query } = buildQuery('United States', 'visa', 'US');
+    expect(query).toContain('official government site');
+    expect(query).not.toContain('site officiel');
+  });
+
+  it('appends "official government site" for English-language queries (JP)', () => {
+    const { query } = buildQuery('Japan', 'sante', 'JP');
+    expect(query).toContain('official government site');
+    expect(query).not.toContain('site officiel');
+  });
+
+  it('appends "official government site" when countryCode is omitted (defaults EN)', () => {
+    const { query } = buildQuery('Japan', 'visa');
+    expect(query).toContain('official government site');
+    expect(query).not.toContain('site officiel');
+  });
+
+  // ── culture category ─────────────────────────────────────────────────────────
+
+  it('builds a French culture query with cultural keywords for FR', () => {
+    const { query, keywords } = buildQuery('France', 'culture', 'FR');
+    expect(query).toContain('vie culturelle');
+    expect(query).toContain('site officiel');
+    expect(keywords).toContain('culture');
+    expect(keywords).toContain('associations');
+  });
+
+  it('builds an English culture query for US', () => {
+    const { query, keywords } = buildQuery('United States', 'culture', 'US');
+    expect(query).toContain('cultural life');
+    expect(query).toContain('official government site');
+    expect(query).not.toContain('site officiel');
+    expect(keywords).toContain('culture');
+    expect(keywords).toContain('community');
+  });
+
+  // ── business category ────────────────────────────────────────────────────────
+
+  it('builds a French business query with enterprise keywords for FR', () => {
+    const { query, keywords } = buildQuery('France', 'business', 'FR');
+    expect(query).toContain('entreprise');
+    expect(query).toContain('site officiel');
+    expect(keywords).toContain('entreprise');
+    expect(keywords).toContain('indépendant');
+  });
+
+  it('builds an English business query for US', () => {
+    const { query, keywords } = buildQuery('United States', 'business', 'US');
+    expect(query).toContain('start a business');
+    expect(query).toContain('official government site');
+    expect(query).not.toContain('site officiel');
+    expect(keywords).toContain('business');
+    expect(keywords).toContain('self-employed');
+  });
+
   // ── Unknown category fallback ────────────────────────────────────────────────
 
   it('falls back gracefully for an unknown category (FR)', () => {
