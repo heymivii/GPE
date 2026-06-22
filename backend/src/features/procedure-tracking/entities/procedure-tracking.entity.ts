@@ -31,8 +31,9 @@ export class ProcedureTracking {
   @Column({ name: 'comments', type: 'text', nullable: true })
   comments: string | null;
 
+  /** completed action texts (content-keyed; survives regeneration — only reworded actions reset) */
   @Column({ name: 'completed_facts', type: 'jsonb', default: () => "'[]'" })
-  completedFacts: number[];
+  completedFacts: string[];
 
   @ManyToOne(() => User, { nullable: false })
   @JoinColumn({ name: 'user_id' })

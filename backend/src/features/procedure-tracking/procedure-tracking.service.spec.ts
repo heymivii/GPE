@@ -149,7 +149,7 @@ describe('ProcedureTrackingService', () => {
       const tracking = {
         idProcedureTracking: trackingId,
         status: 'not_started',
-        completedFacts: [] as number[],
+        completedFacts: [] as string[],
         end_date: null as string | null,
         user: { idUser: 1 },
         admin_procedure: { idAdminProcedure: 1 },
@@ -162,21 +162,26 @@ describe('ProcedureTrackingService', () => {
       return tracking;
     }
 
-    it('persists completedFacts = [0, 2] when provided', async () => {
+    it('persists completedFacts as action texts when provided', async () => {
       stubFindOne();
 
-      const result = await service.update(trackingId, { completedFacts: [0, 2] });
+      const result = await service.update(trackingId, {
+        completedFacts: ['Préparer le passeport', 'Remplir le formulaire'],
+      });
 
       expect(trackingRepo.save).toHaveBeenCalledTimes(1);
-      expect(result.completedFacts).toEqual([0, 2]);
+      expect(result.completedFacts).toEqual([
+        'Préparer le passeport',
+        'Remplir le formulaire',
+      ]);
     });
 
     it('does not overwrite completedFacts when not provided in dto', async () => {
-      stubFindOne({ completedFacts: [1] });
+      stubFindOne({ completedFacts: ['Préparer le passeport'] });
 
       const result = await service.update(trackingId, { status: 'in_progress' });
 
-      expect(result.completedFacts).toEqual([1]);
+      expect(result.completedFacts).toEqual(['Préparer le passeport']);
     });
 
     it('updates status alongside completedFacts in the same call', async () => {
@@ -184,11 +189,11 @@ describe('ProcedureTrackingService', () => {
 
       const result = await service.update(trackingId, {
         status: 'in_progress',
-        completedFacts: [0],
+        completedFacts: ['Obtenir le visa'],
       });
 
       expect(result.status).toBe('in_progress');
-      expect(result.completedFacts).toEqual([0]);
+      expect(result.completedFacts).toEqual(['Obtenir le visa']);
     });
   });
 });
