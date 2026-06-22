@@ -381,5 +381,109 @@ describe('AdminProcedureGeneratorService', () => {
       expect(CATEGORY_PHASE_MAP.emploi).toBe('on_arrival');
       expect(CATEGORY_PHASE_MAP.education).toBe('on_arrival');
     });
+
+    // ── culture category ──────────────────────────────────────────────────────
+
+    it('CATEGORY_FR_TITLE_MAP has "Vie culturelle" for culture', () => {
+      expect(CATEGORY_FR_TITLE_MAP.culture).toBe('Vie culturelle');
+    });
+
+    it('CATEGORY_PHASE_MAP has culture=on_arrival', () => {
+      expect(CATEGORY_PHASE_MAP.culture).toBe('on_arrival');
+    });
+
+    it('DAYS_BEFORE_DEPARTURE_MAP has culture=30', () => {
+      expect(DAYS_BEFORE_DEPARTURE_MAP.culture).toBe(30);
+    });
+
+    it('STEP_ORDER_MAP has culture=9', () => {
+      expect(STEP_ORDER_MAP.culture).toBe(9);
+    });
+
+    it('CATEGORY_OBJECTIVES_MAP has culture=[] (applies to all expats)', () => {
+      expect(CATEGORY_OBJECTIVES_MAP.culture).toEqual([]);
+    });
+
+    it('generates admin procedure with correct French title for culture gov_link', async () => {
+      const mockGovLinkCulture: GovLink = {
+        id: 10,
+        countryCode: 'FR',
+        category: 'culture',
+        label: 'Cultural life in France',
+        url: 'https://culture.gouv.fr',
+        status: 'active',
+        summary: ['Associations culturelles accessibles aux étrangers'],
+        actions: ["S'inscrire dans une association"],
+        confidence: 0.8,
+      } as GovLink;
+
+      countryRepo.findOne.mockResolvedValue(mockCountry);
+      govLinkRepo.find.mockResolvedValue([mockGovLinkCulture]);
+      adminProcedureRepo.findOne.mockResolvedValue(null);
+      adminProcedureRepo.create.mockImplementation((data) => ({ ...data }));
+      adminProcedureRepo.save.mockImplementation((proc) =>
+        Promise.resolve({ ...proc, idAdminProcedure: 10 }),
+      );
+
+      const [result] = await service.generateFromGovLinks('FR');
+
+      expect(result.procedureType).toBe('Vie culturelle');
+      expect(result.phase).toBe('on_arrival');
+      expect(result.stepOrder).toBe(STEP_ORDER_MAP.culture);
+      expect(result.daysBeforeDeparture).toBe(DAYS_BEFORE_DEPARTURE_MAP.culture);
+      expect(result.objectives).toEqual([]);
+    });
+
+    // ── business category ─────────────────────────────────────────────────────
+
+    it('CATEGORY_FR_TITLE_MAP has "Créer une entreprise" for business', () => {
+      expect(CATEGORY_FR_TITLE_MAP.business).toBe('Créer une entreprise');
+    });
+
+    it('CATEGORY_PHASE_MAP has business=on_arrival', () => {
+      expect(CATEGORY_PHASE_MAP.business).toBe('on_arrival');
+    });
+
+    it('DAYS_BEFORE_DEPARTURE_MAP has business=60', () => {
+      expect(DAYS_BEFORE_DEPARTURE_MAP.business).toBe(60);
+    });
+
+    it('STEP_ORDER_MAP has business=8', () => {
+      expect(STEP_ORDER_MAP.business).toBe(8);
+    });
+
+    it('CATEGORY_OBJECTIVES_MAP has business=[] (applies to all expats)', () => {
+      expect(CATEGORY_OBJECTIVES_MAP.business).toEqual([]);
+    });
+
+    it('generates admin procedure with correct French title for business gov_link', async () => {
+      const mockGovLinkBusiness: GovLink = {
+        id: 11,
+        countryCode: 'FR',
+        category: 'business',
+        label: 'Start a business in France',
+        url: 'https://entreprises.gouv.fr',
+        status: 'active',
+        summary: ['Création d\'entreprise possible sous visa long séjour'],
+        actions: ["Choisir le statut juridique", "Immatriculer l'entreprise au RCS"],
+        confidence: 0.85,
+      } as GovLink;
+
+      countryRepo.findOne.mockResolvedValue(mockCountry);
+      govLinkRepo.find.mockResolvedValue([mockGovLinkBusiness]);
+      adminProcedureRepo.findOne.mockResolvedValue(null);
+      adminProcedureRepo.create.mockImplementation((data) => ({ ...data }));
+      adminProcedureRepo.save.mockImplementation((proc) =>
+        Promise.resolve({ ...proc, idAdminProcedure: 11 }),
+      );
+
+      const [result] = await service.generateFromGovLinks('FR');
+
+      expect(result.procedureType).toBe('Créer une entreprise');
+      expect(result.phase).toBe('on_arrival');
+      expect(result.stepOrder).toBe(STEP_ORDER_MAP.business);
+      expect(result.daysBeforeDeparture).toBe(DAYS_BEFORE_DEPARTURE_MAP.business);
+      expect(result.objectives).toEqual([]);
+    });
   });
 });

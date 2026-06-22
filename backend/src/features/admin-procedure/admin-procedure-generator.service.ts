@@ -15,6 +15,8 @@ export const DAYS_BEFORE_DEPARTURE_MAP: Record<string, number> = {
   emploi: 90,
   banque: 30,
   transport: 60,
+  culture: 30,
+  business: 60,
 };
 
 /** Step order per category. */
@@ -27,6 +29,8 @@ export const STEP_ORDER_MAP: Record<string, number> = {
   emploi: 5,
   banque: 6,
   transport: 7,
+  business: 8,
+  culture: 9,
 };
 
 /**
@@ -44,6 +48,10 @@ export const CATEGORY_OBJECTIVES_MAP: Record<string, string[]> = {
   transport: [],
   emploi: ['work'],
   education: ['study'],
+  // business is work-adjacent but applies regardless of work objective (e.g. freelancer
+  // arriving under a long-stay visa). Keep empty to include for all expats.
+  business: [],
+  culture: [],
 };
 
 /**
@@ -60,6 +68,8 @@ export const CATEGORY_FR_TITLE_MAP: Record<string, string> = {
   banque: 'Compte bancaire',
   transport: 'Transport & permis de conduire',
   education: 'Études',
+  culture: 'Vie culturelle',
+  business: 'Créer une entreprise',
 };
 
 /**
@@ -77,6 +87,8 @@ export const CATEGORY_PHASE_MAP: Record<string, 'before' | 'on_arrival'> = {
   banque: 'on_arrival',
   transport: 'on_arrival',
   education: 'on_arrival',
+  culture: 'on_arrival',
+  business: 'on_arrival',
 };
 
 function defaultDaysBeforeDeparture(category: string): number {
