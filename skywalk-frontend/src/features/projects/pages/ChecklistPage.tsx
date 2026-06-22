@@ -10,13 +10,17 @@ import OfficialLinkCard from '../../../components/OfficialLinkCard';
 // ---- Types ----
 type FilterType = 'all' | 'todo' | 'urgent' | 'late' | 'completed';
 type ViewType = 'list' | 'timeline';
+type Phase = 'before' | 'on_arrival';
 
 // ---- Composants utilitaires ----
 
-function DeadlineBadge({ daysBeforeDeparture, departureDate }: {
+function DeadlineBadge({ daysBeforeDeparture, departureDate, phase }: {
   daysBeforeDeparture?: number;
   departureDate?: string | Date | null;
+  phase?: Phase;
 }) {
+  // On-arrival steps have no pre-departure deadline
+  if (phase === 'on_arrival') return null;
   const deadline = getStepDeadline(daysBeforeDeparture, departureDate);
   if (!deadline.date) return null;
 
@@ -84,6 +88,156 @@ function StepLinks({ category, countryCode }: { category: string; countryCode?: 
   );
 }
 
+// ---- Composant ligne de checklist (factorisé pour les deux sections) ----
+
+interface ChecklistItemData {
+  id: string;
+  trackingId: number;
+  title: string;
+  completed: boolean;
+  completedAt: string | null;
+  category: string;
+  substeps: { id: string; label: string; completed: boolean }[];
+  completedFacts: number[];
+  daysBeforeDeparture?: number;
+  phase: Phase;
+  onlyFor?: { travelType?: string[]; objective?: string[] } | null;
+  sourceUrl?: string;
+  keyFacts: string[];
+}
+
+function ChecklistItemRow({
+  item,
+  isExpanded,
+  departureDate,
+  countryCode,
+  onToggleExpand,
+  onToggleItem,
+  onToggleSubstep,
+}: {
+  item: ChecklistItemData;
+  isExpanded: boolean;
+  departureDate?: string | Date | null;
+  countryCode?: string;
+  onToggleExpand: (id: string) => void;
+  onToggleItem: (id: string) => void;
+  onToggleSubstep: (itemId: string, substepId: string, e: React.MouseEvent) => void;
+}) {
+  const substepsTotal = item.substeps.length;
+  const substepsDone = item.substeps.filter((s) => s.completed).length;
+
+  return (
+    <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+      <div
+        className={`flex items-start gap-3 p-4 cursor-pointer transition-colors ${
+          item.completed ? 'bg-gray-50' : 'hover:bg-gray-50'
+        }`}
+        onClick={() => substepsTotal > 0 ? onToggleExpand(item.id) : onToggleItem(item.id)}
+      >
+        <button
+          className="mt-0.5 flex-shrink-0"
+          onClick={(e) => { e.stopPropagation(); onToggleItem(item.id); }}
+        >
+          {item.completed ? (
+            <CheckCircle className="w-5 h-5 text-gray-900" />
+          ) : (
+            <Circle className="w-5 h-5 text-gray-300" />
+          )}
+        </button>
+
+        <div className="flex-1 min-w-0">
+          <p className={`text-sm font-medium ${
+            item.completed ? 'text-gray-400 line-through' : 'text-gray-900'
+          }`}>
+            {item.title}
+          </p>
+
+          <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+            <span className="text-[11px] text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full font-medium">
+              {item.category}
+            </span>
+            {substepsTotal > 0 && (
+              <span className="text-[11px] text-gray-400">
+                {substepsDone}/{substepsTotal} tâches
+              </span>
+            )}
+            {!item.completed && (
+              <>
+                <DeadlineBadge
+                  daysBeforeDeparture={item.daysBeforeDeparture}
+                  departureDate={departureDate}
+                  phase={item.phase}
+                />
+                {item.phase === 'on_arrival' && (
+                  <span className="text-[11px] px-2 py-0.5 rounded-full bg-blue-50 text-blue-600">
+                    À faire sur place
+                  </span>
+                )}
+              </>
+            )}
+            {item.completed && item.completedAt && (
+              <span className="text-[11px] text-green-600 bg-green-50 px-2 py-0.5 rounded-full font-medium">
+                ✅ Complété le {new Date(item.completedAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
+              </span>
+            )}
+          </div>
+
+          {!item.completed && substepsTotal === 0 && (
+            <>
+              {(item.sourceUrl || item.keyFacts.length > 0) ? null : (
+                <StepLinks category={item.category} countryCode={countryCode} />
+              )}
+            </>
+          )}
+
+          {!item.completed && substepsTotal === 0 && item.sourceUrl && (
+            <div className="mt-2">
+              <OfficialLinkCard
+                label={item.title || 'Source officielle'}
+                url={item.sourceUrl || '#'}
+              />
+            </div>
+          )}
+        </div>
+
+        {substepsTotal > 0 && (
+          <button
+            onClick={(e) => { e.stopPropagation(); onToggleExpand(item.id); }}
+            className="flex-shrink-0 p-1 rounded-md hover:bg-gray-200 transition-colors"
+          >
+            {isExpanded
+              ? <ChevronDown className="w-4 h-4 text-gray-400" />
+              : <ChevronRight className="w-4 h-4 text-gray-400" />
+            }
+          </button>
+        )}
+      </div>
+
+      {isExpanded && substepsTotal > 0 && (
+        <div className="border-t border-gray-100 bg-gray-50/50 px-4 py-2 space-y-1">
+          {item.substeps.map((substep) => (
+            <div
+              key={substep.id}
+              onClick={(e) => onToggleSubstep(item.id, substep.id, e)}
+              className={`flex items-start gap-2.5 px-2 py-2 rounded-md cursor-pointer transition-colors ${
+                substep.completed ? 'bg-gray-100/60' : 'hover:bg-gray-100'
+              }`}
+            >
+              {substep.completed
+                ? <CheckCircle className="w-3.5 h-3.5 text-gray-900 flex-shrink-0 mt-0.5" />
+                : <Circle className="w-3.5 h-3.5 text-gray-300 flex-shrink-0 mt-0.5" />
+              }
+              <span className={`text-xs ${substep.completed ? 'text-gray-400 line-through' : 'text-gray-600'}`}>
+                {substep.label}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ---- Page principale ----
 
 export default function ChecklistPage() {
@@ -128,6 +282,7 @@ export default function ChecklistPage() {
         substeps,
         completedFacts,
         daysBeforeDeparture: t.admin_procedure?.daysBeforeDeparture,
+        phase: (t.admin_procedure?.phase ?? 'on_arrival') as Phase,
         onlyFor: t.admin_procedure?.onlyFor ?? null,
         // ✅ Gov-link enrichment
         sourceUrl: t.admin_procedure?.sourceUrl,
@@ -146,7 +301,7 @@ export default function ChecklistPage() {
   const filteredSteps = useMemo(() => {
     return profileSteps
       .filter((step) => {
-        const deadline = getStepDeadline(step.daysBeforeDeparture, departureDate);
+        const deadline = step.phase === 'before' ? getStepDeadline(step.daysBeforeDeparture, departureDate) : { isUrgent: false, isLate: false };
         if (filter === 'todo') return !step.completed;
         if (filter === 'urgent') return !step.completed && deadline.isUrgent;
         if (filter === 'late') return !step.completed && deadline.isLate;
@@ -158,9 +313,12 @@ export default function ChecklistPage() {
       );
   }, [profileSteps, filter, search, departureDate]);
 
-  // Tri timeline : par deadline croissante
+  // Tri timeline : avant-départ d'abord (par deadline croissante), puis à l'arrivée
   const timelineSteps = useMemo(() => {
     return [...filteredSteps].sort((a, b) => {
+      // on_arrival always after before
+      if (a.phase !== b.phase) return a.phase === 'before' ? -1 : 1;
+      if (a.phase !== 'before') return 0;
       const da = getStepDeadline(a.daysBeforeDeparture, departureDate);
       const db = getStepDeadline(b.daysBeforeDeparture, departureDate);
       if (!da.date && !db.date) return 0;
@@ -170,15 +328,17 @@ export default function ChecklistPage() {
     });
   }, [filteredSteps, departureDate]);
 
-  // Stats
+  // Stats — deadlines/urgency only apply to 'before' phase items
   const { totalSteps, completedSteps, lateSteps, urgentSteps } = useMemo(() => {
     const total = profileSteps.length;
     const completed = profileSteps.filter((s) => s.completed).length;
     const late = profileSteps.filter((s) => {
+      if (s.phase !== 'before') return false;
       const d = getStepDeadline(s.daysBeforeDeparture, departureDate);
       return !s.completed && d.isLate;
     }).length;
     const urgent = profileSteps.filter((s) => {
+      if (s.phase !== 'before') return false;
       const d = getStepDeadline(s.daysBeforeDeparture, departureDate);
       return !s.completed && d.isUrgent;
     }).length;
@@ -239,6 +399,10 @@ export default function ChecklistPage() {
   }, [profileSteps, updateFacts]);
 
   const displaySteps = view === 'timeline' ? timelineSteps : filteredSteps;
+
+  // Split into two phase groups for the list view
+  const beforeSteps = displaySteps.filter((s) => s.phase === 'before');
+  const arrivalSteps = displaySteps.filter((s) => s.phase !== 'before');
 
   if (isLoading) {
     return (
@@ -374,115 +538,54 @@ export default function ChecklistPage() {
             <p className="text-sm">Aucune étape ne correspond à ce filtre.</p>
           </div>
         ) : (
-          <div className="space-y-2">
-            {displaySteps.map((item) => {
-              const isExpanded = expandedIds.has(item.id);
-              const substepsTotal = item.substeps.length;
-              const substepsDone = item.substeps.filter((s) => s.completed).length;
-
-              return (
-                <div key={item.id} className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-                  <div
-                    className={`flex items-start gap-3 p-4 cursor-pointer transition-colors ${
-                      item.completed ? 'bg-gray-50' : 'hover:bg-gray-50'
-                    }`}
-                    onClick={() => substepsTotal > 0 ? toggleExpand(item.id) : toggleItem(item.id)}
-                  >
-                    <button
-                      className="mt-0.5 flex-shrink-0"
-                      onClick={(e) => { e.stopPropagation(); toggleItem(item.id); }}
-                    >
-                      {item.completed ? (
-                        <CheckCircle className="w-5 h-5 text-gray-900" />
-                      ) : (
-                        <Circle className="w-5 h-5 text-gray-300" />
-                      )}
-                    </button>
-
-                    <div className="flex-1 min-w-0">
-                      <p className={`text-sm font-medium ${
-                        item.completed ? 'text-gray-400 line-through' : 'text-gray-900'
-                      }`}>
-                        {item.title}
-                      </p>
-
-                      <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-                        <span className="text-[11px] text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full font-medium">
-                          {item.category}
-                        </span>
-                        {substepsTotal > 0 && (
-                          <span className="text-[11px] text-gray-400">
-                            {substepsDone}/{substepsTotal} tâches
-                          </span>
-                        )}
-                        {!item.completed && (
-                          <DeadlineBadge
-                            daysBeforeDeparture={item.daysBeforeDeparture}
-                            departureDate={departureDate}
-                          />
-                        )}
-                        {item.completed && item.completedAt && (
-                          <span className="text-[11px] text-green-600 bg-green-50 px-2 py-0.5 rounded-full font-medium">
-                            ✅ Complété le {new Date(item.completedAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
-                          </span>
-                        )}
-                      </div>
-
-                      {!item.completed && substepsTotal === 0 && (
-                        <>
-                          {(item.sourceUrl || item.keyFacts.length > 0) ? null : (
-                            <StepLinks category={item.category} countryCode={countryCode} />
-                          )}
-                        </>
-                      )}
-
-                      {!item.completed && substepsTotal === 0 && item.sourceUrl && (
-                        <div className="mt-2">
-                          <OfficialLinkCard
-                            label={item.title || 'Source officielle'}
-                            url={item.sourceUrl || '#'}
-                          />
-                        </div>
-                      )}
-                    </div>
-
-                    {substepsTotal > 0 && (
-                      <button
-                        onClick={(e) => { e.stopPropagation(); toggleExpand(item.id); }}
-                        className="flex-shrink-0 p-1 rounded-md hover:bg-gray-200 transition-colors"
-                      >
-                        {isExpanded
-                          ? <ChevronDown className="w-4 h-4 text-gray-400" />
-                          : <ChevronRight className="w-4 h-4 text-gray-400" />
-                        }
-                      </button>
-                    )}
-                  </div>
-
-                  {isExpanded && substepsTotal > 0 && (
-                    <div className="border-t border-gray-100 bg-gray-50/50 px-4 py-2 space-y-1">
-                      {item.substeps.map((substep) => (
-                        <div
-                          key={substep.id}
-                          onClick={(e) => toggleSubstep(item.id, substep.id, e)}
-                          className={`flex items-start gap-2.5 px-2 py-2 rounded-md cursor-pointer transition-colors ${
-                            substep.completed ? 'bg-gray-100/60' : 'hover:bg-gray-100'
-                          }`}
-                        >
-                          {substep.completed
-                            ? <CheckCircle className="w-3.5 h-3.5 text-gray-900 flex-shrink-0 mt-0.5" />
-                            : <Circle className="w-3.5 h-3.5 text-gray-300 flex-shrink-0 mt-0.5" />
-                          }
-                          <span className={`text-xs ${substep.completed ? 'text-gray-400 line-through' : 'text-gray-600'}`}>
-                            {substep.label}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+          <div className="space-y-6">
+            {/* ---- Section : Avant le départ ---- */}
+            {beforeSteps.length > 0 && (
+              <div>
+                <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                  ✈️ Avant le départ
+                  <span className="text-gray-400 font-normal normal-case tracking-normal">({beforeSteps.length})</span>
+                </h2>
+                <div className="space-y-2">
+                  {beforeSteps.map((item) => (
+                    <ChecklistItemRow
+                      key={item.id}
+                      item={item}
+                      isExpanded={expandedIds.has(item.id)}
+                      departureDate={departureDate}
+                      countryCode={countryCode}
+                      onToggleExpand={toggleExpand}
+                      onToggleItem={toggleItem}
+                      onToggleSubstep={toggleSubstep}
+                    />
+                  ))}
                 </div>
-              );
-            })}
+              </div>
+            )}
+
+            {/* ---- Section : À l'arrivée ---- */}
+            {arrivalSteps.length > 0 && (
+              <div>
+                <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                  🏠 À l'arrivée
+                  <span className="text-gray-400 font-normal normal-case tracking-normal">({arrivalSteps.length})</span>
+                </h2>
+                <div className="space-y-2">
+                  {arrivalSteps.map((item) => (
+                    <ChecklistItemRow
+                      key={item.id}
+                      item={item}
+                      isExpanded={expandedIds.has(item.id)}
+                      departureDate={departureDate}
+                      countryCode={countryCode}
+                      onToggleExpand={toggleExpand}
+                      onToggleItem={toggleItem}
+                      onToggleSubstep={toggleSubstep}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

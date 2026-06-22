@@ -19,11 +19,13 @@ const CATEGORY_LABELS: Record<string, string> = {
   integration: 'dashboard.personalized.widgets.checklist.categories.integration',
 };
 
-// ✅ Badge deadline
-function DeadlineBadge({ daysBeforeDeparture, departureDate }: {
+// ✅ Badge deadline — ignoré pour les étapes à l'arrivée
+function DeadlineBadge({ daysBeforeDeparture, departureDate, phase }: {
   daysBeforeDeparture?: number;
   departureDate?: string | Date | null;
+  phase?: 'before' | 'on_arrival';
 }) {
+  if (phase === 'on_arrival') return null;
   const deadline = getStepDeadline(daysBeforeDeparture, departureDate);
   if (!deadline.date) return null;
 
@@ -81,6 +83,148 @@ function StepLinks({ category, countryCode }: { category: string; countryCode?: 
   );
 }
 
+// ---- ChecklistItemCard — renders one item row (used for both phase groups) ----
+
+interface ChecklistItemCardProps {
+  item: {
+    id: string;
+    trackingId: number;
+    title: string;
+    completed: boolean;
+    category: string;
+    substeps: { id: string; label: string; completed: boolean; isOptional: boolean }[];
+    completedFacts: number[];
+    daysBeforeDeparture?: number;
+    phase: 'before' | 'on_arrival';
+    onlyFor?: { travelType?: string[]; objective?: string[] } | null;
+  };
+  isExpanded: boolean;
+  departureDate?: string | Date | null;
+  countryCode?: string;
+  t: (key: string) => string;
+  onToggleExpand: (id: string, e: React.MouseEvent) => void;
+  onToggleItem: (id: string) => void;
+  onToggleSubstep: (itemId: string, substepId: string, e: React.MouseEvent) => void;
+}
+
+function ChecklistItemCard({
+  item,
+  isExpanded,
+  departureDate,
+  countryCode,
+  t,
+  onToggleExpand,
+  onToggleItem,
+  onToggleSubstep,
+}: ChecklistItemCardProps) {
+  const substepsDone = item.substeps?.filter((s) => s.completed).length ?? 0;
+  const substepsTotal = item.substeps?.length ?? 0;
+
+  return (
+    <div className="rounded-lg border border-gray-100 overflow-hidden">
+      <div
+        className={`flex items-start gap-3 p-3 cursor-pointer transition-colors ${
+          item.completed ? 'bg-gray-50' : 'hover:bg-gray-50'
+        }`}
+        onClick={() => substepsTotal === 0 ? onToggleItem(item.id) : onToggleExpand(item.id, { stopPropagation: () => {} } as React.MouseEvent)}
+      >
+        <button
+          className="mt-0.5 flex-shrink-0"
+          onClick={(e) => { e.stopPropagation(); onToggleItem(item.id); }}
+        >
+          {item.completed ? (
+            <CheckCircle className="w-5 h-5 text-gray-900" />
+          ) : (
+            <Circle className="w-5 h-5 text-gray-300" />
+          )}
+        </button>
+
+        <div className="flex-1 min-w-0">
+          <p className={`text-sm font-medium ${
+            item.completed ? 'text-gray-400 line-through' : 'text-gray-900'
+          }`}>
+            {item.title}
+          </p>
+
+          <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+            <span className="text-[11px] text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full font-medium">
+              {t(CATEGORY_LABELS[item.category] || item.category)}
+            </span>
+            {substepsTotal > 0 && (
+              <span className="text-[11px] text-gray-400">
+                {substepsDone}/{substepsTotal}
+              </span>
+            )}
+            {!item.completed && (
+              <>
+                <DeadlineBadge
+                  daysBeforeDeparture={item.daysBeforeDeparture}
+                  departureDate={departureDate}
+                  phase={item.phase}
+                />
+                {item.phase === 'on_arrival' && (
+                  <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-500 whitespace-nowrap">
+                    sur place
+                  </span>
+                )}
+              </>
+            )}
+          </div>
+
+          {!item.completed && substepsTotal === 0 && (
+            <StepLinks category={item.category} countryCode={countryCode} />
+          )}
+        </div>
+
+        {substepsTotal > 0 && (
+          <button
+            onClick={(e) => onToggleExpand(item.id, e)}
+            className="flex-shrink-0 mt-1 p-1 rounded-md hover:bg-gray-200 transition-colors"
+          >
+            {isExpanded ? (
+              <ChevronDown className="w-4 h-4 text-gray-400" />
+            ) : (
+              <ChevronRight className="w-4 h-4 text-gray-400" />
+            )}
+          </button>
+        )}
+      </div>
+
+      {isExpanded && substepsTotal > 0 && (
+        <div className="border-t border-gray-100 bg-gray-50/50 px-3 py-2 space-y-1">
+          {item.substeps.map((substep) => (
+            <div
+              key={substep.id}
+              onClick={(e) => onToggleSubstep(item.id, substep.id, e)}
+              className={`flex items-start gap-2.5 px-2.5 py-2 rounded-md cursor-pointer transition-colors ${
+                substep.completed ? 'bg-gray-100/60' : 'hover:bg-gray-100'
+              }`}
+            >
+              <span className="flex-shrink-0 mt-0.5">
+                {substep.completed ? (
+                  <CheckCircle className="w-3.5 h-3.5 text-gray-900" />
+                ) : (
+                  <Circle className="w-3.5 h-3.5 text-gray-300" />
+                )}
+              </span>
+              <span className={`text-xs leading-relaxed ${
+                substep.completed ? 'text-gray-400 line-through' : 'text-gray-600'
+              }`}>
+                {substep.label}
+                {substep.isOptional && (
+                  <span className="ml-1 text-gray-400 italic">
+                    ({t('dashboard.personalized.widgets.checklist.optional')})
+                  </span>
+                )}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 interface ChecklistWidgetProps {
   countryData: CountryData | null;
   projectId: number;
@@ -112,6 +256,7 @@ interface ChecklistItem {
   substeps: ChecklistSubstep[];
   completedFacts: number[];
   daysBeforeDeparture?: number;
+  phase: 'before' | 'on_arrival';
   onlyFor?: { travelType?: string[]; objective?: string[] } | null;
 }
 
@@ -159,6 +304,7 @@ export default function ChecklistWidget({
         substeps,
         completedFacts,
         daysBeforeDeparture: t.admin_procedure?.daysBeforeDeparture,
+        phase: (t.admin_procedure?.phase ?? 'on_arrival') as 'before' | 'on_arrival',
         onlyFor: t.admin_procedure?.onlyFor ?? null,
       };
     });
@@ -172,10 +318,10 @@ export default function ChecklistWidget({
     });
   }, [allChecklist, project?.travelType, project?.objective]);
 
-  // ✅ Les 3 étapes urgentes/en retard pour l'aperçu widget
+  // ✅ Les 3 étapes urgentes/en retard pour l'aperçu widget — seulement phase 'before'
   const urgentSteps = useMemo(() => {
     return checklist
-      .filter((item) => !item.completed)
+      .filter((item) => !item.completed && item.phase === 'before')
       .map((item) => ({
         ...item,
         deadline: getStepDeadline(item.daysBeforeDeparture, departureDate),
@@ -197,6 +343,16 @@ export default function ChecklistWidget({
   const remainingChecklist = useMemo(
     () => checklist.filter((item) => !urgentIds.has(item.id)),
     [checklist, urgentIds],
+  );
+
+  // Split remaining list by phase for grouped display
+  const remainingBefore = useMemo(
+    () => remainingChecklist.filter((item) => item.phase === 'before'),
+    [remainingChecklist],
+  );
+  const remainingArrival = useMemo(
+    () => remainingChecklist.filter((item) => item.phase !== 'before'),
+    [remainingChecklist],
   );
 
   const toggleExpand = useCallback((id: string, e: React.MouseEvent) => {
@@ -342,117 +498,57 @@ export default function ChecklistWidget({
                   <p className="text-sm text-gray-900 font-medium truncate">{item.title}</p>
                   <StepLinks category={item.category} countryCode={countryCode} />
                 </div>
-                <DeadlineBadge daysBeforeDeparture={item.daysBeforeDeparture} departureDate={departureDate} />
+                <DeadlineBadge daysBeforeDeparture={item.daysBeforeDeparture} departureDate={departureDate} phase={item.phase} />
               </div>
             ))}
           </div>
         )}
 
-        {/* Liste complète */}
-        <div className="space-y-1.5 max-h-[24rem] overflow-y-auto pr-1">
-          {remainingChecklist.map((item) => {
-            const isExpanded = expandedIds.has(item.id);
-            const substepsDone = item.substeps?.filter((s) => s.completed).length ?? 0;
-            const substepsTotal = item.substeps?.length ?? 0;
+        {/* Liste complète — groupée par phase */}
+        <div className="space-y-3 max-h-[24rem] overflow-y-auto pr-1">
+          {/* ✈️ Avant le départ */}
+          {remainingBefore.length > 0 && (
+            <div className="space-y-1.5">
+              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">
+                ✈️ Avant le départ
+              </p>
+              {remainingBefore.map((item) => (
+                <ChecklistItemCard
+                  key={item.id}
+                  item={item}
+                  isExpanded={expandedIds.has(item.id)}
+                  departureDate={departureDate}
+                  countryCode={countryCode}
+                  t={t}
+                  onToggleExpand={toggleExpand}
+                  onToggleItem={toggleItem}
+                  onToggleSubstep={toggleSubstep}
+                />
+              ))}
+            </div>
+          )}
 
-            return (
-              <div key={item.id} className="rounded-lg border border-gray-100 overflow-hidden">
-                <div
-                  className={`flex items-start gap-3 p-3 cursor-pointer transition-colors ${
-                    item.completed ? 'bg-gray-50' : 'hover:bg-gray-50'
-                  }`}
-                  onClick={() => substepsTotal === 0 ? toggleItem(item.id) : toggleExpand(item.id, { stopPropagation: () => {} } as React.MouseEvent)}
-                >
-                  <button
-                    className="mt-0.5 flex-shrink-0"
-                    onClick={(e) => { e.stopPropagation(); toggleItem(item.id); }}
-                  >
-                    {item.completed ? (
-                      <CheckCircle className="w-5 h-5 text-gray-900" />
-                    ) : (
-                      <Circle className="w-5 h-5 text-gray-300" />
-                    )}
-                  </button>
-
-                  <div className="flex-1 min-w-0">
-                    <p className={`text-sm font-medium ${
-                      item.completed ? 'text-gray-400 line-through' : 'text-gray-900'
-                    }`}>
-                      {item.title}
-                    </p>
-
-                    <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-                      <span className="text-[11px] text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full font-medium">
-                        {t(CATEGORY_LABELS[item.category] || item.category)}
-                      </span>
-                      {substepsTotal > 0 && (
-                        <span className="text-[11px] text-gray-400">
-                          {substepsDone}/{substepsTotal}
-                        </span>
-                      )}
-                      {/* ✅ Badge deadline */}
-                      {!item.completed && (
-                        <DeadlineBadge
-                          daysBeforeDeparture={item.daysBeforeDeparture}
-                          departureDate={departureDate}
-                        />
-                      )}
-                    </div>
-
-                    {/* ✅ Liens officiels (seulement si pas de substeps) */}
-                    {!item.completed && substepsTotal === 0 && (
-                      <StepLinks category={item.category} countryCode={countryCode} />
-                    )}
-                  </div>
-
-                  {substepsTotal > 0 && (
-                    <button
-                      onClick={(e) => toggleExpand(item.id, e)}
-                      className="flex-shrink-0 mt-1 p-1 rounded-md hover:bg-gray-200 transition-colors"
-                    >
-                      {isExpanded ? (
-                        <ChevronDown className="w-4 h-4 text-gray-400" />
-                      ) : (
-                        <ChevronRight className="w-4 h-4 text-gray-400" />
-                      )}
-                    </button>
-                  )}
-                </div>
-
-                {isExpanded && substepsTotal > 0 && (
-                  <div className="border-t border-gray-100 bg-gray-50/50 px-3 py-2 space-y-1">
-                    {item.substeps.map((substep) => (
-                      <div
-                        key={substep.id}
-                        onClick={(e) => toggleSubstep(item.id, substep.id, e)}
-                        className={`flex items-start gap-2.5 px-2.5 py-2 rounded-md cursor-pointer transition-colors ${
-                          substep.completed ? 'bg-gray-100/60' : 'hover:bg-gray-100'
-                        }`}
-                      >
-                        <span className="flex-shrink-0 mt-0.5">
-                          {substep.completed ? (
-                            <CheckCircle className="w-3.5 h-3.5 text-gray-900" />
-                          ) : (
-                            <Circle className="w-3.5 h-3.5 text-gray-300" />
-                          )}
-                        </span>
-                        <span className={`text-xs leading-relaxed ${
-                          substep.completed ? 'text-gray-400 line-through' : 'text-gray-600'
-                        }`}>
-                          {substep.label}
-                          {substep.isOptional && (
-                            <span className="ml-1 text-gray-400 italic">
-                              ({t('dashboard.personalized.widgets.checklist.optional')})
-                            </span>
-                          )}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+          {/* 🏠 À l'arrivée */}
+          {remainingArrival.length > 0 && (
+            <div className="space-y-1.5">
+              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">
+                🏠 À l'arrivée
+              </p>
+              {remainingArrival.map((item) => (
+                <ChecklistItemCard
+                  key={item.id}
+                  item={item}
+                  isExpanded={expandedIds.has(item.id)}
+                  departureDate={departureDate}
+                  countryCode={countryCode}
+                  t={t}
+                  onToggleExpand={toggleExpand}
+                  onToggleItem={toggleItem}
+                  onToggleSubstep={toggleSubstep}
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* ✅ Lien vers la page dédiée */}

@@ -21,7 +21,7 @@ export const getStepDeadline = (
   daysBeforeDeparture: number | undefined,
   departureDate: string | Date | undefined | null
 ): StepDeadline => {
-  if (!daysBeforeDeparture || !departureDate) {
+  if (daysBeforeDeparture == null || !departureDate) {
     return { date: null, isUrgent: false, isLate: false, daysLeft: null };
   }
 
