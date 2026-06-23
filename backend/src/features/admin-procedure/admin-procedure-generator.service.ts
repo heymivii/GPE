@@ -125,6 +125,10 @@ export class AdminProcedureGeneratorService {
   /**
    * Upsert admin_procedures from active gov_links for the given ISO2 country code.
    * Keyed on (country_id, category) — updates existing, creates missing.
+   *
+   * Cascade archive: after upserting, any country procedure whose category has NO active gov_link
+   * is archived (status='archived') so it is hidden from the checklist. Non-destructive — rows,
+   * procedure_tracking rows, and progress are preserved; re-verified → re-activates on next run.
    */
   async generateFromGovLinks(countryCode: string): Promise<AdminProcedure[]> {
     const country = await this.countryRepository.findOne({
@@ -163,6 +167,7 @@ export class AdminProcedureGeneratorService {
         daysBeforeDeparture: defaultDaysBeforeDeparture(category),
         stepOrder: defaultStepOrder(category),
         phase: phaseForCategory(category),
+        status: 'active',
       };
 
       if (procedure) {
@@ -176,6 +181,27 @@ export class AdminProcedureGeneratorService {
 
       const saved = await this.adminProcedureRepository.save(procedure);
       results.push(saved);
+    }
+
+    // Cascade archive: procedures whose category has no active gov_link become 'archived'.
+    const activeCategories = govLinks.map((l) => l.category);
+    if (activeCategories.length > 0) {
+      // Archive procedures that are NOT in the active-category set.
+      await this.adminProcedureRepository
+        .createQueryBuilder()
+        .update(AdminProcedure)
+        .set({ status: 'archived' })
+        .where('country_id = :countryId', { countryId: country.idCountry })
+        .andWhere('category NOT IN (:...activeCategories)', { activeCategories })
+        .execute();
+    } else {
+      // No active gov_links at all → archive everything for this country.
+      await this.adminProcedureRepository
+        .createQueryBuilder()
+        .update(AdminProcedure)
+        .set({ status: 'archived' })
+        .where('country_id = :countryId', { countryId: country.idCountry })
+        .execute();
     }
 
     return results;

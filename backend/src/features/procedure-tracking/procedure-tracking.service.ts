@@ -43,10 +43,12 @@ export class ProcedureTrackingService {
         where: { country: { idCountry: project.destinationCountryId } },
       });
 
-      // Filter by project objective: keep procedures that apply to everyone
+      // Only seed from ACTIVE procedures (archived ones are hidden — their gov_link lost verification).
+      // Also filter by project objective: keep procedures that apply to everyone
       // (null/empty objectives) OR explicitly target this project's objective.
       const projectObjective = project.objective;
       const adminProcedures = allAdminProcedures.filter((ap) => {
+        if (ap.status !== 'active') return false;
         if (!ap.objectives || ap.objectives.length === 0) return true;
         if (!projectObjective) return true;
         return ap.objectives.includes(projectObjective);
@@ -78,11 +80,15 @@ export class ProcedureTrackingService {
         relations: ['admin_procedure', 'project'],
       });
 
-      return allTrackings.sort((a, b) => {
-        const orderA = a.admin_procedure?.stepOrder ?? 0;
-        const orderB = b.admin_procedure?.stepOrder ?? 0;
-        return orderA - orderB;
-      });
+      // Only return trackings whose admin_procedure is currently active.
+      // Archived procedures are hidden from the checklist (rows preserved for later reactivation).
+      return allTrackings
+        .filter((t) => t.admin_procedure?.status === 'active')
+        .sort((a, b) => {
+          const orderA = a.admin_procedure?.stepOrder ?? 0;
+          const orderB = b.admin_procedure?.stepOrder ?? 0;
+          return orderA - orderB;
+        });
     }
 
     return await this.trackingRepository.find({

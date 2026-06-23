@@ -11,8 +11,9 @@ function makeAP(
   id: number,
   category: string,
   objectives: string[] | null = null,
+  status = 'active',
 ): Partial<AdminProcedure> {
-  return { idAdminProcedure: id, category, objectives: objectives ?? undefined, stepOrder: id };
+  return { idAdminProcedure: id, category, objectives: objectives ?? undefined, stepOrder: id, status };
 }
 
 describe('ProcedureTrackingService', () => {
@@ -194,6 +195,86 @@ describe('ProcedureTrackingService', () => {
 
       expect(result.status).toBe('in_progress');
       expect(result.completedFacts).toEqual(['Obtenir le visa']);
+    });
+  });
+
+  describe('findAllByUser – archived procedure filtering', () => {
+    const userId = 1;
+    const projectId = 10;
+
+    function setupProjectWith(objective: string | null = null) {
+      projectRepo.findOne.mockResolvedValue({
+        idProject: projectId,
+        userId,
+        destinationCountryId: 5,
+        objective,
+      });
+    }
+
+    it('excludes archived procedures from the seeding pool', async () => {
+      const activeVisa = makeAP(1, 'visa', [], 'active');
+      const archivedSante = makeAP(2, 'sante', [], 'archived');
+
+      setupProjectWith(null);
+      adminProcedureRepo.find.mockResolvedValue([activeVisa, archivedSante]);
+
+      // existingTrackings → empty (seed both)
+      trackingRepo.find.mockResolvedValueOnce([]);
+      trackingRepo.create.mockImplementation((d: any) => ({ ...d }));
+      trackingRepo.save.mockResolvedValue(undefined);
+
+      // Final allTrackings — include both trackings (as stored in DB)
+      trackingRepo.find.mockResolvedValueOnce([
+        { idProcedureTracking: 1, admin_procedure: activeVisa, status: 'not_started' },
+        { idProcedureTracking: 2, admin_procedure: archivedSante, status: 'not_started' },
+      ]);
+
+      const result = await service.findAllByUser(userId, projectId);
+
+      // Archived procedure is filtered from the result
+      expect(result.map((r) => r.admin_procedure?.category)).not.toContain('sante');
+      expect(result.map((r) => r.admin_procedure?.category)).toContain('visa');
+    });
+
+    it('returns only active procedure trackings (archived hidden from checklist)', async () => {
+      const activeVisa = makeAP(1, 'visa', [], 'active');
+      const archivedEmploi = makeAP(3, 'emploi', [], 'archived');
+
+      setupProjectWith(null);
+      adminProcedureRepo.find.mockResolvedValue([activeVisa]);
+
+      trackingRepo.find.mockResolvedValueOnce([]); // no existing
+      trackingRepo.create.mockImplementation((d: any) => ({ ...d }));
+      trackingRepo.save.mockResolvedValue(undefined);
+
+      // DB has both active and archived trackings
+      trackingRepo.find.mockResolvedValueOnce([
+        { idProcedureTracking: 1, admin_procedure: activeVisa, status: 'not_started' },
+        { idProcedureTracking: 3, admin_procedure: archivedEmploi, status: 'in_progress' },
+      ]);
+
+      const result = await service.findAllByUser(userId, projectId);
+
+      // Only active
+      expect(result).toHaveLength(1);
+      expect(result[0].admin_procedure?.category).toBe('visa');
+    });
+
+    it('does NOT seed new trackings for archived procedures', async () => {
+      const archivedSante = makeAP(2, 'sante', [], 'archived');
+
+      setupProjectWith(null);
+      adminProcedureRepo.find.mockResolvedValue([archivedSante]);
+
+      trackingRepo.find.mockResolvedValueOnce([]); // no existing
+      trackingRepo.create.mockImplementation((d: any) => ({ ...d }));
+      trackingRepo.save.mockResolvedValue(undefined);
+      trackingRepo.find.mockResolvedValueOnce([]); // no trackings stored
+
+      await service.findAllByUser(userId, projectId);
+
+      // save should NOT have been called — archived procedure not seeded
+      expect(trackingRepo.save).not.toHaveBeenCalled();
     });
   });
 });

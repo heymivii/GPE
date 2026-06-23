@@ -64,15 +64,28 @@ describe('AdminProcedureGeneratorService', () => {
     findOne: jest.Mock;
     create: jest.Mock;
     save: jest.Mock;
+    createQueryBuilder: jest.Mock;
   };
   let govLinkRepo: { find: jest.Mock };
   let countryRepo: { findOne: jest.Mock };
+
+  /** Default no-op query builder chain used by the archive step in generateFromGovLinks. */
+  function makeQbChain() {
+    const chain: any = {};
+    chain.update = jest.fn(() => chain);
+    chain.set = jest.fn(() => chain);
+    chain.where = jest.fn(() => chain);
+    chain.andWhere = jest.fn(() => chain);
+    chain.execute = jest.fn(async () => ({ affected: 0 }));
+    return chain;
+  }
 
   beforeEach(async () => {
     adminProcedureRepo = {
       findOne: jest.fn(),
       create: jest.fn(),
       save: jest.fn(),
+      createQueryBuilder: jest.fn(() => makeQbChain()),
     };
     govLinkRepo = { find: jest.fn() };
     countryRepo = { findOne: jest.fn() };
@@ -484,6 +497,77 @@ describe('AdminProcedureGeneratorService', () => {
       expect(result.stepOrder).toBe(STEP_ORDER_MAP.business);
       expect(result.daysBeforeDeparture).toBe(DAYS_BEFORE_DEPARTURE_MAP.business);
       expect(result.objectives).toEqual([]);
+    });
+
+    // ── Cascade archive + status='active' on upsert ──────────────────────────────
+
+    it('sets status="active" on upserted procedures', async () => {
+      countryRepo.findOne.mockResolvedValue(mockCountry);
+      govLinkRepo.find.mockResolvedValue([mockGovLinkVisa]);
+      adminProcedureRepo.findOne.mockResolvedValue(null);
+      adminProcedureRepo.create.mockImplementation((data) => ({ ...data }));
+      adminProcedureRepo.save.mockImplementation((proc) => Promise.resolve({ ...proc, idAdminProcedure: 1 }));
+
+      // We need createQueryBuilder for the archive step
+      const qbChain = {
+        update: jest.fn().mockReturnThis(),
+        set: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        execute: jest.fn().mockResolvedValue({ affected: 0 }),
+      };
+      (adminProcedureRepo as any).createQueryBuilder = jest.fn(() => qbChain);
+
+      const [result] = await service.generateFromGovLinks('FR');
+      expect(result.status).toBe('active');
+    });
+
+    it('archives procedures whose category has no active gov_link', async () => {
+      countryRepo.findOne.mockResolvedValue(mockCountry);
+      // Only visa is active
+      govLinkRepo.find.mockResolvedValue([mockGovLinkVisa]);
+      adminProcedureRepo.findOne.mockResolvedValue(null);
+      adminProcedureRepo.create.mockImplementation((data) => ({ ...data }));
+      adminProcedureRepo.save.mockImplementation((proc) => Promise.resolve({ ...proc, idAdminProcedure: 1 }));
+
+      const qbChain = {
+        update: jest.fn().mockReturnThis(),
+        set: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        execute: jest.fn().mockResolvedValue({ affected: 0 }),
+      };
+      (adminProcedureRepo as any).createQueryBuilder = jest.fn(() => qbChain);
+
+      await service.generateFromGovLinks('FR');
+
+      expect(qbChain.set).toHaveBeenCalledWith({ status: 'archived' });
+      expect(qbChain.andWhere).toHaveBeenCalledWith(
+        'category NOT IN (:...activeCategories)',
+        { activeCategories: ['visa'] },
+      );
+      expect(qbChain.execute).toHaveBeenCalled();
+    });
+
+    it('archives ALL procedures when no active gov_links exist', async () => {
+      countryRepo.findOne.mockResolvedValue(mockCountry);
+      govLinkRepo.find.mockResolvedValue([]);
+
+      const qbChain = {
+        update: jest.fn().mockReturnThis(),
+        set: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        execute: jest.fn().mockResolvedValue({ affected: 0 }),
+      };
+      (adminProcedureRepo as any).createQueryBuilder = jest.fn(() => qbChain);
+
+      await service.generateFromGovLinks('FR');
+
+      expect(qbChain.set).toHaveBeenCalledWith({ status: 'archived' });
+      // No andWhere — archive everything
+      expect(qbChain.andWhere).not.toHaveBeenCalled();
+      expect(qbChain.execute).toHaveBeenCalled();
     });
   });
 });
