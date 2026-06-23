@@ -1,6 +1,7 @@
-import { BadRequestException, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import { BadRequestException, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { GovLinksService } from './gov-links.service';
+import { GenerationOrchestratorService } from './generation-orchestrator.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -9,7 +10,10 @@ import { CANONICAL_CATEGORIES, SUPPORTED_COUNTRIES } from './gov-links.types';
 @ApiTags('Gov Links')
 @Controller('gov-links')
 export class GovLinksController {
-  constructor(private readonly service: GovLinksService) {}
+  constructor(
+    private readonly service: GovLinksService,
+    private readonly orchestrator: GenerationOrchestratorService,
+  ) {}
 
   @Get('health')
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -40,5 +44,57 @@ export class GovLinksController {
       throw new BadRequestException(`Unknown category: ${category ?? ''}`);
     }
     return this.service.generate(cc, category);
+  }
+
+  /**
+   * Start a full per-country generation run (fire-and-forget).
+   * Returns {runId} immediately; poll GET /gov-links/runs/:id for progress.
+   */
+  @Post('generate-country')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  async generateCountry(@Query('country') country: string) {
+    const cc = (country ?? '').toUpperCase();
+    if (!(SUPPORTED_COUNTRIES as readonly string[]).includes(cc)) {
+      throw new BadRequestException(`Unsupported country: ${country ?? ''}`);
+    }
+    const run = await this.orchestrator.createRun(cc);
+    // Fire-and-forget — do NOT await; caller polls /runs/:id
+    void this.orchestrator.runForCountry(run.id, cc);
+    return { runId: run.id };
+  }
+
+  /**
+   * Get the latest generation run for a country.
+   * MUST be declared BEFORE runs/:id so 'latest' is not captured as an id param.
+   */
+  @Get('runs/latest')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  findLatestRun(@Query('country') country: string) {
+    return this.orchestrator.findLatest(country ?? '');
+  }
+
+  /** Get a generation run by id. */
+  @Get('runs/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  findRun(@Param('id') id: string) {
+    return this.orchestrator.findById(+id);
+  }
+
+  /** Re-run a single (country, category) cell within an existing run, then re-sync publication. */
+  @Post('runs/:id/rerun')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  async rerunCategory(@Param('id') id: string, @Query('category') category: string) {
+    const run = await this.orchestrator.findById(+id);
+    if (!run) {
+      throw new BadRequestException(`Run not found: ${id}`);
+    }
+    if (!(CANONICAL_CATEGORIES as readonly string[]).includes(category)) {
+      throw new BadRequestException(`Unknown category: ${category ?? ''}`);
+    }
+    return this.orchestrator.rerunCategory(+id, run.countryCode, category);
   }
 }
