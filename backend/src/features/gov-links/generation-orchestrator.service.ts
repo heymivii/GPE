@@ -15,6 +15,10 @@ import { AdminProcedureGeneratorService } from '../admin-procedure/admin-procedu
 /** A 'running' run older than this (e.g. process restarted mid-run) is reported as 'failed' on read. */
 const STALE_RUN_MS = 10 * 60 * 1000;
 
+/** Pause between categories so a run doesn't trip SearXNG/Google or the LLM rate-limit (which would
+ *  wrongly downgrade good links). Configurable via GENERATION_DELAY_MS. */
+const INTER_CATEGORY_DELAY_MS = Number(process.env.GENERATION_DELAY_MS ?? 8000);
+
 /**
  * Orchestrates a per-country generation run: for each canonical category it generates the official
  * link (reusing GovLinksService.generate — NOT rewritten), VERIFIES it via composable hooks, decides
@@ -62,8 +66,10 @@ export class GenerationOrchestratorService {
   async runForCountry(runId: number, countryCode: string): Promise<void> {
     const cc = countryCode.toUpperCase();
     try {
-      for (const category of CANONICAL_CATEGORIES) {
-        await this.processCategory(runId, cc, category);
+      for (let i = 0; i < CANONICAL_CATEGORIES.length; i++) {
+        await this.processCategory(runId, cc, CANONICAL_CATEGORIES[i]);
+        // Throttle between categories to avoid rate-limiting (which would falsely downgrade links).
+        if (i < CANONICAL_CATEGORIES.length - 1) await this.delay(INTER_CATEGORY_DELAY_MS);
       }
       // Auto-publish: generateFromGovLinks reads only status:'active' gov_links → only `verified` ones.
       await this.generator.generateFromGovLinks(cc);
@@ -188,6 +194,10 @@ export class GenerationOrchestratorService {
 
   private async closeRun(runId: number, status: GenerationRunStatus): Promise<void> {
     await this.runs.update({ id: runId }, { status, finishedAt: new Date() });
+  }
+
+  private delay(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   // ── Reads (with stale-run handling) ───────────────────────────────────────────────────
