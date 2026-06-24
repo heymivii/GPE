@@ -1,12 +1,15 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { govLinksApi, type GovLink } from '../../../api/govLinks';
+import { govLinksApi, type GovLink, type GenerationRun } from '../../../api/govLinks';
 import { useSupportedCountries } from '../../../hooks/useSupportedCountries';
 import { SUPPORTED_COUNTRIES } from '../../../data/supportedCountries';
-import { useState, useMemo } from 'react';
-import { Loader2, RefreshCw, Link2, ExternalLink, CheckCircle2, XCircle } from 'lucide-react';
+import { useState, useMemo, useEffect } from 'react';
+import { Loader2, RefreshCw, Link2, ExternalLink, CheckCircle2, XCircle, AlertTriangle, Clock } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-const CATEGORIES = ['visa', 'demarches', 'logement', 'sante'] as const;
+const CATEGORIES = [
+  'visa', 'demarches', 'demarches-admin', 'logement', 'sante',
+  'emploi', 'banque', 'transport', 'education', 'culture', 'business',
+] as const;
 type Category = typeof CATEGORIES[number];
 
 function StatusBadge({ status }: { status: GovLink['status'] }) {
@@ -27,6 +30,22 @@ function StatusBadge({ status }: { status: GovLink['status'] }) {
   );
 }
 
+// ── Per-country generation ────────────────────────────────────────────────────
+
+type RunResult = 'verified' | 'needs_review' | 'failed' | null;
+
+function RunResultIcon({ result }: { result: RunResult }) {
+  if (result === null)
+    return <Clock className="w-4 h-4 text-gray-400" aria-label="En attente" />;
+  if (result === 'verified')
+    return <CheckCircle2 className="w-4 h-4 text-green-600" aria-label="Vérifié" />;
+  if (result === 'needs_review')
+    return <AlertTriangle className="w-4 h-4 text-amber-500" aria-label="À vérifier" />;
+  return <XCircle className="w-4 h-4 text-red-500" aria-label="Échoué" />;
+}
+
+// ── Component ─────────────────────────────────────────────────────────────────
+
 export default function AdminGovLinks() {
   const queryClient = useQueryClient();
   const { countries } = useSupportedCountries();
@@ -36,6 +55,12 @@ export default function AdminGovLinks() {
   const [activeGenKey, setActiveGenKey] = useState<string | null>(null);
 
   const [filterCountry, setFilterCountry] = useState<string>('all');
+
+  // ── Per-country generation state ─────────────────────────────────────────
+  const [activeRunId, setActiveRunId] = useState<number | null>(null);
+  const [activeRunCountry, setActiveRunCountry] = useState<string>(
+    () => countries[0]?.code ?? SUPPORTED_COUNTRIES[0].code,
+  );
 
   const { data: health } = useQuery({
     queryKey: ['gov-links-health'],
@@ -83,6 +108,66 @@ export default function AdminGovLinks() {
 
   const isRowPending = (countryCode: string, category: string) =>
     activeGenKey === `${countryCode}__${category}`;
+
+  // ── Latest run for the selected country (load on mount / country change) ──
+  const { data: latestRun, isLoading: latestRunLoading } = useQuery({
+    queryKey: ['gov-run-latest', activeRunCountry],
+    queryFn: () => govLinksApi.getLatestRun(activeRunCountry),
+    staleTime: 0,
+  });
+
+  // Seed activeRunId from latestRun when it arrives (and we have no active run)
+  useEffect(() => {
+    if (latestRun && activeRunId === null) {
+      setActiveRunId(latestRun.id);
+    }
+  }, [latestRun, activeRunId]);
+
+  // ── Poll the active run while it is running ───────────────────────────────
+  const { data: polledRun, refetch: refetchRun } = useQuery({
+    queryKey: ['gov-run', activeRunId],
+    queryFn: () => govLinksApi.getRun(activeRunId!),
+    enabled: activeRunId !== null,
+    refetchInterval: (query) =>
+      query.state.data?.status === 'running' ? 2000 : false,
+  });
+
+  // Derive the run to display (polled takes precedence once we have it)
+  const displayRun: GenerationRun | null = polledRun ?? latestRun ?? null;
+
+  // ── Generate whole country ────────────────────────────────────────────────
+  const generateCountryMutation = useMutation({
+    mutationFn: (country: string) => govLinksApi.generateCountry(country),
+    onSuccess: (res, country) => {
+      setActiveRunId(res.runId);
+      setActiveRunCountry(country);
+      toast.success(`Génération lancée pour ${country} (run #${res.runId})`);
+      queryClient.invalidateQueries({ queryKey: ['gov-run-latest', country] });
+    },
+    onError: (e: any) => {
+      toast.error(e.response?.data?.message || 'Erreur de lancement');
+    },
+  });
+
+  // ── Rerun a single category ───────────────────────────────────────────────
+  const rerunMutation = useMutation({
+    mutationFn: ({ runId, category }: { runId: number; category: string }) =>
+      govLinksApi.rerunCategory(runId, category),
+    onSuccess: (updatedRun) => {
+      queryClient.setQueryData(['gov-run', updatedRun.id], updatedRun);
+      toast.success(`Relance de ${rerunMutation.variables?.category} lancée`);
+    },
+    onError: (e: any) => {
+      toast.error(e.response?.data?.message || 'Erreur de relance');
+    },
+  });
+
+  // ── Progress helpers ──────────────────────────────────────────────────────
+  const runDone = displayRun
+    ? displayRun.results.filter((r) => r.result !== null).length
+    : 0;
+  const runTotal = displayRun?.total ?? 0;
+  const runPct = runTotal > 0 ? (runDone / runTotal) * 100 : 0;
 
   const formatDate = (dateStr?: string) => {
     if (!dateStr) return '—';
@@ -225,6 +310,194 @@ export default function AdminGovLinks() {
             )}
           </button>
         </div>
+      </div>
+
+      {/* ── Génération par pays ───────────────────────────────────────── */}
+      <div className="bg-white rounded-2xl border border-gray-150 shadow-sm p-6 space-y-5">
+        <h2 className="text-base font-bold text-gray-800 flex items-center gap-2">
+          <RefreshCw className="w-4 h-4 text-[#5EA3C0]" />
+          Génération par pays
+        </h2>
+
+        <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+          Lance la génération des 11 catégories officielles pour un pays en arrière-plan (~1-2 min). Suivez la progression ci-dessous.
+        </p>
+
+        {/* Country buttons */}
+        <div className="flex flex-wrap gap-3">
+          {(countries.length > 0 ? countries : SUPPORTED_COUNTRIES).map((c) => (
+            <button
+              key={c.code}
+              type="button"
+              onClick={() => {
+                setActiveRunCountry(c.code);
+                setActiveRunId(null);
+                generateCountryMutation.mutate(c.code);
+              }}
+              disabled={generateCountryMutation.isPending}
+              className="flex items-center gap-2 bg-[#5EA3C0] hover:bg-[#4891b0] text-white px-4 py-2.5 rounded-xl font-semibold text-sm transition-all shadow-sm hover:shadow-md disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {generateCountryMutation.isPending &&
+              generateCountryMutation.variables === c.code ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <RefreshCw className="w-4 h-4" />
+              )}
+              {'flag' in c ? `${c.flag} ` : ''}{c.code}
+            </button>
+          ))}
+        </div>
+
+        {/* Country selector for viewing runs */}
+        <div className="flex items-center gap-3 flex-wrap">
+          <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Voir le dernier run pour :</span>
+          <div className="flex flex-wrap gap-2">
+            {(countries.length > 0 ? countries : SUPPORTED_COUNTRIES).map((c) => (
+              <button
+                key={c.code}
+                type="button"
+                onClick={() => {
+                  setActiveRunCountry(c.code);
+                  setActiveRunId(null);
+                }}
+                className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors ${
+                  activeRunCountry === c.code
+                    ? 'bg-[#5EA3C0] text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                {'flag' in c ? `${c.flag} ` : ''}{c.code}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Run status + progress */}
+        {latestRunLoading && !displayRun ? (
+          <div className="flex items-center gap-2 text-sm text-gray-500">
+            <Loader2 className="w-4 h-4 animate-spin text-[#5EA3C0]" />
+            Chargement du dernier run…
+          </div>
+        ) : displayRun ? (
+          <div className="space-y-4">
+            {/* Run header */}
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <div className="flex items-center gap-3 text-sm text-gray-700">
+                <span className="font-semibold">Run #{displayRun.id}</span>
+                <span className="text-gray-400">·</span>
+                <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+                  displayRun.status === 'running'
+                    ? 'bg-blue-100 text-blue-700'
+                    : displayRun.status === 'done'
+                    ? 'bg-green-100 text-green-700'
+                    : 'bg-red-100 text-red-700'
+                }`}>
+                  {displayRun.status === 'running' && <Loader2 className="w-3 h-3 animate-spin" />}
+                  {displayRun.status === 'running' ? 'En cours' : displayRun.status === 'done' ? 'Terminé' : 'Échoué'}
+                </span>
+                <span className="text-gray-500 text-xs">
+                  Démarré le {new Date(displayRun.startedAt).toLocaleString('fr-FR')}
+                  {displayRun.finishedAt && ` · Fini le ${new Date(displayRun.finishedAt).toLocaleString('fr-FR')}`}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => refetchRun()}
+                className="flex items-center gap-1.5 px-3 py-1.5 border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 rounded-lg text-xs font-semibold transition-colors"
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+                Rafraîchir
+              </button>
+            </div>
+
+            {/* Progress bar */}
+            <div className="space-y-1">
+              <div className="flex items-center justify-between text-xs text-gray-500">
+                <span>Progression</span>
+                <span className="font-semibold tabular-nums">{runDone}/{runTotal}</span>
+              </div>
+              <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+                <div
+                  className="h-2 rounded-full bg-[#5EA3C0] transition-all duration-500"
+                  style={{ width: `${runPct}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Review table */}
+            <div className="overflow-x-auto rounded-xl border border-gray-100">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-gray-50 border-b border-gray-100 text-xs font-bold uppercase tracking-wider text-gray-500">
+                    <th className="px-4 py-2.5 text-left w-10">État</th>
+                    <th className="px-4 py-2.5 text-left">Catégorie</th>
+                    <th className="px-4 py-2.5 text-left">Lien</th>
+                    <th className="px-4 py-2.5 text-left">Confiance</th>
+                    <th className="px-4 py-2.5 text-left">Message</th>
+                    <th className="px-4 py-2.5 text-left">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  {displayRun.results.map((r) => {
+                    const isRelaunching =
+                      rerunMutation.isPending &&
+                      rerunMutation.variables?.category === r.category &&
+                      rerunMutation.variables?.runId === displayRun.id;
+                    return (
+                      <tr key={r.category} className="hover:bg-gray-50/60 transition-colors">
+                        <td className="px-4 py-3 text-center">
+                          <RunResultIcon result={r.result} />
+                        </td>
+                        <td className="px-4 py-3 font-medium text-gray-800">{r.category}</td>
+                        <td className="px-4 py-3 max-w-xs">
+                          {r.url ? (
+                            <a
+                              href={r.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 text-[#5EA3C0] hover:text-[#4891b0] hover:underline font-medium truncate"
+                              title={r.url}
+                            >
+                              <ExternalLink className="w-3.5 h-3.5 flex-shrink-0" />
+                              <span className="truncate max-w-[200px] block">{r.url}</span>
+                            </a>
+                          ) : (
+                            <span className="text-gray-400">—</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 text-gray-700 tabular-nums">
+                          {r.confidence != null ? r.confidence.toFixed(2) : '—'}
+                        </td>
+                        <td className="px-4 py-3 text-gray-500 text-xs max-w-xs truncate" title={r.message ?? undefined}>
+                          {r.message ?? '—'}
+                        </td>
+                        <td className="px-4 py-3">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              rerunMutation.mutate({ runId: displayRun.id, category: r.category })
+                            }
+                            disabled={rerunMutation.isPending}
+                            className="flex items-center gap-1.5 px-3 py-1.5 border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 rounded-lg text-xs font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            {isRelaunching ? (
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            ) : (
+                              <RefreshCw className="w-3.5 h-3.5" />
+                            )}
+                            Relancer
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        ) : (
+          <p className="text-sm text-gray-500">Aucun run pour {activeRunCountry}. Cliquez sur « Générer (pays) » pour commencer.</p>
+        )}
       </div>
 
       {/* Filter + Table */}
