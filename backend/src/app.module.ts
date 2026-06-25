@@ -38,6 +38,7 @@ import { TravelTypeModule } from './features/project/travel-type/travel-type.mod
 import { AdminStatsModule } from './features/admin-stats/admin-stats.module';
 import { AdminLogModule } from './features/admin-log/admin-log.module';
 import { GovLinksModule } from './features/gov-links/gov-links.module';
+import { SearchHintModule } from './features/search-hint/search-hint.module';
 
 @Module({
   imports: [
@@ -80,6 +81,7 @@ import { GovLinksModule } from './features/gov-links/gov-links.module';
     AdminStatsModule,
     AdminLogModule,
     GovLinksModule,
+    SearchHintModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],
