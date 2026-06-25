@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { GovLink } from './entities/gov-link.entity';
@@ -12,7 +12,11 @@ import { GovLinksService, GovLinkResult } from './gov-links.service';
 import { CANONICAL_CATEGORIES } from './gov-links.types';
 import { AdminProcedureGeneratorService } from '../admin-procedure/admin-procedure-generator.service';
 
-/** A 'running' run older than this (e.g. process restarted mid-run) is reported as 'failed' on read. */
+/**
+ * A 'running' run whose HEARTBEAT (last completed category — falls back to startedAt) is older
+ * than this is reported as 'failed' on read (e.g. process restarted mid-run). Per-category, not
+ * per-run: a healthy 11-category run legitimately exceeds any total-duration budget.
+ */
 const STALE_RUN_MS = 10 * 60 * 1000;
 
 /** Pause between categories so a run doesn't trip SearXNG/Google or the LLM rate-limit (which would
@@ -33,28 +37,43 @@ export class GenerationOrchestratorService {
   private readonly logger = new Logger(GenerationOrchestratorService.name);
 
   constructor(
-    @InjectRepository(GenerationRun) private readonly runs: Repository<GenerationRun>,
-    @InjectRepository(GovLink) private readonly govLinkRepo: Repository<GovLink>,
+    @InjectRepository(GenerationRun)
+    private readonly runs: Repository<GenerationRun>,
+    @InjectRepository(GovLink)
+    private readonly govLinkRepo: Repository<GovLink>,
     private readonly govLinks: GovLinksService,
     private readonly generator: AdminProcedureGeneratorService,
   ) {}
 
-  /** Create the run row: status 'running', all categories pre-filled with result:null (⏳). */
+  /**
+   * Create the run row: status 'running', all categories pre-filled with result:null (⏳).
+   * Refuses to start when a run is ALREADY running for this country (double-click guard) —
+   * findLatest applies stale detection first, so a dead run never blocks forever.
+   */
   async createRun(countryCode: string): Promise<GenerationRun> {
     const cc = countryCode.toUpperCase();
-    const results: GenerationRunResultItem[] = CANONICAL_CATEGORIES.map((category) => ({
-      category,
-      result: null,
-      url: null,
-      confidence: null,
-      message: null,
-    }));
+    const latest = await this.findLatest(cc);
+    if (latest?.status === 'running') {
+      throw new ConflictException(
+        `Une génération est déjà en cours pour ${cc} (run #${latest.id}) — attendez la fin.`,
+      );
+    }
+    const results: GenerationRunResultItem[] = CANONICAL_CATEGORIES.map(
+      (category) => ({
+        category,
+        result: null,
+        url: null,
+        confidence: null,
+        message: null,
+      }),
+    );
     return this.runs.save(
       this.runs.create({
         countryCode: cc,
         status: 'running',
         total: CANONICAL_CATEGORIES.length,
         results,
+        lastHeartbeatAt: new Date(),
       }),
     );
   }
@@ -69,13 +88,16 @@ export class GenerationOrchestratorService {
       for (let i = 0; i < CANONICAL_CATEGORIES.length; i++) {
         await this.processCategory(runId, cc, CANONICAL_CATEGORIES[i]);
         // Throttle between categories to avoid rate-limiting (which would falsely downgrade links).
-        if (i < CANONICAL_CATEGORIES.length - 1) await this.delay(INTER_CATEGORY_DELAY_MS);
+        if (i < CANONICAL_CATEGORIES.length - 1)
+          await this.delay(INTER_CATEGORY_DELAY_MS);
       }
       // Auto-publish: generateFromGovLinks reads only status:'active' gov_links → only `verified` ones.
       await this.generator.generateFromGovLinks(cc);
       await this.closeRun(runId, 'done');
     } catch (e) {
-      this.logger.error(`Generation run ${runId} (${cc}) failed: ${(e as Error)?.message}`);
+      this.logger.error(
+        `Generation run ${runId} (${cc}) failed: ${(e as Error)?.message}`,
+      );
       await this.closeRun(runId, 'failed');
     }
   }
@@ -97,14 +119,20 @@ export class GenerationOrchestratorService {
       const verdict = this.verify(cc, category, gen);
       // Status reflects the CURRENT verdict — re-verified links re-publish themselves (no one-way downgrade).
       if (gen.url) {
-        const finalStatus = verdict.result === 'verified' ? 'active' : 'needs_review';
-        await this.govLinkRepo.update({ countryCode: cc, category }, { status: finalStatus });
+        // HUMAN GATE: even a machine-verified link is NOT published — an admin must approve
+        // it (status 'active') from the Liens officiels tab before it reaches users.
+        const finalStatus =
+          verdict.result === 'verified' ? 'pending_review' : 'needs_review';
+        await this.govLinkRepo.update(
+          { countryCode: cc, category },
+          { status: finalStatus },
+        );
       }
       item = {
         category,
         result: verdict.result,
         url: gen.url,
-        confidence: gen.url ? gen.confidence ?? 0 : null,
+        confidence: gen.url ? (gen.confidence ?? 0) : null,
         message: verdict.message,
       };
     } catch (e) {
@@ -123,9 +151,21 @@ export class GenerationOrchestratorService {
   /**
    * Re-run a single (country, category) cell within an existing run, then re-sync publication
    * so that the checklist immediately reflects the new verdict.
+   * Refused while the run is still 'running': the background loop and the rerun would both
+   * rewrite the same results column and one of them would silently lose its result.
    */
-  async rerunCategory(runId: number, countryCode: string, category: string): Promise<GenerationRun | null> {
+  async rerunCategory(
+    runId: number,
+    countryCode: string,
+    category: string,
+  ): Promise<GenerationRun | null> {
     const cc = countryCode.toUpperCase();
+    const run = await this.findById(runId);
+    if (run?.status === 'running') {
+      throw new ConflictException(
+        `Le run #${runId} est encore en cours — attendez la fin avant de relancer une catégorie.`,
+      );
+    }
     await this.processCategory(runId, cc, category);
     // Re-sync: generateFromGovLinks reads active gov_links → checklist reflects new verdict.
     await this.generator.generateFromGovLinks(cc);
@@ -139,20 +179,29 @@ export class GenerationOrchestratorService {
     gen: GovLinkResult,
   ): { result: GenerationCategoryResult; message: string } {
     // GovLinksService already returns url=null (needs_review) when nothing verified → 'failed' for the run.
-    if (!gen.url) return { result: 'failed', message: 'Aucun lien officiel vérifié trouvé.' };
+    if (!gen.url)
+      return {
+        result: 'failed',
+        message: 'Aucun lien officiel vérifié trouvé.',
+      };
 
     const reasons: string[] = [];
     const relevance = this.relevanceGate(countryCode, category, gen);
     if (!relevance.ok) reasons.push(relevance.reason ?? 'page hors-cible');
     const grounding = this.groundingCheck(gen);
-    if (grounding.ratio < 0.5) reasons.push(`ancrage faible (${Math.round(grounding.ratio * 100)}%)`);
+    if (grounding.ratio < 0.5)
+      reasons.push(`ancrage faible (${Math.round(grounding.ratio * 100)}%)`);
     const linter = this.businessLinter(category, gen);
     if (linter.flags.length) reasons.push(...linter.flags);
     if ((gen.confidence ?? 0) < 0.5) reasons.push('confiance faible');
     if (!gen.actions?.length) reasons.push('aucune action extraite');
 
-    if (reasons.length) return { result: 'needs_review', message: reasons.join(' · ') };
-    return { result: 'verified', message: 'Vérifié ✓' };
+    if (reasons.length)
+      return { result: 'needs_review', message: reasons.join(' · ') };
+    return {
+      result: 'verified',
+      message: 'Vérifié machine ✓ — en attente de validation humaine',
+    };
   }
 
   // ── Verification HOOKS — MINIMAL placeholders. To be filled by their dedicated prompts WITHOUT
@@ -162,7 +211,12 @@ export class GenerationOrchestratorService {
     _countryCode: string,
     _category: string,
     _gen: GovLinkResult,
-  ): { ok: boolean; direction: string | null; audience: string | null; reason: string | null } {
+  ): {
+    ok: boolean;
+    direction: string | null;
+    audience: string | null;
+    reason: string | null;
+  } {
     return { ok: true, direction: null, audience: null, reason: null };
   }
 
@@ -173,26 +227,51 @@ export class GenerationOrchestratorService {
   }
 
   /** TODO(prompt: business-linter): full domain rules. Minimal: the AME rule. */
-  private businessLinter(category: string, gen: GovLinkResult): { flags: string[] } {
+  private businessLinter(
+    category: string,
+    gen: GovLinkResult,
+  ): { flags: string[] } {
     const flags: string[] = [];
-    const text = [...(gen.summary ?? []), ...(gen.actions ?? [])].join(' ').toLowerCase();
+    const text = [...(gen.summary ?? []), ...(gen.actions ?? [])]
+      .join(' ')
+      .toLowerCase();
     if (category === 'sante' && /\bame\b|aide médicale d['’]état/.test(text)) {
-      flags.push("mention de l'AME (réservée aux sans-papiers) — un expatrié avec visa relève de la PUMa");
+      flags.push(
+        "mention de l'AME (réservée aux sans-papiers) — un expatrié avec visa relève de la PUMa",
+      );
     }
     return { flags };
   }
 
   // ── Run row helpers ─────────────────────────────────────────────────────────────────
-  /** Replace the matching category's item (reload-modify-save; runs are sequential → no race). */
-  private async updateResult(runId: number, item: GenerationRunResultItem): Promise<void> {
-    const run = await this.runs.findOne({ where: { id: runId } });
-    if (!run) return;
-    const results = (run.results ?? []).map((r) => (r.category === item.category ? item : r));
-    if (!results.some((r) => r.category === item.category)) results.push(item);
-    await this.runs.update({ id: runId }, { results });
+  /**
+   * Replace the matching category's item ATOMICALLY (single SQL statement, no read-modify-write
+   * window) and bump the heartbeat. Every run row is pre-filled with all categories at creation,
+   * so a replace-in-place is always sufficient.
+   */
+  private async updateResult(
+    runId: number,
+    item: GenerationRunResultItem,
+  ): Promise<void> {
+    await this.runs.query(
+      `UPDATE "generation_run"
+         SET "results" = (
+           SELECT COALESCE(
+             jsonb_agg(CASE WHEN elem->>'category' = $2 THEN $3::jsonb ELSE elem END),
+             '[]'::jsonb
+           )
+           FROM jsonb_array_elements("results") AS elem
+         ),
+         "last_heartbeat_at" = now()
+       WHERE "id_generation_run" = $1`,
+      [runId, item.category, JSON.stringify(item)],
+    );
   }
 
-  private async closeRun(runId: number, status: GenerationRunStatus): Promise<void> {
+  private async closeRun(
+    runId: number,
+    status: GenerationRunStatus,
+  ): Promise<void> {
     await this.runs.update({ id: runId }, { status, finishedAt: new Date() });
   }
 
@@ -214,11 +293,23 @@ export class GenerationOrchestratorService {
     );
   }
 
-  private async markStaleIfNeeded(run: GenerationRun | null): Promise<GenerationRun | null> {
-    if (run && run.status === 'running' && Date.now() - new Date(run.startedAt).getTime() > STALE_RUN_MS) {
+  private async markStaleIfNeeded(
+    run: GenerationRun | null,
+  ): Promise<GenerationRun | null> {
+    // Staleness = no category completed for STALE_RUN_MS (heartbeat), NOT total run duration.
+    const lastAlive = run?.lastHeartbeatAt ?? run?.startedAt;
+    if (
+      run &&
+      run.status === 'running' &&
+      lastAlive &&
+      Date.now() - new Date(lastAlive).getTime() > STALE_RUN_MS
+    ) {
       run.status = 'failed';
       run.finishedAt = new Date();
-      await this.runs.update({ id: run.id }, { status: 'failed', finishedAt: run.finishedAt });
+      await this.runs.update(
+        { id: run.id },
+        { status: 'failed', finishedAt: run.finishedAt },
+      );
     }
     return run;
   }

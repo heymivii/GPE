@@ -21,13 +21,21 @@ export class SearchHintService {
   }
 
   async findOne(countryCode: string, category: string): Promise<SearchHint> {
-    const hint = await this.repo.findOne({
-      where: { countryCode: countryCode.toUpperCase(), category },
-    });
+    const hint = await this.findOneOrNull(countryCode, category);
     if (!hint) {
       throw new NotFoundException(`Fiche de recherche ${countryCode}/${category} introuvable`);
     }
     return hint;
+  }
+
+  /**
+   * Non-throwing read used by the gov-links engine: returns the fiche or null.
+   * Generation must NEVER fail just because no address-book entry exists (fallback is mandatory).
+   */
+  async findOneOrNull(countryCode: string, category: string): Promise<SearchHint | null> {
+    return this.repo.findOne({
+      where: { countryCode: countryCode.toUpperCase(), category },
+    });
   }
 
   async create(dto: CreateSearchHintDto): Promise<SearchHint> {

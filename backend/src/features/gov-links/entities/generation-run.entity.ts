@@ -42,8 +42,16 @@ export class GenerationRun {
   @Column({ name: 'results', type: 'jsonb', default: () => "'[]'" })
   results: GenerationRunResultItem[];
 
-  @Column({ name: 'started_at', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({
+    name: 'started_at',
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
   startedAt: Date;
+
+  /** Bumped after each category completes; staleness detection is based on THIS, not startedAt. */
+  @Column({ name: 'last_heartbeat_at', type: 'timestamp', nullable: true })
+  lastHeartbeatAt?: Date | null;
 
   @Column({ name: 'finished_at', type: 'timestamp', nullable: true })
   finishedAt?: Date;

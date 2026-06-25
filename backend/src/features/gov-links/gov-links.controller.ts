@@ -1,11 +1,23 @@
-import { BadRequestException, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  BadRequestException,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  ServiceUnavailableException,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { GovLinksService } from './gov-links.service';
 import { GenerationOrchestratorService } from './generation-orchestrator.service';
+import { AdminProcedureGeneratorService } from '../admin-procedure/admin-procedure-generator.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { CANONICAL_CATEGORIES, SUPPORTED_COUNTRIES } from './gov-links.types';
+import { listSupportedCountries } from './supported-countries';
 
 @ApiTags('Gov Links')
 @Controller('gov-links')
@@ -13,6 +25,7 @@ export class GovLinksController {
   constructor(
     private readonly service: GovLinksService,
     private readonly orchestrator: GenerationOrchestratorService,
+    private readonly procedureGenerator: AdminProcedureGeneratorService,
   ) {}
 
   @Get('health')
@@ -20,6 +33,13 @@ export class GovLinksController {
   @Roles('admin')
   health() {
     return this.service.checkHealth();
+  }
+
+  /** The countries this engine can process — the admin UI derives its buttons from HERE. */
+  @Get('supported-countries')
+  @UseGuards(JwtAuthGuard)
+  supportedCountries() {
+    return listSupportedCountries();
   }
 
   @Get()
@@ -32,10 +52,43 @@ export class GovLinksController {
     return this.service.list({ countryCode: country, category, status });
   }
 
+  /** HUMAN approval: publish a machine-verified link → checklist re-syncs immediately. */
+  @Patch(':id/approve')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  async approveLink(@Param('id') id: string) {
+    const link = await this.service.reviewLink(+id, true);
+    // Publication sync: the checklist only reads 'active' links.
+    await this.procedureGenerator.generateFromGovLinks(link.countryCode);
+    return link;
+  }
+
+  /** HUMAN rejection: the link stays hidden (needs_review) — regenerate or pin a URL. */
+  @Patch(':id/reject')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  async rejectLink(@Param('id') id: string) {
+    return this.service.reviewLink(+id, false);
+  }
+
+  /** Fail FAST with a clear message when the search engine is down — a run without search
+   *  would only produce 11 empty "needs_review" cells with no explanation. */
+  private async assertSearchUp(): Promise<void> {
+    const h = await this.service.checkHealth();
+    if (!h.search.ok) {
+      throw new ServiceUnavailableException(
+        `Moteur de recherche (${h.search.provider}) injoignable — démarrez SearXNG puis réessayez.`,
+      );
+    }
+  }
+
   @Post('generate')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
-  generate(@Query('country') country: string, @Query('category') category: string) {
+  async generate(
+    @Query('country') country: string,
+    @Query('category') category: string,
+  ) {
     const cc = (country ?? '').toUpperCase();
     if (!(SUPPORTED_COUNTRIES as readonly string[]).includes(cc)) {
       throw new BadRequestException(`Unsupported country: ${country ?? ''}`);
@@ -43,6 +96,7 @@ export class GovLinksController {
     if (!(CANONICAL_CATEGORIES as readonly string[]).includes(category)) {
       throw new BadRequestException(`Unknown category: ${category ?? ''}`);
     }
+    await this.assertSearchUp();
     return this.service.generate(cc, category);
   }
 
@@ -58,6 +112,7 @@ export class GovLinksController {
     if (!(SUPPORTED_COUNTRIES as readonly string[]).includes(cc)) {
       throw new BadRequestException(`Unsupported country: ${country ?? ''}`);
     }
+    await this.assertSearchUp();
     const run = await this.orchestrator.createRun(cc);
     // Fire-and-forget — do NOT await; caller polls /runs/:id
     void this.orchestrator.runForCountry(run.id, cc);
@@ -87,7 +142,10 @@ export class GovLinksController {
   @Post('runs/:id/rerun')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
-  async rerunCategory(@Param('id') id: string, @Query('category') category: string) {
+  async rerunCategory(
+    @Param('id') id: string,
+    @Query('category') category: string,
+  ) {
     const run = await this.orchestrator.findById(+id);
     if (!run) {
       throw new BadRequestException(`Run not found: ${id}`);

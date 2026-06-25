@@ -1,7 +1,11 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { GovLinksController } from './gov-links.controller';
-import { GovLinksService, SEARCH_PROVIDER, LLM_RANKER } from './gov-links.service';
+import {
+  GovLinksService,
+  SEARCH_PROVIDER,
+  LLM_RANKER,
+} from './gov-links.service';
 import { GovLink } from './entities/gov-link.entity';
 import { GenerationRun } from './entities/generation-run.entity';
 import { GenerationOrchestratorService } from './generation-orchestrator.service';
@@ -10,9 +14,14 @@ import { LocalPageReader, JinaPageReader } from './page-reader';
 import { SearxngSearchProvider, TavilySearchProvider } from './search-provider';
 import { OllamaRanker } from './llm-ranker';
 import { AdminProcedureModule } from '../admin-procedure/admin-procedure.module';
+import { SearchHintModule } from '../search-hint/search-hint.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([GovLink, GenerationRun]), AdminProcedureModule],
+  imports: [
+    TypeOrmModule.forFeature([GovLink, GenerationRun]),
+    AdminProcedureModule,
+    SearchHintModule,
+  ],
   controllers: [GovLinksController],
   providers: [
     GovLinksService,
@@ -21,7 +30,12 @@ import { AdminProcedureModule } from '../admin-procedure/admin-procedure.module'
       // Clean-content reader for relevance + LLM input. Free local default; PAGE_READER=jina uses r.jina.ai (free, keyless).
       provide: LinkVerifier,
       useFactory: () =>
-        new LinkVerifier(undefined, process.env.PAGE_READER === 'jina' ? new JinaPageReader() : new LocalPageReader()),
+        new LinkVerifier(
+          undefined,
+          process.env.PAGE_READER === 'jina'
+            ? new JinaPageReader()
+            : new LocalPageReader(),
+        ),
     },
     // Free SearXNG by default; set SEARCH_PROVIDER=tavily (+ TAVILY_API_KEY) in prod.
     {

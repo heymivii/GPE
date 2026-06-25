@@ -1,4 +1,4 @@
-import { buildQuery, LANG_BY_COUNTRY } from './query-builder';
+import { buildQuery, buildQueries, LANG_BY_COUNTRY } from './query-builder';
 
 describe('LANG_BY_COUNTRY', () => {
   it('maps FR to french', () => {
@@ -34,7 +34,9 @@ describe('buildQuery', () => {
     const { query, keywords } = buildQuery('France', 'sante', 'FR');
     expect(query).toContain('assurance maladie');
     expect(query).toContain('sécurité sociale');
-    expect(keywords.some((k) => k.includes('maladie') || k.includes('sociale'))).toBe(true);
+    expect(
+      keywords.some((k) => k.includes('maladie') || k.includes('sociale')),
+    ).toBe(true);
   });
 
   it('builds a French demarches query with titre de séjour for CH', () => {
@@ -170,5 +172,107 @@ describe('buildQuery', () => {
     const { query, keywords } = buildQuery('Japan', 'unknown-cat');
     expect(query.toLowerCase()).toContain('japan');
     expect(Array.isArray(keywords)).toBe(true);
+  });
+});
+
+describe('buildQueries (hint-driven fan-out)', () => {
+  const frVisaHint = {
+    officialDomains: ['france-visas.gouv.fr'],
+    keywords: 'visa long séjour VLS-TS demande',
+    queryLang: 'fr',
+    excludeTerms: ['expatriation des français', 'quitter la france'],
+  };
+
+  it('FR/visa: one site: query per domain + an open "site officiel" query, with -excludeTerms', () => {
+    const { queries, keywords, excludeTerms } = buildQueries(frVisaHint, {
+      countryName: 'France',
+      category: 'visa',
+      countryCode: 'FR',
+    });
+    expect(queries).toHaveLength(2); // 1 official domain + 1 open fallback
+    expect(queries[0]).toContain('site:france-visas.gouv.fr');
+    expect(queries[0]).toContain('visa long séjour VLS-TS demande');
+    expect(queries[1]).toContain('site officiel'); // open query, FR qualifier
+    for (const q of queries) {
+      expect(q).toContain('-"expatriation des français"');
+      expect(q).toContain('-"quitter la france"');
+    }
+    expect(excludeTerms).toEqual(frVisaHint.excludeTerms);
+    expect(keywords).toContain('visa');
+    expect(keywords).toContain('VLS-TS');
+    expect(keywords.every((k) => k.length > 2)).toBe(true);
+  });
+
+  it('quotes multi-word exclude terms and leaves single words bare', () => {
+    const { queries } = buildQueries(
+      {
+        officialDomains: ['x.gov'],
+        keywords: 'foo',
+        queryLang: 'en',
+        excludeTerms: ['statistics', 'leaving the country'],
+      },
+      { countryName: 'X', category: 'visa', countryCode: 'US' },
+    );
+    expect(queries[0]).toContain('-statistics');
+    expect(queries[0]).toContain('-"leaving the country"');
+    expect(queries[queries.length - 1]).toContain('official government site');
+  });
+
+  it('JP hint: site: query in the hint keywords + the ja "公式サイト" open qualifier', () => {
+    const { queries, keywords } = buildQueries(
+      {
+        officialDomains: ['mofa.go.jp'],
+        keywords: 'ビザ 在留資格 申請',
+        queryLang: 'ja',
+        excludeTerms: [],
+      },
+      { countryName: 'Japan', category: 'visa', countryCode: 'JP' },
+    );
+    expect(queries[0]).toContain('site:mofa.go.jp');
+    expect(queries[0]).toContain('ビザ 在留資格 申請');
+    expect(queries[queries.length - 1]).toContain('公式サイト');
+    // CJK-aware relevance tokens: 2-char Japanese words must NOT be dropped by the length filter.
+    expect(keywords).toEqual(['ビザ', '在留資格', '申請']);
+  });
+
+  it('multiple official domains → one site: query each + the open query', () => {
+    const { queries } = buildQueries(
+      {
+        officialDomains: ['a.gouv.fr', 'b.gouv.fr'],
+        keywords: 'k',
+        queryLang: 'fr',
+        excludeTerms: [],
+      },
+      { countryName: 'France', category: 'demarches', countryCode: 'FR' },
+    );
+    expect(queries).toHaveLength(3); // 2 domains + 1 open
+    expect(queries[0]).toContain('site:a.gouv.fr');
+    expect(queries[1]).toContain('site:b.gouv.fr');
+  });
+
+  it('no hint → falls back to the generic single query (buildQuery), unchanged', () => {
+    const { queries, keywords } = buildQueries(null, {
+      countryName: 'France',
+      category: 'visa',
+      countryCode: 'FR',
+    });
+    const generic = buildQuery('France', 'visa', 'FR');
+    expect(queries).toHaveLength(1);
+    expect(queries[0]).toBe(generic.query);
+    expect(keywords).toEqual(generic.keywords);
+  });
+
+  it('empty-keywords hint → also falls back to generic', () => {
+    const { queries } = buildQueries(
+      {
+        officialDomains: ['x.gov'],
+        keywords: '   ',
+        queryLang: 'en',
+        excludeTerms: [],
+      },
+      { countryName: 'Japan', category: 'visa', countryCode: 'JP' },
+    );
+    expect(queries).toHaveLength(1);
+    expect(queries[0]).toBe(buildQuery('Japan', 'visa', 'JP').query);
   });
 });
