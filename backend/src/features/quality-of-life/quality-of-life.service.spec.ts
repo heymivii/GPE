@@ -20,7 +20,7 @@ describe('QualityOfLifeService', () => {
     jest.clearAllMocks();
     jest.spyOn(console, 'error').mockImplementation(() => undefined);
     repo = makeRepo();
-    service = new QualityOfLifeService(repo as never);
+    service = new QualityOfLifeService(repo as never, {} as never, {} as never); // country path only
   });
 
   it('rejects an unsupported country (no DB hit, no fetch)', async () => {

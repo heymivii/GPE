@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { CityService } from './city.service';
 import { City } from './entities/city.entity';
+import { ReviewService } from '../review/review.service';
 
 const mockRepo = () => ({
   find: jest.fn(),
@@ -9,20 +10,38 @@ const mockRepo = () => ({
   create: jest.fn(),
   save: jest.fn(),
   remove: jest.fn(),
+  manager: {
+    transaction: jest.fn(),
+  },
+});
+
+const mockReviewService = () => ({
+  notifyAdminsOfPending: jest.fn(),
+  notifyAuthorOfDecision: jest.fn(),
+  assertNotSelfReview: jest.fn(),
 });
 
 describe('CityService', () => {
   let service: CityService;
   let repo: ReturnType<typeof mockRepo>;
+  let review: ReturnType<typeof mockReviewService>;
 
   beforeEach(async () => {
     repo = mockRepo();
+    review = mockReviewService();
+    repo.manager.transaction.mockImplementation(async (handler: any) =>
+      handler({ query: jest.fn() }),
+    );
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CityService,
         {
           provide: getRepositoryToken(City),
           useValue: repo,
+        },
+        {
+          provide: ReviewService,
+          useValue: review,
         },
       ],
     }).compile();
@@ -80,6 +99,49 @@ describe('CityService', () => {
       await service.findAll('active');
       expect(repo.find).toHaveBeenCalledWith(
         expect.objectContaining({ where: { status: 'active' } }),
+      );
+    });
+  });
+
+  describe('remove()', () => {
+    it('should delete dependent city rows before removing the city itself', async () => {
+      const query = jest.fn();
+      repo.manager.transaction.mockImplementation(async (handler: any) =>
+        handler({ query }),
+      );
+
+      await service.remove(42);
+
+      expect(repo.manager.transaction).toHaveBeenCalled();
+      expect(query).toHaveBeenNthCalledWith(
+        1,
+        'DELETE FROM "cost_of_living_cache" WHERE "city_id" = $1',
+        [42],
+      );
+      expect(query).toHaveBeenNthCalledWith(
+        2,
+        'DELETE FROM "cost_of_living" WHERE "city_id" = $1',
+        [42],
+      );
+      expect(query).toHaveBeenNthCalledWith(
+        3,
+        'DELETE FROM "job_offer" WHERE "city_id" = $1',
+        [42],
+      );
+      expect(query).toHaveBeenNthCalledWith(
+        4,
+        'DELETE FROM "city_comparison" WHERE "city_id" = $1',
+        [42],
+      );
+      expect(query).toHaveBeenNthCalledWith(
+        5,
+        'DELETE FROM "expatriation_project" WHERE "destination_city_id" = $1',
+        [42],
+      );
+      expect(query).toHaveBeenNthCalledWith(
+        6,
+        'DELETE FROM "city" WHERE "id_city" = $1',
+        [42],
       );
     });
   });

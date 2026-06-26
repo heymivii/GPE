@@ -6,6 +6,8 @@ import { CostOfLivingCleanerService } from './cost-of-living-cleaner.service';
 import { CostOfLivingCache } from './entities/cost-of-living-cache.entity';
 import { City } from '../city/entities/city.entity';
 import { Country } from '../country/entities/country.entity';
+import { QualityOfLifeService } from '../quality-of-life/quality-of-life.service';
+import { PropertyInvestmentService } from '../property-investment/property-investment.service';
 import { CleanedCostOfLivingData } from './types/cost-of-living.types';
 import {
   fetchNumbeoHtml,
@@ -63,6 +65,9 @@ export class CostOfLivingService {
     private readonly cityRepository: Repository<City>,
     @InjectRepository(Country)
     private readonly countryRepository: Repository<Country>,
+    // Optional: auto-chained city indices (QoL + property) after a cost-of-living fetch.
+    private readonly qualityOfLife?: QualityOfLifeService,
+    private readonly propertyInvestment?: PropertyInvestmentService,
   ) {}
 
   private memKey(city: string, country: string): string {
@@ -265,7 +270,10 @@ export class CostOfLivingService {
     );
   }
 
-  private createEmptyCostOfLiving(cityName: string, countryName: string): CleanedCostOfLivingData {
+  private createEmptyCostOfLiving(
+    cityName: string,
+    countryName: string,
+  ): CleanedCostOfLivingData {
     return {
       city: {
         id: 0,
@@ -280,18 +288,37 @@ export class CostOfLivingService {
       categories: {
         housing: {
           rent: {
-            oneBedroom: { cityCenter: { min: 0, avg: 0, max: 0, currency: 'EUR' }, outsideCenter: { min: 0, avg: 0, max: 0, currency: 'EUR' } },
-            threeBedroom: { cityCenter: { min: 0, avg: 0, max: 0, currency: 'EUR' }, outsideCenter: { min: 0, avg: 0, max: 0, currency: 'EUR' } },
+            oneBedroom: {
+              cityCenter: { min: 0, avg: 0, max: 0, currency: 'EUR' },
+              outsideCenter: { min: 0, avg: 0, max: 0, currency: 'EUR' },
+            },
+            threeBedroom: {
+              cityCenter: { min: 0, avg: 0, max: 0, currency: 'EUR' },
+              outsideCenter: { min: 0, avg: 0, max: 0, currency: 'EUR' },
+            },
           },
           buy: {
-            pricePerSqm: { cityCenter: { min: 0, avg: 0, max: 0, currency: 'EUR' }, outsideCenter: { min: 0, avg: 0, max: 0, currency: 'EUR' } },
+            pricePerSqm: {
+              cityCenter: { min: 0, avg: 0, max: 0, currency: 'EUR' },
+              outsideCenter: { min: 0, avg: 0, max: 0, currency: 'EUR' },
+            },
           },
         },
         food: { markets: {} as any },
         transportation: {
-          publicTransport: { oneWayTicket: { min: 0, avg: 0, max: 0, currency: 'EUR' }, monthlyPass: { min: 0, avg: 0, max: 0, currency: 'EUR' } },
-          taxi: { start: { min: 0, avg: 0, max: 0, currency: 'EUR' }, per1km: { min: 0, avg: 0, max: 0, currency: 'EUR' }, waitingHour: { min: 0, avg: 0, max: 0, currency: 'EUR' } },
-          personal: { gasoline1L: { min: 0, avg: 0, max: 0, currency: 'EUR' }, newCar: { min: 0, avg: 0, max: 0, currency: 'EUR' } },
+          publicTransport: {
+            oneWayTicket: { min: 0, avg: 0, max: 0, currency: 'EUR' },
+            monthlyPass: { min: 0, avg: 0, max: 0, currency: 'EUR' },
+          },
+          taxi: {
+            start: { min: 0, avg: 0, max: 0, currency: 'EUR' },
+            per1km: { min: 0, avg: 0, max: 0, currency: 'EUR' },
+            waitingHour: { min: 0, avg: 0, max: 0, currency: 'EUR' },
+          },
+          personal: {
+            gasoline1L: { min: 0, avg: 0, max: 0, currency: 'EUR' },
+            newCar: { min: 0, avg: 0, max: 0, currency: 'EUR' },
+          },
         },
         utilities: {
           basic85m2: { min: 0, avg: 0, max: 0, currency: 'EUR' },
@@ -307,10 +334,25 @@ export class CostOfLivingService {
           domesticBeer: { min: 0, avg: 0, max: 0, currency: 'EUR' },
           importedBeer: { min: 0, avg: 0, max: 0, currency: 'EUR' },
         },
-        clothing: { jeans: { min: 0, avg: 0, max: 0, currency: 'EUR' }, summerDress: { min: 0, avg: 0, max: 0, currency: 'EUR' }, runningShoes: { min: 0, avg: 0, max: 0, currency: 'EUR' }, leatherShoes: { min: 0, avg: 0, max: 0, currency: 'EUR' } },
-        childcare: { preschool: { min: 0, avg: 0, max: 0, currency: 'EUR' }, primarySchool: { min: 0, avg: 0, max: 0, currency: 'EUR' } },
-        sports: { cinema: { min: 0, avg: 0, max: 0, currency: 'EUR' }, gym: { min: 0, avg: 0, max: 0, currency: 'EUR' }, tennis: { min: 0, avg: 0, max: 0, currency: 'EUR' } },
-        salary: { averageMonthly: { min: 0, avg: 0, max: 0, currency: 'EUR' }, mortgageRate: { min: 0, avg: 0, max: 0 } },
+        clothing: {
+          jeans: { min: 0, avg: 0, max: 0, currency: 'EUR' },
+          summerDress: { min: 0, avg: 0, max: 0, currency: 'EUR' },
+          runningShoes: { min: 0, avg: 0, max: 0, currency: 'EUR' },
+          leatherShoes: { min: 0, avg: 0, max: 0, currency: 'EUR' },
+        },
+        childcare: {
+          preschool: { min: 0, avg: 0, max: 0, currency: 'EUR' },
+          primarySchool: { min: 0, avg: 0, max: 0, currency: 'EUR' },
+        },
+        sports: {
+          cinema: { min: 0, avg: 0, max: 0, currency: 'EUR' },
+          gym: { min: 0, avg: 0, max: 0, currency: 'EUR' },
+          tennis: { min: 0, avg: 0, max: 0, currency: 'EUR' },
+        },
+        salary: {
+          averageMonthly: { min: 0, avg: 0, max: 0, currency: 'EUR' },
+          mortgageRate: { min: 0, avg: 0, max: 0 },
+        },
       },
       summary: {
         monthlyBudget: { min: 0, avg: 0, max: 0 },
@@ -383,6 +425,11 @@ export class CostOfLivingService {
     await this.persistCurated(cityId, data);
     this.memCache.delete(this.memKey(cityName, country));
 
+    // AUTO-CHAIN (fire-and-forget): one Numbeo fetch also refreshes the city's quality-of-life
+    // and property indices, reusing the SAME (possibly admin-corrected) slug. Failures are
+    // logged but never break the cost-of-living result.
+    void this.chainCityIndices(cityId, slug, cityName);
+
     this.logger.log(
       `🌐 Admin curated ${cityName}, ${country} (city_id=${cityId}) from Numbeo`,
     );
@@ -397,6 +444,33 @@ export class CostOfLivingService {
       unavailable: data.meta.unavailable ?? [],
       summary: data.summary,
     };
+  }
+
+  /** Fire-and-forget refresh of the city's QoL + property indices (same Numbeo slug). */
+  private async chainCityIndices(
+    cityId: number,
+    slug: string,
+    cityName: string,
+  ): Promise<void> {
+    const results = await Promise.allSettled([
+      this.qualityOfLife?.getByCity(cityId, {
+        refresh: true,
+        slugOverride: slug,
+      }),
+      this.propertyInvestment?.getByCity(cityId, {
+        refresh: true,
+        slugOverride: slug,
+      }),
+    ]);
+    results.forEach((r, i) => {
+      const label = i === 0 ? 'quality-of-life' : 'property-investment';
+      if (r.status === 'rejected') {
+        this.logger.warn(
+          `Auto-chained ${label} fetch failed for ${cityName}: ${(r.reason as Error)?.message}`,
+        );
+      }
+    });
+    this.logger.log(`🔗 Auto-chained city indices refreshed for ${cityName}`);
   }
 
   // Count populated price leaves (avg > 0) across all categories — a quick

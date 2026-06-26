@@ -2,8 +2,9 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { cityApi, type City } from '../../../api/city';
 import { countryApi } from '../../../api/country';
 import { costOfLivingApi } from '../../../api/costOfLiving';
-import { useState, useMemo, useEffect } from 'react';
-import { Plus, Edit2, Globe, RefreshCw, X, Search, Eye, ChevronRight, ArrowLeft, Save, Coins, Building2, Utensils, Car, Loader2, Globe2, ShoppingBag, Shirt, Baby, Activity, Archive, ArchiveRestore } from 'lucide-react';
+import { cityIndicesApi } from '../../../api/cityIndices';
+import { useState, useMemo, useEffect, useRef } from 'react';
+import { Plus, Edit2, Globe, RefreshCw, X, Search, Eye, ChevronRight, ArrowLeft, Save, Coins, Building2, Utensils, Car, Loader2, Globe2, ShoppingBag, Shirt, Baby, Activity, Archive, ArchiveRestore, CheckCircle2, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import Combobox from '../components/Combobox';
@@ -23,6 +24,7 @@ export default function AdminCities() {
   // Filters & Search
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCountryFilter, setSelectedCountryFilter] = useState<string>('all');
+  const [cityListTab, setCityListTab] = useState<'active' | 'trash'>('active');
 
   // Form Fields
   const [name, setName] = useState('');
@@ -39,6 +41,9 @@ export default function AdminCities() {
   // dead page, the real slug is "Ajaccio-France"), which the auto-derived slug can't guess.
   const [colCity, setColCity] = useState<City | null>(null);
   const [colSlug, setColSlug] = useState('');
+  // AUTO-FILL géo : dès qu'un nom de ville est saisi/choisi, les champs vides
+  // (lat/long/population/fuseau/capitale/image) se remplissent seuls (Open-Meteo + Wikipédia).
+  const autofillTimer = useRef<number | null>(null);
 
   const { data: cities = [], isLoading: citiesLoading, refetch, isRefetching } = useQuery({
     queryKey: ['admin-cities-list'],
@@ -54,6 +59,20 @@ export default function AdminCities() {
     queryKey: ['admin-city-cost-of-living', viewingCity?.idCity],
     queryFn: () => costOfLivingApi.getCostOfLiving(viewingCity.name, viewingCity.country?.countryName),
     enabled: !!viewingCity && !!viewingCity.country?.countryName,
+    retry: false,
+  });
+
+  const { data: viewingCityIndices, isLoading: viewingCityIndicesLoading } = useQuery({
+    queryKey: ['admin-city-indices-summary', viewingCity?.idCity],
+    queryFn: async () => {
+      if (!viewingCity) return null;
+      const [qol, prop] = await Promise.all([
+        cityIndicesApi.getQualityOfLife(viewingCity.idCity),
+        cityIndicesApi.getPropertyInvestment(viewingCity.idCity),
+      ]);
+      return { qol, prop };
+    },
+    enabled: !!viewingCity,
     retry: false,
   });
 
@@ -240,6 +259,20 @@ export default function AdminCities() {
       .sort((a: any, b: any) => a.idCity - b.idCity);
   }, [cities, searchQuery, selectedCountryFilter]);
 
+  const visibleCities = useMemo(() => {
+    return filteredCities.filter((city: City) =>
+      cityListTab === 'trash' ? city.status === 'archived' : city.status !== 'archived',
+    );
+  }, [filteredCities, cityListTab]);
+
+  const cityCounts = useMemo(
+    () => ({
+      active: filteredCities.filter((city: City) => city.status !== 'archived').length,
+      trash: filteredCities.filter((city: City) => city.status === 'archived').length,
+    }),
+    [filteredCities],
+  );
+
   // Mutations
   const createMutation = useMutation({
     mutationFn: cityApi.create,
@@ -412,8 +445,160 @@ export default function AdminCities() {
     }
   };
 
+  // Fill ONLY the empty fields (never clobber what the admin typed); silent on failure —
+  // this runs automatically in the background, an error toast per keystroke would be noise.
+  const autofillGeo = async (cityName: string) => {
+    const countryName = countries.find((c) => c.idCountry === countryId)?.countryName;
+    try {
+      const d = await cityApi.autofill(cityName, countryName);
+      setLatitude((v) => v || (d.latitude != null ? String(d.latitude) : ''));
+      setLongitude((v) => v || (d.longitude != null ? String(d.longitude) : ''));
+      setPopulation((v) => v || (d.population != null ? String(d.population) : ''));
+      setTimezone((v) => v || (d.timezone ?? ''));
+      setImageUrl((v) => v || (d.imageUrl ?? ''));
+      setIsCapital((v) => v || d.isCapital);
+      toast.success(`Données géographiques remplies pour ${d.matchedName ?? cityName}`, { id: 'geo-autofill' });
+    } catch {
+      /* automatic background behavior — stay silent */
+    }
+  };
 
-  const isPending = createMutation.isPending || updateMutation.isPending || deleteMutation.isPending;
+  const handleNameChange = (value: string) => {
+    setName(value);
+    if (autofillTimer.current) window.clearTimeout(autofillTimer.current);
+    if (!value.trim() || value.trim().length < 3) return;
+    autofillTimer.current = window.setTimeout(() => void autofillGeo(value.trim()), 900);
+  };
+
+  // ── Numbeo CITY indices modal: view + fetch from Numbeo + MANUAL EDIT ──────
+  // Manual edits are stored with source='manuel'; a Numbeo re-fetch replaces them.
+  const QOL_FIELDS: Array<[string, string]> = [
+    ['qualityOfLife', 'Qualité de vie'],
+    ['purchasingPower', "Pouvoir d'achat"],
+    ['safety', 'Sécurité'],
+    ['healthCare', 'Santé'],
+    ['costOfLiving', 'Coût de la vie'],
+    ['propertyPriceToIncome', 'Prix immo / revenu'],
+    ['trafficCommuteTime', 'Temps de trajet'],
+    ['pollution', 'Pollution'],
+    ['climate', 'Climat'],
+  ];
+  const PROP_FIELDS: Array<[string, string]> = [
+    ['priceToIncomeRatio', 'Prix / revenu'],
+    ['mortgageAsPctIncome', 'Mensualité (% revenu)'],
+    ['loanAffordabilityIndex', 'Accessibilité crédit'],
+    ['priceToRentCityCentre', 'Prix/loyer (centre)'],
+    ['priceToRentOutside', 'Prix/loyer (périph.)'],
+    ['grossRentalYieldCityCentre', 'Rendement centre (%)'],
+    ['grossRentalYieldOutside', 'Rendement périph. (%)'],
+    ['gdpPerCapita', 'PIB/hab ($)'],
+    ['gdpGrowthRate', 'Croissance PIB (%)'],
+    ['populationGrowthRate', 'Croissance pop. (%)'],
+  ];
+  const [idxCity, setIdxCity] = useState<City | null>(null);
+  const [idxQol, setIdxQol] = useState<Record<string, string>>({});
+  const [idxProp, setIdxProp] = useState<Record<string, string>>({});
+  const [idxSources, setIdxSources] = useState<{ qol?: string; prop?: string }>({});
+  const [idxBusy, setIdxBusy] = useState<'load' | 'fetch' | 'save' | null>(null);
+
+  const numToStr = (v: number | null | undefined) => (v == null ? '' : String(v));
+  const fillQol = (d: Record<string, unknown> | null) =>
+    setIdxQol(Object.fromEntries(QOL_FIELDS.map(([k]) => [k, numToStr(d?.[k] as number | null)])));
+  const fillProp = (d: Record<string, unknown> | null) =>
+    setIdxProp(Object.fromEntries(PROP_FIELDS.map(([k]) => [k, numToStr(d?.[k] as number | null)])));
+
+  const openIdxModal = async (city: City) => {
+    setIdxCity(city);
+    setIdxBusy('load');
+    const [qol, prop] = await Promise.allSettled([
+      cityIndicesApi.getQualityOfLife(city.idCity),
+      cityIndicesApi.getPropertyInvestment(city.idCity),
+    ]);
+    fillQol(qol.status === 'fulfilled' ? (qol.value as never) : null);
+    fillProp(prop.status === 'fulfilled' ? (prop.value as never) : null);
+    setIdxSources({
+      qol: qol.status === 'fulfilled' ? qol.value?.source : undefined,
+      prop: prop.status === 'fulfilled' ? prop.value?.source : undefined,
+    });
+    setIdxBusy(null);
+  };
+
+  const fetchIdxFromNumbeo = async () => {
+    if (!idxCity || idxBusy) return;
+    setIdxBusy('fetch');
+    const [qol, prop] = await Promise.allSettled([
+      cityIndicesApi.fetchQualityOfLife(idxCity.idCity),
+      cityIndicesApi.fetchPropertyInvestment(idxCity.idCity),
+    ]);
+    if (qol.status === 'fulfilled') {
+      fillQol(qol.value as never);
+      setIdxSources((s) => ({ ...s, qol: qol.value.source }));
+      toast.success('Indices qualité de vie récupérés (Numbeo)');
+    } else {
+      toast.error((qol.reason as any)?.response?.data?.message || 'Qualité de vie indisponible sur Numbeo');
+    }
+    if (prop.status === 'fulfilled') {
+      fillProp(prop.value as never);
+      setIdxSources((s) => ({ ...s, prop: prop.value.source }));
+      toast.success('Indicateurs immobiliers récupérés (Numbeo)');
+    } else {
+      toast.error((prop.reason as any)?.response?.data?.message || 'Immobilier indisponible sur Numbeo');
+    }
+    setIdxBusy(null);
+  };
+
+  const saveIdx = async () => {
+    if (!idxCity || idxBusy) return;
+    setIdxBusy('save');
+    const toPatch = (fields: Array<[string, string]>, form: Record<string, string>) =>
+      Object.fromEntries(
+        fields.map(([k]) => {
+          const raw = (form[k] ?? '').trim();
+          if (raw === '') return [k, null]; // empty input explicitly clears the value
+          const n = Number(raw.replace(',', '.'));
+          return [k, Number.isNaN(n) ? null : n];
+        }),
+      );
+    try {
+      const [q, p] = await Promise.all([
+        cityIndicesApi.updateQualityOfLife(idxCity.idCity, toPatch(QOL_FIELDS, idxQol)),
+        cityIndicesApi.updatePropertyInvestment(idxCity.idCity, toPatch(PROP_FIELDS, idxProp)),
+      ]);
+      setIdxSources({ qol: q.source, prop: p.source });
+      toast.success(`Indices de ${idxCity.name} enregistrés (source : manuel)`);
+      setIdxCity(null);
+    } catch (e: any) {
+      toast.error(e.response?.data?.message || "Erreur lors de l'enregistrement des indices");
+    }
+    setIdxBusy(null);
+  };
+
+  // Review workflow: approve publishes user-side; reject keeps it hidden. The backend enforces
+  // the 4-eyes rule (the author cannot validate their own addition → clear 403 message).
+  const reviewMutation = useMutation({
+    mutationFn: ({ id, approve }: { id: number; approve: boolean }) =>
+      approve ? cityApi.approve(id) : cityApi.reject(id),
+    onSuccess: (city, { approve }) => {
+      toast.success(
+        approve
+          ? `Ville « ${city.name} » vérifiée et publiée ✓`
+          : `Ville « ${city.name} » rejetée — non publiée`,
+      );
+      queryClient.invalidateQueries({ queryKey: ['admin-cities-list'] });
+      queryClient.invalidateQueries({ queryKey: ['destinations-list'] });
+    },
+    onError: (err: any) => {
+      toast.error(err.response?.data?.message || 'Erreur lors de la vérification.');
+    },
+  });
+
+
+  const isPending =
+    createMutation.isPending ||
+    updateMutation.isPending ||
+    deleteMutation.isPending ||
+    archiveMutation.isPending ||
+    reviewMutation.isPending;
 
   if (viewingCity) {
     return (
@@ -449,6 +634,13 @@ export default function AdminCities() {
               </div>
             </div>
             <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setIdxCity(viewingCity)}
+                className="px-4 py-2.5 border border-violet-200 bg-violet-50 text-violet-700 hover:bg-violet-100 rounded-xl font-semibold text-sm transition-colors shadow-sm"
+              >
+                Éditer les indices
+              </button>
               <button
                 type="button"
                 onClick={() => setViewingCity(null)}
@@ -608,6 +800,55 @@ export default function AdminCities() {
 
           {/* Right Column: Cost of Living details */}
           <div className="lg:col-span-2 space-y-6">
+            <div className="bg-white p-6 rounded-2xl border border-gray-150 shadow-sm space-y-4">
+              <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+                <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                  <Activity className="w-5 h-5 text-violet-600" />
+                  Indices de la ville
+                </h3>
+                <span className="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded-full font-semibold">
+                  Aperçu rapide
+                </span>
+              </div>
+              {viewingCityIndicesLoading ? (
+                <div className="flex items-center gap-2 text-sm text-gray-500 py-4">
+                  <Loader2 className="w-4 h-4 animate-spin text-violet-500" />
+                  Chargement des indices...
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="rounded-xl border border-gray-100 bg-gray-50/70 p-4">
+                    <div className="text-xs font-bold uppercase tracking-wider text-gray-500">Qualité de vie</div>
+                    <div className="mt-2 flex items-end gap-2">
+                      <span className="text-2xl font-bold text-gray-900">
+                        {viewingCityIndices?.qol?.qualityOfLife ?? '—'}
+                      </span>
+                      <span className="text-xs text-gray-500 pb-1">Numbeo</span>
+                    </div>
+                    <div className="mt-3 text-xs text-gray-500 space-y-1">
+                      <div>Sécurité: {viewingCityIndices?.qol?.safety ?? '—'}</div>
+                      <div>Pouvoir d'achat: {viewingCityIndices?.qol?.purchasingPower ?? '—'}</div>
+                      <div>Santé: {viewingCityIndices?.qol?.healthCare ?? '—'}</div>
+                    </div>
+                  </div>
+                  <div className="rounded-xl border border-gray-100 bg-gray-50/70 p-4">
+                    <div className="text-xs font-bold uppercase tracking-wider text-gray-500">Immobilier</div>
+                    <div className="mt-2 flex items-end gap-2">
+                      <span className="text-2xl font-bold text-gray-900">
+                        {viewingCityIndices?.prop?.priceToRentCityCentre ?? '—'}
+                      </span>
+                      <span className="text-xs text-gray-500 pb-1">Prix/loyer centre</span>
+                    </div>
+                    <div className="mt-3 text-xs text-gray-500 space-y-1">
+                      <div>Rendement centre: {viewingCityIndices?.prop?.grossRentalYieldCityCentre ?? '—'}</div>
+                      <div>Prix/revenu: {viewingCityIndices?.prop?.priceToIncomeRatio ?? '—'}</div>
+                      <div>Accessibilité crédit: {viewingCityIndices?.prop?.loanAffordabilityIndex ?? '—'}</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
             {costOfLivingLoading ? (
               <div className="bg-white p-12 rounded-2xl border border-gray-150 shadow-sm flex flex-col items-center justify-center min-h-[400px] space-y-3">
                 <Loader2 className="w-10 h-10 animate-spin text-[#5EA3C0]" />
@@ -1236,9 +1477,34 @@ export default function AdminCities() {
             ))}
           </select>
           <span className="text-xs text-gray-400 ml-2 font-medium">
-            {filteredCities.length} résultat(s)
+            {visibleCities.length} résultat(s)
           </span>
         </div>
+      </div>
+
+      <div className="flex items-center gap-2 bg-white p-1 rounded-2xl border border-gray-100 shadow-sm w-fit">
+        <button
+          type="button"
+          onClick={() => setCityListTab('active')}
+          className={`px-4 py-2 rounded-xl text-sm font-semibold transition-colors ${
+            cityListTab === 'active'
+              ? 'bg-[#5EA3C0] text-white shadow-sm'
+              : 'text-gray-600 hover:bg-gray-50'
+          }`}
+        >
+          Villes actives <span className="ml-1 text-xs opacity-80">({cityCounts.active})</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setCityListTab('trash')}
+          className={`px-4 py-2 rounded-xl text-sm font-semibold transition-colors ${
+            cityListTab === 'trash'
+              ? 'bg-slate-900 text-white shadow-sm'
+              : 'text-gray-600 hover:bg-gray-50'
+          }`}
+        >
+          Corbeille <span className="ml-1 text-xs opacity-80">({cityCounts.trash})</span>
+        </button>
       </div>
 
       {/* Cities Table */}
@@ -1263,14 +1529,16 @@ export default function AdminCities() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 text-sm text-gray-650">
-                {filteredCities.length === 0 ? (
+                {visibleCities.length === 0 ? (
                   <tr>
                     <td colSpan={8} className="py-8 px-6 text-center text-gray-400 italic">
-                      Aucune ville ne correspond aux critères.
+                      {cityListTab === 'trash'
+                        ? 'La corbeille est vide.'
+                        : 'Aucune ville ne correspond aux critères.'}
                     </td>
                   </tr>
                 ) : (
-                  filteredCities.map((city) => (
+                  visibleCities.map((city) => (
                     <tr key={city.idCity} className="hover:bg-gray-50/45 transition-colors">
                       <td className="py-4 px-6 text-center font-semibold text-gray-400">
                         {city.idCity}
@@ -1310,7 +1578,15 @@ export default function AdminCities() {
                         )}
                       </td>
                       <td className="py-4 px-6">
-                        {city.status === 'archived' ? (
+                        {city.status === 'pending_review' ? (
+                          <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wide bg-blue-100 text-blue-800">
+                            À vérifier
+                          </span>
+                        ) : city.status === 'rejected' ? (
+                          <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wide bg-red-100 text-red-700">
+                            Rejeté
+                          </span>
+                        ) : city.status === 'archived' ? (
                           <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wide bg-amber-100 text-amber-800">
                             Archivé
                           </span>
@@ -1318,6 +1594,12 @@ export default function AdminCities() {
                           <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wide bg-emerald-100 text-emerald-800">
                             Actif
                           </span>
+                        )}
+                        {city.createdBy && (
+                          <p className="text-[10px] text-gray-400 mt-1">
+                            Ajouté par {city.createdBy.firstName ?? '?'}
+                            {city.reviewedBy && ` · vérifié par ${city.reviewedBy.firstName ?? '?'}`}
+                          </p>
                         )}
                       </td>
                       <td className="py-4 px-6 text-right">
@@ -1343,6 +1625,18 @@ export default function AdminCities() {
                             )}
                           </button>
                           <button
+                            onClick={() => openIdxModal(city)}
+                            disabled={idxCity !== null}
+                            className="p-1.5 hover:bg-violet-50 text-gray-600 hover:text-violet-600 rounded-lg transition-colors disabled:opacity-50"
+                            title="Indices ville (qualité de vie + immobilier) : consulter, récupérer depuis Numbeo ou éditer"
+                          >
+                            {idxCity?.idCity === city.idCity && idxBusy === 'load' ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <Activity className="w-4 h-4" />
+                            )}
+                          </button>
+                          <button
                             onClick={() => openEditModal(city)}
                             disabled={isPending}
                             className="p-1.5 hover:bg-gray-100 text-gray-650 hover:text-[#5EA3C0] rounded-lg transition-colors"
@@ -1350,24 +1644,62 @@ export default function AdminCities() {
                           >
                             <Edit2 className="w-4 h-4" />
                           </button>
-                          {city.status === 'archived' ? (
-                            <button
-                              onClick={() => handleToggleArchive(city.idCity, true)}
-                              disabled={archiveMutation.isPending}
-                              className="p-1.5 hover:bg-emerald-50 text-gray-650 hover:text-emerald-600 rounded-lg transition-colors"
-                              title="Réactiver"
-                            >
-                              <ArchiveRestore className="w-4 h-4" />
-                            </button>
+                          {city.status === 'pending_review' ? (
+                            <>
+                              <button
+                                onClick={() => reviewMutation.mutate({ id: city.idCity, approve: true })}
+                                disabled={reviewMutation.isPending}
+                                className="p-1.5 hover:bg-emerald-50 text-gray-650 hover:text-emerald-600 rounded-lg transition-colors"
+                                title="Approuver et publier (un autre admin que l'auteur)"
+                              >
+                                <CheckCircle2 className="w-4 h-4" />
+                              </button>
+                            </>
+                          ) : city.status === 'archived' ? (
+                            cityListTab === 'trash' ? (
+                              <>
+                                <button
+                                  onClick={() => handleToggleArchive(city.idCity, true)}
+                                  disabled={archiveMutation.isPending}
+                                  className="p-1.5 hover:bg-emerald-50 text-gray-650 hover:text-emerald-600 rounded-lg transition-colors"
+                                  title="Réactiver"
+                                >
+                                  <ArchiveRestore className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    if (window.confirm(`Supprimer définitivement la ville « ${city.name} » ? Cette action est irréversible.`)) {
+                                      deleteMutation.mutate(city.idCity);
+                                    }
+                                  }}
+                                  disabled={deleteMutation.isPending}
+                                  className="p-1.5 hover:bg-red-50 text-gray-650 hover:text-red-600 rounded-lg transition-colors"
+                                  title="Supprimer définitivement"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </>
+                            ) : (
+                              <button
+                                onClick={() => handleToggleArchive(city.idCity, true)}
+                                disabled={archiveMutation.isPending}
+                                className="p-1.5 hover:bg-emerald-50 text-gray-650 hover:text-emerald-600 rounded-lg transition-colors"
+                                title="Réactiver"
+                              >
+                                <ArchiveRestore className="w-4 h-4" />
+                              </button>
+                            )
                           ) : (
-                            <button
-                              onClick={() => handleToggleArchive(city.idCity, false)}
-                              disabled={archiveMutation.isPending}
-                              className="p-1.5 hover:bg-amber-50 text-gray-650 hover:text-amber-600 rounded-lg transition-colors"
-                              title="Archiver"
-                            >
-                              <Archive className="w-4 h-4" />
-                            </button>
+                            cityListTab === 'trash' ? null : (
+                              <button
+                                onClick={() => handleToggleArchive(city.idCity, false)}
+                                disabled={archiveMutation.isPending}
+                                className="p-1.5 hover:bg-amber-50 text-gray-650 hover:text-amber-600 rounded-lg transition-colors"
+                                title="Archiver"
+                              >
+                                <Archive className="w-4 h-4" />
+                              </button>
+                            )
                           )}
                         </div>
                       </td>
@@ -1403,7 +1735,7 @@ export default function AdminCities() {
                     required
                     options={availableCities}
                     value={name}
-                    onChange={setName}
+                    onChange={handleNameChange}
                     disabled={!countryId}
                     placeholder={
                       countryId
@@ -1614,6 +1946,128 @@ export default function AdminCities() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* City indices modal: view + fetch from Numbeo + manual edit (source 'manuel') */}
+      {idxCity && (
+        <div className="fixed inset-0 bg-black/45 backdrop-blur-sm z-50 flex items-start justify-center p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl max-w-2xl w-full my-8 border border-gray-100 shadow-xl overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
+              <h3 className="font-bold tracking-wide flex items-center gap-2">
+                <Activity className="w-4 h-4 text-violet-300" />
+                Indices ville — {idxCity.name}
+              </h3>
+              <button onClick={() => setIdxCity(null)} className="p-1 hover:bg-slate-800 rounded-lg transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-5">
+              <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-4 py-2.5">
+                Modifie les valeurs à la main (source passera à <strong>manuel</strong>), ou récupère-les depuis
+                Numbeo — <strong>attention</strong> : une récupération Numbeo écrase les éditions manuelles.
+                Champ vide = valeur effacée.
+              </p>
+
+              {idxBusy === 'load' ? (
+                <div className="flex items-center gap-2 text-sm text-gray-500 py-8 justify-center">
+                  <Loader2 className="w-5 h-5 animate-spin text-violet-500" />
+                  Chargement des indices…
+                </div>
+              ) : (
+                <>
+                  {/* Quality of life */}
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500">Qualité de vie</h4>
+                      {idxSources.qol && (
+                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${
+                          idxSources.qol === 'manuel' ? 'bg-violet-100 text-violet-700' : 'bg-gray-100 text-gray-500'
+                        }`}>
+                          source : {idxSources.qol}
+                        </span>
+                      )}
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      {QOL_FIELDS.map(([key, label]) => (
+                        <label key={key} className="flex flex-col gap-1">
+                          <span className="text-[11px] font-semibold text-gray-500">{label}</span>
+                          <input
+                            type="text"
+                            inputMode="decimal"
+                            value={idxQol[key] ?? ''}
+                            onChange={(e) => setIdxQol((f) => ({ ...f, [key]: e.target.value }))}
+                            placeholder="—"
+                            className="px-2.5 py-1.5 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:border-violet-400"
+                          />
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Property investment */}
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500">Investissement immobilier</h4>
+                      {idxSources.prop && (
+                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${
+                          idxSources.prop === 'manuel' ? 'bg-violet-100 text-violet-700' : 'bg-gray-100 text-gray-500'
+                        }`}>
+                          source : {idxSources.prop}
+                        </span>
+                      )}
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      {PROP_FIELDS.map(([key, label]) => (
+                        <label key={key} className="flex flex-col gap-1">
+                          <span className="text-[11px] font-semibold text-gray-500">{label}</span>
+                          <input
+                            type="text"
+                            inputMode="decimal"
+                            value={idxProp[key] ?? ''}
+                            onChange={(e) => setIdxProp((f) => ({ ...f, [key]: e.target.value }))}
+                            placeholder="—"
+                            className="px-2.5 py-1.5 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:border-violet-400"
+                          />
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+
+            <div className="flex items-center justify-between gap-3 px-6 py-4 border-t border-gray-100 flex-wrap">
+              <button
+                type="button"
+                onClick={fetchIdxFromNumbeo}
+                disabled={idxBusy !== null}
+                className="flex items-center gap-2 px-4 py-2 border border-violet-200 bg-violet-50 hover:bg-violet-100 text-violet-700 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
+              >
+                {idxBusy === 'fetch' ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+                Récupérer depuis Numbeo
+              </button>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIdxCity(null)}
+                  className="px-4 py-2 border border-gray-200 text-gray-500 hover:bg-gray-50 rounded-lg text-sm font-semibold transition-colors"
+                >
+                  Annuler
+                </button>
+                <button
+                  type="button"
+                  onClick={saveIdx}
+                  disabled={idxBusy !== null}
+                  className="flex items-center gap-2 px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white rounded-lg text-sm font-semibold transition-colors shadow-sm disabled:opacity-50"
+                >
+                  {idxBusy === 'save' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                  Enregistrer (manuel)
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
