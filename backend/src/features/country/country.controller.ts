@@ -34,13 +34,45 @@ export class CountryController {
   @Roles('admin')
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() createDto: CreateCountryDto, @Request() req) {
-    const country = await this.countryService.create(createDto);
+    const country = await this.countryService.create(createDto, req.user.userId);
     await this.adminLogService.log(
       req.user.userId,
       'CREATE',
       'Country',
       country.idCountry.toString(),
-      `Création du pays "${country.countryName}"`
+      `Création du pays "${country.countryName}" (en attente de vérification)`
+    );
+    return country;
+  }
+
+  /** Approve a pending country → published user-side. Reviewer must NOT be its author (4 eyes). */
+  @Patch(':id/approve')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  async approve(@Param('id') id: string, @Request() req) {
+    const country = await this.countryService.reviewCountry(+id, req.user.userId, true);
+    await this.adminLogService.log(
+      req.user.userId,
+      'APPROVE',
+      'Country',
+      id,
+      `Vérification approuvée : pays "${country.countryName}" publié`
+    );
+    return country;
+  }
+
+  /** Reject a pending country → stays invisible user-side. */
+  @Patch(':id/reject')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  async reject(@Param('id') id: string, @Request() req) {
+    const country = await this.countryService.reviewCountry(+id, req.user.userId, false);
+    await this.adminLogService.log(
+      req.user.userId,
+      'REJECT',
+      'Country',
+      id,
+      `Vérification rejetée : pays "${country.countryName}" non publié`
     );
     return country;
   }

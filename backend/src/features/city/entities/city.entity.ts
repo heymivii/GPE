@@ -5,7 +5,8 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Country } from '../../country/entities/country.entity';
+import { Country, ContentReviewStatus } from '../../country/entities/country.entity';
+import { User } from '../../user/entities/user.entity';
 
 @Entity({ name: 'city' })
 export class City {
@@ -46,7 +47,7 @@ export class City {
   imageUrl: string;
 
   @Column({ name: 'status', type: 'varchar', length: 20, default: 'active' })
-  status: 'active' | 'archived';
+  status: ContentReviewStatus;
 
   @Column({ name: 'country_id' })
   countryId: number;
@@ -54,4 +55,22 @@ export class City {
   @ManyToOne(() => Country, { nullable: false })
   @JoinColumn({ name: 'country_id' })
   country: Country;
+
+  // ── Review trace: who added it, who verified it ──────────────────────────
+  @Column({ name: 'created_by_id', type: 'int', nullable: true })
+  createdById?: number | null;
+
+  @ManyToOne(() => User, { nullable: true })
+  @JoinColumn({ name: 'created_by_id' })
+  createdBy?: User | null;
+
+  @Column({ name: 'reviewed_by_id', type: 'int', nullable: true })
+  reviewedById?: number | null;
+
+  @ManyToOne(() => User, { nullable: true })
+  @JoinColumn({ name: 'reviewed_by_id' })
+  reviewedBy?: User | null;
+
+  @Column({ name: 'reviewed_at', type: 'timestamp', nullable: true })
+  reviewedAt?: Date | null;
 }

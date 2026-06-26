@@ -41,6 +41,8 @@ import {
   Activity,
   Archive,
   ArchiveRestore,
+  CheckCircle2,
+  XCircle,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
@@ -459,6 +461,25 @@ export default function AdminCountries() {
     onError: (err: any) => {
       const msg = err.response?.data?.message || 'Erreur lors de l\'archivage.';
       toast.error(msg);
+    },
+  });
+
+  // Review workflow: approve publishes user-side; reject keeps it hidden. The backend enforces
+  // the 4-eyes rule (the author cannot validate their own addition → clear 403 message).
+  const reviewMutation = useMutation({
+    mutationFn: ({ id, approve }: { id: number; approve: boolean }) =>
+      approve ? countryApi.approve(id) : countryApi.reject(id),
+    onSuccess: (country, { approve }) => {
+      toast.success(
+        approve
+          ? `Pays « ${country.countryName} » vérifié et publié ✓`
+          : `Pays « ${country.countryName} » rejeté — non publié`,
+      );
+      queryClient.invalidateQueries({ queryKey: ['admin-countries-list'] });
+      queryClient.invalidateQueries({ queryKey: ['destinations-list'] });
+    },
+    onError: (err: any) => {
+      toast.error(err.response?.data?.message || 'Erreur lors de la vérification.');
     },
   });
 
@@ -1546,7 +1567,15 @@ export default function AdminCountries() {
                         {country.continent?.name ? t(`comparison.data.continents.${country.continent.name}`, { defaultValue: country.continent.name }) : <span className="text-gray-400 italic">Inconnu</span>}
                       </td>
                       <td className="py-4 px-6">
-                        {country.status === 'archived' ? (
+                        {country.status === 'pending_review' ? (
+                          <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wide bg-blue-100 text-blue-800">
+                            À vérifier
+                          </span>
+                        ) : country.status === 'rejected' ? (
+                          <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wide bg-red-100 text-red-700">
+                            Rejeté
+                          </span>
+                        ) : country.status === 'archived' ? (
                           <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wide bg-amber-100 text-amber-800">
                             Archivé
                           </span>
@@ -1554,6 +1583,12 @@ export default function AdminCountries() {
                           <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wide bg-emerald-100 text-emerald-800">
                             Actif
                           </span>
+                        )}
+                        {country.createdBy && (
+                          <p className="text-[10px] text-gray-400 mt-1">
+                            Ajouté par {country.createdBy.firstName ?? '?'}
+                            {country.reviewedBy && ` · vérifié par ${country.reviewedBy.firstName ?? '?'}`}
+                          </p>
                         )}
                       </td>
                       <td className="py-4 px-6 text-right">
@@ -1574,7 +1609,30 @@ export default function AdminCountries() {
                           >
                             <Edit2 className="w-4 h-4" />
                           </button>
-                          {country.status === 'archived' ? (
+                          {country.status === 'pending_review' ? (
+                            <>
+                              <button
+                                onClick={() => reviewMutation.mutate({ id: country.idCountry, approve: true })}
+                                disabled={reviewMutation.isPending}
+                                className="p-1.5 hover:bg-emerald-50 text-gray-650 hover:text-emerald-600 rounded-lg transition-colors"
+                                title="Approuver et publier (un autre admin que l'auteur)"
+                              >
+                                <CheckCircle2 className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() => {
+                                  if (window.confirm(`Rejeter le pays « ${country.countryName} » ? Il ne sera pas publié.`)) {
+                                    reviewMutation.mutate({ id: country.idCountry, approve: false });
+                                  }
+                                }}
+                                disabled={reviewMutation.isPending}
+                                className="p-1.5 hover:bg-red-50 text-gray-650 hover:text-red-600 rounded-lg transition-colors"
+                                title="Rejeter"
+                              >
+                                <XCircle className="w-4 h-4" />
+                              </button>
+                            </>
+                          ) : country.status === 'archived' ? (
                             <button
                               onClick={() => handleToggleArchive(country.idCountry, true)}
                               disabled={archiveMutation.isPending}

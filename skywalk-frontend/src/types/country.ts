@@ -1,3 +1,13 @@
+/** Review workflow: an addition stays 'pending_review' (invisible user-side) until another admin approves it. */
+export type ContentReviewStatus = 'pending_review' | 'active' | 'archived' | 'rejected';
+
+/** Display-only author/reviewer info (sanitized server-side — never the full user row). */
+export interface ReviewUserRef {
+  idUser: number;
+  firstName?: string;
+  lastName?: string;
+}
+
 export interface Country {
   idCountry: number;
   countryName: string;
@@ -7,7 +17,7 @@ export interface Country {
   visaInfo?: string;
   flagUrl?: string;
   continentId: number; // FK to continent (matches the backend Country entity)
-  status?: 'active' | 'archived';
+  status?: ContentReviewStatus;
   createdAt: string;
   capital?: string;
   continent?: {
@@ -15,4 +25,7 @@ export interface Country {
     name: string;
     continentName?: string;
   };
+  createdBy?: ReviewUserRef | null;
+  reviewedBy?: ReviewUserRef | null;
+  reviewedAt?: string | null;
 }
