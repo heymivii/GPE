@@ -95,7 +95,7 @@ export const adminApi = {
   },
 
   generateFromGovLinks: async (country: string): Promise<AdminProcedure[]> => {
-    const response = await apiClient.post<AdminProcedure[]>('/admin-procedure/generate', null, {
+    const response = await apiClient.post<AdminProcedure[]>('/admin-procedure/generate', undefined, {
       params: { country },
     });
     return response.data;
