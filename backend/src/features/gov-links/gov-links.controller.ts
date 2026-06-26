@@ -16,8 +16,7 @@ import { AdminProcedureGeneratorService } from '../admin-procedure/admin-procedu
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { CANONICAL_CATEGORIES, SUPPORTED_COUNTRIES } from './gov-links.types';
-import { listSupportedCountries } from './supported-countries';
+import { CANONICAL_CATEGORIES } from './gov-links.types';
 
 @ApiTags('Gov Links')
 @Controller('gov-links')
@@ -39,7 +38,7 @@ export class GovLinksController {
   @Get('supported-countries')
   @UseGuards(JwtAuthGuard)
   supportedCountries() {
-    return listSupportedCountries();
+    return this.service.listSupportedCountries();
   }
 
   @Get()
@@ -90,7 +89,7 @@ export class GovLinksController {
     @Query('category') category: string,
   ) {
     const cc = (country ?? '').toUpperCase();
-    if (!(SUPPORTED_COUNTRIES as readonly string[]).includes(cc)) {
+    if (!(await this.service.isSupported(cc))) {
       throw new BadRequestException(`Unsupported country: ${country ?? ''}`);
     }
     if (!(CANONICAL_CATEGORIES as readonly string[]).includes(category)) {
@@ -109,7 +108,7 @@ export class GovLinksController {
   @Roles('admin')
   async generateCountry(@Query('country') country: string) {
     const cc = (country ?? '').toUpperCase();
-    if (!(SUPPORTED_COUNTRIES as readonly string[]).includes(cc)) {
+    if (!(await this.service.isSupported(cc))) {
       throw new BadRequestException(`Unsupported country: ${country ?? ''}`);
     }
     await this.assertSearchUp();

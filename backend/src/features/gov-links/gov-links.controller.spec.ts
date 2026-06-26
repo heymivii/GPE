@@ -23,6 +23,13 @@ describe('GovLinksController', () => {
       status: 'needs_review',
     })),
     list: jest.fn(async (filter: object) => [{ id: 1, ...filter }]),
+    // DB-driven country config: FR/US/JP/CH enabled by default in tests
+    isSupported: jest.fn(async (cc: string) =>
+      ['FR', 'US', 'JP', 'CH'].includes(cc),
+    ),
+    listSupportedCountries: jest.fn(async () => [
+      { code: 'FR', name: 'France', flag: '🇫🇷' },
+    ]),
     // search UP by default — generation pre-flight requires it
     checkHealth: jest.fn(async () => ({
       llm: { ok: true, model: 'm', baseUrl: 'b' },

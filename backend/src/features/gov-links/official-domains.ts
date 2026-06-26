@@ -12,7 +12,11 @@ export function officialSuffixes(countryCode: string): string[] {
   );
 }
 
-export function isOfficialDomain(url: string, countryCode: string): boolean {
+export function isOfficialDomain(
+  url: string,
+  countryCode: string,
+  suffixes?: string[],
+): boolean {
   let host: string;
   try {
     host = new URL(url).hostname.toLowerCase();
@@ -21,7 +25,7 @@ export function isOfficialDomain(url: string, countryCode: string): boolean {
   }
   // Match exact host OR a proper subdomain only. The dot boundary is critical:
   // a bare `endsWith('gouv.fr')` would wrongly accept `evilgouv.fr`.
-  return officialSuffixes(countryCode).some((sfx) => {
+  return (suffixes ?? officialSuffixes(countryCode)).some((sfx) => {
     const bare = sfx.replace(/^\./, '');
     return host === bare || host.endsWith(`.${bare}`);
   });

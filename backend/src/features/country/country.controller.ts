@@ -34,13 +34,16 @@ export class CountryController {
   @Roles('admin')
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() createDto: CreateCountryDto, @Request() req) {
-    const country = await this.countryService.create(createDto, req.user.userId);
+    const country = await this.countryService.create(
+      createDto,
+      req.user.userId,
+    );
     await this.adminLogService.log(
       req.user.userId,
       'CREATE',
       'Country',
       country.idCountry.toString(),
-      `Création du pays "${country.countryName}" (en attente de vérification)`
+      `Création du pays "${country.countryName}" (en attente de vérification)`,
     );
     return country;
   }
@@ -50,13 +53,17 @@ export class CountryController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   async approve(@Param('id') id: string, @Request() req) {
-    const country = await this.countryService.reviewCountry(+id, req.user.userId, true);
+    const country = await this.countryService.reviewCountry(
+      +id,
+      req.user.userId,
+      true,
+    );
     await this.adminLogService.log(
       req.user.userId,
       'APPROVE',
       'Country',
       id,
-      `Vérification approuvée : pays "${country.countryName}" publié`
+      `Vérification approuvée : pays "${country.countryName}" publié`,
     );
     return country;
   }
@@ -66,13 +73,17 @@ export class CountryController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   async reject(@Param('id') id: string, @Request() req) {
-    const country = await this.countryService.reviewCountry(+id, req.user.userId, false);
+    const country = await this.countryService.reviewCountry(
+      +id,
+      req.user.userId,
+      false,
+    );
     await this.adminLogService.log(
       req.user.userId,
       'REJECT',
       'Country',
       id,
-      `Vérification rejetée : pays "${country.countryName}" non publié`
+      `Vérification rejetée : pays "${country.countryName}" non publié`,
     );
     return country;
   }
@@ -99,14 +110,18 @@ export class CountryController {
   @Patch(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
-  async update(@Param('id') id: string, @Body() updateDto: UpdateCountryDto, @Request() req) {
+  async update(
+    @Param('id') id: string,
+    @Body() updateDto: UpdateCountryDto,
+    @Request() req,
+  ) {
     const country = await this.countryService.update(+id, updateDto);
     await this.adminLogService.log(
       req.user.userId,
       'UPDATE',
       'Country',
       country.idCountry.toString(),
-      `Modification du pays "${country.countryName}"`
+      `Modification du pays "${country.countryName}"`,
     );
     return country;
   }
@@ -123,7 +138,7 @@ export class CountryController {
       'DELETE',
       'Country',
       id,
-      `Suppression du pays "${country.countryName}"`
+      `Suppression du pays "${country.countryName}"`,
     );
   }
 }

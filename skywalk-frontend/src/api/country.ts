@@ -5,6 +5,8 @@ export interface CreateCountryDto {
   countryName: string;
   isoCode?: string;
   continentId: number;
+  govLinkEnabled?: boolean;
+  officialDomains?: string[];
 }
 
 export interface UpdateCountryDto {
@@ -12,6 +14,8 @@ export interface UpdateCountryDto {
   isoCode?: string;
   continentId?: number;
   status?: 'active' | 'archived';
+  govLinkEnabled?: boolean;
+  officialDomains?: string[];
 }
 
 export const countryApi = {

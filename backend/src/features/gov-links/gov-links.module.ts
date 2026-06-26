@@ -8,6 +8,7 @@ import {
 } from './gov-links.service';
 import { GovLink } from './entities/gov-link.entity';
 import { GenerationRun } from './entities/generation-run.entity';
+import { Country } from '../country/entities/country.entity';
 import { GenerationOrchestratorService } from './generation-orchestrator.service';
 import { LinkVerifier } from './link-verifier';
 import { LocalPageReader, JinaPageReader } from './page-reader';
@@ -18,7 +19,7 @@ import { SearchHintModule } from '../search-hint/search-hint.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([GovLink, GenerationRun]),
+    TypeOrmModule.forFeature([GovLink, GenerationRun, Country]),
     AdminProcedureModule,
     SearchHintModule,
   ],

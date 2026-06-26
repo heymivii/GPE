@@ -14,7 +14,8 @@ import { SearchProvider } from './search-provider';
 import { LinkVerifier } from './link-verifier';
 import { LlmRanker } from './llm-ranker';
 import { SearchCandidate, GovLinkStatus } from './gov-links.types';
-import { countryDisplayName } from './supported-countries';
+import { countryDisplayName, SUPPORTED_COUNTRIES } from './supported-countries';
+import { Country } from '../country/entities/country.entity';
 import { SearchHintService } from '../search-hint/search-hint.service';
 
 export const SEARCH_PROVIDER = 'SEARCH_PROVIDER';
@@ -47,7 +48,69 @@ export class GovLinksService {
     @Inject(LLM_RANKER) private readonly ranker: LlmRanker,
     // Optional: the editable address book. Absent/undefined → generic fallback queries (no DB hint).
     private readonly hints?: SearchHintService,
+    // Optional: admin-managed country config (gov_link_enabled + official_domains).
+    // Absent (unit tests) → static registry fallback.
+    @InjectRepository(Country)
+    private readonly countries?: Repository<Country>,
   ) {}
+
+  /** Admin-managed engine config from the country row; static registry as fallback (tests/seed). */
+  private async countryConfig(
+    cc: string,
+  ): Promise<{ name: string; suffixes: string[] }> {
+    if (this.countries) {
+      const row = await this.countries.findOne({ where: { isoCode: cc } });
+      if (row?.officialDomains?.length) {
+        return { name: row.countryName, suffixes: row.officialDomains };
+      }
+    }
+    return { name: countryDisplayName(cc), suffixes: officialSuffixes(cc) };
+  }
+
+  /** Is this country enabled for the engine? DB-driven; static registry as fallback. */
+  async isSupported(cc: string): Promise<boolean> {
+    const code = cc.toUpperCase();
+    if (this.countries) {
+      const row = await this.countries.findOne({ where: { isoCode: code } });
+      if (row) return row.govLinkEnabled && row.status === 'active';
+    }
+    return (SUPPORTED_COUNTRIES as readonly string[]).includes(code);
+  }
+
+  /** ISO2 → flag emoji (no stored flag needed). */
+  private static isoToFlag(cc: string): string {
+    return cc
+      .toUpperCase()
+      .replace(/[A-Z]/g, (ch) =>
+        String.fromCodePoint(0x1f1e6 + ch.charCodeAt(0) - 65),
+      );
+  }
+
+  /** The countries the engine can process — DB-driven for the admin UI. */
+  async listSupportedCountries(): Promise<
+    Array<{ code: string; name: string; flag: string }>
+  > {
+    if (this.countries) {
+      const rows = await this.countries.find({
+        where: { govLinkEnabled: true, status: 'active' },
+        order: { countryName: 'ASC' },
+      });
+      if (rows.length) {
+        return rows
+          .filter((r) => r.isoCode)
+          .map((r) => ({
+            code: r.isoCode as string,
+            name: r.countryName,
+            flag: GovLinksService.isoToFlag(r.isoCode as string),
+          }));
+      }
+    }
+    return SUPPORTED_COUNTRIES.map((c) => ({
+      code: c,
+      name: countryDisplayName(c),
+      flag: GovLinksService.isoToFlag(c),
+    }));
+  }
 
   async list(filter: {
     countryCode?: string;
@@ -93,7 +156,7 @@ export class GovLinksService {
     category: string,
   ): Promise<GovLinkResult> {
     const cc = countryCode.toUpperCase();
-    const country = this.countryName(cc);
+    const { name: country, suffixes: allowed } = await this.countryConfig(cc);
     const hint = this.hints
       ? await this.hints.findOneOrNull(cc, category)
       : null;
@@ -121,7 +184,6 @@ export class GovLinksService {
     const primaryQuery = queries[0];
 
     // Run ALL queries, then merge + dedupe candidates by normalized URL (one fetch per distinct URL).
-    const allowed = officialSuffixes(cc);
     const rawLists = await Promise.all(
       queries.map((q) => this.searchWithRetry(q, allowed)),
     );
@@ -129,7 +191,7 @@ export class GovLinksService {
     // Cap BEFORE verifying: each verify is a live HTTP fetch, and the fan-out can surface dozens
     // of official hits — without this cap we'd burst-hammer the same government site.
     const official = candidates
-      .filter((c) => isOfficialDomain(c.url, cc))
+      .filter((c) => isOfficialDomain(c.url, cc, allowed))
       .slice(0, GovLinksService.MAX_VERIFIED);
 
     // Verify candidates concurrently: each does a live HTTP fetch (up to ~10s), so running
@@ -139,7 +201,7 @@ export class GovLinksService {
       official.map(async (c) => {
         const v = await this.verifier.verify(c.url, keywords);
         // FIX 1: also re-validate the post-redirect finalUrl against the official-domain allowlist
-        return v.live && v.matched && isOfficialDomain(v.finalUrl, cc)
+        return v.live && v.matched && isOfficialDomain(v.finalUrl, cc, allowed)
           ? { ...c, url: v.finalUrl, snippet: v.text || c.snippet }
           : null;
       }),

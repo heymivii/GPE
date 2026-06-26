@@ -11,7 +11,11 @@ import { City } from '../../city/entities/city.entity';
 import { User } from '../../user/entities/user.entity';
 
 /** Review workflow: added content stays 'pending_review' (invisible user-side) until another admin approves. */
-export type ContentReviewStatus = 'pending_review' | 'active' | 'archived' | 'rejected';
+export type ContentReviewStatus =
+  | 'pending_review'
+  | 'active'
+  | 'archived'
+  | 'rejected';
 
 @Entity('country')
 export class Country {
@@ -37,6 +41,15 @@ export class Country {
   @ManyToOne(() => Continent, { nullable: false })
   @JoinColumn({ name: 'continent_id' })
   continent: Continent;
+
+  // ── Gov-links engine config (admin-managed, replaces the hardcoded registry) ──
+  /** "The AI engine processes this country" switch. */
+  @Column({ name: 'gov_link_enabled', type: 'boolean', default: false })
+  govLinkEnabled: boolean;
+
+  /** Anti-hallucination allowlist: official hostname suffixes (gouv.fr, admin.ch…). */
+  @Column({ name: 'official_domains', type: 'jsonb', default: () => "'[]'" })
+  officialDomains: string[];
 
   @OneToMany(() => City, (city) => city.country)
   cities: City[];
