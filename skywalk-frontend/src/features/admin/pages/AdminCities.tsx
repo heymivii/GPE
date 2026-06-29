@@ -3,6 +3,7 @@ import { cityApi, type City } from '../../../api/city';
 import { countryApi } from '../../../api/country';
 import { costOfLivingApi } from '../../../api/costOfLiving';
 import { cityIndicesApi } from '../../../api/cityIndices';
+import { userApi } from '../../../api/user';
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { Plus, Edit2, Globe, RefreshCw, X, Search, Eye, ChevronRight, ArrowLeft, Save, Coins, Building2, Utensils, Car, Loader2, Globe2, ShoppingBag, Shirt, Baby, Activity, Archive, ArchiveRestore, CheckCircle2, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -49,6 +50,14 @@ export default function AdminCities() {
     queryKey: ['admin-cities-list'],
     queryFn: cityApi.getAll,
   });
+
+  // Admins for the "assign the verification to" select (creation only)
+  const [assignedToId, setAssignedToId] = useState<number | ''>('');
+  const { data: adminsPage } = useQuery({
+    queryKey: ['admins-for-assignment'],
+    queryFn: () => userApi.getUsersAdmin(1, 100),
+  });
+  const admins = (adminsPage?.data ?? []).filter((u: any) => u.roles === 'admin');
 
   const { data: countries = [], isLoading: countriesLoading } = useQuery({
     queryKey: ['admin-countries-dropdown'],
@@ -362,6 +371,7 @@ export default function AdminCities() {
 
   const openCreateModal = () => {
     setEditingCity(null);
+    setAssignedToId('');
     setName('');
     setLatitude('');
     setLongitude('');
@@ -411,6 +421,7 @@ export default function AdminCities() {
       isCapital: isCapital,
       imageUrl: imageUrl.trim() || undefined,
       countryId: Number(countryId),
+      ...(assignedToId ? { assignedToId: Number(assignedToId) } : {}),
     };
 
     if (editingCity) {
@@ -572,6 +583,16 @@ export default function AdminCities() {
     }
     setIdxBusy(null);
   };
+
+  // Step 1 of the assigned flow: the reviewer marks the verification done.
+  const reviewDoneMutation = useMutation({
+    mutationFn: (id: number) => cityApi.reviewDone(id),
+    onSuccess: (city) => {
+      toast.success(`Vérification de « ${city.name} » enregistrée — l'auteur doit valider`);
+      queryClient.invalidateQueries({ queryKey: ['admin-cities-list'] });
+    },
+    onError: (err: any) => toast.error(err.response?.data?.message || 'Erreur'),
+  });
 
   // Review workflow: approve publishes user-side; reject keeps it hidden. The backend enforces
   // the 4-eyes rule (the author cannot validate their own addition → clear 403 message).
@@ -1578,7 +1599,11 @@ export default function AdminCities() {
                         )}
                       </td>
                       <td className="py-4 px-6">
-                        {city.status === 'pending_review' ? (
+                        {city.status === 'review_done' ? (
+                          <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wide bg-violet-100 text-violet-700">
+                            Vérifiée — à valider
+                          </span>
+                        ) : city.status === 'pending_review' ? (
                           <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wide bg-blue-100 text-blue-800">
                             À vérifier
                           </span>
@@ -1595,10 +1620,11 @@ export default function AdminCities() {
                             Actif
                           </span>
                         )}
-                        {city.createdBy && (
+                        {(city.createdBy || city.assignedTo) && (
                           <p className="text-[10px] text-gray-400 mt-1">
-                            Ajouté par {city.createdBy.firstName ?? '?'}
-                            {city.reviewedBy && ` · vérifié par ${city.reviewedBy.firstName ?? '?'}`}
+                            {city.createdBy && `Ajouté par ${city.createdBy.firstName ?? '?'}`}
+                            {city.assignedTo && ` · assignée à ${city.assignedTo.firstName ?? '?'}`}
+                            {city.reviewedBy && ` · vérifiée par ${city.reviewedBy.firstName ?? '?'}`}
                           </p>
                         )}
                       </td>
@@ -1644,7 +1670,16 @@ export default function AdminCities() {
                           >
                             <Edit2 className="w-4 h-4" />
                           </button>
-                          {city.status === 'pending_review' ? (
+                          {city.status === 'pending_review' && city.assignedToId ? (
+                            <button
+                              onClick={() => reviewDoneMutation.mutate(city.idCity)}
+                              disabled={reviewDoneMutation.isPending}
+                              className="p-1.5 hover:bg-violet-50 text-gray-650 hover:text-violet-600 rounded-lg transition-colors"
+                              title="J'ai vérifié cette ville (admin assigné) — l'auteur validera ensuite"
+                            >
+                              <CheckCircle2 className="w-4 h-4" />
+                            </button>
+                          ) : city.status === 'pending_review' || city.status === 'review_done' ? (
                             <>
                               <button
                                 onClick={() => reviewMutation.mutate({ id: city.idCity, approve: true })}
@@ -1763,6 +1798,29 @@ export default function AdminCities() {
                     ))}
                   </select>
                 </div>
+
+                {!editingCity && (
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                      Assigner la vérification à
+                    </label>
+                    <select
+                      value={assignedToId}
+                      onChange={(e) => setAssignedToId(e.target.value ? Number(e.target.value) : '')}
+                      className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900 bg-white"
+                    >
+                      <option value="">— Aucun (tous les admins notifiés) —</option>
+                      {admins.map((a: { idUser: number; firstName?: string; lastName?: string; email?: string }) => (
+                        <option key={a.idUser} value={a.idUser}>
+                          {[a.firstName, a.lastName].filter(Boolean).join(' ') || a.email}
+                        </option>
+                      ))}
+                    </select>
+                    <p className="text-[11px] text-gray-400 mt-1">
+                      L'assigné vérifie puis marque « vérification faite » — vous validez ensuite la publication.
+                    </p>
+                  </div>
+                )}
 
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">

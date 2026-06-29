@@ -16,6 +16,8 @@ export interface City {
     idCountry: number;
     countryName: string;
   };
+  assignedToId?: number | null;
+  assignedTo?: ReviewUserRef | null;
   createdBy?: ReviewUserRef | null;
   reviewedBy?: ReviewUserRef | null;
   reviewedAt?: string | null;
@@ -23,6 +25,7 @@ export interface City {
 
 export interface CreateCityDto {
   name: string;
+  assignedToId?: number;
   latitude?: number;
   longitude?: number;
   population?: number;
@@ -104,6 +107,12 @@ export const cityApi = {
     const response = await apiClient.get<CityAutofillData>('/city/autofill', {
       params: { name, ...(country ? { country } : {}) },
     });
+    return response.data;
+  },
+
+  /** Assigned reviewer marks the verification done → creator gets notified for final call. */
+  reviewDone: async (id: number): Promise<City> => {
+    const response = await apiClient.patch<City>(`/city/${id}/review-done`);
     return response.data;
   },
 

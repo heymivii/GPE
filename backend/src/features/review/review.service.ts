@@ -114,6 +114,29 @@ export class ReviewService {
     }
   }
 
+  /** Generic single-user notification (assignment workflow etc.). Never throws. */
+  async notifyUser(
+    userId: number | null | undefined,
+    message: string,
+    type: 'info' | 'alert' = 'info',
+  ): Promise<void> {
+    if (userId == null) return;
+    try {
+      await this.notifications.create({
+        userId,
+        notificationType: type,
+        message,
+      } as CreateNotificationDto);
+    } catch (e) {
+      this.logger.warn(`notifyUser failed: ${(e as Error)?.message}`);
+    }
+  }
+
+  /** Public helper for workflow messages. */
+  async nameOf(userId?: number | null): Promise<string> {
+    return this.displayName(userId);
+  }
+
   private async displayName(userId?: number | null): Promise<string> {
     if (userId == null) return 'un admin';
     const u = await this.users.findOne({ where: { idUser: userId } });

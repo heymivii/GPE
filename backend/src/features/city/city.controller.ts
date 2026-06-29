@@ -43,6 +43,22 @@ export class CityController {
     return city;
   }
 
+  /** Step 1 (assigned reviewer): mark the verification as done → creator gets notified. */
+  @Patch(':id/review-done')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  async reviewDone(@Param('id') id: string, @Request() req) {
+    const city = await this.cityService.markReviewDone(+id, req.user.userId);
+    await this.adminLogService.log(
+      req.user.userId,
+      'UPDATE',
+      'City',
+      id,
+      `Vérification effectuée : ville "${city.name}" — en attente de validation finale`,
+    );
+    return city;
+  }
+
   /** Approve a pending city → published user-side. Reviewer must NOT be its author (4 eyes). */
   @Patch(':id/approve')
   @UseGuards(JwtAuthGuard, RolesGuard)

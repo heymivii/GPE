@@ -85,7 +85,9 @@ describe('CityService', () => {
     });
 
     it('should combine countryId and status filter when both provided', async () => {
-      repo.find.mockResolvedValue([{ idCity: 3, countryId: 10, status: 'active' }]);
+      repo.find.mockResolvedValue([
+        { idCity: 3, countryId: 10, status: 'active' },
+      ]);
       const result = await service.findByCountry(10, 'active');
       expect(result).toHaveLength(1);
       expect(repo.find).toHaveBeenCalledWith(

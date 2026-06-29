@@ -1,5 +1,5 @@
 /** Review workflow: an addition stays 'pending_review' (invisible user-side) until another admin approves it. */
-export type ContentReviewStatus = 'pending_review' | 'active' | 'archived' | 'rejected';
+export type ContentReviewStatus = 'pending_review' | 'review_done' | 'active' | 'archived' | 'rejected';
 
 /** Display-only author/reviewer info (sanitized server-side — never the full user row). */
 export interface ReviewUserRef {

@@ -12,7 +12,8 @@ import { User } from '../../user/entities/user.entity';
 
 /** Review workflow: added content stays 'pending_review' (invisible user-side) until another admin approves. */
 export type ContentReviewStatus =
-  | 'pending_review'
+  | 'pending_review' // en attente de la vérification (de l'assigné, le cas échéant)
+  | 'review_done' // vérifié par l'assigné — validation finale de l'auteur attendue
   | 'active'
   | 'archived'
   | 'rejected';

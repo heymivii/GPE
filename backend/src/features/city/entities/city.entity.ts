@@ -5,7 +5,10 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Country, ContentReviewStatus } from '../../country/entities/country.entity';
+import {
+  Country,
+  ContentReviewStatus,
+} from '../../country/entities/country.entity';
 import { User } from '../../user/entities/user.entity';
 
 @Entity({ name: 'city' })
@@ -55,6 +58,14 @@ export class City {
   @ManyToOne(() => Country, { nullable: false })
   @JoinColumn({ name: 'country_id' })
   country: Country;
+
+  /** Reviewer chosen by the creator — the only one who can mark the check done. */
+  @Column({ name: 'assigned_to_id', type: 'int', nullable: true })
+  assignedToId?: number | null;
+
+  @ManyToOne(() => User, { nullable: true })
+  @JoinColumn({ name: 'assigned_to_id' })
+  assignedTo?: User | null;
 
   // ── Review trace: who added it, who verified it ──────────────────────────
   @Column({ name: 'created_by_id', type: 'int', nullable: true })

@@ -188,11 +188,45 @@ export class CityService {
       status: 'pending_review',
       countryId: createCityDto.countryId,
       createdById: creatorId ?? null,
+      assignedToId: createCityDto.assignedToId ?? null,
     });
     const saved = await this.cityRepository.save(city);
-    await this.review.notifyAdminsOfPending(
-      `Ville « ${saved.name} »`,
-      creatorId,
+    if (saved.assignedToId) {
+      await this.review.notifyUser(
+        saved.assignedToId,
+        `🔍 Ville « ${saved.name} » vous a été assignée pour vérification par ${await this.review.nameOf(creatorId)}.`,
+        'alert',
+      );
+    } else {
+      await this.review.notifyAdminsOfPending(
+        `Ville « ${saved.name} »`,
+        creatorId,
+      );
+    }
+    return saved;
+  }
+
+  /** Step 1 — the ASSIGNED reviewer marks the check done; the creator then does the final call. */
+  async markReviewDone(id: number, userId: number): Promise<City> {
+    const city = await this.findOne(id);
+    if (city.status !== 'pending_review') {
+      throw new BadRequestException(
+        `Cette ville n'est pas en attente de vérification (statut : ${city.status}).`,
+      );
+    }
+    if (city.assignedToId != null && city.assignedToId !== userId) {
+      throw new BadRequestException(
+        'Cette vérification est assignée à un autre admin.',
+      );
+    }
+    city.status = 'review_done';
+    city.reviewedById = userId;
+    city.reviewedAt = new Date();
+    const saved = await this.cityRepository.save(city);
+    await this.review.notifyUser(
+      saved.createdById,
+      `✅ Ville « ${saved.name} » vérifiée par ${await this.review.nameOf(userId)} — à vous de la valider (publier ou renvoyer).`,
+      'alert',
     );
     return saved;
   }
@@ -204,6 +238,29 @@ export class CityService {
     approve: boolean,
   ): Promise<City> {
     const city = await this.findOne(id);
+    if (city.assignedToId) {
+      // Assigned flow: FINAL call happens on 'review_done' (typically by the creator).
+      if (city.status !== 'review_done') {
+        throw new BadRequestException(
+          `Validation finale impossible : la vérification assignée n'est pas terminée (statut : ${city.status}).`,
+        );
+      }
+      if (approve) {
+        city.status = 'active';
+      } else {
+        city.status = 'pending_review'; // back to the assignee for another review
+      }
+      const saved = await this.cityRepository.save(city);
+      await this.review.notifyUser(
+        saved.assignedToId,
+        approve
+          ? `✅ Ville « ${saved.name} » validée et publiée par ${await this.review.nameOf(reviewerId)}.`
+          : `🔁 Ville « ${saved.name} » renvoyée par ${await this.review.nameOf(reviewerId)} — merci de refaire une review.`,
+        approve ? 'info' : 'alert',
+      );
+      return saved;
+    }
+    // Legacy 4-eyes flow (no assignee)
     this.review.assertNotSelfReview(city.createdById, reviewerId);
     if (city.status !== 'pending_review') {
       throw new BadRequestException(
@@ -225,7 +282,7 @@ export class CityService {
 
   async findAll(status?: string): Promise<City[]> {
     const cities = await this.cityRepository.find({
-      relations: ['country', 'createdBy', 'reviewedBy'],
+      relations: ['country', 'createdBy', 'reviewedBy', 'assignedTo'],
       ...(status !== undefined && {
         where: { status: status as ContentReviewStatus },
       }),
@@ -245,6 +302,7 @@ export class CityService {
         : u;
     city.createdBy = strip(city.createdBy);
     city.reviewedBy = strip(city.reviewedBy);
+    city.assignedTo = strip(city.assignedTo);
     return city;
   }
 
@@ -291,10 +349,18 @@ export class CityService {
 
   async remove(id: number): Promise<void> {
     await this.cityRepository.manager.transaction(async (manager) => {
-      await manager.query('DELETE FROM "cost_of_living_cache" WHERE "city_id" = $1', [id]);
-      await manager.query('DELETE FROM "cost_of_living" WHERE "city_id" = $1', [id]);
+      await manager.query(
+        'DELETE FROM "cost_of_living_cache" WHERE "city_id" = $1',
+        [id],
+      );
+      await manager.query('DELETE FROM "cost_of_living" WHERE "city_id" = $1', [
+        id,
+      ]);
       await manager.query('DELETE FROM "job_offer" WHERE "city_id" = $1', [id]);
-      await manager.query('DELETE FROM "city_comparison" WHERE "city_id" = $1', [id]);
+      await manager.query(
+        'DELETE FROM "city_comparison" WHERE "city_id" = $1',
+        [id],
+      );
       await manager.query(
         'DELETE FROM "expatriation_project" WHERE "destination_city_id" = $1',
         [id],
