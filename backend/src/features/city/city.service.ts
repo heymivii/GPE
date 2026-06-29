@@ -172,6 +172,16 @@ export class CityService {
       }
     }
 
+    if (
+      createCityDto.assignedToId != null &&
+      creatorId != null &&
+      createCityDto.assignedToId === creatorId
+    ) {
+      throw new BadRequestException(
+        'Vous ne pouvez pas vous assigner votre propre vérification.',
+      );
+    }
+
     await this.ensureUniqueCityName(
       createCityDto.countryId,
       createCityDto.name,
@@ -214,7 +224,12 @@ export class CityService {
         `Cette ville n'est pas en attente de vérification (statut : ${city.status}).`,
       );
     }
-    if (city.assignedToId != null && city.assignedToId !== userId) {
+    if (city.assignedToId == null) {
+      throw new BadRequestException(
+        "Cette ville n'a pas de vérificateur assigné — utilisez le circuit de validation classique.",
+      );
+    }
+    if (city.assignedToId !== userId) {
       throw new BadRequestException(
         'Cette vérification est assignée à un autre admin.',
       );
@@ -240,6 +255,11 @@ export class CityService {
     const city = await this.findOne(id);
     if (city.assignedToId) {
       // Assigned flow: FINAL call happens on 'review_done' (typically by the creator).
+      if (reviewerId === city.assignedToId) {
+        throw new BadRequestException(
+          "La validation finale doit être faite par un autre admin que le vérificateur assigné (typiquement l'auteur).",
+        );
+      }
       if (city.status !== 'review_done') {
         throw new BadRequestException(
           `Validation finale impossible : la vérification assignée n'est pas terminée (statut : ${city.status}).`,
