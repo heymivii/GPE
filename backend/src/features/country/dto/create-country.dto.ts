@@ -32,6 +32,10 @@ export class CreateCountryDto {
   govLinkEnabled?: boolean;
 
   @IsOptional()
+  @IsBoolean()
+  selectableAsDestination?: boolean;
+
+  @IsOptional()
   @IsArray()
   @IsString({ each: true })
   officialDomains?: string[];

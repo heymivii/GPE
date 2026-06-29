@@ -43,7 +43,7 @@ export class CountryController {
       'CREATE',
       'Country',
       country.idCountry.toString(),
-      `Création du pays "${country.countryName}" (en attente de vérification)`,
+      `Création du pays "${country.countryName}" (publié immédiatement)`,
     );
     return country;
   }

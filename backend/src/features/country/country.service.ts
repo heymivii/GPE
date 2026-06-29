@@ -21,8 +21,8 @@ export class CountryService {
   ) {}
 
   /**
-   * Every addition starts as 'pending_review' (invisible user-side) and is traced to its
-   * author; the other admins get notified so ONE OF THEM verifies and publishes it.
+   * Countries are published DIRECTLY (team decision: a confirm popup client-side suffices;
+   * no 4-eyes gate here — unlike cities). Still traced to the author + admins notified.
    */
   async create(
     createDto: CreateCountryDto,
@@ -30,11 +30,11 @@ export class CountryService {
   ): Promise<Country> {
     const country = this.countryRepository.create({
       ...createDto,
-      status: 'pending_review',
+      status: 'active',
       createdById: creatorId ?? null,
     });
     const saved = await this.countryRepository.save(country);
-    await this.review.notifyAdminsOfPending(
+    await this.review.notifyAdminsOfAddition(
       `Pays « ${saved.countryName} »`,
       creatorId,
     );

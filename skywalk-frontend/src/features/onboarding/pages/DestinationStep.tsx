@@ -23,7 +23,7 @@ import { useSupportedCountries } from '../../../hooks/useSupportedCountries';
 
 export default function DestinationStep({ data, isEditMode, onNext, onBack }: DestinationStepProps) {
   const { t } = useTranslation()
-  const { countries: supportedCountries, citiesByCode, isLoading: isLoadingCities } = useSupportedCountries();
+  const { countries: supportedCountries, nonSelectableCodes, citiesByCode, isLoading: isLoadingCities } = useSupportedCountries();
 
   const [formData, setFormData] = useState<DestinationStepData>({
     fromCountry: data?.fromCountry || '',
@@ -33,10 +33,12 @@ export default function DestinationStep({ data, isEditMode, onNext, onBack }: De
   })
 
 
+  // Origin: every visible country. Destination: excludes "visible mais non sélectionnable" ones.
   const countryOptions = supportedCountries.map(c => ({
     value: c.code,
     label: t(c.i18nKey, { defaultValue: c.name })
   }));
+  const destinationOptions = countryOptions.filter(o => !nonSelectableCodes.has(o.value));
 
   // Active cities (admin-managed `city` table) for the selected destination country.
   // value = idCity so it matches the project's idDestinationCity FK.
@@ -154,7 +156,7 @@ export default function DestinationStep({ data, isEditMode, onNext, onBack }: De
         >
           <Select
             id="toCountry"
-            options={countryOptions}
+            options={destinationOptions}
             value={formData.toCountry}
             onChange={handleFieldChange('toCountry')}
             placeholder={t('onboarding.destination.toCountryPlaceholder')}

@@ -6,6 +6,7 @@ export interface CreateCountryDto {
   isoCode?: string;
   continentId: number;
   govLinkEnabled?: boolean;
+  selectableAsDestination?: boolean;
   officialDomains?: string[];
 }
 
@@ -15,6 +16,7 @@ export interface UpdateCountryDto {
   continentId?: number;
   status?: 'active' | 'archived';
   govLinkEnabled?: boolean;
+  selectableAsDestination?: boolean;
   officialDomains?: string[];
 }
 

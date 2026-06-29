@@ -22,7 +22,10 @@ export class ReviewService {
   ) {}
 
   /** "4 eyes": the author of an addition cannot approve/reject it themselves. */
-  assertNotSelfReview(createdById: number | null | undefined, reviewerId: number): void {
+  assertNotSelfReview(
+    createdById: number | null | undefined,
+    reviewerId: number,
+  ): void {
     if (createdById != null && createdById === reviewerId) {
       throw new ForbiddenException(
         'Règle des 4 yeux : vous ne pouvez pas valider votre propre ajout — un autre admin doit le vérifier.',
@@ -53,7 +56,37 @@ export class ReviewService {
       );
     } catch (e) {
       // Notifications must never break the actual creation.
-      this.logger.warn(`notifyAdminsOfPending failed: ${(e as Error)?.message}`);
+      this.logger.warn(
+        `notifyAdminsOfPending failed: ${(e as Error)?.message}`,
+      );
+    }
+  }
+
+  /** Simple awareness ping (no approval needed): tell the other admins something was added. */
+  async notifyAdminsOfAddition(
+    entityLabel: string,
+    authorId?: number | null,
+  ): Promise<void> {
+    try {
+      const [admins, authorName] = await Promise.all([
+        this.users.find({ where: { roles: 'admin' } }),
+        this.displayName(authorId),
+      ]);
+      await Promise.all(
+        admins
+          .filter((a) => a.idUser !== authorId)
+          .map((a) =>
+            this.notifications.create({
+              userId: a.idUser,
+              notificationType: 'info',
+              message: `ℹ️ ${entityLabel} ajouté par ${authorName} — visible côté utilisateur.`,
+            } as CreateNotificationDto),
+          ),
+      );
+    } catch (e) {
+      this.logger.warn(
+        `notifyAdminsOfAddition failed: ${(e as Error)?.message}`,
+      );
     }
   }
 
@@ -75,7 +108,9 @@ export class ReviewService {
           : `❌ ${entityLabel} a été rejeté par ${reviewerName} — il n'est pas publié.`,
       } as CreateNotificationDto);
     } catch (e) {
-      this.logger.warn(`notifyAuthorOfDecision failed: ${(e as Error)?.message}`);
+      this.logger.warn(
+        `notifyAuthorOfDecision failed: ${(e as Error)?.message}`,
+      );
     }
   }
 

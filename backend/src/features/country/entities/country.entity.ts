@@ -42,6 +42,10 @@ export class Country {
   @JoinColumn({ name: 'continent_id' })
   continent: Continent;
 
+  /** Visible in browsing pages but excluded from project-creation choices when false. */
+  @Column({ name: 'selectable_as_destination', type: 'boolean', default: true })
+  selectableAsDestination: boolean;
+
   // ── Gov-links engine config (admin-managed, replaces the hardcoded registry) ──
   /** "The AI engine processes this country" switch. */
   @Column({ name: 'gov_link_enabled', type: 'boolean', default: false })

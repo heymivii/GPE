@@ -62,6 +62,7 @@ export default function AdminCountries() {
   const [isoCode, setIsoCode] = useState('');
   // Gov-links engine config (admin-managed): switch + official domains allowlist
   const [govLinkEnabled, setGovLinkEnabled] = useState(false);
+  const [selectableAsDestination, setSelectableAsDestination] = useState(true);
   const [officialDomainsText, setOfficialDomainsText] = useState('');
   const [continentId, setContinentId] = useState<number | ''>('');
 
@@ -491,6 +492,7 @@ export default function AdminCountries() {
     setCountryName('');
     setIsoCode('');
     setGovLinkEnabled(false);
+    setSelectableAsDestination(true);
     setOfficialDomainsText('');
     setContinentId(continents.length > 0 ? continents[0].idContinent : '');
     setModalOpen(true);
@@ -502,6 +504,7 @@ export default function AdminCountries() {
     setIsoCode(country.isoCode || '');
     setContinentId(country.continentId);
     setGovLinkEnabled(country.govLinkEnabled ?? false);
+    setSelectableAsDestination(country.selectableAsDestination ?? true);
     setOfficialDomainsText((country.officialDomains ?? []).join('\n'));
     setModalOpen(true);
   };
@@ -527,6 +530,7 @@ export default function AdminCountries() {
       isoCode: isoCode.trim().toUpperCase() || undefined,
       continentId: Number(continentId),
       govLinkEnabled,
+      selectableAsDestination,
       officialDomains: officialDomainsText
         .split(/\r?\n/)
         .map((d) => d.trim())
@@ -536,6 +540,10 @@ export default function AdminCountries() {
     if (editingCountry) {
       updateMutation.mutate({ id: editingCountry.idCountry, data: payload });
     } else {
+      // Countries publish DIRECTLY (no 4-eyes gate) — explicit confirm before creating.
+      if (!window.confirm(`Créer le pays « ${payload.countryName} » ? Il sera immédiatement visible côté utilisateur.`)) {
+        return;
+      }
       createMutation.mutate(payload);
     }
   };
@@ -1747,8 +1755,18 @@ export default function AdminCountries() {
                 </select>
               </div>
 
-              {/* Gov-links engine config — replaces the hardcoded supported-countries registry */}
+              {/* Visibility / engine config */}
               <div className="rounded-xl border border-gray-150 bg-gray-50/60 p-4 space-y-3">
+                <label className="flex items-center gap-2 text-sm font-semibold text-gray-800 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={selectableAsDestination}
+                    onChange={(e) => setSelectableAsDestination(e.target.checked)}
+                    className="w-4 h-4 accent-[#5EA3C0]"
+                  />
+                  Sélectionnable comme destination de projet
+                  <span className="text-xs font-normal text-gray-400">(décoché : visible mais non choisissable)</span>
+                </label>
                 <label className="flex items-center gap-2 text-sm font-semibold text-gray-800 cursor-pointer">
                   <input
                     type="checkbox"

@@ -26,6 +26,7 @@ export interface Country {
     continentName?: string;
   };
   govLinkEnabled?: boolean;
+  selectableAsDestination?: boolean;
   officialDomains?: string[];
   createdBy?: ReviewUserRef | null;
   reviewedBy?: ReviewUserRef | null;
