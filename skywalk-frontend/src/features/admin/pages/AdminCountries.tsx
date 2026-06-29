@@ -60,10 +60,7 @@ export default function AdminCountries() {
   // Form Fields
   const [countryName, setCountryName] = useState('');
   const [isoCode, setIsoCode] = useState('');
-  // Gov-links engine config (admin-managed): switch + official domains allowlist
-  const [govLinkEnabled, setGovLinkEnabled] = useState(false);
   const [selectableAsDestination, setSelectableAsDestination] = useState(true);
-  const [officialDomainsText, setOfficialDomainsText] = useState('');
   const [continentId, setContinentId] = useState<number | ''>('');
 
   // Fetch Countries & Continents
@@ -491,9 +488,7 @@ export default function AdminCountries() {
     setEditingCountry(null);
     setCountryName('');
     setIsoCode('');
-    setGovLinkEnabled(false);
     setSelectableAsDestination(true);
-    setOfficialDomainsText('');
     setContinentId(continents.length > 0 ? continents[0].idContinent : '');
     setModalOpen(true);
   };
@@ -503,9 +498,7 @@ export default function AdminCountries() {
     setCountryName(country.countryName);
     setIsoCode(country.isoCode || '');
     setContinentId(country.continentId);
-    setGovLinkEnabled(country.govLinkEnabled ?? false);
     setSelectableAsDestination(country.selectableAsDestination ?? true);
-    setOfficialDomainsText((country.officialDomains ?? []).join('\n'));
     setModalOpen(true);
   };
 
@@ -529,12 +522,7 @@ export default function AdminCountries() {
       countryName: countryName.trim(),
       isoCode: isoCode.trim().toUpperCase() || undefined,
       continentId: Number(continentId),
-      govLinkEnabled,
       selectableAsDestination,
-      officialDomains: officialDomainsText
-        .split(/\r?\n/)
-        .map((d) => d.trim())
-        .filter(Boolean),
     };
 
     if (editingCountry) {
@@ -1767,32 +1755,6 @@ export default function AdminCountries() {
                   Sélectionnable comme destination de projet
                   <span className="text-xs font-normal text-gray-400">(décoché : visible mais non choisissable)</span>
                 </label>
-                <label className="flex items-center gap-2 text-sm font-semibold text-gray-800 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={govLinkEnabled}
-                    onChange={(e) => setGovLinkEnabled(e.target.checked)}
-                    className="w-4 h-4 accent-[#5EA3C0]"
-                  />
-                  Moteur liens officiels (IA) activé pour ce pays
-                </label>
-                {govLinkEnabled && (
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                      Domaines officiels (un par ligne) — liste blanche anti-hallucination
-                    </label>
-                    <textarea
-                      value={officialDomainsText}
-                      onChange={(e) => setOfficialDomainsText(e.target.value)}
-                      rows={3}
-                      placeholder={'gouv.fr\nservice-public.fr'}
-                      className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900 font-mono resize-y"
-                    />
-                    <p className="text-[11px] text-gray-400 mt-1">
-                      Seuls les liens sur ces domaines (ou leurs sous-domaines) peuvent être retenus par le moteur.
-                    </p>
-                  </div>
-                )}
               </div>
 
               <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-150">
