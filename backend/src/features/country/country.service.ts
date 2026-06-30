@@ -41,32 +41,6 @@ export class CountryService {
     return saved;
   }
 
-  /** Approve/reject a pending country — the reviewer must NOT be its author (4 eyes). */
-  async reviewCountry(
-    id: number,
-    reviewerId: number,
-    approve: boolean,
-  ): Promise<Country> {
-    const country = await this.findOne(id);
-    this.review.assertNotSelfReview(country.createdById, reviewerId);
-    if (country.status !== 'pending_review') {
-      throw new BadRequestException(
-        `Ce pays n'est pas en attente de vérification (statut actuel : ${country.status}).`,
-      );
-    }
-    country.status = approve ? 'active' : 'rejected';
-    country.reviewedById = reviewerId;
-    country.reviewedAt = new Date();
-    const saved = await this.countryRepository.save(country);
-    await this.review.notifyAuthorOfDecision(
-      `Pays « ${saved.countryName} »`,
-      saved.createdById,
-      approve,
-      reviewerId,
-    );
-    return saved;
-  }
-
   async findAll(status?: string): Promise<Country[]> {
     const countries = await this.countryRepository.find({
       relations: ['continent', 'createdBy', 'reviewedBy'],

@@ -150,6 +150,21 @@ export class CityService {
     createCityDto: CreateCityDto,
     creatorId?: number,
   ): Promise<City> {
+    // Cheap validations FIRST — reject before spending any external autofill call.
+    if (
+      createCityDto.assignedToId != null &&
+      creatorId != null &&
+      createCityDto.assignedToId === creatorId
+    ) {
+      throw new BadRequestException(
+        'Vous ne pouvez pas vous assigner votre propre vérification.',
+      );
+    }
+    await this.ensureUniqueCityName(
+      createCityDto.countryId,
+      createCityDto.name,
+    );
+
     // AUTO-FILL: complete any missing geo field from free sources (Open-Meteo + Wikipedia).
     // Best-effort — creation must NEVER fail because an external geo API is down.
     let auto: CityAutofillData | null = null;
@@ -171,21 +186,6 @@ export class CityService {
         );
       }
     }
-
-    if (
-      createCityDto.assignedToId != null &&
-      creatorId != null &&
-      createCityDto.assignedToId === creatorId
-    ) {
-      throw new BadRequestException(
-        'Vous ne pouvez pas vous assigner votre propre vérification.',
-      );
-    }
-
-    await this.ensureUniqueCityName(
-      createCityDto.countryId,
-      createCityDto.name,
-    );
 
     const city = this.cityRepository.create({
       name: createCityDto.name,
@@ -281,13 +281,25 @@ export class CityService {
         city.status = 'pending_review'; // back to the assignee for another review
       }
       const saved = await this.cityRepository.save(city);
+      const finalizer = await this.review.nameOf(reviewerId);
+      // Notify the assigned reviewer…
       await this.review.notifyUser(
         saved.assignedToId,
         approve
-          ? `✅ Ville « ${saved.name} » validée et publiée par ${await this.review.nameOf(reviewerId)}.`
-          : `🔁 Ville « ${saved.name} » renvoyée par ${await this.review.nameOf(reviewerId)} — merci de refaire une review.`,
+          ? `✅ Ville « ${saved.name} » validée et publiée par ${finalizer}.`
+          : `🔁 Ville « ${saved.name} » renvoyée par ${finalizer} — merci de refaire une review.`,
         approve ? 'info' : 'alert',
       );
+      // …and the author (may be a third admin doing the final call — the author must know too).
+      if (saved.createdById && saved.createdById !== saved.assignedToId) {
+        await this.review.notifyUser(
+          saved.createdById,
+          approve
+            ? `✅ Votre ville « ${saved.name} » a été publiée par ${finalizer}.`
+            : `🔁 Votre ville « ${saved.name} » a été renvoyée en review par ${finalizer}.`,
+          'info',
+        );
+      }
       return saved;
     }
     // Legacy 4-eyes flow (no assignee)
@@ -368,6 +380,26 @@ export class CityService {
 
   async update(id: number, updateCityDto: UpdateCityDto): Promise<City> {
     const city = await this.findOne(id);
+
+    // Guard: the review workflow OWNS status transitions. A generic update may only
+    // archive/unarchive an ALREADY-decided city — never publish one still in review
+    // (that must go through markReviewDone/reviewCity).
+    if (updateCityDto.status !== undefined) {
+      if (city.status === 'pending_review' || city.status === 'review_done') {
+        throw new BadRequestException(
+          "Le statut d'une ville en cours de vérification se change via les actions de validation, pas par une modification.",
+        );
+      }
+      if (
+        updateCityDto.status !== 'active' &&
+        updateCityDto.status !== 'archived'
+      ) {
+        throw new BadRequestException(
+          `Statut invalide pour une modification : ${updateCityDto.status}`,
+        );
+      }
+    }
+
     const nextName = updateCityDto.name ?? city.name;
     const nextCountryId = updateCityDto.countryId ?? city.countryId;
 

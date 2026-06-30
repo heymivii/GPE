@@ -103,17 +103,15 @@ describe('GenerationOrchestratorService.verify (via processCategory)', () => {
 
 // ── processCategory: status is set FROM verdict ──────────────────────────────────────
 describe('GenerationOrchestratorService.processCategory — gov_link status update', () => {
-  it('verified → gov_link status set to "pending_review" (human gate, never auto-published)', async () => {
+  it('verified → orchestrator does NOT override the status (generate/persist owns it: pending_review for new, active preserved on re-run)', async () => {
     const mocks = makeService(makeGen()); // verified
     const svc = buildOrchestrator(mocks);
     await svc.processCategory(1, 'FR', 'visa');
-    expect(mocks.govLinkRepo.update).toHaveBeenCalledWith(
-      { countryCode: 'FR', category: 'visa' },
-      { status: 'pending_review' },
-    );
+    // No downgrade write for a verified verdict — persist() already set the correct status.
+    expect(mocks.govLinkRepo.update).not.toHaveBeenCalled();
   });
 
-  it('needs_review → gov_link status set to "needs_review"', async () => {
+  it('needs_review → gov_link forced to "needs_review"', async () => {
     const mocks = makeService(makeGen({ confidence: 0.3 }));
     const svc = buildOrchestrator(mocks);
     await svc.processCategory(1, 'FR', 'visa');
@@ -123,8 +121,8 @@ describe('GenerationOrchestratorService.processCategory — gov_link status upda
     );
   });
 
-  it('re-run: previously needs_review flips to pending_review when re-verified', async () => {
-    // First run: needs_review
+  it('re-run: a needs_review verdict still downgrades; a verified one leaves the persisted status untouched', async () => {
+    // First run: needs_review → forced downgrade
     const mocks = makeService(makeGen({ confidence: 0.3 }));
     const svc = buildOrchestrator(mocks);
     await svc.processCategory(1, 'FR', 'visa');
@@ -132,14 +130,12 @@ describe('GenerationOrchestratorService.processCategory — gov_link status upda
       { countryCode: 'FR', category: 'visa' },
       { status: 'needs_review' },
     );
+    const callsAfterFirst = mocks.govLinkRepo.update.mock.calls.length;
 
-    // Re-run with better data → now verified (still needs a human to publish)
+    // Re-run verified → orchestrator makes NO further status write (no un-publishing).
     mocks.govLinks.generate.mockResolvedValueOnce(makeGen()); // clean
     await svc.processCategory(1, 'FR', 'visa');
-    expect(mocks.govLinkRepo.update).toHaveBeenLastCalledWith(
-      { countryCode: 'FR', category: 'visa' },
-      { status: 'pending_review' },
-    );
+    expect(mocks.govLinkRepo.update.mock.calls.length).toBe(callsAfterFirst);
   });
 
   it('url=null → govLinkRepo.update NOT called', async () => {

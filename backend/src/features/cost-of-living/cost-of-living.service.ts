@@ -160,15 +160,12 @@ export class CostOfLivingService {
     const data = await this.fetchFromApi(city, normalizedCountry);
     this.memSet(key, data);
 
-    const resolvedCityId = cityEntity
-      ? cityEntity.idCity
-      : await this.resolveOrCreateCity(city, normalizedCountry).catch((e) => {
-          this.logger.warn(`Could not resolve/create city: ${e}`);
-          return null;
-        });
-
-    if (resolvedCityId) {
-      this.persistToDb(resolvedCityId, data).catch((e) =>
+    // READ-ONLY path: this method is reachable UNAUTHENTICATED (GET /cost-of-living/search).
+    // Persist the cache ONLY for a city that already exists — NEVER create a City here, or
+    // anyone could spawn published, unreviewed cities. City/country creation is reserved to
+    // the admin-guarded fetchAndStoreCuratedCity path.
+    if (cityEntity) {
+      this.persistToDb(cityEntity.idCity, data).catch((e) =>
         this.logger.warn(`DB persist failed: ${e}`),
       );
     }

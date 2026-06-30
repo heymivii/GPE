@@ -117,15 +117,14 @@ export class GenerationOrchestratorService {
     try {
       const gen = await this.govLinks.generate(cc, category);
       const verdict = this.verify(cc, category, gen);
-      // Status reflects the CURRENT verdict — re-verified links re-publish themselves (no one-way downgrade).
-      if (gen.url) {
-        // HUMAN GATE: even a machine-verified link is NOT published — an admin must approve
-        // it (status 'active') from the Liens officiels tab before it reaches users.
-        const finalStatus =
-          verdict.result === 'verified' ? 'pending_review' : 'needs_review';
+      if (gen.url && verdict.result !== 'verified') {
+        // Only a NON-verified verdict forces a downgrade. For a verified verdict we leave the
+        // status that generate()/persist() already set: 'pending_review' for a new machine link
+        // (HUMAN GATE — an admin must approve it), or 'active' preserved for an unchanged link
+        // a human had already approved (no un-publishing on re-run).
         await this.govLinkRepo.update(
           { countryCode: cc, category },
-          { status: finalStatus },
+          { status: 'needs_review' },
         );
       }
       item = {

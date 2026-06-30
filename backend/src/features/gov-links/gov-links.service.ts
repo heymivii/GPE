@@ -402,6 +402,16 @@ export class GovLinksService {
       const existing = await this.repo.findOne({
         where: { countryCode, category },
       });
+      // Don't UN-PUBLISH an already-approved link on a re-run: if it's 'active', the URL is
+      // unchanged, and the incoming verdict is the machine 'pending_review', keep it published
+      // (a human already approved this exact link). A different URL / needs_review still applies.
+      if (
+        existing?.status === 'active' &&
+        existing.url === url &&
+        status === 'pending_review'
+      ) {
+        data.status = 'active';
+      }
       await this.repo.save(
         existing ? { ...existing, ...data } : this.repo.create(data),
       );
