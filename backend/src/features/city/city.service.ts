@@ -234,6 +234,11 @@ export class CityService {
         'Cette vérification est assignée à un autre admin.',
       );
     }
+    if (city.createdById != null && city.createdById === userId) {
+      throw new BadRequestException(
+        "L'auteur de la ville ne peut pas effectuer lui-même la vérification assignée.",
+      );
+    }
     city.status = 'review_done';
     city.reviewedById = userId;
     city.reviewedAt = new Date();
@@ -255,6 +260,11 @@ export class CityService {
     const city = await this.findOne(id);
     if (city.assignedToId) {
       // Assigned flow: FINAL call happens on 'review_done' (typically by the creator).
+      if (city.reviewedById != null && reviewerId === city.reviewedById) {
+        throw new BadRequestException(
+          'La validation finale doit être faite par un autre admin que celui qui a effectué la vérification.',
+        );
+      }
       if (reviewerId === city.assignedToId) {
         throw new BadRequestException(
           "La validation finale doit être faite par un autre admin que le vérificateur assigné (typiquement l'auteur).",
