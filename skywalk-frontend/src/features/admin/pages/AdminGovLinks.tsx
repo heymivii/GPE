@@ -1,8 +1,91 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { govLinksApi, type GovLink, type GenerationRun } from '../../../api/govLinks';
+import { countryApi } from '../../../api/country';
+import type { Country } from '../../../types/country';
 import { useState, useMemo, useEffect } from 'react';
-import { Loader2, RefreshCw, Link2, ExternalLink, CheckCircle2, XCircle, AlertTriangle, Clock } from 'lucide-react';
+import { Loader2, RefreshCw, Link2, ExternalLink, CheckCircle2, XCircle, AlertTriangle, Clock, Settings2 } from 'lucide-react';
 import toast from 'react-hot-toast';
+
+/**
+ * Admin panel to configure WHICH countries the engine processes (country.govLinkEnabled)
+ * and their official-domain allowlist — the config removed from the country modal lives here.
+ */
+function EngineCountriesConfig() {
+  const queryClient = useQueryClient();
+  const { data: countries = [] } = useQuery({
+    queryKey: ['admin-countries-engine'],
+    queryFn: countryApi.getActive,
+  });
+  const [draft, setDraft] = useState<Record<number, { enabled: boolean; domains: string }>>({});
+
+  const rowOf = (c: Country) =>
+    draft[c.idCountry] ?? {
+      enabled: c.govLinkEnabled ?? false,
+      domains: (c.officialDomains ?? []).join('\n'),
+    };
+
+  const saveMutation = useMutation({
+    mutationFn: ({ id, enabled, domains }: { id: number; enabled: boolean; domains: string }) =>
+      countryApi.update(id, {
+        govLinkEnabled: enabled,
+        officialDomains: domains.split(/\r?\n/).map((d) => d.trim()).filter(Boolean),
+      }),
+    onSuccess: (c) => {
+      toast.success(`Config moteur enregistrée pour ${c.countryName}`);
+      queryClient.invalidateQueries({ queryKey: ['admin-countries-engine'] });
+      queryClient.invalidateQueries({ queryKey: ['gov-links-supported-countries'] });
+    },
+    onError: (e: any) => toast.error(e.response?.data?.message || 'Erreur lors de l’enregistrement'),
+  });
+
+  return (
+    <details className="rounded-2xl border border-gray-150 bg-white shadow-sm">
+      <summary className="cursor-pointer select-none px-6 py-4 text-sm font-bold text-gray-800 flex items-center gap-2">
+        <Settings2 className="w-4 h-4 text-[#5EA3C0]" />
+        Pays gérés par le moteur ({countries.filter((c) => c.govLinkEnabled).length}/{countries.length} activés)
+      </summary>
+      <div className="px-6 pb-5 space-y-3">
+        <p className="text-xs text-gray-500">
+          Activez un pays pour que le moteur puisse générer ses liens, et listez ses domaines officiels
+          (un par ligne) — seuls ces domaines (et leurs sous-domaines) peuvent être retenus.
+        </p>
+        {countries.map((c) => {
+          const row = rowOf(c);
+          return (
+            <div key={c.idCountry} className="flex flex-wrap items-start gap-3 border-t border-gray-100 pt-3">
+              <label className="flex items-center gap-2 text-sm font-semibold text-gray-800 min-w-[160px]">
+                <input
+                  type="checkbox"
+                  checked={row.enabled}
+                  onChange={(e) =>
+                    setDraft((d) => ({ ...d, [c.idCountry]: { ...row, enabled: e.target.checked } }))
+                  }
+                  className="w-4 h-4 accent-[#5EA3C0]"
+                />
+                {c.countryName}
+              </label>
+              <textarea
+                value={row.domains}
+                onChange={(e) => setDraft((d) => ({ ...d, [c.idCountry]: { ...row, domains: e.target.value } }))}
+                rows={2}
+                placeholder={'gouv.fr\nservice-public.fr'}
+                className="flex-1 min-w-[220px] px-3 py-1.5 border border-gray-200 rounded-lg text-xs text-gray-900 font-mono resize-y focus:outline-none focus:border-[#5EA3C0]"
+              />
+              <button
+                type="button"
+                onClick={() => saveMutation.mutate({ id: c.idCountry, enabled: row.enabled, domains: row.domains })}
+                disabled={saveMutation.isPending}
+                className="px-3 py-1.5 bg-[#5EA3C0] hover:bg-[#4891b0] text-white rounded-lg text-xs font-semibold transition-colors disabled:opacity-50"
+              >
+                Enregistrer
+              </button>
+            </div>
+          );
+        })}
+      </div>
+    </details>
+  );
+}
 
 const CATEGORIES = [
   'visa', 'demarches', 'demarches-admin', 'logement', 'sante',
@@ -342,6 +425,8 @@ export default function AdminGovLinks() {
 
       {/* ═══ TAB : GÉNÉRATION PAR PAYS ═══ */}
       {tab === 'runs' && (
+      <>
+      <EngineCountriesConfig />
       <div className="bg-white rounded-2xl border border-gray-150 shadow-sm p-6 space-y-5">
         <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
           Lance la génération des 11 catégories officielles pour un pays en arrière-plan (~2-10 min). Suivez la progression ci-dessous — les liens vérifiés apparaissent dans l'onglet « Liens officiels ».
@@ -522,6 +607,7 @@ export default function AdminGovLinks() {
           <p className="text-sm text-gray-500">Aucun run pour {activeRunCountry}. Cliquez sur « Générer (pays) » pour commencer.</p>
         )}
       </div>
+      </>
       )}
 
       {/* Filter + Table */}

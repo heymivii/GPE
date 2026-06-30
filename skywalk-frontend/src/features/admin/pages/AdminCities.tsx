@@ -4,8 +4,9 @@ import { countryApi } from '../../../api/country';
 import { costOfLivingApi } from '../../../api/costOfLiving';
 import { cityIndicesApi } from '../../../api/cityIndices';
 import { userApi } from '../../../api/user';
+import { useAuth } from '../../../hooks/useAuth';
 import { useState, useMemo, useEffect, useRef } from 'react';
-import { Plus, Edit2, Globe, RefreshCw, X, Search, Eye, ChevronRight, ArrowLeft, Save, Coins, Building2, Utensils, Car, Loader2, Globe2, ShoppingBag, Shirt, Baby, Activity, Archive, ArchiveRestore, CheckCircle2, Trash2 } from 'lucide-react';
+import { Plus, Edit2, Globe, RefreshCw, X, Search, Eye, ChevronRight, ArrowLeft, Save, Coins, Building2, Utensils, Car, Loader2, Globe2, ShoppingBag, Shirt, Baby, Activity, Archive, ArchiveRestore, CheckCircle2, XCircle, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import Combobox from '../components/Combobox';
@@ -50,6 +51,23 @@ export default function AdminCities() {
     queryKey: ['admin-cities-list'],
     queryFn: cityApi.getAll,
   });
+
+  const { user } = useAuth();
+  const myId = user?.idUser;
+
+  // Who may make the FINAL publish/reject decision on a city (mirrors the backend guard):
+  //  - assigned flow: after 'review_done', by an admin ≠ assignee and ≠ the one who verified;
+  //  - legacy 4-eyes flow (no assignee): any admin ≠ the creator, while 'pending_review'.
+  const canFinalize = (city: City): boolean => {
+    if (city.assignedToId != null) {
+      return (
+        city.status === 'review_done' &&
+        myId !== city.assignedToId &&
+        myId !== city.reviewedBy?.idUser
+      );
+    }
+    return city.status === 'pending_review' && myId !== city.createdBy?.idUser;
+  };
 
   // Admins for the "assign the verification to" select (creation only)
   const [assignedToId, setAssignedToId] = useState<number | ''>('');
@@ -1670,24 +1688,40 @@ export default function AdminCities() {
                           >
                             <Edit2 className="w-4 h-4" />
                           </button>
-                          {city.status === 'pending_review' && city.assignedToId ? (
+                          {/* The assigned reviewer marks the check done (step 1). */}
+                          {city.status === 'pending_review' &&
+                          city.assignedToId != null &&
+                          city.assignedToId === myId ? (
                             <button
                               onClick={() => reviewDoneMutation.mutate(city.idCity)}
                               disabled={reviewDoneMutation.isPending}
                               className="p-1.5 hover:bg-violet-50 text-gray-650 hover:text-violet-600 rounded-lg transition-colors"
-                              title="J'ai vérifié cette ville (admin assigné) — l'auteur validera ensuite"
+                              title="J'ai vérifié cette ville — l'auteur validera ensuite"
                             >
                               <CheckCircle2 className="w-4 h-4" />
                             </button>
-                          ) : city.status === 'pending_review' || city.status === 'review_done' ? (
+                          ) : canFinalize(city) ? (
+                            /* Final decision (step 2): publish or send back — only shown to an admin allowed to decide. */
                             <>
                               <button
                                 onClick={() => reviewMutation.mutate({ id: city.idCity, approve: true })}
                                 disabled={reviewMutation.isPending}
                                 className="p-1.5 hover:bg-emerald-50 text-gray-650 hover:text-emerald-600 rounded-lg transition-colors"
-                                title="Approuver et publier (un autre admin que l'auteur)"
+                                title="Valider et publier"
                               >
                                 <CheckCircle2 className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() => {
+                                  if (window.confirm(`Rejeter la ville « ${city.name} » ?${city.assignedToId ? ' Elle repartira en review chez l’assigné.' : ' Elle ne sera pas publiée.'}`)) {
+                                    reviewMutation.mutate({ id: city.idCity, approve: false });
+                                  }
+                                }}
+                                disabled={reviewMutation.isPending}
+                                className="p-1.5 hover:bg-red-50 text-gray-650 hover:text-red-600 rounded-lg transition-colors"
+                                title={city.assignedToId ? 'Renvoyer en review' : 'Rejeter (non publiée)'}
+                              >
+                                <XCircle className="w-4 h-4" />
                               </button>
                             </>
                           ) : city.status === 'archived' ? (
