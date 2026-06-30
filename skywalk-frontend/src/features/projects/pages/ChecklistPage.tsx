@@ -6,6 +6,7 @@ import { useChecklistProgress, getStepDeadline, filterStepsForProject } from '..
 import { getLinksForStep } from '../../../data/checklist-links';
 import { useGovLink } from '../../../api/useGovLink';
 import OfficialLinkCard from '../../../components/OfficialLinkCard';
+import TrustBadge from '../../../components/TrustBadge';
 
 // ---- Types ----
 type FilterType = 'all' | 'todo' | 'urgent' | 'late' | 'completed';
@@ -156,6 +157,7 @@ function ChecklistItemRow({
             <span className="text-[11px] text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full font-medium">
               {item.category}
             </span>
+            {item.sourceUrl && <TrustBadge url={item.sourceUrl} />}
             {substepsTotal > 0 && (
               <span className="text-[11px] text-gray-400">
                 {substepsDone}/{substepsTotal} tâches
@@ -195,6 +197,7 @@ function ChecklistItemRow({
               <OfficialLinkCard
                 label={item.title || 'Source officielle'}
                 url={item.sourceUrl || '#'}
+                summary={item.keyFacts}
               />
             </div>
           )}
