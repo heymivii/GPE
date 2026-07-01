@@ -12,7 +12,7 @@ import PreparationStep from '../pages/PreparationStep'
 import NeedsStep from '../pages/NeedsStep'
 import SummaryStep from '../pages/SummaryStep'
 import AuthGateStep from '../pages/AuthGateStep'
-import useOnboarding from '../hooks/useOnboarding'
+import useOnboarding, { type OnboardingData } from '../hooks/useOnboarding'
 import { useCreateProject, useUpdateProject } from '../../projects/hooks/useProjectMutations'
 import { useProjects } from '../../projects/hooks/useProjectMutations'
 import { countryApi } from '../../../api/country'
@@ -75,6 +75,17 @@ export default function OnboardingFlow() {
     canGoToStep,
     clearDraft
   } = useOnboarding(editMode)
+
+  // Prefill destination from the landing preview (?to=XX), once, if not already set.
+  const preInitRef = useRef(false)
+  useEffect(() => {
+    if (preInitRef.current || editMode) return
+    const to = searchParams.get('to')
+    if (to && !data.destination?.toCountry) {
+      preInitRef.current = true
+      updateStepData('destination', { toCountry: to.toUpperCase() } as OnboardingData['destination'])
+    }
+  }, [searchParams, editMode, data.destination?.toCountry, updateStepData])
 
   const formOriginCountryData = useCountryDataByCode(data.destination?.fromCountry)
   const rawCurrency = formOriginCountryData?.currency || originCountryData?.currency || 'EUR'

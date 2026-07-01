@@ -7,6 +7,7 @@ import LandingToolsSection from '../components/LandingToolsSection';
 import MiddleCtaBanner from '../components/MiddleCtaBanner';
 import NewsletterCTA from '../components/NewsletterCTA';
 import HowItWorks from '../components/HowItWorks';
+import DestinationPreview from '../components/DestinationPreview';
 import Testimonials from '../components/Testimonials';
 import FAQ from '../components/FAQ';
 import { useAuth } from '../../../hooks/useAuth';
@@ -88,6 +89,8 @@ export default function LandingPage() {
 
         </div>
       </section>
+
+      <DestinationPreview />
 
       <HowItWorks />
 

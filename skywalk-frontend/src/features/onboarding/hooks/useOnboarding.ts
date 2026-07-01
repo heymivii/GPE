@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Step } from '../components/Stepper'
 
-interface OnboardingData {
+export interface OnboardingData {
   destination: {
     fromCountry: string
     toCountry: string
