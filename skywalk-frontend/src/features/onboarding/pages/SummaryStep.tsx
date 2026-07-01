@@ -95,27 +95,31 @@ export default function SummaryStep({ data, onBack, onEdit, onComplete, isSubmit
     { label: t('onboarding.summary.languageLevel'), value: getTranslatedLabel('languageLevels', data.profile.languageLevel) }
   ], [data.profile, t, getTranslatedLabel])
 
+  // Steps 3-5 are optional (skippable) — every field guards against a missing section.
+  const notSet = t('onboarding.summary.notSpecified');
   const objectiveItems = useMemo(() => [
-    { label: t('onboarding.summary.mainGoal'), value: getTranslatedLabel('goals', data.objective.goal) },
-    { label: t('onboarding.summary.expectedDuration'), value: getTranslatedLabel('stayDuration', data.objective.stayDuration) }
-  ], [data.objective, t, getTranslatedLabel])
+    { label: t('onboarding.summary.mainGoal'), value: data.objective?.goal ? getTranslatedLabel('goals', data.objective.goal) : notSet },
+    { label: t('onboarding.summary.expectedDuration'), value: data.objective?.stayDuration ? getTranslatedLabel('stayDuration', data.objective.stayDuration) : notSet }
+  ], [data.objective, t, getTranslatedLabel, notSet])
 
   const preparationItems = useMemo(() => [
     {
       label: t('onboarding.summary.stepsDone'),
-      value: data.preparation.stepsDone.length > 0
-        ? getMultipleTranslatedLabels('stepsDone', data.preparation.stepsDone)
+      value: (data.preparation?.stepsDone?.length ?? 0) > 0
+        ? getMultipleTranslatedLabels('stepsDone', data.preparation!.stepsDone)
         : t('onboarding.summary.none')
     },
-    { label: t('onboarding.summary.housingBudget'), value: t('onboarding.summary.housingBudgetValue', { budget: data.preparation.housingBudget }) }
-  ], [data.preparation, t, getMultipleTranslatedLabels])
+    { label: t('onboarding.summary.housingBudget'), value: data.preparation?.housingBudget ? t('onboarding.summary.housingBudgetValue', { budget: data.preparation.housingBudget }) : notSet }
+  ], [data.preparation, t, getMultipleTranslatedLabels, notSet])
 
   const needsItems = useMemo(() => [
     {
       label: t('onboarding.summary.prioritiesLabel'),
-      value: getMultipleTranslatedLabels('priorities', data.needs.priorities)
+      value: (data.needs?.priorities?.length ?? 0) > 0
+        ? getMultipleTranslatedLabels('priorities', data.needs!.priorities)
+        : notSet
     }
-  ], [data.needs, t, getMultipleTranslatedLabels])
+  ], [data.needs, t, getMultipleTranslatedLabels, notSet])
 
   return (
     <div className="space-y-6">

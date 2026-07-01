@@ -451,6 +451,7 @@ export default function OnboardingFlow() {
               nextStep()
             }}
             onBack={prevStep}
+            onSkip={nextStep}
           />
         )
       case 4:
@@ -462,6 +463,7 @@ export default function OnboardingFlow() {
               nextStep()
             }}
             onBack={prevStep}
+            onSkip={nextStep}
             currency={currency}
           />
         )
@@ -474,6 +476,7 @@ export default function OnboardingFlow() {
               nextStep()
             }}
             onBack={prevStep}
+            onSkip={nextStep}
           />
         )
       case 6:

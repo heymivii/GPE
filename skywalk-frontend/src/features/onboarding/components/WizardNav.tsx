@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next'
 interface WizardNavProps {
   onBack?: () => void
   onNext?: () => void
+  /** Optional-step escape hatch: advances without filling the step ("Passer pour l'instant"). */
+  onSkip?: () => void
   isNextDisabled?: boolean
   nextLabel?: string
   backLabel?: string
@@ -12,6 +14,7 @@ interface WizardNavProps {
 export default function WizardNav({
   onBack,
   onNext,
+  onSkip,
   isNextDisabled = false,
   nextLabel,
   backLabel,
@@ -32,6 +35,16 @@ export default function WizardNav({
         </button>
       ) : (
         <div className="hidden sm:block" />
+      )}
+
+      {onSkip && (
+        <button
+          type="button"
+          onClick={onSkip}
+          className="w-full sm:w-auto text-sm text-gray-500 hover:text-gray-800 underline underline-offset-2 transition-colors sm:mx-auto"
+        >
+          {t('onboarding.nav.skip', { defaultValue: "Passer pour l'instant" })}
+        </button>
       )}
 
       {onNext && (

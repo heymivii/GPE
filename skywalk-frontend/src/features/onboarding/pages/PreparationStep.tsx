@@ -15,10 +15,11 @@ interface PreparationStepProps {
   data?: PreparationStepData
   onNext: (data: PreparationStepData) => void
   onBack?: () => void
+  onSkip?: () => void
   currency?: string
 }
 
-export default function PreparationStep({ data, onNext, onBack, currency = "€" }: PreparationStepProps) {
+export default function PreparationStep({ data, onNext, onBack, onSkip, currency = "€" }: PreparationStepProps) {
   const { t } = useTranslation()
   const [formData, setFormData] = useState<PreparationStepData>({
     stepsDone: data?.stepsDone || [],
@@ -113,6 +114,7 @@ export default function PreparationStep({ data, onNext, onBack, currency = "€"
 
       <WizardNav
         onBack={onBack}
+        onSkip={onSkip}
         onNext={handleNext}
         isNextDisabled={isNextDisabled}
       />

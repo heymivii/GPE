@@ -13,9 +13,10 @@ interface NeedsStepProps {
   data?: NeedsStepData
   onNext: (data: NeedsStepData) => void
   onBack?: () => void
+  onSkip?: () => void
 }
 
-export default function NeedsStep({ data, onNext, onBack }: NeedsStepProps) {
+export default function NeedsStep({ data, onNext, onBack, onSkip }: NeedsStepProps) {
   const { t } = useTranslation()
   const [formData, setFormData] = useState<NeedsStepData>({
     priorities: data?.priorities || [],
@@ -81,6 +82,7 @@ export default function NeedsStep({ data, onNext, onBack }: NeedsStepProps) {
 
       <WizardNav
         onBack={onBack}
+        onSkip={onSkip}
         onNext={handleNext}
         isNextDisabled={isNextDisabled}
       />
