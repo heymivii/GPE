@@ -357,6 +357,21 @@ export default function ChecklistPage() {
     return diff;
   }, [departureDate]);
 
+  // « Prochaine action » : l'étape non faite la plus urgente (avant-départ par échéance, sinon 1ʳᵉ).
+  const nextAction = useMemo(() => {
+    const incomplete = profileSteps.filter((s) => !s.completed);
+    if (incomplete.length === 0) return null;
+    const before = incomplete
+      .filter((s) => s.phase === 'before')
+      .map((s) => ({ s, date: getStepDeadline(s.daysBeforeDeparture, departureDate).date }))
+      .sort((a, b) => (a.date?.getTime() ?? Infinity) - (b.date?.getTime() ?? Infinity));
+    return before[0]?.s ?? incomplete[0];
+  }, [profileSteps, departureDate]);
+
+  const nextActionDeadline = nextAction
+    ? getStepDeadline(nextAction.daysBeforeDeparture, departureDate)
+    : null;
+
   const toggleExpand = (id: string) => {
     setExpandedIds((prev) => {
       const next = new Set(prev);
@@ -457,6 +472,43 @@ export default function ChecklistPage() {
               />
             </div>
           </div>
+
+          {/* Prochaine action recommandée — le guide « et maintenant, je fais quoi ? » */}
+          {nextAction ? (
+            <div className="mt-4 rounded-xl border border-[#5EA3C0]/30 bg-[#5EA3C0]/5 px-4 py-3">
+              <div className="flex items-start gap-3">
+                <div className="mt-0.5 flex-shrink-0 w-8 h-8 rounded-full bg-[#5EA3C0]/15 flex items-center justify-center">
+                  <ArrowRight className="w-4 h-4 text-[#5EA3C0]" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-[#5EA3C0]">Prochaine action</p>
+                  <p className="text-sm font-semibold text-gray-900 mt-0.5">{nextAction.title}</p>
+                  <div className="flex items-center gap-2 mt-1 flex-wrap">
+                    {nextActionDeadline?.date && (
+                      <span className={`inline-flex items-center gap-1 text-[11px] font-medium ${
+                        nextActionDeadline.isLate ? 'text-red-600' : nextActionDeadline.isUrgent ? 'text-orange-600' : 'text-gray-500'
+                      }`}>
+                        <Calendar className="w-3 h-3" />
+                        avant le {nextActionDeadline.date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}
+                      </span>
+                    )}
+                    {nextAction.sourceUrl && <TrustBadge url={nextAction.sourceUrl} />}
+                  </div>
+                </div>
+                <button
+                  onClick={() => toggleItem(nextAction.id)}
+                  className="flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#5EA3C0] hover:bg-[#4891b0] text-white rounded-lg text-xs font-semibold transition-colors"
+                >
+                  <CheckCircle className="w-3.5 h-3.5" />
+                  Fait
+                </button>
+              </div>
+            </div>
+          ) : completedSteps > 0 && completedSteps === totalSteps ? (
+            <div className="mt-4 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-semibold text-green-700 flex items-center gap-2">
+              <CheckCircle className="w-4 h-4" /> Toutes tes démarches sont faites — bravo !
+            </div>
+          ) : null}
 
           {/* Résumé stats */}
           <div className="flex items-center gap-4 mt-4">
