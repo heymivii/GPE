@@ -4,6 +4,7 @@ import { useState, useMemo, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import type { CountryData } from '../../../hooks/useCountryData';
 import { useChecklistProgress, getStepDeadline, filterStepsForProject } from '../hooks/useChecklistProgress';
+import TrustBadge from '../../../components/TrustBadge';
 import { getLinksForStep } from '../../../data/checklist-links';
 import { useTranslation } from 'react-i18next';
 import type { WidgetSize } from '../hooks/useDashboardPreferences';
@@ -258,6 +259,7 @@ interface ChecklistItem {
   daysBeforeDeparture?: number;
   phase: 'before' | 'on_arrival';
   onlyFor?: { travelType?: string[]; objective?: string[] } | null;
+  sourceUrl?: string;
 }
 
 export default function ChecklistWidget({
@@ -306,6 +308,7 @@ export default function ChecklistWidget({
         daysBeforeDeparture: t.admin_procedure?.daysBeforeDeparture,
         phase: (t.admin_procedure?.phase ?? 'on_arrival') as 'before' | 'on_arrival',
         onlyFor: t.admin_procedure?.onlyFor ?? null,
+        sourceUrl: t.admin_procedure?.sourceUrl,
       };
     });
   }, [progress]);
@@ -496,7 +499,11 @@ export default function ChecklistWidget({
                 <Circle className="w-4 h-4 text-gray-300 flex-shrink-0" />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm text-gray-900 font-medium truncate">{item.title}</p>
-                  <StepLinks category={item.category} countryCode={countryCode} />
+                  {item.sourceUrl ? (
+                    <div className="mt-1"><TrustBadge url={item.sourceUrl} /></div>
+                  ) : (
+                    <StepLinks category={item.category} countryCode={countryCode} />
+                  )}
                 </div>
                 <DeadlineBadge daysBeforeDeparture={item.daysBeforeDeparture} departureDate={departureDate} phase={item.phase} />
               </div>
