@@ -50,6 +50,19 @@ export class ExpatriationProject {
   @Column({ name: 'expected_departure_date', type: 'date', nullable: true })
   expectedDepartureDate: Date;
 
+  // ── Personalisation drivers ────────────────────────────────────────────────
+  /** Citizenship (ISO2) — the visa determinant (EU/EEA free movement vs third-country). */
+  @Column({ name: 'nationality', type: 'varchar', length: 2, nullable: true })
+  nationality?: string | null;
+
+  /** Has children → school / childcare steps become relevant. */
+  @Column({ name: 'has_children', type: 'boolean', nullable: true })
+  hasChildren?: boolean | null;
+
+  /** Already has a job offer at destination → work-visa path vs job search. */
+  @Column({ name: 'has_job_offer', type: 'boolean', nullable: true })
+  hasJobOffer?: boolean | null;
+
   @Column({ name: 'user_id' })
   userId: number;
 

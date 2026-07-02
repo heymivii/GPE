@@ -5,6 +5,8 @@ import {
   IsString,
   IsDateString,
   IsIn,
+  IsBoolean,
+  Length,
   Min,
 } from 'class-validator';
 
@@ -43,4 +45,17 @@ export class CreateExpatriationProjectDto {
   @IsOptional()
   @IsDateString()
   expectedDepartureDate?: string;
+
+  @IsOptional()
+  @IsString()
+  @Length(2, 2)
+  nationality?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  hasChildren?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  hasJobOffer?: boolean;
 }
