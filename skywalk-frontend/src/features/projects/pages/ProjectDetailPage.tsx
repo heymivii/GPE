@@ -236,8 +236,10 @@ export default function ProjectDetailPage() {
                 </div>
                 {project.idDestinationCity && (
                   <div className="pt-4 border-t border-gray-100">
-                    <p className="text-sm text-gray-500 mb-1">{t('projectDetail.cityId')}</p>
-                    <p className="font-medium text-gray-900">#{project.idDestinationCity}</p>
+                    <p className="text-sm text-gray-500 mb-1">{t('projectDetail.city')}</p>
+                    <p className="font-medium text-gray-900">
+                      {project.destinationCity?.name || `#${project.idDestinationCity}`}
+                    </p>
                   </div>
                 )}
               </div>

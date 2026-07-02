@@ -4,6 +4,7 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
+  CreateDateColumn,
 } from 'typeorm';
 import { TravelType } from '../../project/travel-type/travel-type.entity';
 import { User } from '../../user/entities/user.entity';
@@ -115,4 +116,7 @@ export class ExpatriationProject {
 
   @Column({ name: 'cancellation_details', type: 'text', nullable: true })
   cancellationDetails: string | null;
+
+  @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
+  createdAt: Date;
 }

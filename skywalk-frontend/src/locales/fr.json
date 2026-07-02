@@ -2118,6 +2118,7 @@
     "destination": "Destination",
     "country": "Pays",
     "cityId": "Ville (ID)",
+    "city": "Ville",
     "generalInfo": "Informations générales",
     "objective": "Objectif",
     "notDefined": "Non défini",

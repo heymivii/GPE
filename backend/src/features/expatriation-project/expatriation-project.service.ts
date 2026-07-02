@@ -33,6 +33,10 @@ export class ExpatriationProjectService {
   async findAllByUser(userId: number): Promise<ExpatriationProject[]> {
     return await this.projectRepository.find({
       where: { userId: userId },
+      // Load the country so consumers (NavBar project switcher, dashboard) can label
+      // a project by its destination — findOne/findAll already do this; the list must too.
+      relations: ['destinationCountry', 'destinationCity', 'travelType'],
+      order: { idProject: 'ASC' },
     });
   }
 

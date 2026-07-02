@@ -2118,6 +2118,7 @@
     "destination": "Destination",
     "country": "Country",
     "cityId": "City (ID)",
+    "city": "City",
     "generalInfo": "General information",
     "objective": "Objective",
     "notDefined": "Not defined",
