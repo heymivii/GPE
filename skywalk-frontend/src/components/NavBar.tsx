@@ -5,6 +5,7 @@ import { Search, Menu, X, ChevronDown, Globe, LogOut, User, LayoutDashboard, Fol
 import { useAuth } from '../hooks/useAuth';
 import GlobalSearchModal from './GlobalSearchModal';
 import CurrencySelector from './CurrencySelector';
+import ProjectSwitcher from './ProjectSwitcher';
 
 const languages = [
   { code: 'fr', label: 'Français', flag: '🇫🇷' },
@@ -168,6 +169,12 @@ export default function NavBar() {
                 ⌘K
               </kbd>
             </button>
+
+            {isAuthenticated && (
+              <div className="hidden md:block">
+                <ProjectSwitcher />
+              </div>
+            )}
 
             <CurrencySelector />
 

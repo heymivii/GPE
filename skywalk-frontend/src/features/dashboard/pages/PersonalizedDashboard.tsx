@@ -21,6 +21,7 @@ import { CSS } from '@dnd-kit/utilities'
 import { useProjects } from '../../projects/hooks/useProjectMutations'
 import { useCountryData } from '../../../hooks/useCountryData'
 import { useAuth } from '../../../hooks/useAuth'
+import { useActiveProject } from '../../../contexts/ActiveProjectContext'
 import { useDashboardPreferences } from '../hooks/useDashboardPreferences'
 import ProfileSummaryWidget from '../widgets/ProfileSummaryWidget'
 import RecommendationsWidget from '../widgets/RecommendationsWidget'
@@ -39,9 +40,11 @@ export default function PersonalizedDashboard() {
   const { user } = useAuth()
   const { hiddenWidgets, toggleWidget, widgetOrder, updateWidgetOrder, getWidgetSize, setWidgetSize } = useDashboardPreferences()
   const [searchParams] = useSearchParams()
+  const { activeProjectId, setActiveProjectId } = useActiveProject()
   const [selectedProjectId, setSelectedProjectId] = useState<number | null>(() => {
     const projectParam = searchParams.get('project')
-    return projectParam ? Number(projectParam) : null
+    // URL param wins (deep links), else the site-wide active project.
+    return projectParam ? Number(projectParam) : activeProjectId
   })
   const [editMode, setEditMode] = useState(false)
   const [showAddWidget, setShowAddWidget] = useState(false)
@@ -91,6 +94,13 @@ export default function PersonalizedDashboard() {
       }
     }
   }, [projects, selectedProjectId])
+
+  // Keep the site-wide active project in sync with what the dashboard shows.
+  useEffect(() => {
+    if (selectedProjectId != null && selectedProjectId !== activeProjectId) {
+      setActiveProjectId(selectedProjectId)
+    }
+  }, [selectedProjectId, activeProjectId, setActiveProjectId])
 
   const availableWidgets = [
     { id: 'profile-summary', name: t('dashboard.personalized.widgets.available.profileSummary.name'), icon: '👤', description: t('dashboard.personalized.widgets.available.profileSummary.description') },
@@ -366,28 +376,7 @@ export default function PersonalizedDashboard() {
               </p>
             </div>
             <div className="flex items-center flex-wrap gap-2">
-              {projects.length >= 1 && selectedProjectId && (
-                <select
-                  value={selectedProjectId}
-                  onChange={(e) => setSelectedProjectId(Number(e.target.value))}
-                  className="px-3 py-2 border border-gray-300 rounded-lg bg-white text-sm font-medium hover:border-gray-400 transition-colors"
-                >
-                  {projects.map((project) => {
-                    const countryNames: Record<number, string> = {
-                      1: t('countries.france'), 2: t('countries.switzerland'), 3: t('countries.unitedStates'), 4: t('countries.japan'),
-                      5: t('countries.canada'), 6: t('countries.italy'), 7: t('countries.portugal'), 8: t('countries.belgium'),
-                      9: t('countries.netherlands'), 10: t('countries.luxembourg'), 11: t('countries.unitedKingdom'),
-                      12: t('countries.ireland'), 13: t('countries.germany'), 14: t('countries.australia'), 16: t('countries.sweden')
-                    }
-                    const countryName = countryNames[project.idDestinationCountry] || t('dashboard.personalized.defaultDestination')
-                    return (
-                      <option key={project.idProject} value={project.idProject}>
-                        {countryName}
-                      </option>
-                    )
-                  })}
-                </select>
-              )}
+              {/* Project selection now lives site-wide in the NavBar (ProjectSwitcher) — no duplicate here. */}
               {selectedProjectId && (
                 <Link
                   to={`/onboarding/${selectedProjectId}`}

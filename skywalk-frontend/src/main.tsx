@@ -13,6 +13,7 @@ import {
 
 import { CostOfLivingProvider } from './contexts/CostOfLivingContext';
 import { CurrencyProvider } from './contexts/CurrencyContext';
+import { ActiveProjectProvider } from './contexts/ActiveProjectContext';
 import { useSupportedCountries } from './hooks/useSupportedCountries';
 
 const queryClient = new QueryClient();
@@ -43,11 +44,13 @@ root.render(
     <AuthProvider>
       <QueryClientProvider client={queryClient}>
         <CountriesHydrator />
-        <CurrencyProvider>
-          <CostOfLivingProvider>
-            <RouterProvider router={router} />
-          </CostOfLivingProvider>
-        </CurrencyProvider>
+        <ActiveProjectProvider>
+          <CurrencyProvider>
+            <CostOfLivingProvider>
+              <RouterProvider router={router} />
+            </CostOfLivingProvider>
+          </CurrencyProvider>
+        </ActiveProjectProvider>
       </QueryClientProvider>
     </AuthProvider>
   </React.StrictMode>
