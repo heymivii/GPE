@@ -305,6 +305,9 @@ export default function PersonalizedDashboard() {
               objective: activeProject?.mainObjective,
               expectedDepartureDate: activeProject?.expectedDepartureDate,
               idProject: activeProject?.idProject,
+              nationality: activeProject?.nationality,
+              hasChildren: activeProject?.hasChildren,
+              priorities: activeProject?.priorities,
             }}
             {...commonProps}
           />
