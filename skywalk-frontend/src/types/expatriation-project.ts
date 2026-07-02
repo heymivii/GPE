@@ -27,6 +27,9 @@ export interface ExpatriationProject {
   needsSupport: boolean;
   projectStatus: 'planning' | 'active' | 'completed' | 'cancelled' | 'on_hold';
   expectedDepartureDate?: string;
+  nationality?: string;
+  hasChildren?: boolean;
+  hasJobOffer?: boolean;
   checklistProgress?: ChecklistProgress;
   completedAt?: string;
   completedReason?: string;
@@ -54,6 +57,9 @@ export interface CreateExpatriationProjectDto {
   needsSupport?: boolean;
   projectStatus?: 'planning' | 'active' | 'completed' | 'cancelled' | 'on_hold';
   expectedDepartureDate?: string;
+  nationality?: string;
+  hasChildren?: boolean;
+  hasJobOffer?: boolean;
 }
 
 export interface UpdateExpatriationProjectDto extends Partial<CreateExpatriationProjectDto> {

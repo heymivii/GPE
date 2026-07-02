@@ -7,6 +7,7 @@ import { getLinksForStep } from '../../../data/checklist-links';
 import { useGovLink } from '../../../api/useGovLink';
 import OfficialLinkCard from '../../../components/OfficialLinkCard';
 import TrustBadge from '../../../components/TrustBadge';
+import { personalizeFilter, sortByPriorities } from '../../dashboard/hooks/personalize';
 
 // ---- Types ----
 type FilterType = 'all' | 'todo' | 'urgent' | 'late' | 'completed';
@@ -294,11 +295,19 @@ export default function ChecklistPage() {
     });
   }, [progress]);
 
-  // Filtrage profil
-  const profileSteps = useMemo(() => filterStepsForProject(allSteps, {
-    travelType: project?.travelType ?? undefined,
-    objective: project?.mainObjective ?? undefined,
-  }), [allSteps, project]);
+  // Filtrage profil + personnalisation par règles (nationalité/enfants → masquage, priorités → tri)
+  const profileSteps = useMemo(() => {
+    const base = filterStepsForProject(allSteps, {
+      travelType: project?.travelType ?? undefined,
+      objective: project?.mainObjective ?? undefined,
+    });
+    return personalizeFilter(base, {
+      nationality: project?.nationality,
+      destinationIso: countryCode,
+      hasChildren: project?.hasChildren,
+      priorities: project?.priorities,
+    });
+  }, [allSteps, project, countryCode]);
 
   // Filtrage UI + recherche
   const filteredSteps = useMemo(() => {
@@ -418,9 +427,9 @@ export default function ChecklistPage() {
 
   const displaySteps = view === 'timeline' ? timelineSteps : filteredSteps;
 
-  // Split into two phase groups for the list view
-  const beforeSteps = displaySteps.filter((s) => s.phase === 'before');
-  const arrivalSteps = displaySteps.filter((s) => s.phase !== 'before');
+  // Split into two phase groups for the list view — priority categories float to the top of each.
+  const beforeSteps = sortByPriorities(displaySteps.filter((s) => s.phase === 'before'), project?.priorities);
+  const arrivalSteps = sortByPriorities(displaySteps.filter((s) => s.phase !== 'before'), project?.priorities);
 
   if (isLoading) {
     return (

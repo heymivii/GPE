@@ -58,6 +58,9 @@ const mapBackendToFrontendProject = (bp: any): ExpatriationProject => {
     housingBudget: bp.budget ? parseFloat(bp.budget) : undefined,
     projectStatus: bp.status || 'planning',
     expectedDepartureDate: bp.expectedDepartureDate,
+    nationality: bp.nationality ?? undefined,
+    hasChildren: bp.hasChildren ?? undefined,
+    hasJobOffer: bp.hasJobOffer ?? undefined,
     stepsDone: bp.stepsDone || '',
     priorities: bp.priorities || '',
     needsSupport: bp.needsSupport || false,
@@ -81,6 +84,9 @@ const mapFrontendToBackendCreateDto = (feDto: CreateExpatriationProjectDto): any
     budget: feDto.housingBudget,
     status: feDto.projectStatus,
     expectedDepartureDate: feDto.expectedDepartureDate,
+    nationality: feDto.nationality,
+    hasChildren: feDto.hasChildren,
+    hasJobOffer: feDto.hasJobOffer,
   };
 };
 
@@ -97,6 +103,9 @@ const mapFrontendToBackendUpdateDto = (feDto: UpdateExpatriationProjectDto): any
   if (feDto.housingBudget !== undefined) beDto.budget = feDto.housingBudget;
   if (feDto.projectStatus !== undefined) beDto.status = feDto.projectStatus;
   if (feDto.expectedDepartureDate !== undefined) beDto.expectedDepartureDate = feDto.expectedDepartureDate;
+  if (feDto.nationality !== undefined) beDto.nationality = feDto.nationality;
+  if (feDto.hasChildren !== undefined) beDto.hasChildren = feDto.hasChildren;
+  if (feDto.hasJobOffer !== undefined) beDto.hasJobOffer = feDto.hasJobOffer;
   if (feDto.checklistProgress !== undefined) beDto.checklistProgress = feDto.checklistProgress;
 
   return beDto;

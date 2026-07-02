@@ -50,11 +50,9 @@ export default function OnboardingFlow() {
   const { mutateAsync: updateProject, isPending: isUpdatingProject } = useUpdateProject()
   const { data: projects } = useProjects(editMode)
 
-  useEffect(() => {
-    if (!isAuthLoading && !isAuthenticated) {
-      navigate('/auth/register?redirect=/onboarding');
-    }
-  }, [isAuthLoading, isAuthenticated, navigate]);
+  // NB: no auth wall here — the wizard runs ANONYMOUSLY (draft kept in localStorage) so the
+  // user gets value before committing. Registration is requested only at save time via
+  // handleComplete → AuthGateStep (redirect …?save=true → auto-save on return).
 
   const { data: countries = [] } = useQuery({
     queryKey: ['countries'],
@@ -124,7 +122,11 @@ export default function OnboardingFlow() {
           targetCity: existingProject.idDestinationCity?.toString() || '',
           departureYear: existingProject.expectedDepartureDate
             ? new Date(existingProject.expectedDepartureDate).getFullYear().toString()
-            : new Date().getFullYear().toString()
+            : new Date().getFullYear().toString(),
+          departureDate: existingProject.expectedDepartureDate
+            ? new Date(existingProject.expectedDepartureDate).toISOString().slice(0, 10)
+            : '',
+          nationality: existingProject.nationality || ''
         },
         profile: {
           age: user.age?.toString() || '25',
@@ -132,7 +134,9 @@ export default function OnboardingFlow() {
           travelParty: existingProject.travelType || 'alone',
           languageLevel: user.languageLevel || existingProject.languageLevel || 'intermediate',
           motherTongue: user.motherTongue || '',
-          spokenLanguages: user.spokenLanguages || []
+          spokenLanguages: user.spokenLanguages || [],
+          hasChildren: existingProject.hasChildren ?? undefined,
+          hasJobOffer: existingProject.hasJobOffer ?? undefined
         },
         objective: {
           goal: objectiveReverseMapping[existingProject.mainObjective || ''] || 'other',
@@ -294,7 +298,12 @@ export default function OnboardingFlow() {
         stepsDone: data.preparation?.stepsDone?.join(',') || '',
         priorities: data.needs?.priorities?.join(', ') || '',
         projectStatus: 'planning' as const,
-        expectedDepartureDate: data.destination?.departureYear ? `${data.destination.departureYear}-01-01` : undefined,
+        expectedDepartureDate:
+          data.destination?.departureDate ||
+          (data.destination?.departureYear ? `${data.destination.departureYear}-01-01` : undefined),
+        nationality: data.destination?.nationality || undefined,
+        hasChildren: data.profile?.hasChildren,
+        hasJobOffer: data.profile?.hasJobOffer,
       };
 
 

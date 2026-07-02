@@ -8,6 +8,8 @@ export interface OnboardingData {
     toCountry: string
     targetCity: string
     departureYear: string
+    departureDate?: string
+    nationality?: string
   }
   profile: {
     age: string
@@ -16,6 +18,8 @@ export interface OnboardingData {
     languageLevel: string
     motherTongue?: string
     spokenLanguages?: string[]
+    hasChildren?: boolean
+    hasJobOffer?: boolean
   }
   objective: {
     goal: string

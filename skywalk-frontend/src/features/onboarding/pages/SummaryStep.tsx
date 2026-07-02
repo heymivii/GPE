@@ -7,6 +7,7 @@ import WizardNav from '../components/WizardNav'
 import { COUNTRIES } from '../data/constants'
 import { destinationsApi } from '../../../api/destinations'
 import { SUPPORTED_COUNTRIES } from '../../../data/supportedCountries'
+import { NATIONALITY_OPTIONS } from '../../../data/freeMovement'
 
 interface AllStepsData {
   destination: {
@@ -14,12 +15,16 @@ interface AllStepsData {
     toCountry: string
     targetCity: string
     departureYear: string
+    departureDate?: string
+    nationality?: string
   }
   profile: {
     age: string
     status: string
     travelParty: string
     languageLevel: string
+    hasChildren?: boolean
+    hasJobOffer?: boolean
   }
   objective: {
     goal: string
@@ -60,6 +65,10 @@ export default function SummaryStep({ data, onBack, onEdit, onComplete, isSubmit
   const getMultipleTranslatedLabels = useCallback((prefix: string, values: string[]) =>
     values.map(v => getTranslatedLabel(prefix, v)).join(', '), [getTranslatedLabel])
 
+  const notSet = t('onboarding.summary.notSpecified')
+  const nationalityLabel = (code?: string) =>
+    code ? (NATIONALITY_OPTIONS.find(o => o.value === code)?.label ?? code) : notSet
+
   const selectedCountrySlug = useMemo(() => {
     return SUPPORTED_COUNTRIES.find(c => c.code === data.destination.toCountry)?.slug;
   }, [data.destination.toCountry]);
@@ -81,12 +90,16 @@ export default function SummaryStep({ data, onBack, onEdit, onComplete, isSubmit
     return data.destination.targetCity;
   }, [data.destination.targetCity, countryDetail, t]);
 
+  const departureDisplay = data.destination.departureDate
+    ? new Date(data.destination.departureDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
+    : data.destination.departureYear
   const destinationItems = useMemo(() => [
     { label: t('onboarding.summary.fromCountry'), value: getCountryLabel(data.destination.fromCountry) },
+    { label: t('onboarding.summary.nationality', { defaultValue: 'Nationalité' }), value: nationalityLabel(data.destination.nationality) },
     { label: t('onboarding.summary.toCountry'), value: getCountryLabel(data.destination.toCountry) },
     { label: t('onboarding.summary.targetCity'), value: targetCityName },
-    { label: t('onboarding.summary.departureYear'), value: data.destination.departureYear }
-  ], [data.destination, t, getCountryLabel, targetCityName])
+    { label: t('onboarding.summary.departureDate', { defaultValue: 'Date de départ' }), value: departureDisplay }
+  ], [data.destination, t, getCountryLabel, targetCityName, departureDisplay, notSet])
 
   const profileItems = useMemo(() => [
     { label: t('onboarding.summary.age'), value: t('onboarding.summary.ageYears', { age: data.profile.age }) },
@@ -96,7 +109,6 @@ export default function SummaryStep({ data, onBack, onEdit, onComplete, isSubmit
   ], [data.profile, t, getTranslatedLabel])
 
   // Steps 3-5 are optional (skippable) — every field guards against a missing section.
-  const notSet = t('onboarding.summary.notSpecified');
   const objectiveItems = useMemo(() => [
     { label: t('onboarding.summary.mainGoal'), value: data.objective?.goal ? getTranslatedLabel('goals', data.objective.goal) : notSet },
     { label: t('onboarding.summary.expectedDuration'), value: data.objective?.stayDuration ? getTranslatedLabel('stayDuration', data.objective.stayDuration) : notSet }

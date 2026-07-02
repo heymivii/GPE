@@ -4,6 +4,7 @@ import { useState, useMemo, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import type { CountryData } from '../../../hooks/useCountryData';
 import { useChecklistProgress, getStepDeadline, filterStepsForProject } from '../hooks/useChecklistProgress';
+import { personalizeFilter } from '../hooks/personalize';
 import TrustBadge from '../../../components/TrustBadge';
 import { getLinksForStep } from '../../../data/checklist-links';
 import { useTranslation } from 'react-i18next';
@@ -234,6 +235,9 @@ interface ChecklistWidgetProps {
     objective?: string | null;
     expectedDepartureDate?: string | Date | null;
     idProject?: number;
+    nationality?: string | null;
+    hasChildren?: boolean | null;
+    priorities?: string | null;
   };
   onEdit?: () => void;
   onHide?: () => void;
@@ -313,13 +317,19 @@ export default function ChecklistWidget({
     });
   }, [progress]);
 
-  // ✅ Filtrage selon le profil du projet
+  // ✅ Filtrage profil + personnalisation par règles (nationalité/enfants)
   const checklist = useMemo(() => {
-    return filterStepsForProject(allChecklist, {
+    const base = filterStepsForProject(allChecklist, {
       travelType: project?.travelType,
       objective: project?.objective,
     });
-  }, [allChecklist, project?.travelType, project?.objective]);
+    return personalizeFilter(base, {
+      nationality: project?.nationality,
+      destinationIso: countryCode,
+      hasChildren: project?.hasChildren,
+      priorities: project?.priorities,
+    });
+  }, [allChecklist, project?.travelType, project?.objective, project?.nationality, project?.hasChildren, project?.priorities, countryCode]);
 
   // ✅ Les 3 étapes urgentes/en retard pour l'aperçu widget — seulement phase 'before'
   const urgentSteps = useMemo(() => {
