@@ -95,6 +95,20 @@ export default function PersonalizedDashboard() {
     }
   }, [projects, selectedProjectId])
 
+  // Follow the URL ?project param — the NavBar switcher navigates to
+  // /dashboard?project=id, and when the dashboard is already mounted the
+  // useState initializer above won't rerun, so without this the selection
+  // would silently do nothing.
+  useEffect(() => {
+    const projectParam = searchParams.get('project')
+    if (projectParam) {
+      const id = Number(projectParam)
+      if (!Number.isNaN(id) && id !== selectedProjectId) {
+        setSelectedProjectId(id)
+      }
+    }
+  }, [searchParams, selectedProjectId])
+
   // Keep the site-wide active project in sync with what the dashboard shows.
   useEffect(() => {
     if (selectedProjectId != null && selectedProjectId !== activeProjectId) {
