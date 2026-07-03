@@ -6,6 +6,7 @@ import { useAuth } from '../hooks/useAuth';
 import GlobalSearchModal from './GlobalSearchModal';
 import CurrencySelector from './CurrencySelector';
 import ProjectSwitcher from './ProjectSwitcher';
+import { useCurrency, DISPLAY_CURRENCIES } from '../contexts/CurrencyContext';
 
 const languages = [
   { code: 'fr', label: 'Français', flag: '🇫🇷' },
@@ -26,6 +27,7 @@ export default function NavBar() {
   const langRef = useRef<HTMLDivElement>(null);
   
   const { user, isAuthenticated, logout } = useAuth();
+  const { displayCurrency, setDisplayCurrency } = useCurrency();
   const navigate = useNavigate();
 
   const userRole = (user as any)?.roles || user?.role || user?.userRole || '';
@@ -176,36 +178,42 @@ export default function NavBar() {
               </div>
             )}
 
-            <CurrencySelector />
+            {/* Visitors keep currency + language visible (no profile menu to hold them);
+                signed-in users find these inside the profile menu instead. */}
+            {!isAuthenticated && (
+              <>
+                <CurrencySelector />
 
-            <div className="relative hidden sm:block" ref={langRef}>
-              <button
-                className="flex items-center gap-1.5 px-2.5 py-2 border border-gray-200 rounded-lg bg-white hover:bg-gray-50 text-gray-600 text-sm"
-                onClick={() => setLangOpen((v) => !v)}
-              >
-                <Globe className="w-4 h-4" />
-                <span className="hidden md:inline">{currentLang.label}</span>
-                <span className="md:hidden">{currentLang.flag}</span>
-                <ChevronDown className={`w-3.5 h-3.5 transition-transform ${langOpen ? 'rotate-180' : ''}`} />
-              </button>
-              {langOpen && (
-                <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-xl shadow-lg z-50 py-1 animate-in fade-in slide-in-from-top-1">
-                  {languages.map((lang) => (
-                    <button
-                      key={lang.code}
-                      onClick={() => handleLanguageChange(lang.code)}
-                      className={`flex items-center gap-2 w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 ${
-                        currentLang.code === lang.code ? 'text-[#5EA3C0] font-medium' : 'text-gray-700'
-                      }`}
-                    >
-                      <span>{lang.flag}</span>
-                      {lang.label}
-                    </button>
-                  ))}
+                <div className="relative hidden sm:block" ref={langRef}>
+                  <button
+                    className="flex items-center gap-1.5 px-2.5 py-2 border border-gray-200 rounded-lg bg-white hover:bg-gray-50 text-gray-600 text-sm"
+                    onClick={() => setLangOpen((v) => !v)}
+                  >
+                    <Globe className="w-4 h-4" />
+                    <span className="hidden md:inline">{currentLang.label}</span>
+                    <span className="md:hidden">{currentLang.flag}</span>
+                    <ChevronDown className={`w-3.5 h-3.5 transition-transform ${langOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                  {langOpen && (
+                    <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-xl shadow-lg z-50 py-1 animate-in fade-in slide-in-from-top-1">
+                      {languages.map((lang) => (
+                        <button
+                          key={lang.code}
+                          onClick={() => handleLanguageChange(lang.code)}
+                          className={`flex items-center gap-2 w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 ${
+                            currentLang.code === lang.code ? 'text-[#5EA3C0] font-medium' : 'text-gray-700'
+                          }`}
+                        >
+                          <span>{lang.flag}</span>
+                          {lang.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-            
+              </>
+            )}
+
             {isAuthenticated && user ? (
               <div className="relative hidden sm:block" ref={userMenuRef}>
                 <button
@@ -220,7 +228,7 @@ export default function NavBar() {
                 </button>
                 
                 {userMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-52 bg-white border border-gray-200 rounded-xl shadow-lg z-50 py-2 animate-in fade-in slide-in-from-top-1">
+                  <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-xl shadow-lg z-50 py-2 animate-in fade-in slide-in-from-top-1">
                     <div className="px-4 py-2 border-b border-gray-100">
                       <p className="text-sm font-medium text-gray-900 truncate">{user.fullName}</p>
                       <p className="text-xs text-gray-500 truncate">{user.email}</p>
@@ -259,6 +267,45 @@ export default function NavBar() {
                         Administration
                       </Link>
                     )}
+
+                    {/* Préférences (devise + langue) — regroupées ici pour désencombrer la barre. */}
+                    <div className="px-4 pt-3 pb-2 border-t border-gray-100">
+                      <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400 mb-2">
+                        {t('nav.preferences', { defaultValue: 'Préférences' })}
+                      </p>
+                      <div className="flex flex-wrap gap-1.5 mb-2">
+                        {DISPLAY_CURRENCIES.map((cur) => (
+                          <button
+                            key={cur.code}
+                            onClick={() => setDisplayCurrency(cur.code)}
+                            className={`px-2 py-1 rounded-md text-xs font-medium border transition-colors ${
+                              displayCurrency === cur.code
+                                ? 'bg-gray-900 text-white border-gray-900'
+                                : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                            }`}
+                          >
+                            {cur.symbol} {cur.code}
+                          </button>
+                        ))}
+                      </div>
+                      <div className="flex gap-1.5">
+                        {languages.map((lang) => (
+                          <button
+                            key={lang.code}
+                            onClick={() => handleLanguageChange(lang.code)}
+                            className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-md text-xs font-medium border transition-colors ${
+                              currentLang.code === lang.code
+                                ? 'bg-[#5EA3C0]/10 text-[#5EA3C0] border-[#5EA3C0]/30'
+                                : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                            }`}
+                          >
+                            <span>{lang.flag}</span>
+                            {lang.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
                     <hr className="my-1 border-gray-100" />
                     <button
                       className="flex items-center gap-3 w-full text-left px-4 py-2.5 hover:bg-red-50 text-red-600 text-sm"
