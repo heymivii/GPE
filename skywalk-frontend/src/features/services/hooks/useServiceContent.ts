@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../../hooks/useAuth';
 import { useQuery } from '@tanstack/react-query';
@@ -8,6 +8,7 @@ import { getCountryContent } from '../../../data/services-content-by-country';
 import { useDestination } from '../../../contexts/DestinationContext';
 import { useSupportedCountries } from '../../../hooks/useSupportedCountries';
 import { resolveCountry, slugify } from '../../../data/countryMappings';
+import { useActiveProject } from '../../../contexts/ActiveProjectContext';
 
 // Lightweight city shape for the service-page selector (admin-managed `city` table).
 export interface ServiceCity {
@@ -38,6 +39,39 @@ export function useServiceContent({ service, category }: UseServiceContentParams
     enabled: isAuthenticated,
   });
 
+  // The site-wide active project: contextualise Services to its destination.
+  const { activeProjectId } = useActiveProject();
+  const activeProject = useMemo(() => {
+    if (!projects || projects.length === 0) return undefined;
+    return projects.find((p) => p.idProject === activeProjectId) ?? projects[projects.length - 1];
+  }, [projects, activeProjectId]);
+
+  const projectCountrySlug = useMemo(() => {
+    const iso = activeProject?.destinationCountry?.isoCode;
+    return iso ? resolveCountry(iso)?.slug ?? null : null;
+  }, [activeProject]);
+
+  const projectCitySlug = useMemo(() => {
+    const name = activeProject?.destinationCity?.name;
+    return name ? slugify(name) : null;
+  }, [activeProject]);
+
+  // Seed the destination from the active project. First seed of a mount only fills when
+  // nothing is chosen yet (respects a ?country= deep-link / a remembered choice); a genuine
+  // active-project switch afterwards overrides so Services follows the current project.
+  const seededForProjectRef = useRef<number | null>(null);
+  useEffect(() => {
+    if (!isAuthenticated || !activeProject || !projectCountrySlug) return;
+    if (seededForProjectRef.current === activeProject.idProject) return;
+    const firstSeed = seededForProjectRef.current === null;
+    seededForProjectRef.current = activeProject.idProject;
+    if (firstSeed) {
+      if (!selectedCountry) setSelectedCountry(projectCountrySlug);
+    } else {
+      setSelectedCountry(projectCountrySlug);
+    }
+  }, [isAuthenticated, activeProject, projectCountrySlug, selectedCountry, setSelectedCountry]);
+
   // Cities come from the admin-managed `city` table (active) — same source as the onboarding step.
   const { citiesByCode } = useSupportedCountries();
   const countryCode = resolveCountry(selectedCountry)?.code;
@@ -53,13 +87,17 @@ export function useServiceContent({ service, category }: UseServiceContentParams
     if (availableCities.length > 0) {
       const isSelectedCityValid = availableCities.some((c) => c.slug === selectedCity);
       if (!selectedCity || !isSelectedCityValid) {
+        // Prefer the active project's city, then the capital, then the first available.
+        const projectCity = projectCitySlug
+          ? availableCities.find((c) => c.slug === projectCitySlug)
+          : undefined;
         const capital = availableCities.find((c) => c.isCapital);
-        setSelectedCity(capital ? capital.slug : availableCities[0].slug);
+        setSelectedCity((projectCity ?? capital ?? availableCities[0]).slug);
       }
     } else if (selectedCountry === null) {
       setSelectedCity(null);
     }
-  }, [availableCities, selectedCity, selectedCountry]);
+  }, [availableCities, selectedCity, selectedCountry, projectCitySlug]);
 
   const enrichedContent = useMemo(() => {
     if (!selectedCountry) {
