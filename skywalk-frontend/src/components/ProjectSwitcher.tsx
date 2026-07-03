@@ -42,7 +42,9 @@ export default function ProjectSwitcher() {
   const choose = (id: number) => {
     setActiveProjectId(id);
     setOpen(false);
-    navigate(`/dashboard?project=${id}`);
+    // Target the personalized dashboard directly — /dashboard is an index route
+    // that redirects and drops the query string, losing ?project.
+    navigate(`/dashboard/personalized?project=${id}`);
   };
 
   return (
