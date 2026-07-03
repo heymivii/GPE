@@ -250,7 +250,10 @@ export default function OnboardingFlow() {
         try {
           await userApi.updateProfile({
             age: data.profile.age ? parseInt(data.profile.age) : undefined,
-            // status et languageLevel sauvegardés dans ExpatriationProject, pas sur User
+            // status (emploi) et languageLevel vivent sur le User — c'est ce que la page
+            // profil affiche. Les y écrire ici, sinon ces deux champs restent vides.
+            status: data.profile.status || undefined,
+            languageLevel: data.profile.languageLevel || undefined,
             motherTongue: data.profile.motherTongue,
             spokenLanguages: data.profile.spokenLanguages,
             countryOriginId: originCountryId,
