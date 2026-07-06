@@ -8,6 +8,7 @@ import {
   JoinColumn,
   OneToMany,
 } from 'typeorm';
+import { Exclude } from 'class-transformer';
 import { Country } from '../../country/entities/country.entity';
 import { ProcedureTracking } from '../../procedure-tracking/entities/procedure-tracking.entity';
 
@@ -25,6 +26,7 @@ export class User {
   @Column({ type: 'varchar', length: 255, unique: true })
   email: string;
 
+  @Exclude()
   @Column({ name: 'password', type: 'varchar', length: 255 })
   password: string;
 

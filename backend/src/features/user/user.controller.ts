@@ -51,6 +51,7 @@ export class UserController {
     return result;
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete('me')
   async deleteAccount(@Request() req) {
     await this.userService.remove(req.user.userId);
