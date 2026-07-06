@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ProcedureTracking } from './entities/procedure-tracking.entity';
@@ -18,7 +22,10 @@ export class ProcedureTrackingService {
     private readonly adminProcedureRepository: Repository<AdminProcedure>,
   ) {}
 
-  async create(userId: number, createDto: CreateProcedureTrackingDto): Promise<ProcedureTracking> {
+  async create(
+    userId: number,
+    createDto: CreateProcedureTrackingDto,
+  ): Promise<ProcedureTracking> {
     const tracking = this.trackingRepository.create({
       status: createDto.status ?? 'not_started',
       start_date: createDto.startDate,
@@ -30,13 +37,18 @@ export class ProcedureTrackingService {
     return await this.trackingRepository.save(tracking);
   }
 
-  async findAllByUser(userId: number, projectId?: number): Promise<ProcedureTracking[]> {
+  async findAllByUser(
+    userId: number,
+    projectId?: number,
+  ): Promise<ProcedureTracking[]> {
     if (projectId) {
       const project = await this.projectRepository.findOne({
         where: { idProject: projectId, userId: userId },
       });
       if (!project) {
-        throw new NotFoundException(`Projet avec l'ID ${projectId} introuvable`);
+        throw new NotFoundException(
+          `Projet avec l'ID ${projectId} introuvable`,
+        );
       }
 
       const allAdminProcedures = await this.adminProcedureRepository.find({
@@ -60,7 +72,11 @@ export class ProcedureTrackingService {
       });
 
       const missingProcedures = adminProcedures.filter(
-        (ap) => !existingTrackings.some((et) => et.admin_procedure?.idAdminProcedure === ap.idAdminProcedure)
+        (ap) =>
+          !existingTrackings.some(
+            (et) =>
+              et.admin_procedure?.idAdminProcedure === ap.idAdminProcedure,
+          ),
       );
 
       if (missingProcedures.length > 0) {
@@ -70,7 +86,7 @@ export class ProcedureTrackingService {
             user: { idUser: userId } as any,
             project: { idProject: projectId } as any,
             admin_procedure: ap,
-          })
+          }),
         );
         await this.trackingRepository.save(newTrackings);
       }
@@ -97,19 +113,30 @@ export class ProcedureTrackingService {
     });
   }
 
-  async findOne(id: number): Promise<ProcedureTracking> {
+  // userId requis : un suivi de procédure appartient à un utilisateur, on n'expose
+  // ni ne modifie jamais celui d'un autre.
+  async findOne(id: number, userId: number): Promise<ProcedureTracking> {
     const tracking = await this.trackingRepository.findOne({
       where: { idProcedureTracking: id },
       relations: ['user', 'admin_procedure', 'project'],
     });
     if (!tracking) {
-      throw new NotFoundException(`Suivi de procédure avec l'ID ${id} introuvable`);
+      throw new NotFoundException(
+        `Suivi de procédure avec l'ID ${id} introuvable`,
+      );
+    }
+    if (tracking.user?.idUser !== userId) {
+      throw new ForbiddenException('Accès refusé à ce suivi de procédure');
     }
     return tracking;
   }
 
-  async update(id: number, updateDto: UpdateProcedureTrackingDto): Promise<ProcedureTracking> {
-    const tracking = await this.findOne(id);
+  async update(
+    id: number,
+    userId: number,
+    updateDto: UpdateProcedureTrackingDto,
+  ): Promise<ProcedureTracking> {
+    const tracking = await this.findOne(id, userId);
 
     if (updateDto.status !== undefined) {
       tracking.status = updateDto.status;
@@ -125,15 +152,18 @@ export class ProcedureTrackingService {
     }
 
     // ✅ Vider end_date si l'étape est décochée
-    if (updateDto.status === 'not_started' || updateDto.status === 'in_progress') {
+    if (
+      updateDto.status === 'not_started' ||
+      updateDto.status === 'in_progress'
+    ) {
       tracking.end_date = null;
     }
 
     return await this.trackingRepository.save(tracking);
   }
 
-  async remove(id: number): Promise<void> {
-    const tracking = await this.findOne(id);
+  async remove(id: number, userId: number): Promise<void> {
+    const tracking = await this.findOne(id, userId);
     await this.trackingRepository.remove(tracking);
   }
 }

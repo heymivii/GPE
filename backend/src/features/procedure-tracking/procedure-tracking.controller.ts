@@ -44,23 +44,25 @@ export class ProcedureTrackingController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.procedureTrackingService.findOne(+id);
+  findOne(@Request() req, @Param('id') id: string) {
+    return this.procedureTrackingService.findOne(+id, req.user.userId);
   }
 
   @Patch(':id')
   update(
+    @Request() req,
     @Param('id') id: string,
     @Body() updateProcedureTrackingDto: UpdateProcedureTrackingDto,
   ) {
     return this.procedureTrackingService.update(
       +id,
+      req.user.userId,
       updateProcedureTrackingDto,
     );
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.procedureTrackingService.remove(+id);
+  remove(@Request() req, @Param('id') id: string) {
+    return this.procedureTrackingService.remove(+id, req.user.userId);
   }
 }

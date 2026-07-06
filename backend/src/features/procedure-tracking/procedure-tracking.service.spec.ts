@@ -13,7 +13,13 @@ function makeAP(
   objectives: string[] | null = null,
   status = 'active',
 ): Partial<AdminProcedure> {
-  return { idAdminProcedure: id, category, objectives: objectives ?? undefined, stepOrder: id, status };
+  return {
+    idAdminProcedure: id,
+    category,
+    objectives: objectives ?? undefined,
+    stepOrder: id,
+    status,
+  };
 }
 
 describe('ProcedureTrackingService', () => {
@@ -43,9 +49,18 @@ describe('ProcedureTrackingService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ProcedureTrackingService,
-        { provide: getRepositoryToken(ProcedureTracking), useValue: trackingRepo },
-        { provide: getRepositoryToken(ExpatriationProject), useValue: projectRepo },
-        { provide: getRepositoryToken(AdminProcedure), useValue: adminProcedureRepo },
+        {
+          provide: getRepositoryToken(ProcedureTracking),
+          useValue: trackingRepo,
+        },
+        {
+          provide: getRepositoryToken(ExpatriationProject),
+          useValue: projectRepo,
+        },
+        {
+          provide: getRepositoryToken(AdminProcedure),
+          useValue: adminProcedureRepo,
+        },
       ],
     }).compile();
 
@@ -76,7 +91,11 @@ describe('ProcedureTrackingService', () => {
       trackingRepo.save.mockResolvedValue(undefined);
       // Final allTrackings: wrap each procedure in a tracking
       trackingRepo.find.mockResolvedValueOnce(
-        procedures.map((ap) => ({ idProcedureTracking: ap.idAdminProcedure, admin_procedure: ap, status: 'not_started' })),
+        procedures.map((ap) => ({
+          idProcedureTracking: ap.idAdminProcedure,
+          admin_procedure: ap,
+          status: 'not_started',
+        })),
       );
     }
 
@@ -139,7 +158,9 @@ describe('ProcedureTrackingService', () => {
 
     it('throws NotFoundException when project not found', async () => {
       projectRepo.findOne.mockResolvedValue(null);
-      await expect(service.findAllByUser(userId, 999)).rejects.toThrow(NotFoundException);
+      await expect(service.findAllByUser(userId, 999)).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -166,7 +187,7 @@ describe('ProcedureTrackingService', () => {
     it('persists completedFacts as action texts when provided', async () => {
       stubFindOne();
 
-      const result = await service.update(trackingId, {
+      const result = await service.update(trackingId, 1, {
         completedFacts: ['Préparer le passeport', 'Remplir le formulaire'],
       });
 
@@ -180,7 +201,9 @@ describe('ProcedureTrackingService', () => {
     it('does not overwrite completedFacts when not provided in dto', async () => {
       stubFindOne({ completedFacts: ['Préparer le passeport'] });
 
-      const result = await service.update(trackingId, { status: 'in_progress' });
+      const result = await service.update(trackingId, 1, {
+        status: 'in_progress',
+      });
 
       expect(result.completedFacts).toEqual(['Préparer le passeport']);
     });
@@ -188,7 +211,7 @@ describe('ProcedureTrackingService', () => {
     it('updates status alongside completedFacts in the same call', async () => {
       stubFindOne();
 
-      const result = await service.update(trackingId, {
+      const result = await service.update(trackingId, 1, {
         status: 'in_progress',
         completedFacts: ['Obtenir le visa'],
       });
@@ -225,14 +248,24 @@ describe('ProcedureTrackingService', () => {
 
       // Final allTrackings — include both trackings (as stored in DB)
       trackingRepo.find.mockResolvedValueOnce([
-        { idProcedureTracking: 1, admin_procedure: activeVisa, status: 'not_started' },
-        { idProcedureTracking: 2, admin_procedure: archivedSante, status: 'not_started' },
+        {
+          idProcedureTracking: 1,
+          admin_procedure: activeVisa,
+          status: 'not_started',
+        },
+        {
+          idProcedureTracking: 2,
+          admin_procedure: archivedSante,
+          status: 'not_started',
+        },
       ]);
 
       const result = await service.findAllByUser(userId, projectId);
 
       // Archived procedure is filtered from the result
-      expect(result.map((r) => r.admin_procedure?.category)).not.toContain('sante');
+      expect(result.map((r) => r.admin_procedure?.category)).not.toContain(
+        'sante',
+      );
       expect(result.map((r) => r.admin_procedure?.category)).toContain('visa');
     });
 
@@ -249,8 +282,16 @@ describe('ProcedureTrackingService', () => {
 
       // DB has both active and archived trackings
       trackingRepo.find.mockResolvedValueOnce([
-        { idProcedureTracking: 1, admin_procedure: activeVisa, status: 'not_started' },
-        { idProcedureTracking: 3, admin_procedure: archivedEmploi, status: 'in_progress' },
+        {
+          idProcedureTracking: 1,
+          admin_procedure: activeVisa,
+          status: 'not_started',
+        },
+        {
+          idProcedureTracking: 3,
+          admin_procedure: archivedEmploi,
+          status: 'in_progress',
+        },
       ]);
 
       const result = await service.findAllByUser(userId, projectId);

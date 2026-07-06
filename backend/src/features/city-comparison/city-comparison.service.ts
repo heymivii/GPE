@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CityComparison } from './entities/city-comparison.entity';
@@ -11,7 +15,10 @@ export class CityComparisonService {
     private readonly cityComparisonRepository: Repository<CityComparison>,
   ) {}
 
-  async create(userId: number, createDto: CreateCityComparisonDto): Promise<CityComparison> {
+  async create(
+    userId: number,
+    createDto: CreateCityComparisonDto,
+  ): Promise<CityComparison> {
     const comparison = this.cityComparisonRepository.create({
       user: { idUser: userId } as any,
       city: { idCity: createDto.cityId } as any,
@@ -26,7 +33,8 @@ export class CityComparisonService {
     });
   }
 
-  async findOne(id: number): Promise<CityComparison> {
+  // userId requis : une comparaison appartient à un utilisateur (IDOR sinon).
+  async findOne(id: number, userId: number): Promise<CityComparison> {
     const comparison = await this.cityComparisonRepository.findOne({
       where: { idCityComparison: id },
       relations: ['city', 'city.country', 'user'],
@@ -34,11 +42,14 @@ export class CityComparisonService {
     if (!comparison) {
       throw new NotFoundException(`City comparison with ID ${id} not found`);
     }
+    if (comparison.user?.idUser !== userId) {
+      throw new ForbiddenException('Accès refusé à cette comparaison');
+    }
     return comparison;
   }
 
-  async remove(id: number): Promise<void> {
-    const comparison = await this.findOne(id);
+  async remove(id: number, userId: number): Promise<void> {
+    const comparison = await this.findOne(id, userId);
     await this.cityComparisonRepository.remove(comparison);
   }
 }
