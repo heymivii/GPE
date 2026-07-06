@@ -41,6 +41,6 @@ export class CreateUserDto {
   status?: string;
 
   @IsOptional()
-  @IsEnum(['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'native', 'intermediate'])
+  @IsEnum(['none', 'A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'native'])
   languageLevel?: string;
 }
