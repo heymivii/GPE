@@ -87,6 +87,7 @@ const mapFrontendToBackendCreateDto = (feDto: CreateExpatriationProjectDto): any
     nationality: feDto.nationality,
     hasChildren: feDto.hasChildren,
     hasJobOffer: feDto.hasJobOffer,
+    priorities: feDto.priorities,
   };
 };
 
@@ -106,6 +107,7 @@ const mapFrontendToBackendUpdateDto = (feDto: UpdateExpatriationProjectDto): any
   if (feDto.nationality !== undefined) beDto.nationality = feDto.nationality;
   if (feDto.hasChildren !== undefined) beDto.hasChildren = feDto.hasChildren;
   if (feDto.hasJobOffer !== undefined) beDto.hasJobOffer = feDto.hasJobOffer;
+  if (feDto.priorities !== undefined) beDto.priorities = feDto.priorities;
   if (feDto.checklistProgress !== undefined) beDto.checklistProgress = feDto.checklistProgress;
 
   return beDto;

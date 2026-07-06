@@ -58,4 +58,10 @@ export class CreateExpatriationProjectDto {
   @IsOptional()
   @IsBoolean()
   hasJobOffer?: boolean;
+
+  // Priorités (chaîne « cat1, cat2 ») — pilotent la perso de la checklist et les recos.
+  @IsOptional()
+  @IsString()
+  @Length(0, 100)
+  priorities?: string;
 }
