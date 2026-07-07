@@ -33,6 +33,10 @@ export class User {
   @Column({ name: 'roles', type: 'varchar', length: 50, default: 'user' })
   roles: string;
 
+  // Compteur dénormalisé d'avertissements (schéma modération d'Arphan).
+  @Column({ name: 'warning_count', type: 'int', default: 0 })
+  warningCount: number;
+
   @Column({ type: 'integer', nullable: true })
   age?: number;
 
