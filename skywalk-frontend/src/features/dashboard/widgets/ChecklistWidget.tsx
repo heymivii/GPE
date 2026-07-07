@@ -8,7 +8,10 @@ import { personalizeFilter } from '../hooks/personalize';
 import TrustBadge from '../../../components/TrustBadge';
 import { getLinksForStep } from '../../../data/checklist-links';
 import { useTranslation } from 'react-i18next';
+import { getLocale } from '../../../data/supportedCountries';
 import type { WidgetSize } from '../hooks/useDashboardPreferences';
+
+const CK = 'dashboard.personalized.widgets.checklist';
 
 const CATEGORY_LABELS: Record<string, string> = {
   visa: 'dashboard.personalized.widgets.checklist.categories.visa',
@@ -27,31 +30,33 @@ function DeadlineBadge({ daysBeforeDeparture, departureDate, phase }: {
   departureDate?: string | Date | null;
   phase?: 'before' | 'on_arrival';
 }) {
+  const { t, i18n } = useTranslation();
   if (phase === 'on_arrival') return null;
   const deadline = getStepDeadline(daysBeforeDeparture, departureDate);
   if (!deadline.date) return null;
 
-  const dateStr = deadline.date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+  const dateStr = deadline.date.toLocaleDateString(getLocale(i18n.language), { day: 'numeric', month: 'short', year: 'numeric' });
 
   if (deadline.isLate) return (
     <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-red-100 text-red-700 font-medium whitespace-nowrap">
-      🔴 En retard — {dateStr}
+      {t(`${CK}.deadlineLate`, { date: dateStr })}
     </span>
   );
   if (deadline.isUrgent) return (
     <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-orange-100 text-orange-700 font-medium whitespace-nowrap">
-      🟠 {deadline.daysLeft}j — {dateStr}
+      {t(`${CK}.deadlineUrgent`, { days: deadline.daysLeft, date: dateStr })}
     </span>
   );
   return (
     <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-500 whitespace-nowrap">
-      📅 {dateStr}
+      {t(`${CK}.deadlineNormal`, { date: dateStr })}
     </span>
   );
 }
 
 // ✅ Liens officiels par étape
 function StepLinks({ category, countryCode }: { category: string; countryCode?: string }) {
+  const { t } = useTranslation();
   const links = getLinksForStep(category, countryCode);
   if (!links) return null;
 
@@ -66,7 +71,7 @@ function StepLinks({ category, countryCode }: { category: string; countryCode?: 
           onClick={(e) => e.stopPropagation()}
           className="text-[10px] text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-0.5"
         >
-          Voir le service <ArrowRight className="w-2.5 h-2.5" />
+          {t(`${CK}.seeService`)} <ArrowRight className="w-2.5 h-2.5" />
         </Link>
       )}
       {links.externalLinks?.map((link) => (
@@ -166,7 +171,7 @@ function ChecklistItemCard({
                 />
                 {item.phase === 'on_arrival' && (
                   <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-500 whitespace-nowrap">
-                    sur place
+                    {t(`${CK}.onSite`)}
                   </span>
                 )}
               </>
@@ -490,7 +495,7 @@ export default function ChecklistWidget({
         {/* ✅ Alerte date de départ manquante */}
         {!departureDate && (
           <div className="text-xs text-orange-600 bg-orange-50 border border-orange-100 rounded-lg px-3 py-2">
-            Ajoutez votre date de départ pour voir les deadlines de chaque étape.
+            {t(`${CK}.missingDepartureDate`)}
           </div>
         )}
 
@@ -498,7 +503,7 @@ export default function ChecklistWidget({
         {urgentSteps.length > 0 && (
           <div className="space-y-1.5">
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
-              À faire en priorité
+              {t(`${CK}.priorityToDo`)}
             </p>
             {urgentSteps.map((item) => (
               <div
@@ -527,7 +532,7 @@ export default function ChecklistWidget({
           {remainingBefore.length > 0 && (
             <div className="space-y-1.5">
               <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">
-                ✈️ Avant le départ
+                {t(`${CK}.beforeDeparture`)}
               </p>
               {remainingBefore.map((item) => (
                 <ChecklistItemCard
@@ -549,7 +554,7 @@ export default function ChecklistWidget({
           {remainingArrival.length > 0 && (
             <div className="space-y-1.5">
               <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">
-                🏠 À l'arrivée
+                {t(`${CK}.onArrival`)}
               </p>
               {remainingArrival.map((item) => (
                 <ChecklistItemCard
@@ -574,7 +579,7 @@ export default function ChecklistWidget({
             to={`/projects/${project.idProject}/checklist`}
             className="flex items-center justify-center gap-1.5 w-full py-2 text-sm text-gray-500 hover:text-gray-900 border border-gray-100 hover:border-gray-300 rounded-lg transition-colors"
           >
-            Voir toute la checklist
+            {t(`${CK}.seeFullChecklist`)}
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         )}

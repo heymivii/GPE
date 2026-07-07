@@ -130,9 +130,9 @@ export default function OnboardingFlow() {
         },
         profile: {
           age: user.age?.toString() || '25',
-          status: user.status || 'single',
+          status: user.status || '',
           travelParty: existingProject.travelType || 'alone',
-          languageLevel: user.languageLevel || existingProject.languageLevel || 'intermediate',
+          languageLevel: user.languageLevel || existingProject.languageLevel || '',
           motherTongue: user.motherTongue || '',
           spokenLanguages: user.spokenLanguages || [],
           hasChildren: existingProject.hasChildren ?? undefined,

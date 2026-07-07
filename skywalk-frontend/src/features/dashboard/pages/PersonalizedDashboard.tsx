@@ -302,7 +302,7 @@ export default function PersonalizedDashboard() {
           <WeatherWidget
             key={widgetId}
             countryName={countryData?.name || 'France'}
-            cityName={countryData?.capital || ''}
+            cityName={activeProject?.destinationCity?.name || countryData?.capital || ''}
             {...commonProps}
           />
         )

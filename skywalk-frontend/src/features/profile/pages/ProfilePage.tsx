@@ -118,6 +118,18 @@ export default function ProfilePage() {
     return null;
   }
 
+  const STATUS_LABEL_KEYS: Record<string, string> = {
+    student: 'profilePage.statusStudentOption',
+    employee: 'profilePage.statusEmployeeOption',
+    self_employed: 'profilePage.statusSelfEmployedOption',
+    unemployed: 'profilePage.statusUnemployedOption',
+    retired: 'profilePage.statusRetiredOption',
+    other: 'profilePage.statusOtherOption',
+  };
+  const statusLabel = profile.status
+    ? (STATUS_LABEL_KEYS[profile.status] ? t(STATUS_LABEL_KEYS[profile.status]) : profile.status)
+    : null;
+
   const getInitials = (name: string) => {
     return name
       .split(' ')
@@ -200,13 +212,9 @@ export default function ProfilePage() {
               </div>
               
               <div className="flex flex-wrap justify-center sm:justify-start gap-2 font-sans">
-                {profile.status && (
+                {statusLabel && (
                   <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
-                    {profile.status === 'self-employed' ? t('profilePage.statusSelfEmployed') : 
-                     profile.status === 'employed' ? t('profilePage.statusEmployed') :
-                     profile.status === 'student' ? t('profilePage.statusStudent') :
-                     profile.status === 'retired' ? t('profilePage.statusRetired') :
-                     profile.status}
+                    {statusLabel}
                   </span>
                 )}
                 {originCountry && (
@@ -283,13 +291,7 @@ export default function ProfilePage() {
                 <div className="space-y-6 pl-2">
                   <InfoItem label={t('profilePage.originCountry')} value={originCountry?.countryName} />
                   <InfoItem label={t('profilePage.targetLanguageLevel')} value={profile.languageLevel} />
-                  <InfoItem label={t('profilePage.currentStatus')} value={
-                    profile.status === 'self-employed' ? t('profilePage.statusSelfEmployed') : 
-                    profile.status === 'employed' ? t('profilePage.statusEmployed') :
-                    profile.status === 'student' ? t('profilePage.statusStudent') :
-                    profile.status === 'retired' ? t('profilePage.statusRetired') :
-                    profile.status
-                  } />
+                  <InfoItem label={t('profilePage.currentStatus')} value={statusLabel} />
                 </div>
               </section>
             </div>

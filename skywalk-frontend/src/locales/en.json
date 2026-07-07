@@ -1419,6 +1419,16 @@
           "hide": "Hide",
           "show": "{{count}} substeps",
           "optional": "optional",
+          "deadlineLate": "🔴 Overdue — {{date}}",
+          "deadlineUrgent": "🟠 {{days}}d — {{date}}",
+          "deadlineNormal": "📅 {{date}}",
+          "seeService": "See the service",
+          "onSite": "on-site",
+          "missingDepartureDate": "Add your departure date to see each step's deadline.",
+          "priorityToDo": "Priority tasks",
+          "beforeDeparture": "✈️ Before departure",
+          "onArrival": "🏠 On arrival",
+          "seeFullChecklist": "See full checklist",
           "categories": {
             "visa": "Visa",
             "preDeparture": "Pre-departure",
@@ -1906,7 +1916,8 @@
         "alone": "Alone",
         "couple": "As a couple",
         "family": "With family",
-        "friends": "With friends"
+        "friends": "With friends",
+        "other": "Other"
       },
       "goal": {
         "studies": "Studies",

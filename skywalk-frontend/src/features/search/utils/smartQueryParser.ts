@@ -248,6 +248,11 @@ export function isAdzunaSupported(countryCode: string): boolean {
 }
 
 export function getCountryCodeFromName(name: string): string {
-  const alias = countryAliases[name.toLowerCase()]
-  return alias?.code || ''
+  const normalized = name.trim().toLowerCase()
+  const alias = countryAliases[normalized]
+  if (alias) return alias.code
+  // Destination detail links pass a raw ISO2 code (e.g. ?country=ch). Accept it directly
+  // so ch→Suisse, de→Allemagne, jp→Japon, ca→Canada resolve instead of falling back to fr.
+  if (isAdzunaSupported(normalized)) return normalized
+  return ''
 }
