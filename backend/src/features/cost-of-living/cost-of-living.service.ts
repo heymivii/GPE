@@ -1,4 +1,10 @@
-import { Injectable, Logger, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  HttpException,
+  HttpStatus,
+  Optional,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, LessThan } from 'typeorm';
 import axios from 'axios';
@@ -66,8 +72,10 @@ export class CostOfLivingService {
     @InjectRepository(Country)
     private readonly countryRepository: Repository<Country>,
     // Optional: auto-chained city indices (QoL + property) after a cost-of-living fetch.
-    private readonly qualityOfLife?: QualityOfLifeService,
-    private readonly propertyInvestment?: PropertyInvestmentService,
+    // @Optional() : sans ça Nest les traite comme requis (et casse les tests / tout
+    // module qui ne les fournit pas), alors que le service garde déjà en `?.`.
+    @Optional() private readonly qualityOfLife?: QualityOfLifeService,
+    @Optional() private readonly propertyInvestment?: PropertyInvestmentService,
   ) {}
 
   private memKey(city: string, country: string): string {
