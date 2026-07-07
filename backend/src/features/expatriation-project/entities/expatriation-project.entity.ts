@@ -99,6 +99,10 @@ export class ExpatriationProject {
   @Column({ name: 'priorities', type: 'varchar', length: 100, nullable: true })
   priorities: string | null;
 
+  /** Étapes de préparation déjà faites (liste « id,id » saisie à l'onboarding). */
+  @Column({ name: 'steps_done', type: 'varchar', length: 255, nullable: true })
+  stepsDone: string | null;
+
   @Column({ name: 'completed_at', type: 'timestamp', nullable: true })
   completedAt: Date | null;
 

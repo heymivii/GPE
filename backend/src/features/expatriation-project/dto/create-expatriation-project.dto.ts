@@ -64,4 +64,10 @@ export class CreateExpatriationProjectDto {
   @IsString()
   @Length(0, 100)
   priorities?: string;
+
+  // Étapes de préparation déjà faites (« id,id »).
+  @IsOptional()
+  @IsString()
+  @Length(0, 255)
+  stepsDone?: string;
 }

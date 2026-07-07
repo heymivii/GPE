@@ -8,7 +8,7 @@ import {
   JoinColumn,
   OneToMany,
 } from 'typeorm';
-import { Exclude } from 'class-transformer';
+import { Exclude, Expose } from 'class-transformer';
 import { Country } from '../../country/entities/country.entity';
 import { ProcedureTracking } from '../../procedure-tracking/entities/procedure-tracking.entity';
 
@@ -70,4 +70,11 @@ export class User {
 
   @OneToMany(() => ProcedureTracking, (tracking) => tracking.user)
   processTrackings: ProcedureTracking[];
+
+  // Nom complet dérivé — le front lit `fullName` (en-tête profil, NavBar) mais il n'y a
+  // pas de colonne. @Expose() l'inclut dans toute réponse sérialisée via l'interceptor global.
+  @Expose()
+  get fullName(): string {
+    return [this.firstName, this.lastName].filter(Boolean).join(' ');
+  }
 }
