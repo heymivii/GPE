@@ -11,6 +11,8 @@ interface BudgetTrackerWidgetProps {
   housingBudget: string
   countryData?: CountryData | null
   originCountryData?: CountryData | null
+  /** Destination city of the active project — used for cost-of-living instead of the capital. */
+  cityName?: string
   onEdit?: () => void
   onHide?: () => void
   onResize?: (size: WidgetSize) => void
@@ -57,11 +59,12 @@ const COUNTRY_CAPITAL_MAP: Record<string, { city: string; apiCountry: string }> 
   SE: { city: 'Stockholm', apiCountry: 'Sweden' },
 }
 
-export default function BudgetTrackerWidget({ 
-  housingBudget, 
+export default function BudgetTrackerWidget({
+  housingBudget,
   countryData,
   originCountryData,
-  onEdit, 
+  cityName,
+  onEdit,
   onHide,
   onResize,
   currentSize,
@@ -71,11 +74,13 @@ export default function BudgetTrackerWidget({
   const originCurrency = originCountryData?.currency || 'EUR'
   const destCode = countryData?.code || ''
   const capitalInfo = COUNTRY_CAPITAL_MAP[destCode]
+  // Ville du projet si connue, sinon la capitale de la map (le pays vient toujours de la map).
+  const colCity = cityName || capitalInfo?.city
 
   const { data: liveColData } = useQuery<CleanedCostOfLivingData>({
-    queryKey: ['cost-of-living-widget', capitalInfo?.city, capitalInfo?.apiCountry],
-    queryFn: () => costOfLivingApi.getCostOfLiving(capitalInfo!.city, capitalInfo!.apiCountry),
-    enabled: !!capitalInfo,
+    queryKey: ['cost-of-living-widget', colCity, capitalInfo?.apiCountry],
+    queryFn: () => costOfLivingApi.getCostOfLiving(colCity!, capitalInfo!.apiCountry),
+    enabled: !!capitalInfo && !!colCity,
     staleTime: 30 * 60 * 1000,
     retry: 1,
   })
@@ -217,7 +222,7 @@ export default function BudgetTrackerWidget({
 
           <p className="text-[10px] text-gray-400 text-right mt-2">
             {isLiveData
-              ? t('dashboard.personalized.widgets.budgetTracker.sourceLive', { city: capitalInfo?.city || '' })
+              ? t('dashboard.personalized.widgets.budgetTracker.sourceLive', { city: colCity || '' })
               : t('dashboard.personalized.widgets.budgetTracker.sourceStatic')}
           </p>
         </div>

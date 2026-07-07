@@ -8,6 +8,8 @@ import type { WidgetSize } from '../hooks/useDashboardPreferences';
 interface LocalTimeWidgetProps {
   countryCode: string;
   countryName: string;
+  /** IANA timezone of the destination city (preferred over the per-country fallback). */
+  timezone?: string;
   onHide?: () => void;
   onResize?: (size: WidgetSize) => void;
   currentSize?: WidgetSize;
@@ -30,9 +32,10 @@ const TIMEZONE_MAP: Record<string, string> = {
   'SE': 'Europe/Stockholm',
 };
 
-export default function LocalTimeWidget({ 
-  countryCode, 
-  countryName, 
+export default function LocalTimeWidget({
+  countryCode,
+  countryName,
+  timezone: timezoneProp,
   onHide,
   onResize,
   currentSize,
@@ -40,8 +43,9 @@ export default function LocalTimeWidget({
   const { t, i18n } = useTranslation()
   const [localTime, setLocalTime] = useState<Date>(new Date());
   const [destinationTime, setDestinationTime] = useState<Date>(new Date());
-  
-  const timezone = TIMEZONE_MAP[countryCode] || 'UTC';
+
+  // Fuseau de la ville de destination si connu, sinon repli par pays (faux pour les pays multi-fuseaux).
+  const timezone = timezoneProp || TIMEZONE_MAP[countryCode] || 'UTC';
   const locale = getLocale(i18n.language);
 
   useEffect(() => {

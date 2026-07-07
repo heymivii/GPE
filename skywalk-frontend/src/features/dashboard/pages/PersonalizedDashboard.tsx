@@ -195,8 +195,8 @@ export default function PersonalizedDashboard() {
           : new Date().getFullYear().toString()
       },
       profile: {
-        age: user?.age?.toString() || '25',
-        status: user?.status || 'employee',
+        age: user?.age?.toString() || '',
+        status: user?.status || '',
         travelParty: activeProject?.travelType || 'alone'
       },
       objective: {
@@ -293,6 +293,7 @@ export default function PersonalizedDashboard() {
             key={widgetId}
             countryCode={countryData?.code || 'FR'}
             countryName={countryData?.name || 'France'}
+            timezone={(activeProject?.destinationCity as { timezone?: string } | undefined)?.timezone || undefined}
             {...commonProps}
           />
         )
@@ -344,6 +345,7 @@ export default function PersonalizedDashboard() {
             housingBudget={activeProject?.housingBudget?.toString() || '0'}
             countryData={countryData}
             originCountryData={originCountryData}
+            cityName={activeProject?.destinationCity?.name || undefined}
             {...commonProps}
           />
         )
