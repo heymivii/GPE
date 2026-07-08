@@ -57,6 +57,11 @@ export default function AdminLayout() {
       label: 'Carnet de recherche',
       icon: BookMarked,
     },
+    {
+      path: '/admin/moderation',
+      label: 'Modération Forum',
+      icon: ShieldAlert,
+    },
   ];
 
   const handleLogout = async () => {
