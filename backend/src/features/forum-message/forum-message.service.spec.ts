@@ -9,6 +9,7 @@ import { ForumMessageService } from './forum-message.service';
 import { ForumMessage } from './entities/forum-message.entity';
 import { ForumReport } from './entities/forum-report.entity';
 import { ContentFilterService } from './content-filter.service';
+import { ForumModerationService } from '../forum-moderation/forum-moderation.service';
 
 const mockMessageRepo = () => ({
   create: jest.fn(),
@@ -50,6 +51,10 @@ describe('ForumMessageService', () => {
         { provide: getRepositoryToken(ForumMessage), useValue: messageRepo },
         { provide: getRepositoryToken(ForumReport), useValue: reportRepo },
         { provide: ContentFilterService, useValue: contentFilter },
+        {
+          provide: ForumModerationService,
+          useValue: { moderate: jest.fn().mockResolvedValue({ action: 'ok' }) },
+        },
       ],
     }).compile();
 

@@ -39,6 +39,7 @@ import { AdminStatsModule } from './features/admin-stats/admin-stats.module';
 import { AdminLogModule } from './features/admin-log/admin-log.module';
 import { GovLinksModule } from './features/gov-links/gov-links.module';
 import { SearchHintModule } from './features/search-hint/search-hint.module';
+import { ForumModerationModule } from './features/forum-moderation/forum-moderation.module';
 
 @Module({
   imports: [
@@ -69,6 +70,7 @@ import { SearchHintModule } from './features/search-hint/search-hint.module';
     ProcedureTrackingModule,
     ForumTopicModule,
     ForumMessageModule,
+    ForumModerationModule,
     NotificationModule,
     ExperienceModule,
     ExpatriationProjectModule,

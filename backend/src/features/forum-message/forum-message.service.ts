@@ -12,6 +12,7 @@ import { CreateReportDto } from './dto/create-report.dto';
 import { ForumMessage } from './entities/forum-message.entity';
 import { ForumReport } from './entities/forum-report.entity';
 import { ContentFilterService } from './content-filter.service';
+import { ForumModerationService } from '../forum-moderation/forum-moderation.service';
 
 @Injectable()
 export class ForumMessageService {
@@ -21,6 +22,7 @@ export class ForumMessageService {
     @InjectRepository(ForumReport)
     private readonly forumReportRepository: Repository<ForumReport>,
     private readonly contentFilter: ContentFilterService,
+    private readonly moderation: ForumModerationService,
   ) {}
 
   async create(
@@ -35,10 +37,21 @@ export class ForumMessageService {
       throw new BadRequestException(`Content rejected: ${check.reason}`);
     }
 
+    // Modération pilotée par la BDD (mots interdits) : high/critical bloque,
+    // low/medium publie mais flague + crée un avertissement.
+    const mod = await this.moderation.moderate(userId, sanitized);
+    if (mod.action === 'block') {
+      throw new BadRequestException(`Content rejected: ${mod.reason}`);
+    }
+
+    const flagged = mod.action === 'flag';
     const message = this.forumMessageRepository.create({
       content: sanitized,
       topic: { idForumTopic: createForumMessageDto.topicId } as any,
       user: { idUser: userId } as any,
+      isModerated: flagged,
+      moderationReason: flagged ? (mod.reason ?? null) : null,
+      moderatedAt: flagged ? new Date() : null,
     });
 
     return await this.forumMessageRepository.save(message);

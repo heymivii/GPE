@@ -11,6 +11,7 @@ import { UpdateForumTopicDto } from './dto/update-forum-topic.dto';
 import { ForumTopic } from './entities/forum-topic.entity';
 import { ForumMessage } from '../forum-message/entities/forum-message.entity';
 import { ContentFilterService } from '../forum-message/content-filter.service';
+import { ForumModerationService } from '../forum-moderation/forum-moderation.service';
 
 @Injectable()
 export class ForumTopicService {
@@ -20,6 +21,7 @@ export class ForumTopicService {
     @InjectRepository(ForumMessage)
     private readonly forumMessageRepository: Repository<ForumMessage>,
     private readonly contentFilterService: ContentFilterService,
+    private readonly moderation: ForumModerationService,
   ) {}
 
   async create(
@@ -51,6 +53,17 @@ export class ForumTopicService {
       createForumTopicDto.content.trim(),
     );
 
+    // Modération BDD sur titre + contenu : high/critical bloque la création,
+    // low/medium laisse passer mais flague le message initial + avertit l'auteur.
+    const mod = await this.moderation.moderate(
+      userId,
+      `${sanitizedTitle}\n${sanitizedContent}`,
+    );
+    if (mod.action === 'block') {
+      throw new BadRequestException(`Topic rejected: ${mod.reason}`);
+    }
+    const flagged = mod.action === 'flag';
+
     const topic = this.forumTopicRepository.create({
       title: sanitizedTitle,
       category: createForumTopicDto.category,
@@ -66,6 +79,9 @@ export class ForumTopicService {
       content: sanitizedContent,
       topic: { idForumTopic: savedTopic.idForumTopic } as any,
       user: { idUser: userId } as any,
+      isModerated: flagged,
+      moderationReason: flagged ? (mod.reason ?? null) : null,
+      moderatedAt: flagged ? new Date() : null,
     });
 
     await this.forumMessageRepository.save(initialMessage);

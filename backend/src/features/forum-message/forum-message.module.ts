@@ -5,9 +5,13 @@ import { ForumMessageController } from './forum-message.controller';
 import { ForumMessage } from './entities/forum-message.entity';
 import { ForumReport } from './entities/forum-report.entity';
 import { ContentFilterService } from './content-filter.service';
+import { ForumModerationModule } from '../forum-moderation/forum-moderation.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ForumMessage, ForumReport])],
+  imports: [
+    TypeOrmModule.forFeature([ForumMessage, ForumReport]),
+    ForumModerationModule,
+  ],
   controllers: [ForumMessageController],
   providers: [ForumMessageService, ContentFilterService],
   exports: [ForumMessageService, ContentFilterService],
