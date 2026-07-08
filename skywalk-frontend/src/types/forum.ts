@@ -53,9 +53,9 @@ export interface ForumTopicWithMessages extends ForumTopic {
 
 export interface CreateForumTopicDto {
   title: string;
-  content: string; 
+  content: string;
   category?: TopicCategory;
-  userId: number;
+  // NB: pas de userId — l'auteur est dérivé du token JWT côté serveur.
   countryId?: number;
 }
 
@@ -69,7 +69,7 @@ export interface UpdateForumTopicDto {
 export interface CreateForumMessageDto {
   content: string;
   topicId: number;
-  userId: number;
+  // NB: pas de userId — l'auteur vient du token JWT côté serveur.
 }
 
 
@@ -118,7 +118,7 @@ export interface ForumReport {
 }
 
 export interface CreateReportDto {
-  reporterId: number;
+  // NB: pas de reporterId — le rapporteur vient du token JWT côté serveur.
   messageId?: number;
   topicId?: number;
   reason: ReportReason;

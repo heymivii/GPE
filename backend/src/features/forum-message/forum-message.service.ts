@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -23,6 +24,7 @@ export class ForumMessageService {
   ) {}
 
   async create(
+    userId: number,
     createForumMessageDto: CreateForumMessageDto,
   ): Promise<ForumMessage> {
     const sanitized = this.contentFilter.sanitize(
@@ -36,7 +38,7 @@ export class ForumMessageService {
     const message = this.forumMessageRepository.create({
       content: sanitized,
       topic: { idForumTopic: createForumMessageDto.topicId } as any,
-      user: { idUser: createForumMessageDto.userId } as any,
+      user: { idUser: userId } as any,
     });
 
     return await this.forumMessageRepository.save(message);
@@ -64,9 +66,13 @@ export class ForumMessageService {
 
   async update(
     id: number,
+    userId: number,
     updateForumMessageDto: UpdateForumMessageDto,
   ): Promise<ForumMessage> {
     const message = await this.findOne(id);
+    if (message.user?.idUser !== userId) {
+      throw new ForbiddenException('Vous ne pouvez modifier que vos messages');
+    }
 
     if (updateForumMessageDto.content) {
       const sanitized = this.contentFilter.sanitize(
@@ -84,12 +90,12 @@ export class ForumMessageService {
     return await this.forumMessageRepository.save(message);
   }
 
-  async remove(id: number): Promise<void> {
-    const result = await this.forumMessageRepository.delete(id);
-
-    if (result.affected === 0) {
-      throw new NotFoundException(`Message with ID ${id} not found`);
+  async remove(id: number, userId: number): Promise<void> {
+    const message = await this.findOne(id);
+    if (message.user?.idUser !== userId) {
+      throw new ForbiddenException('Vous ne pouvez supprimer que vos messages');
     }
+    await this.forumMessageRepository.delete(id);
   }
 
   async moderatorRemove(id: number): Promise<void> {
@@ -108,10 +114,13 @@ export class ForumMessageService {
     });
   }
 
-  async createReport(dto: CreateReportDto): Promise<ForumReport> {
+  async createReport(
+    reporterId: number,
+    dto: CreateReportDto,
+  ): Promise<ForumReport> {
     const existing = await this.forumReportRepository.findOne({
       where: {
-        reporter: { idUser: dto.reporterId },
+        reporter: { idUser: reporterId },
         ...(dto.messageId ? { message: { idForumMessage: dto.messageId } } : {}),
         ...(dto.topicId ? { topic: { idForumTopic: dto.topicId } } : {}),
         status: 'pending' as const,
@@ -125,7 +134,7 @@ export class ForumMessageService {
     const report = this.forumReportRepository.create({
       reason: dto.reason,
       details: dto.details,
-      reporter: { idUser: dto.reporterId } as any,
+      reporter: { idUser: reporterId } as any,
       message: dto.messageId
         ? ({ idForumMessage: dto.messageId } as any)
         : undefined,

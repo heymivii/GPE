@@ -54,4 +54,7 @@ export class ForumTopic {
 
   @OneToMany(() => ForumMessage, (message) => message.topic)
   messages: ForumMessage[];
+
+  /** Non persisté : nombre de messages, rempli par findAll (loadRelationCountAndMap). */
+  messagesCount?: number;
 }

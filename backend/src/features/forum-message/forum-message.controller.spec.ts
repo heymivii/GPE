@@ -40,10 +40,11 @@ describe('ForumMessageController', () => {
   describe('create()', () => {
     it('should delegate to service.create', async () => {
       const dto = { content: 'Hello', idForumMessage: 1, topicId: 1 };
+      const req = { user: { userId: 1 } };
       service.create.mockResolvedValue({ idForumMessage: 1, content: 'Hello' });
 
-      const result = await controller.create(dto as any);
-      expect(service.create).toHaveBeenCalledWith(dto);
+      const result = await controller.create(req, dto as any);
+      expect(service.create).toHaveBeenCalledWith(1, dto);
       expect(result.idForumMessage).toBe(1);
     });
   });
@@ -74,7 +75,7 @@ describe('ForumMessageController', () => {
     it('should return a single message', async () => {
       service.findOne.mockResolvedValue({ idForumMessage: 3 });
 
-      const result = await controller.findOne('3');
+      const result = await controller.findOne(3);
       expect(service.findOne).toHaveBeenCalledWith(3);
       expect(result.idForumMessage).toBe(3);
     });
@@ -85,13 +86,14 @@ describe('ForumMessageController', () => {
   describe('update()', () => {
     it('should delegate to service.update', async () => {
       const dto = { content: 'Updated content' };
+      const req = { user: { userId: 1 } };
       service.update.mockResolvedValue({
         idForumMessage: 1,
         content: 'Updated content',
       });
 
-      const result = await controller.update('1', dto as any);
-      expect(service.update).toHaveBeenCalledWith(1, dto);
+      const result = await controller.update(req, 1, dto as any);
+      expect(service.update).toHaveBeenCalledWith(1, 1, dto);
       expect(result.content).toBe('Updated content');
     });
   });
@@ -100,10 +102,11 @@ describe('ForumMessageController', () => {
 
   describe('remove()', () => {
     it('should delegate to service.remove', async () => {
+      const req = { user: { userId: 1 } };
       service.remove.mockResolvedValue(undefined);
 
-      await controller.remove('4');
-      expect(service.remove).toHaveBeenCalledWith(4);
+      await controller.remove(req, 4);
+      expect(service.remove).toHaveBeenCalledWith(4, 1);
     });
   });
 
@@ -113,7 +116,7 @@ describe('ForumMessageController', () => {
     it('should delegate to service.moderatorRemove', async () => {
       service.moderatorRemove.mockResolvedValue(undefined);
 
-      await controller.moderateRemove('6');
+      await controller.moderateRemove(6);
       expect(service.moderatorRemove).toHaveBeenCalledWith(6);
     });
   });
@@ -123,15 +126,15 @@ describe('ForumMessageController', () => {
   describe('createReport()', () => {
     it('should delegate to service.createReport', async () => {
       const dto = {
-        reporterId: 1,
         messageId: 2,
         reason: 'spam',
         itemType: 'message',
       };
+      const req = { user: { userId: 1 } };
       service.createReport.mockResolvedValue({ idReport: 1 });
 
-      const result = await controller.createReport(dto as any);
-      expect(service.createReport).toHaveBeenCalledWith(dto);
+      const result = await controller.createReport(req, dto as any);
+      expect(service.createReport).toHaveBeenCalledWith(1, dto);
       expect(result.idReport).toBe(1);
     });
   });
@@ -172,14 +175,14 @@ describe('ForumMessageController', () => {
 
   describe('resolveReport()', () => {
     it('should resolve a report', async () => {
-      const req = { user: { sub: 42 } };
+      const req = { user: { userId: 42 } };
       const body = { action: 'resolved' as const, moderatorNote: 'done' };
       service.resolveReport.mockResolvedValue({
         report_id: 1,
         status: 'resolved',
       });
 
-      const result = await controller.resolveReport('1', req, body);
+      const result = await controller.resolveReport(1, req, body);
       expect(service.resolveReport).toHaveBeenCalledWith(
         1,
         42,
@@ -190,14 +193,14 @@ describe('ForumMessageController', () => {
     });
 
     it('should reject a report', async () => {
-      const req = { user: { sub: 42 } };
+      const req = { user: { userId: 42 } };
       const body = { action: 'rejected' as const };
       service.resolveReport.mockResolvedValue({
         report_id: 1,
         status: 'rejected',
       });
 
-      const result = await controller.resolveReport('1', req, body);
+      const result = await controller.resolveReport(1, req, body);
       expect(service.resolveReport).toHaveBeenCalledWith(
         1,
         42,

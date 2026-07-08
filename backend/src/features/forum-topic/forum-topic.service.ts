@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MoreThanOrEqual, Repository } from 'typeorm';
@@ -21,7 +22,10 @@ export class ForumTopicService {
     private readonly contentFilterService: ContentFilterService,
   ) {}
 
-  async create(createForumTopicDto: CreateForumTopicDto): Promise<ForumTopic> {
+  async create(
+    userId: number,
+    createForumTopicDto: CreateForumTopicDto,
+  ): Promise<ForumTopic> {
     const titleFilter = await this.contentFilterService.validate(
       createForumTopicDto.title,
     );
@@ -50,7 +54,7 @@ export class ForumTopicService {
     const topic = this.forumTopicRepository.create({
       title: sanitizedTitle,
       category: createForumTopicDto.category,
-      user: { idUser: createForumTopicDto.userId } as any,
+      user: { idUser: userId } as any,
       country: createForumTopicDto.countryId
         ? ({ idCountry: createForumTopicDto.countryId } as any)
         : undefined,
@@ -61,7 +65,7 @@ export class ForumTopicService {
     const initialMessage = this.forumMessageRepository.create({
       content: sanitizedContent,
       topic: { idForumTopic: savedTopic.idForumTopic } as any,
-      user: { idUser: createForumTopicDto.userId } as any,
+      user: { idUser: userId } as any,
     });
 
     await this.forumMessageRepository.save(initialMessage);
@@ -69,10 +73,16 @@ export class ForumTopicService {
     return savedTopic;
   }
   async findAll(): Promise<ForumTopic[]> {
-    return await this.forumTopicRepository.find({
-      relations: ['user', 'country'],
-      order: { createdAt: 'DESC' },
-    });
+    // loadRelationCountAndMap → chaque topic reçoit messagesCount (compteur de réponses
+    // réel), sans charger tous les messages. Avant, le front lisait messages?.length
+    // toujours undefined → « 0 réponses » partout.
+    return await this.forumTopicRepository
+      .createQueryBuilder('topic')
+      .leftJoinAndSelect('topic.user', 'user')
+      .leftJoinAndSelect('topic.country', 'country')
+      .loadRelationCountAndMap('topic.messagesCount', 'topic.messages')
+      .orderBy('topic.createdAt', 'DESC')
+      .getMany();
   }
 
   async getStats(): Promise<{
@@ -127,11 +137,25 @@ export class ForumTopicService {
     return topic;
   }
 
+  /** Lecture publique d'un topic : incrémente le compteur de vues (jamais fait avant). */
+  async findOnePublic(id: number): Promise<ForumTopic> {
+    await this.forumTopicRepository.increment(
+      { idForumTopic: id },
+      'viewsCount',
+      1,
+    );
+    return this.findOne(id);
+  }
+
   async update(
     id: number,
+    userId: number,
     updateForumTopicDto: UpdateForumTopicDto,
   ): Promise<ForumTopic> {
     const topic = await this.findOne(id);
+    if (topic.user?.idUser !== userId) {
+      throw new ForbiddenException('Vous ne pouvez modifier que vos sujets');
+    }
 
     if (updateForumTopicDto.title) {
       const titleFilter = await this.contentFilterService.validate(
@@ -207,16 +231,27 @@ export class ForumTopicService {
     return this.forumTopicRepository.save(topic);
   }
 
-  async moderatorRemove(id: number): Promise<void> {
-    const topic = await this.findOne(id);
+  // Supprime le topic ET ses messages — forum_message.topic est NOT NULL sans cascade,
+  // donc supprimer un topic qui a des messages violait la FK (500).
+  private async deleteTopicWithMessages(topic: ForumTopic): Promise<void> {
+    await this.forumMessageRepository.delete({
+      topic: { idForumTopic: topic.idForumTopic } as any,
+    });
     await this.forumTopicRepository.remove(topic);
   }
 
-  async remove(id: number): Promise<void> {
-    const result = await this.forumTopicRepository.delete(id);
+  /** Modération (admin/mod) : supprime n'importe quel topic. */
+  async moderatorRemove(id: number): Promise<void> {
+    const topic = await this.findOne(id);
+    await this.deleteTopicWithMessages(topic);
+  }
 
-    if (result.affected === 0) {
-      throw new NotFoundException(`Topic with ID ${id} not found`);
+  /** Suppression par l'auteur uniquement. */
+  async remove(id: number, userId: number): Promise<void> {
+    const topic = await this.findOne(id);
+    if (topic.user?.idUser !== userId) {
+      throw new ForbiddenException('Vous ne pouvez supprimer que vos sujets');
     }
+    await this.deleteTopicWithMessages(topic);
   }
 }

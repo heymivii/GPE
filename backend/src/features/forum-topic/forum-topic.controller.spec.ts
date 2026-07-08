@@ -7,6 +7,7 @@ const mockService = () => ({
   findAll: jest.fn(),
   getStats: jest.fn(),
   findOne: jest.fn(),
+  findOnePublic: jest.fn(),
   update: jest.fn(),
   remove: jest.fn(),
   lockTopic: jest.fn(),
@@ -39,10 +40,11 @@ describe('ForumTopicController', () => {
     it('should delegate to service.create', async () => {
       const dto = { title: 'T', content: 'C', category: 'question', idForumTopic: 1 };
       const topic = { idForumTopic: 1, ...dto };
+      const req = { user: { userId: 1 } };
       service.create.mockResolvedValue(topic);
 
-      const result = await controller.create(dto as any);
-      expect(service.create).toHaveBeenCalledWith(dto);
+      const result = await controller.create(req, dto as any);
+      expect(service.create).toHaveBeenCalledWith(1, dto);
       expect(result.idForumTopic).toBe(1);
     });
   });
@@ -80,10 +82,10 @@ describe('ForumTopicController', () => {
 
   describe('findOne()', () => {
     it('should return a single topic', async () => {
-      service.findOne.mockResolvedValue({ idForumTopic: 5 });
+      service.findOnePublic.mockResolvedValue({ idForumTopic: 5 });
 
       const result = await controller.findOne(5);
-      expect(service.findOne).toHaveBeenCalledWith(5);
+      expect(service.findOnePublic).toHaveBeenCalledWith(5);
       expect(result.idForumTopic).toBe(5);
     });
   });
@@ -93,10 +95,11 @@ describe('ForumTopicController', () => {
   describe('update()', () => {
     it('should delegate to service.update', async () => {
       const dto = { title: 'Updated' };
+      const req = { user: { userId: 1 } };
       service.update.mockResolvedValue({ idForumTopic: 1, title: 'Updated' });
 
-      const result = await controller.update(1, dto as any);
-      expect(service.update).toHaveBeenCalledWith(1, dto);
+      const result = await controller.update(req, 1, dto as any);
+      expect(service.update).toHaveBeenCalledWith(1, 1, dto);
       expect(result.title).toBe('Updated');
     });
   });
@@ -105,10 +108,11 @@ describe('ForumTopicController', () => {
 
   describe('remove()', () => {
     it('should delegate to service.remove', async () => {
+      const req = { user: { userId: 1 } };
       service.remove.mockResolvedValue(undefined);
 
-      await controller.remove(3);
-      expect(service.remove).toHaveBeenCalledWith(3);
+      await controller.remove(req, 3);
+      expect(service.remove).toHaveBeenCalledWith(3, 1);
     });
   });
 

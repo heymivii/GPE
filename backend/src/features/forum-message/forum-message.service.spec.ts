@@ -1,6 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { ForumMessageService } from './forum-message.service';
 import { ForumMessage } from './entities/forum-message.entity';
 import { ForumReport } from './entities/forum-report.entity';
@@ -59,14 +63,14 @@ describe('ForumMessageService', () => {
   // ─── create() ──────────────────────────────────────────────────
 
   describe('create()', () => {
-    const dto = { content: 'Hello World', topicId: 1, userId: 42 };
+    const dto = { content: 'Hello World', topicId: 1 };
 
     it('should create a message with sanitized content', async () => {
       const message = { idForumMessage: 1, content: 'Hello World' };
       messageRepo.create.mockReturnValue(message);
       messageRepo.save.mockResolvedValue(message);
 
-      const result = await service.create(dto);
+      const result = await service.create(42, dto);
 
       expect(contentFilter.sanitize).toHaveBeenCalledWith('Hello World');
       expect(contentFilter.validate).toHaveBeenCalled();
@@ -81,7 +85,9 @@ describe('ForumMessageService', () => {
         reason: 'profanity',
       });
 
-      await expect(service.create(dto)).rejects.toThrow(BadRequestException);
+      await expect(service.create(42, dto)).rejects.toThrow(
+        BadRequestException,
+      );
     });
 
     it('should throw BadRequestException with rejection reason', async () => {
@@ -91,7 +97,7 @@ describe('ForumMessageService', () => {
       });
 
       try {
-        await service.create(dto);
+        await service.create(42, dto);
         fail('Should have thrown');
       } catch (err) {
         expect(err.message).toContain('hate speech');
@@ -121,14 +127,18 @@ describe('ForumMessageService', () => {
 
   describe('update()', () => {
     it('should update message content with filtering', async () => {
-      const existing = { idForumMessage: 1, content: 'old' };
+      const existing = {
+        idForumMessage: 1,
+        content: 'old',
+        user: { idUser: 1 },
+      };
       messageRepo.findOne.mockResolvedValue(existing);
       messageRepo.save.mockResolvedValue({
         ...existing,
         content: 'new content',
       });
 
-      await service.update(1, { content: 'new content' });
+      await service.update(1, 1, { content: 'new content' });
 
       expect(contentFilter.sanitize).toHaveBeenCalledWith('new content');
       expect(contentFilter.validate).toHaveBeenCalled();
@@ -136,19 +146,23 @@ describe('ForumMessageService', () => {
     });
 
     it('should throw BadRequestException if updated content is rejected', async () => {
-      const existing = { idForumMessage: 1, content: 'old' };
+      const existing = {
+        idForumMessage: 1,
+        content: 'old',
+        user: { idUser: 1 },
+      };
       messageRepo.findOne.mockResolvedValue(existing);
       contentFilter.validate.mockResolvedValue({ ok: false, reason: 'spam' });
 
       await expect(
-        service.update(1, { content: 'spam content' }),
+        service.update(1, 1, { content: 'spam content' }),
       ).rejects.toThrow(BadRequestException);
     });
 
     it('should throw NotFoundException if message not found', async () => {
       messageRepo.findOne.mockResolvedValue(null);
 
-      await expect(service.update(999, { content: 'test' })).rejects.toThrow(
+      await expect(service.update(999, 1, { content: 'test' })).rejects.toThrow(
         NotFoundException,
       );
     });
@@ -157,17 +171,34 @@ describe('ForumMessageService', () => {
   // ─── remove() ──────────────────────────────────────────────────
 
   describe('remove()', () => {
-    it('should delete a message', async () => {
+    it('should delete a message (owner)', async () => {
+      const message = {
+        idForumMessage: 1,
+        content: 'x',
+        user: { idUser: 1 },
+      };
+      messageRepo.findOne.mockResolvedValue(message);
       messageRepo.delete.mockResolvedValue({ affected: 1 });
 
-      await expect(service.remove(1)).resolves.toBeUndefined();
+      await expect(service.remove(1, 1)).resolves.toBeUndefined();
       expect(messageRepo.delete).toHaveBeenCalledWith(1);
     });
 
-    it('should throw NotFoundException if nothing deleted', async () => {
-      messageRepo.delete.mockResolvedValue({ affected: 0 });
+    it('should throw ForbiddenException if not the owner', async () => {
+      const message = {
+        idForumMessage: 1,
+        content: 'x',
+        user: { idUser: 2 },
+      };
+      messageRepo.findOne.mockResolvedValue(message);
 
-      await expect(service.remove(999)).rejects.toThrow(NotFoundException);
+      await expect(service.remove(1, 99)).rejects.toThrow(ForbiddenException);
+    });
+
+    it('should throw NotFoundException if message not found', async () => {
+      messageRepo.findOne.mockResolvedValue(null);
+
+      await expect(service.remove(999, 1)).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -196,7 +227,6 @@ describe('ForumMessageService', () => {
 
   describe('createReport()', () => {
     const dto = {
-      reporterId: 1,
       messageId: 10,
       reason: 'spam' as any,
       details: 'This is spam',
@@ -208,7 +238,7 @@ describe('ForumMessageService', () => {
       reportRepo.create.mockReturnValue(report);
       reportRepo.save.mockResolvedValue(report);
 
-      const result = await service.createReport(dto);
+      const result = await service.createReport(1, dto);
       expect(result.idReport).toBe(1);
       expect(reportRepo.save).toHaveBeenCalled();
     });
@@ -216,7 +246,7 @@ describe('ForumMessageService', () => {
     it('should throw BadRequestException on duplicate report', async () => {
       reportRepo.findOne.mockResolvedValue({ idReport: 99 }); // existing
 
-      await expect(service.createReport(dto)).rejects.toThrow(
+      await expect(service.createReport(1, dto)).rejects.toThrow(
         BadRequestException,
       );
     });
