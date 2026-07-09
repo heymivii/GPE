@@ -455,14 +455,61 @@ export default function ChecklistPage() {
             Ma checklist d'expatriation
           </h1>
 
-          {departureDate && (
-            <p className="text-sm text-gray-500">
-              Départ le {new Date(departureDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
-              {daysUntilDeparture !== null && (
-                <span className={`ml-2 font-medium ${daysUntilDeparture < 30 ? 'text-orange-600' : 'text-gray-700'}`}>
-                  ({daysUntilDeparture > 0 ? `${daysUntilDeparture}j restants` : 'Date passée'})
-                </span>
-              )}
+          {departureDate ? (
+            <div className="mt-2 flex items-center gap-4 rounded-2xl border border-gray-100 bg-gradient-to-br from-[#5EA3C0]/10 to-transparent p-4">
+              <div className="text-center px-2 flex-shrink-0">
+                <div
+                  className={`text-3xl font-bold font-outfit leading-none ${
+                    daysUntilDeparture !== null && daysUntilDeparture < 30
+                      ? 'text-orange-600'
+                      : 'text-[#5EA3C0]'
+                  }`}
+                >
+                  {daysUntilDeparture === null
+                    ? '—'
+                    : daysUntilDeparture > 0
+                      ? `J-${daysUntilDeparture}`
+                      : daysUntilDeparture === 0
+                        ? 'Jour J'
+                        : 'Parti·e'}
+                </div>
+                <div className="text-[10px] text-gray-400 uppercase tracking-wide mt-1">
+                  avant le départ
+                </div>
+              </div>
+              <div className="h-12 w-px bg-gray-200 flex-shrink-0" />
+              <div className="min-w-0">
+                <p className="text-sm text-gray-600">
+                  Départ le{' '}
+                  <span className="font-semibold text-gray-800">
+                    {new Date(departureDate).toLocaleDateString('fr-FR', {
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric',
+                    })}
+                  </span>
+                </p>
+                <div className="flex flex-wrap gap-1.5 mt-1.5">
+                  {lateSteps > 0 && (
+                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-red-50 text-red-700 border border-red-100">
+                      {lateSteps} en retard
+                    </span>
+                  )}
+                  {urgentSteps > 0 && (
+                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-orange-50 text-orange-700 border border-orange-100">
+                      {urgentSteps} urgentes
+                    </span>
+                  )}
+                  <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">
+                    {completionPercentage}% fait
+                  </span>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <p className="mt-2 text-sm text-gray-500">
+              💡 Ajoutez une date de départ à votre projet pour activer le compte à rebours et les
+              échéances.
             </p>
           )}
 
