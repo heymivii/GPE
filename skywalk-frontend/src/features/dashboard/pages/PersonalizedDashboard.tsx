@@ -333,6 +333,7 @@ export default function PersonalizedDashboard() {
               nationality: activeProject?.nationality,
               hasChildren: activeProject?.hasChildren,
               priorities: activeProject?.priorities,
+              isPaid: activeProject?.isPaid,
             }}
             {...commonProps}
           />

@@ -243,6 +243,7 @@ interface ChecklistWidgetProps {
     nationality?: string | null;
     hasChildren?: boolean | null;
     priorities?: string | null;
+    isPaid?: boolean;
   };
   onEdit?: () => void;
   onHide?: () => void;
@@ -282,6 +283,10 @@ export default function ChecklistWidget({
 }: ChecklistWidgetProps) {
   const { t } = useTranslation();
   const { progress, updateStep, updateFacts, isLoading } = useChecklistProgress(projectId);
+
+  // Projet non payé → on ne montre que l'aperçu (les étapes urgentes) ; le reste est
+  // verrouillé derrière le déblocage, comme sur la page checklist.
+  const isLocked = project?.isPaid === false;
 
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const pendingRef = useRef<Set<string>>(new Set());
@@ -526,7 +531,8 @@ export default function ChecklistWidget({
           </div>
         )}
 
-        {/* Liste complète — groupée par phase */}
+        {/* Liste complète — groupée par phase (verrouillée si projet non payé) */}
+        {!isLocked && (
         <div className="space-y-3 max-h-[24rem] overflow-y-auto pr-1">
           {/* ✈️ Avant le départ */}
           {remainingBefore.length > 0 && (
@@ -572,9 +578,22 @@ export default function ChecklistWidget({
             </div>
           )}
         </div>
+        )}
+
+        {/* 🔒 Verrou : plan complet réservé aux projets débloqués (payés) */}
+        {isLocked && project?.idProject && (
+          <Link
+            to={`/projects/${project.idProject}/checklist`}
+            className="flex flex-col items-center gap-0.5 w-full py-4 rounded-xl border-2 border-dashed border-[#5EA3C0]/40 bg-[#5EA3C0]/5 text-center hover:bg-[#5EA3C0]/10 transition-colors"
+          >
+            <span className="text-2xl">🔒</span>
+            <span className="text-sm font-semibold text-gray-800">Débloquez votre plan complet</span>
+            <span className="text-xs text-gray-500">Toutes les démarches + liens officiels vérifiés</span>
+          </Link>
+        )}
 
         {/* ✅ Lien vers la page dédiée */}
-        {project?.idProject && (
+        {!isLocked && project?.idProject && (
           <Link
             to={`/projects/${project.idProject}/checklist`}
             className="flex items-center justify-center gap-1.5 w-full py-2 text-sm text-gray-500 hover:text-gray-900 border border-gray-100 hover:border-gray-300 rounded-lg transition-colors"
