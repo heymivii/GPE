@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { CheckCircle, Circle, ChevronDown, ChevronRight, ExternalLink, ArrowLeft, ArrowRight, List, Calendar } from 'lucide-react';
+import { CheckCircle, Circle, ChevronDown, ChevronRight, ExternalLink, ArrowLeft, ArrowRight, List, Calendar, Paperclip } from 'lucide-react';
+import DocumentsVault from '../../documents/DocumentsVault';
 import { useProject, useUnlockProject } from '../hooks/useProjectMutations';
 import { useChecklistProgress, getStepDeadline, filterStepsForProject } from '../../dashboard/hooks/useChecklistProgress';
 import { getLinksForStep } from '../../../data/checklist-links';
@@ -113,6 +114,7 @@ function ChecklistItemRow({
   isExpanded,
   departureDate,
   countryCode,
+  projectId,
   onToggleExpand,
   onToggleItem,
   onToggleSubstep,
@@ -121,12 +123,14 @@ function ChecklistItemRow({
   isExpanded: boolean;
   departureDate?: string | Date | null;
   countryCode?: string;
+  projectId: number;
   onToggleExpand: (id: string) => void;
   onToggleItem: (id: string) => void;
   onToggleSubstep: (itemId: string, substepId: string, e: React.MouseEvent) => void;
 }) {
   const substepsTotal = item.substeps.length;
   const substepsDone = item.substeps.filter((s) => s.completed).length;
+  const [docsOpen, setDocsOpen] = useState(false);
 
   return (
     <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
@@ -185,6 +189,13 @@ function ChecklistItemRow({
             )}
           </div>
 
+          <button
+            onClick={(e) => { e.stopPropagation(); setDocsOpen((o) => !o); }}
+            className="mt-1.5 inline-flex items-center gap-1 text-[11px] font-medium text-gray-400 hover:text-[#5EA3C0] transition-colors"
+          >
+            <Paperclip className="w-3 h-3" /> Documents
+          </button>
+
           {!item.completed && substepsTotal === 0 && (
             <>
               {(item.sourceUrl || item.keyFacts.length > 0) ? null : (
@@ -236,6 +247,13 @@ function ChecklistItemRow({
               </span>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Documents rattachés à cette étape */}
+      {docsOpen && (
+        <div className="border-t border-gray-100 bg-gray-50/50 px-4 py-3">
+          <DocumentsVault projectId={projectId} procedureTrackingId={item.trackingId} compact />
         </div>
       )}
     </div>
@@ -734,6 +752,7 @@ export default function ChecklistPage() {
                       isExpanded={expandedIds.has(item.id)}
                       departureDate={departureDate}
                       countryCode={countryCode}
+                      projectId={projectId}
                       onToggleExpand={toggleExpand}
                       onToggleItem={toggleItem}
                       onToggleSubstep={toggleSubstep}
@@ -758,6 +777,7 @@ export default function ChecklistPage() {
                       isExpanded={expandedIds.has(item.id)}
                       departureDate={departureDate}
                       countryCode={countryCode}
+                      projectId={projectId}
                       onToggleExpand={toggleExpand}
                       onToggleItem={toggleItem}
                       onToggleSubstep={toggleSubstep}
