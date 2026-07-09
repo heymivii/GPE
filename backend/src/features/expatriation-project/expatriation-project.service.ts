@@ -76,6 +76,13 @@ export class ExpatriationProjectService {
     await this.projectRepository.remove(project);
   }
 
+  /** Débloque le projet (paiement mock) → plan complet accessible. */
+  async unlock(projectId: number, userId: number): Promise<ExpatriationProject> {
+    const project = await this.findOne(projectId, userId);
+    project.isPaid = true;
+    return await this.projectRepository.save(project);
+  }
+
   async countByUser(userId: number): Promise<number> {
     return await this.projectRepository.count({
       where: { userId: userId },

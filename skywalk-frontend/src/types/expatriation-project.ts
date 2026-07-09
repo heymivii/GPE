@@ -25,6 +25,7 @@ export interface ExpatriationProject {
   stepsDone?: string;
   priorities?: string;
   needsSupport: boolean;
+  isPaid?: boolean;
   projectStatus: 'planning' | 'active' | 'completed' | 'cancelled' | 'on_hold';
   expectedDepartureDate?: string;
   nationality?: string;

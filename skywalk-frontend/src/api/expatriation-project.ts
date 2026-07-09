@@ -57,6 +57,7 @@ const mapBackendToFrontendProject = (bp: any): ExpatriationProject => {
     expectedDuration: bp.expectedDuration || 12,
     housingBudget: bp.budget ? parseFloat(bp.budget) : undefined,
     projectStatus: bp.status || 'planning',
+    isPaid: bp.isPaid ?? false,
     expectedDepartureDate: bp.expectedDepartureDate,
     nationality: bp.nationality ?? undefined,
     hasChildren: bp.hasChildren ?? undefined,
@@ -151,6 +152,14 @@ export const expatriationProjectApi = {
 
   delete: async (projectId: number): Promise<void> => {
     await apiClient.delete(`/expatriation-project/${projectId}`);
+  },
+
+  // Débloque le projet (paiement mock) → plan complet.
+  unlock: async (projectId: number): Promise<ExpatriationProject> => {
+    const response = await apiClient.patch<any>(
+      `/expatriation-project/${projectId}/unlock`,
+    );
+    return mapBackendToFrontendProject(response.data);
   },
 
   complete: async (

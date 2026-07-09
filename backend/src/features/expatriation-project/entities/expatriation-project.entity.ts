@@ -49,6 +49,10 @@ export class ExpatriationProject {
   @Column({ name: 'status', length: 50, default: 'planning' })
   status: string;
 
+  /** Projet débloqué (payé) → checklist complète + liens officiels. Gratuit = aperçu. */
+  @Column({ name: 'is_paid', type: 'boolean', default: false })
+  isPaid: boolean;
+
   @Column({ name: 'expected_departure_date', type: 'date', nullable: true })
   expectedDepartureDate: Date;
 

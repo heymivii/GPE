@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { CheckCircle, Circle, ChevronDown, ChevronRight, ExternalLink, ArrowLeft, ArrowRight, List, Calendar } from 'lucide-react';
-import { useProject } from '../hooks/useProjectMutations';
+import { useProject, useUnlockProject } from '../hooks/useProjectMutations';
 import { useChecklistProgress, getStepDeadline, filterStepsForProject } from '../../dashboard/hooks/useChecklistProgress';
 import { getLinksForStep } from '../../../data/checklist-links';
 import { useGovLink } from '../../../api/useGovLink';
@@ -256,6 +256,8 @@ export default function ChecklistPage() {
   const [view, setView] = useState<ViewType>('list');
   const [search, setSearch] = useState('');
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+  const [showPaywall, setShowPaywall] = useState(false);
+  const unlockProject = useUnlockProject();
 
   const countryCode = project?.destinationCountry?.isoCode;
   const departureDate = project?.expectedDepartureDate;
@@ -427,9 +429,16 @@ export default function ChecklistPage() {
 
   const displaySteps = view === 'timeline' ? timelineSteps : filteredSteps;
 
+  // Paywall « par projet » : un projet non payé n'affiche qu'un aperçu (3 étapes) ;
+  // le reste est verrouillé derrière le déblocage (paiement mock).
+  const isLocked = project?.isPaid === false;
+  const PREVIEW_COUNT = 3;
+  const gatedSteps = isLocked ? displaySteps.slice(0, PREVIEW_COUNT) : displaySteps;
+  const lockedCount = isLocked ? displaySteps.length - gatedSteps.length : 0;
+
   // Split into two phase groups for the list view — priority categories float to the top of each.
-  const beforeSteps = sortByPriorities(displaySteps.filter((s) => s.phase === 'before'), project?.priorities);
-  const arrivalSteps = sortByPriorities(displaySteps.filter((s) => s.phase !== 'before'), project?.priorities);
+  const beforeSteps = sortByPriorities(gatedSteps.filter((s) => s.phase === 'before'), project?.priorities);
+  const arrivalSteps = sortByPriorities(gatedSteps.filter((s) => s.phase !== 'before'), project?.priorities);
 
   if (isLoading) {
     return (
@@ -699,7 +708,93 @@ export default function ChecklistPage() {
             )}
           </div>
         )}
+
+        {/* Paywall — le reste du plan est verrouillé tant que le projet n'est pas débloqué */}
+        {isLocked && lockedCount > 0 && (
+          <div className="mt-6 rounded-2xl border-2 border-dashed border-[#5EA3C0]/40 bg-[#5EA3C0]/5 p-6 text-center">
+            <div className="text-3xl mb-2">🔒</div>
+            <p className="font-bold text-gray-900">
+              {lockedCount} étape{lockedCount > 1 ? 's' : ''} verrouillée{lockedCount > 1 ? 's' : ''}
+            </p>
+            <p className="text-sm text-gray-600 mt-1 mb-4 max-w-md mx-auto">
+              Débloquez votre plan complet : toutes les démarches, les liens officiels vérifiés, les
+              deadlines et le suivi de progression.
+            </p>
+            <button
+              onClick={() => setShowPaywall(true)}
+              className="inline-flex items-center gap-2 bg-[#5EA3C0] hover:bg-[#4891b0] text-white px-6 py-3 rounded-full font-semibold text-sm transition-colors"
+            >
+              Débloquer mon projet — 49 €
+            </button>
+          </div>
+        )}
       </div>
+
+      {/* Modale de paiement (mock) */}
+      {showPaywall && (
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          onClick={() => setShowPaywall(false)}
+        >
+          <div
+            className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-lg font-bold text-gray-900 mb-1">Débloquer ce projet</h3>
+            <p className="text-sm text-gray-500 mb-4">
+              Plan complet : checklist entière, liens officiels vérifiés, deadlines & budget.
+            </p>
+
+            <div className="rounded-xl border border-gray-200 p-4 mb-4">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm text-gray-600">Projet d'expatriation</span>
+                <span className="text-lg font-bold text-gray-900">49 €</span>
+              </div>
+              <input
+                disabled
+                value="4242 4242 4242 4242"
+                readOnly
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm mb-2 bg-gray-50 text-gray-400"
+              />
+              <div className="flex gap-2">
+                <input
+                  disabled
+                  value="12/29"
+                  readOnly
+                  className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-400"
+                />
+                <input
+                  disabled
+                  value="123"
+                  readOnly
+                  className="w-20 px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-400"
+                />
+              </div>
+              <p className="text-[11px] text-gray-400 mt-2">
+                💳 Démo — aucune vraie carte, aucun débit réel.
+              </p>
+            </div>
+
+            <div className="flex gap-2 justify-end">
+              <button
+                onClick={() => setShowPaywall(false)}
+                className="px-4 py-2 text-sm border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={() =>
+                  unlockProject.mutate(projectId, { onSuccess: () => setShowPaywall(false) })
+                }
+                disabled={unlockProject.isPending}
+                className="px-5 py-2 text-sm bg-[#5EA3C0] hover:bg-[#4891b0] text-white rounded-lg font-semibold disabled:opacity-50"
+              >
+                {unlockProject.isPending ? 'Traitement…' : 'Payer 49 € (démo)'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
