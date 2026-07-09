@@ -12,9 +12,12 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ProcedureTrackingService } from './procedure-tracking.service';
+import { DeadlineReminderService } from './deadline-reminder.service';
 import { CreateProcedureTrackingDto } from './dto/create-procedure-tracking.dto';
 import { UpdateProcedureTrackingDto } from './dto/update-procedure-tracking.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
 
 @ApiTags('Procedure Tracking')
 @Controller('procedure-tracking')
@@ -22,7 +25,17 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 export class ProcedureTrackingController {
   constructor(
     private readonly procedureTrackingService: ProcedureTrackingService,
+    private readonly deadlineReminderService: DeadlineReminderService,
   ) {}
+
+  // Déclenche manuellement la passe de rappels d'échéance (le cron tourne aussi tous les jours).
+  @Post('run-reminders')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  async runReminders() {
+    const sent = await this.deadlineReminderService.runReminders();
+    return { sent };
+  }
 
   @Post()
   create(

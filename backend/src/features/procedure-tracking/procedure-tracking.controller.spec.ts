@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProcedureTrackingController } from './procedure-tracking.controller';
 import { ProcedureTrackingService } from './procedure-tracking.service';
+import { DeadlineReminderService } from './deadline-reminder.service';
 
 describe('ProcedureTrackingController', () => {
   let controller: ProcedureTrackingController;
@@ -12,6 +13,10 @@ describe('ProcedureTrackingController', () => {
         {
           provide: ProcedureTrackingService,
           useValue: {},
+        },
+        {
+          provide: DeadlineReminderService,
+          useValue: { runReminders: jest.fn().mockResolvedValue(0) },
         },
       ],
     }).compile();

@@ -3,6 +3,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { ScheduleModule } from '@nestjs/schedule';
 import { typeOrmConfigAsync } from './config/typeorm.config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -51,6 +52,8 @@ import { UserReportModule } from './features/user-report/user-report.module';
 
     ThrottlerModule.forRoot([{ ttl: 60_000, limit: 60 }]),
 
+    ScheduleModule.forRoot(),
+
     TypeOrmModule.forRootAsync(typeOrmConfigAsync),
 
     AuthModule,
@@ -90,4 +93,4 @@ import { UserReportModule } from './features/user-report/user-report.module';
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
-export class AppModule { }
+export class AppModule {}

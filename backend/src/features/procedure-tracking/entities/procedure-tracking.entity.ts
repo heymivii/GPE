@@ -35,6 +35,10 @@ export class ProcedureTracking {
   @Column({ name: 'completed_facts', type: 'jsonb', default: () => "'[]'" })
   completedFacts: string[];
 
+  /** Dernier palier de rappel d'échéance envoyé (30 puis 7) — évite les doublons. */
+  @Column({ name: 'last_reminder_days', type: 'int', nullable: true })
+  lastReminderDays: number | null;
+
   @ManyToOne(() => User, { nullable: false })
   @JoinColumn({ name: 'user_id' })
   user: User;
