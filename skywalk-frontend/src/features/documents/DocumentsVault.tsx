@@ -120,7 +120,7 @@ export default function DocumentsVault({ projectId, procedureTrackingId, compact
       )}
 
       {/* Type de document + zone d'upload */}
-      <div className="mt-3 flex flex-col sm:flex-row gap-2">
+      <div className="mt-3 flex flex-col sm:flex-row sm:items-center gap-2">
         <label className="sr-only" htmlFor={`doctype-${projectId}-${procedureTrackingId ?? 'p'}`}>
           {t('documents.typeLabel')}
         </label>
@@ -128,7 +128,7 @@ export default function DocumentsVault({ projectId, procedureTrackingId, compact
           id={`doctype-${projectId}-${procedureTrackingId ?? 'p'}`}
           value={docType}
           onChange={(e) => setDocType(e.target.value)}
-          className="px-3 py-2 border border-gray-300 rounded-xl text-sm bg-white focus:border-[#5EA3C0] sm:w-56"
+          className="flex-shrink-0 px-2.5 py-1.5 border border-gray-300 rounded-lg text-sm bg-white focus:border-[#5EA3C0] sm:w-44"
         >
           {DOC_TYPES.map((k) => (
             <option key={k} value={k}>
@@ -149,7 +149,7 @@ export default function DocumentsVault({ projectId, procedureTrackingId, compact
             setDragOver(false);
             handleFiles(e.dataTransfer.files);
           }}
-          className={`flex-1 flex items-center justify-center gap-2 rounded-xl border-2 border-dashed cursor-pointer transition-colors py-4 px-3 ${
+          className={`flex-1 flex items-center justify-center gap-2 rounded-lg border-2 border-dashed cursor-pointer transition-colors py-2.5 px-3 ${
             dragOver ? 'border-[#5EA3C0] bg-[#5EA3C0]/5' : 'border-gray-200 hover:border-gray-300'
           }`}
         >
