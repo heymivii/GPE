@@ -37,6 +37,7 @@ import { TravelTypeModule } from './features/project/travel-type/travel-type.mod
 
 import { AdminStatsModule } from './features/admin-stats/admin-stats.module';
 import { BuddyContactModule } from './features/buddy-contact/buddy-contact.module';
+import { BuddyMessagesModule } from './features/buddy-messages/buddy-messages.module';
 import { AdminLogModule } from './features/admin-log/admin-log.module';
 
 @Module({
@@ -80,6 +81,7 @@ import { AdminLogModule } from './features/admin-log/admin-log.module';
     AdminStatsModule,
     AdminLogModule,
     BuddyContactModule,
+    BuddyMessagesModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],

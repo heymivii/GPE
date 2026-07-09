@@ -26,10 +26,8 @@ export class BuddyContactService {
     procedureId: number,
     message?: string,
   ): Promise<BuddyContactRequest> {
-    // Vérifier opt-in contact du destinataire (chargé depuis la BDD)
-    // Note: la vérification se fait côté service pour éviter l'exposition dans le DTO
     if (senderId === recipientId) {
-      throw new BadRequestException('Vous ne pouvez pas vous contacter vous-même.');
+      throw new BadRequestException('Vous ne pouvez pas vous contacter vous-meme.');
     }
 
     const existing = await this.requestRepository.findOne({
@@ -41,7 +39,7 @@ export class BuddyContactService {
       },
     });
     if (existing) {
-      throw new BadRequestException('Une demande de contact est déjà en attente pour cette étape.');
+      throw new BadRequestException('Une demande de contact est deja en attente pour cette etape.');
     }
 
     const expiresAt = new Date();
@@ -65,7 +63,7 @@ export class BuddyContactService {
     await this.notificationService.create({
       userId: recipientId,
       notificationType: 'message' as any,
-      message: `Quelqu'un souhaite vous contacter à propos de "${procedure?.procedureType ?? 'une étape'}". Acceptez-vous ?`,
+      message: `Quelqu'un souhaite vous contacter a propos de "${procedure?.procedureType ?? 'une etape'}". Acceptez-vous ?`,
     });
 
     return saved;
@@ -86,17 +84,17 @@ export class BuddyContactService {
     }
 
     if (request.recipientId !== currentUserId) {
-      throw new ForbiddenException('Vous n\'êtes pas le destinataire de cette demande.');
+      throw new ForbiddenException("Vous n'etes pas le destinataire de cette demande.");
     }
 
     if (request.status !== 'pending') {
-      throw new BadRequestException('Cette demande a déjà été traitée.');
+      throw new BadRequestException('Cette demande a deja ete traitee.');
     }
 
     if (new Date() > request.expiresAt) {
       request.status = 'expired';
       await this.requestRepository.save(request);
-      throw new BadRequestException('Cette demande a expiré.');
+      throw new BadRequestException('Cette demande a expire.');
     }
 
     request.status = accept ? 'accepted' : 'declined';
@@ -106,7 +104,7 @@ export class BuddyContactService {
       userId: request.senderId,
       notificationType: 'message' as any,
       message: accept
-        ? `Votre demande de contact pour "${request.procedure?.procedureType}" a été acceptée !`
+        ? `Votre demande de contact pour "${request.procedure?.procedureType}" a ete acceptee !`
         : `Ce buddy n'est pas disponible pour le moment.`,
     });
 
