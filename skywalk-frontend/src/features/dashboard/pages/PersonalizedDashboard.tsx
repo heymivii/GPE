@@ -363,6 +363,8 @@ export default function PersonalizedDashboard() {
           <JobOpportunitiesWidget
             key={widgetId}
             countryData={countryData}
+            hasJobOffer={activeProject?.hasJobOffer}
+            projectId={activeProject?.idProject}
             userProfile={{
               age: user?.age || undefined,
               status: user?.status || undefined,
