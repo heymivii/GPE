@@ -62,7 +62,7 @@ export default function DocumentsVault({ projectId, procedureTrackingId, compact
 
   const uploadMutation = useMutation({
     mutationFn: ({ file, type }: { file: File; type: string }) =>
-      documentsApi.upload(projectId, file, type, procedureTrackingId),
+      documentsApi.upload(file, type, { projectId, procedureTrackingId }),
     onSuccess: () => {
       invalidate();
       toast.success(t('documents.added'));

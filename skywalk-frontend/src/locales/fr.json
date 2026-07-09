@@ -9,6 +9,7 @@
     "visa": "Visa",
     "dashboard": "Tableau de bord",
     "projects": "Mes Projets",
+    "documents": "Mes documents",
     "explore": "Explorer",
     "myProject": "Mon Projet",
     "login": "Connexion",
@@ -789,6 +790,20 @@
     "formatError": "Format non autorisé (PDF, JPEG ou PNG)",
     "sizeError": "Fichier trop lourd (10 Mo max)",
     "downloadError": "Téléchargement impossible",
+    "page": {
+      "title": "Mes documents",
+      "subtitle": "Votre coffre-fort personnel : passeport, visa, contrats… chiffrés et accessibles à tout moment.",
+      "uploadTitle": "Ajouter un document",
+      "projectLabel": "Projet (optionnel)",
+      "noProject": "Aucun (personnel)",
+      "searchPlaceholder": "Rechercher un document…",
+      "filterAll": "Tous les types",
+      "count": "{{count}} document(s)",
+      "personal": "Personnel",
+      "preview": "Aperçu",
+      "close": "Fermer",
+      "noResults": "Aucun document ne correspond à votre recherche."
+    },
     "types": {
       "passport": "Passeport",
       "id_card": "Carte d'identité",

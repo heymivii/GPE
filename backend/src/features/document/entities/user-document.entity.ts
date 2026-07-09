@@ -46,9 +46,9 @@ export class UserDocument {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @ManyToOne(() => ExpatriationProject, { nullable: false, onDelete: 'CASCADE' })
+  @ManyToOne(() => ExpatriationProject, { nullable: true, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'project_id' })
-  project: ExpatriationProject;
+  project: ExpatriationProject | null;
 
   @ManyToOne(() => ProcedureTracking, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'procedure_tracking_id' })

@@ -79,13 +79,14 @@ export class DocumentService {
 
   async create(
     userId: number,
-    projectId: number,
+    projectId: number | undefined,
     procedureTrackingId: number | undefined,
     docType: string | undefined,
     file: UploadedFileLike,
   ): Promise<UserDocument> {
     if (!file) throw new BadRequestException('Aucun fichier fourni');
-    await this.assertOwnsProject(projectId, userId);
+    // Le projet est optionnel (coffre personnel) ; s'il est fourni, il doit être le vôtre.
+    if (projectId != null) await this.assertOwnsProject(projectId, userId);
 
     if (!ALLOWED[file.mimetype] || !magicMatches(file.mimetype, file.buffer)) {
       throw new BadRequestException(
@@ -103,12 +104,21 @@ export class DocumentService {
       sizeBytes: file.size,
       storageKey,
       user: { idUser: userId } as any,
-      project: { idProject: projectId } as any,
+      project: projectId != null ? ({ idProject: projectId } as any) : null,
       procedureTracking: procedureTrackingId
         ? ({ idProcedureTracking: procedureTrackingId } as any)
         : null,
     });
     return this.documentRepo.save(doc);
+  }
+
+  /** Tous les documents de l'utilisateur (coffre personnel), tous projets confondus. */
+  listAllByUser(userId: number): Promise<UserDocument[]> {
+    return this.documentRepo.find({
+      where: { user: { idUser: userId } },
+      relations: ['project', 'project.destinationCountry', 'procedureTracking'],
+      order: { createdAt: 'DESC' },
+    });
   }
 
   async listByProject(

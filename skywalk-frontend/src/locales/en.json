@@ -9,6 +9,7 @@
     "visa": "Visa",
     "dashboard": "Dashboard",
     "projects": "My Projects",
+    "documents": "My documents",
     "explore": "Explore",
     "myProject": "My Project",
     "login": "Login",
@@ -789,6 +790,20 @@
     "formatError": "Unsupported format (PDF, JPEG or PNG)",
     "sizeError": "File too large (10 MB max)",
     "downloadError": "Download failed",
+    "page": {
+      "title": "My documents",
+      "subtitle": "Your personal vault: passport, visa, contracts… encrypted and available anytime.",
+      "uploadTitle": "Add a document",
+      "projectLabel": "Project (optional)",
+      "noProject": "None (personal)",
+      "searchPlaceholder": "Search a document…",
+      "filterAll": "All types",
+      "count": "{{count}} document(s)",
+      "personal": "Personal",
+      "preview": "Preview",
+      "close": "Close",
+      "noResults": "No document matches your search."
+    },
     "types": {
       "passport": "Passport",
       "id_card": "ID card",

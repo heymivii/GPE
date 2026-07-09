@@ -8,6 +8,10 @@ export interface UserDocument {
   sizeBytes: number;
   createdAt: string;
   procedureTracking?: { idProcedureTracking: number } | null;
+  project?: {
+    idProject: number;
+    destinationCountry?: { countryName: string } | null;
+  } | null;
 }
 
 export const ACCEPTED_MIME = ['application/pdf', 'image/jpeg', 'image/png'];
@@ -30,6 +34,10 @@ export const DOC_TYPES = [
 ] as const;
 
 export const documentsApi = {
+  // Tout le coffre personnel (tous projets confondus + documents sans projet).
+  listAll: async (): Promise<UserDocument[]> =>
+    (await apiClient.get<UserDocument[]>('/documents')).data,
+
   listByProject: async (projectId: number): Promise<UserDocument[]> =>
     (await apiClient.get<UserDocument[]>(`/documents?projectId=${projectId}`)).data,
 
@@ -40,24 +48,37 @@ export const documentsApi = {
       )
     ).data,
 
+  // projectId optionnel : sans projet, le document rejoint le coffre personnel.
   upload: async (
-    projectId: number,
     file: File,
     docType: string,
-    procedureTrackingId?: number,
+    opts?: { projectId?: number; procedureTrackingId?: number },
   ): Promise<UserDocument> => {
     const form = new FormData();
     form.append('file', file);
-    form.append('projectId', String(projectId));
     form.append('docType', docType);
-    if (procedureTrackingId) {
-      form.append('procedureTrackingId', String(procedureTrackingId));
+    if (opts?.projectId != null) {
+      form.append('projectId', String(opts.projectId));
+    }
+    if (opts?.procedureTrackingId != null) {
+      form.append('procedureTrackingId', String(opts.procedureTrackingId));
     }
     return (
       await apiClient.post<UserDocument>('/documents', form, {
         headers: { 'Content-Type': 'multipart/form-data' },
       })
     ).data;
+  },
+
+  // Récupère le contenu déchiffré via un blob authentifié et renvoie une object-URL
+  // (jamais d'URL publique). L'appelant DOIT révoquer l'URL après usage.
+  blobUrl: async (doc: UserDocument): Promise<string> => {
+    const res = await apiClient.get(`/documents/${doc.idDocument}/download`, {
+      responseType: 'blob',
+    });
+    // On force le bon type MIME pour que <img>/<iframe> l'affiche correctement.
+    const blob = new Blob([res.data as BlobPart], { type: doc.mimeType });
+    return URL.createObjectURL(blob);
   },
 
   // Télécharge via un blob authentifié (jamais d'URL publique) puis déclenche l'enregistrement.

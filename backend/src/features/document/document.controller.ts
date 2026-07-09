@@ -50,16 +50,16 @@ export class DocumentController {
     @Body()
     body: { projectId?: string; procedureTrackingId?: string; docType?: string },
   ) {
-    const projectId = parseInt(body.projectId ?? '', 10);
-    if (Number.isNaN(projectId)) {
-      throw new BadRequestException('projectId requis');
-    }
+    // Projet optionnel (coffre personnel) ; s'il est absent, le document reste au user.
+    const projectId = body.projectId
+      ? parseInt(body.projectId, 10)
+      : undefined;
     const procId = body.procedureTrackingId
       ? parseInt(body.procedureTrackingId, 10)
       : undefined;
     return this.documentService.create(
       req.user.userId,
-      projectId,
+      Number.isNaN(projectId as number) ? undefined : projectId,
       Number.isNaN(procId as number) ? undefined : procId,
       body.docType,
       file,
@@ -78,13 +78,14 @@ export class DocumentController {
         parseInt(procedureTrackingId, 10),
       );
     }
-    if (!projectId) {
-      throw new BadRequestException('projectId ou procedureTrackingId requis');
+    if (projectId) {
+      return this.documentService.listByProject(
+        req.user.userId,
+        parseInt(projectId, 10),
+      );
     }
-    return this.documentService.listByProject(
-      req.user.userId,
-      parseInt(projectId, 10),
-    );
+    // Aucun filtre → tout le coffre personnel de l'utilisateur.
+    return this.documentService.listAllByUser(req.user.userId);
   }
 
   @Get(':id/download')

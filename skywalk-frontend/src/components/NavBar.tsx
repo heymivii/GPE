@@ -1,7 +1,7 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Search, Menu, X, ChevronDown, Globe, LogOut, User, LayoutDashboard, FolderKanban, Compass, BarChart3, MapPin, Briefcase, BookOpen, ShieldAlert } from 'lucide-react';
+import { Search, Menu, X, ChevronDown, Globe, LogOut, User, LayoutDashboard, FolderKanban, FolderLock, Compass, BarChart3, MapPin, Briefcase, BookOpen, ShieldAlert } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import GlobalSearchModal from './GlobalSearchModal';
 import CurrencySelector from './CurrencySelector';
@@ -257,6 +257,14 @@ export default function NavBar() {
                       <FolderKanban className="w-4 h-4 text-gray-400" />
                       {t('nav.projects')}
                     </Link>
+                    <Link
+                      to="/documents"
+                      className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-gray-700 text-sm"
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      <FolderLock className="w-4 h-4 text-gray-400" />
+                      {t('nav.documents', { defaultValue: 'Mes documents' })}
+                    </Link>
                     {isAdmin && (
                       <Link
                         to="/admin"
@@ -351,6 +359,7 @@ export default function NavBar() {
               <>
                 <MobileLink to="/dashboard" label={t('nav.dashboard')} active={isActive('/dashboard')} />
                 <MobileLink to="/projects" label={t('nav.projects')} active={isActive('/projects')} />
+                <MobileLink to="/documents" label={t('nav.documents', { defaultValue: 'Mes documents' })} active={isActive('/documents')} />
                 <MobileLink to="/destinations" label={t('nav.destinations')} active={isActive('/destinations')} />
                 <MobileLink to="/comparison" label={t('nav.comparison')} active={isActive('/comparison')} />
                 <MobileLink to="/services" label={t('nav.services')} active={isActive('/services')} />
