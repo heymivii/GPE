@@ -1,8 +1,8 @@
 import { ArrowRightIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import Dropdown from '../components/Dropdown';
 import DestinationCard from '../../dashboard/components/DestinationCard';
+import VisaChecker from '../components/VisaChecker';
 import LandingToolsSection from '../components/LandingToolsSection';
 import MiddleCtaBanner from '../components/MiddleCtaBanner';
 import NewsletterCTA from '../components/NewsletterCTA';
@@ -10,6 +10,8 @@ import HowItWorks from '../components/HowItWorks';
 import DestinationPreview from '../components/DestinationPreview';
 import Testimonials from '../components/Testimonials';
 import FAQ from '../components/FAQ';
+import OfficialSources from '../components/OfficialSources';
+import Pricing from '../components/Pricing';
 import { useAuth } from '../../../hooks/useAuth';
 
 export default function LandingPage() {
@@ -84,7 +86,7 @@ export default function LandingPage() {
           </div>
 
           <div className="flex-1 w-full lg:w-1/2">
-            <Dropdown />
+            <VisaChecker />
           </div>
 
         </div>
@@ -93,6 +95,8 @@ export default function LandingPage() {
       <DestinationPreview />
 
       <HowItWorks />
+
+      <OfficialSources />
 
       <LandingToolsSection />
 
@@ -159,6 +163,8 @@ export default function LandingPage() {
       </section>
 
       <Testimonials />
+
+      <Pricing />
 
       <NewsletterCTA />
 
