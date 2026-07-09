@@ -5,6 +5,7 @@ import { countryApi } from '../../../api/country';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getLocale } from '../../../data/supportedCountries';
+import DocumentsVault from '../../documents/DocumentsVault';
 import { 
   ArrowLeft, Calendar, MapPin, Clock, Wallet, 
   Briefcase, GraduationCap, Heart, Globe, User, Users,
@@ -334,6 +335,9 @@ export default function ProjectDetailPage() {
                 </div>
               </div>
             )}
+
+            {/* Coffre de documents (chiffré, rattaché au projet) */}
+            <DocumentsVault projectId={project.idProject} />
 
           </div>
 
