@@ -3,6 +3,7 @@ import apiClient from '../lib/api';
 export interface UserDocument {
   idDocument: number;
   originalName: string;
+  docType: string;
   mimeType: string;
   sizeBytes: number;
   createdAt: string;
@@ -11,6 +12,22 @@ export interface UserDocument {
 
 export const ACCEPTED_MIME = ['application/pdf', 'image/jpeg', 'image/png'];
 export const MAX_SIZE_BYTES = 10 * 1024 * 1024;
+
+// Types prédéfinis (libellés traduits via documents.types.*).
+export const DOC_TYPES = [
+  'passport',
+  'id_card',
+  'visa',
+  'residence_permit',
+  'work_contract',
+  'lease',
+  'birth_certificate',
+  'diploma',
+  'bank_details',
+  'insurance',
+  'payslip',
+  'other',
+] as const;
 
 export const documentsApi = {
   listByProject: async (projectId: number): Promise<UserDocument[]> =>
@@ -26,11 +43,13 @@ export const documentsApi = {
   upload: async (
     projectId: number,
     file: File,
+    docType: string,
     procedureTrackingId?: number,
   ): Promise<UserDocument> => {
     const form = new FormData();
     form.append('file', file);
     form.append('projectId', String(projectId));
+    form.append('docType', docType);
     if (procedureTrackingId) {
       form.append('procedureTrackingId', String(procedureTrackingId));
     }

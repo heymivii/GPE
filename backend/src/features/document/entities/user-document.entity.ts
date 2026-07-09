@@ -24,6 +24,10 @@ export class UserDocument {
   @Column({ name: 'original_name', type: 'varchar', length: 255 })
   originalName: string;
 
+  /** Type prédéfini (passport, id_card, visa, …) — libellé traduit côté front. */
+  @Column({ name: 'doc_type', type: 'varchar', length: 40, default: 'other' })
+  docType: string;
+
   @Column({ name: 'mime_type', type: 'varchar', length: 100 })
   mimeType: string;
 

@@ -772,6 +772,38 @@
       }
     }
   },
+  "documents": {
+    "title": "My documents",
+    "subtitle": "Encrypted and accessible only to you",
+    "dropzone": "Drag a file or click",
+    "uploading": "Uploading…",
+    "constraints": "PDF, JPEG or PNG · 10 MB max",
+    "empty": "No documents yet.",
+    "typeLabel": "Document type",
+    "download": "Download",
+    "delete": "Delete",
+    "added": "Document added",
+    "deleted": "Document deleted",
+    "uploadError": "Upload failed",
+    "deleteError": "Delete failed",
+    "formatError": "Unsupported format (PDF, JPEG or PNG)",
+    "sizeError": "File too large (10 MB max)",
+    "downloadError": "Download failed",
+    "types": {
+      "passport": "Passport",
+      "id_card": "ID card",
+      "visa": "Visa",
+      "residence_permit": "Residence permit",
+      "work_contract": "Work contract",
+      "lease": "Lease",
+      "birth_certificate": "Birth certificate",
+      "diploma": "Diploma",
+      "bank_details": "Bank details",
+      "insurance": "Insurance",
+      "payslip": "Payslip",
+      "other": "Other"
+    }
+  },
   "landing": {
     "visaChecker": {
       "eyebrow": "Instant visa check",

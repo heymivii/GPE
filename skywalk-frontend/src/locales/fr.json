@@ -772,6 +772,38 @@
       }
     }
   },
+  "documents": {
+    "title": "Mes documents",
+    "subtitle": "Chiffrés et accessibles à vous seul·e",
+    "dropzone": "Glissez un fichier ou cliquez",
+    "uploading": "Envoi…",
+    "constraints": "PDF, JPEG ou PNG · 10 Mo max",
+    "empty": "Aucun document pour l'instant.",
+    "typeLabel": "Type de document",
+    "download": "Télécharger",
+    "delete": "Supprimer",
+    "added": "Document ajouté",
+    "deleted": "Document supprimé",
+    "uploadError": "Échec de l'envoi",
+    "deleteError": "Échec de la suppression",
+    "formatError": "Format non autorisé (PDF, JPEG ou PNG)",
+    "sizeError": "Fichier trop lourd (10 Mo max)",
+    "downloadError": "Téléchargement impossible",
+    "types": {
+      "passport": "Passeport",
+      "id_card": "Carte d'identité",
+      "visa": "Visa",
+      "residence_permit": "Titre de séjour",
+      "work_contract": "Contrat de travail",
+      "lease": "Bail",
+      "birth_certificate": "Acte de naissance",
+      "diploma": "Diplôme",
+      "bank_details": "RIB / coordonnées bancaires",
+      "insurance": "Assurance",
+      "payslip": "Fiche de paie",
+      "other": "Autre"
+    }
+  },
   "landing": {
     "visaChecker": {
       "eyebrow": "Vérif visa express",

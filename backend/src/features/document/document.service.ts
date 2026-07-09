@@ -17,6 +17,28 @@ export interface UploadedFileLike {
   buffer: Buffer;
 }
 
+// Types de documents prédéfinis (le libellé est traduit côté front).
+export const DOC_TYPES = [
+  'passport',
+  'id_card',
+  'visa',
+  'residence_permit',
+  'work_contract',
+  'lease',
+  'birth_certificate',
+  'diploma',
+  'bank_details',
+  'insurance',
+  'payslip',
+  'other',
+] as const;
+
+function normalizeType(input?: string): string {
+  return input && (DOC_TYPES as readonly string[]).includes(input)
+    ? input
+    : 'other';
+}
+
 // Types autorisés + leur signature binaire (magic bytes) — on ne fait pas confiance
 // au mimetype fourni par le client, on vérifie le contenu réel.
 const ALLOWED: Record<string, number[]> = {
@@ -59,6 +81,7 @@ export class DocumentService {
     userId: number,
     projectId: number,
     procedureTrackingId: number | undefined,
+    docType: string | undefined,
     file: UploadedFileLike,
   ): Promise<UserDocument> {
     if (!file) throw new BadRequestException('Aucun fichier fourni');
@@ -75,6 +98,7 @@ export class DocumentService {
 
     const doc = this.documentRepo.create({
       originalName: file.originalname.slice(0, 255),
+      docType: normalizeType(docType),
       mimeType: file.mimetype,
       sizeBytes: file.size,
       storageKey,

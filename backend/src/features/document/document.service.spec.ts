@@ -49,7 +49,7 @@ describe('DocumentService (sécurité)', () => {
 
   it("refuse l'upload sur un projet qui n'est pas le sien", async () => {
     projectRepo.findOne.mockResolvedValue({ idProject: 1, userId: 99 });
-    await expect(service.create(1, 1, undefined, pdf)).rejects.toThrow(
+    await expect(service.create(1, 1, undefined, 'passport',pdf)).rejects.toThrow(
       ForbiddenException,
     );
     expect(storage.write).not.toHaveBeenCalled();
@@ -58,17 +58,24 @@ describe('DocumentService (sécurité)', () => {
   it('refuse un fichier dont le contenu ne correspond pas au type (magic bytes)', async () => {
     projectRepo.findOne.mockResolvedValue({ idProject: 1, userId: 1 });
     const fake = { ...pdf, buffer: Buffer.from('ceci n est pas un pdf') };
-    await expect(service.create(1, 1, undefined, fake)).rejects.toThrow(
+    await expect(service.create(1, 1, undefined, 'passport',fake)).rejects.toThrow(
       BadRequestException,
     );
     expect(storage.write).not.toHaveBeenCalled();
   });
 
-  it('stocke un fichier valide et possédé', async () => {
+  it('stocke un fichier valide et possédé, avec son type', async () => {
     projectRepo.findOne.mockResolvedValue({ idProject: 1, userId: 1 });
-    const res = await service.create(1, 1, undefined, pdf);
+    const res = await service.create(1, 1, undefined, 'passport', pdf);
     expect(storage.write).toHaveBeenCalledWith('key-1', pdf.buffer);
     expect(res.idDocument).toBe(1);
+    expect(res.docType).toBe('passport');
+  });
+
+  it('normalise un type inconnu en "other"', async () => {
+    projectRepo.findOne.mockResolvedValue({ idProject: 1, userId: 1 });
+    const res = await service.create(1, 1, undefined, 'n_importe_quoi', pdf);
+    expect(res.docType).toBe('other');
   });
 
   it("refuse le téléchargement du document d'autrui", async () => {

@@ -48,7 +48,7 @@ export class DocumentController {
     @Req() req: any,
     @UploadedFile() file: UploadedFileLike,
     @Body()
-    body: { projectId?: string; procedureTrackingId?: string },
+    body: { projectId?: string; procedureTrackingId?: string; docType?: string },
   ) {
     const projectId = parseInt(body.projectId ?? '', 10);
     if (Number.isNaN(projectId)) {
@@ -61,6 +61,7 @@ export class DocumentController {
       req.user.userId,
       projectId,
       Number.isNaN(procId as number) ? undefined : procId,
+      body.docType,
       file,
     );
   }
