@@ -937,9 +937,9 @@
       "subtitle2": "Commencez par répondre à notre questionnaire pour un accompagnement personnalisé.",
       "cta": "Je prépare mon départ",
       "stats": {
-        "expats": "expatriés accompagnés",
-        "satisfaction": "de satisfaction",
-        "countries": "destinations couvertes"
+        "destinations": "destinations couvertes",
+        "officialSources": "sources officielles",
+        "freeToExplore": "pour explorer"
       }
     },
     "destinations": {

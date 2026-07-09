@@ -937,9 +937,9 @@
       "subtitle2": "Start by answering our questionnaire for personalized support.",
       "cta": "I prepare my departure",
       "stats": {
-        "expats": "expats supported",
-        "satisfaction": "satisfaction",
-        "countries": "destinations covered"
+        "destinations": "destinations covered",
+        "officialSources": "official sources",
+        "freeToExplore": "to explore"
       }
     },
     "destinations": {
