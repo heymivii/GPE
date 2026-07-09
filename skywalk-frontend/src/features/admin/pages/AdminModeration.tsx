@@ -8,12 +8,16 @@ import {
   AlertTriangle,
   ChevronDown,
   ChevronRight,
+  Flag,
+  Check,
+  X,
 } from 'lucide-react';
 import {
   forumModerationApi,
   type WordSeverity,
   type ForbiddenWord,
 } from '../../../api/forum-moderation';
+import { userReportApi } from '../../../api/user-report';
 
 const SEVERITIES: WordSeverity[] = ['low', 'medium', 'high', 'critical'];
 
@@ -49,6 +53,33 @@ export default function AdminModeration() {
     queryFn: () => forumModerationApi.userWarnings(expandedUser as number),
     enabled: expandedUser !== null,
   });
+
+  const { data: userReports = [], isLoading: reportsLoading } = useQuery({
+    queryKey: ['user-reports', 'pending'],
+    queryFn: () => userReportApi.list('pending'),
+  });
+
+  const resolveReportMutation = useMutation({
+    mutationFn: ({ id, action }: { id: number; action: 'resolved' | 'rejected' }) =>
+      userReportApi.resolve(id, action),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user-reports'] });
+      toast.success('Signalement traité');
+    },
+    onError: () => toast.error('Échec du traitement'),
+  });
+
+  const reasonLabel: Record<string, string> = {
+    spam: 'Spam',
+    harassment: 'Harcèlement',
+    hate_speech: 'Propos haineux',
+    impersonation: 'Usurpation',
+    inappropriate: 'Inapproprié',
+    other: 'Autre',
+  };
+
+  const displayName = (u?: { fullName?: string; firstName?: string; lastName?: string; email?: string }) =>
+    u?.fullName || `${u?.firstName ?? ''} ${u?.lastName ?? ''}`.trim() || u?.email || `#${''}`;
 
   const invalidateWords = () =>
     queryClient.invalidateQueries({ queryKey: ['forbidden-words'] });
@@ -251,6 +282,67 @@ export default function AdminModeration() {
                 </div>
               );
             })}
+          </div>
+        )}
+      </section>
+
+      {/* ── Signalements de comptes ── */}
+      <section className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-1 flex items-center gap-2">
+          <Flag className="w-5 h-5 text-red-500" />
+          Signalements de comptes ({userReports.length} en attente)
+        </h2>
+        <p className="text-sm text-gray-500 mb-4">
+          Membres signalés par d'autres utilisateurs.
+        </p>
+
+        {reportsLoading ? (
+          <p className="text-sm text-gray-400 py-4">Chargement…</p>
+        ) : userReports.length === 0 ? (
+          <p className="text-sm text-gray-400 py-4">Aucun signalement en attente. 🎉</p>
+        ) : (
+          <div className="space-y-2">
+            {userReports.map((r) => (
+              <div
+                key={r.idUserReport}
+                className="flex items-start gap-3 border border-gray-100 rounded-xl p-3"
+              >
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-gray-800">
+                    {displayName(r.reportedUser)}{' '}
+                    <span className="text-xs font-normal text-gray-400">
+                      signalé par {displayName(r.reporter)}
+                    </span>
+                  </p>
+                  <p className="text-xs mt-0.5">
+                    <span className="inline-block px-2 py-0.5 rounded-full bg-red-50 text-red-700 border border-red-100 font-medium">
+                      {reasonLabel[r.reason] ?? r.reason}
+                    </span>
+                    {r.details && <span className="text-gray-500 ml-2">{r.details}</span>}
+                  </p>
+                </div>
+                <div className="flex items-center gap-1.5 flex-shrink-0">
+                  <button
+                    onClick={() =>
+                      resolveReportMutation.mutate({ id: r.idUserReport, action: 'resolved' })
+                    }
+                    className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium bg-gray-900 text-white rounded-lg hover:bg-gray-800"
+                    title="Traité (action prise)"
+                  >
+                    <Check className="w-3.5 h-3.5" /> Traiter
+                  </button>
+                  <button
+                    onClick={() =>
+                      resolveReportMutation.mutate({ id: r.idUserReport, action: 'rejected' })
+                    }
+                    className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50"
+                    title="Rejeter le signalement"
+                  >
+                    <X className="w-3.5 h-3.5" /> Rejeter
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </section>

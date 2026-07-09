@@ -35,6 +35,7 @@ import { useAuth } from '../../../hooks/useAuth';
 import { useTranslation } from 'react-i18next';
 import type { ReportReason } from '../../../types/forum';
 import { ReportReasonValues } from '../../../types/forum';
+import { userReportApi, type UserReportReason } from '../../../api/user-report';
 
 const categoryColors: Record<string, string> = {
   question: 'bg-blue-50 text-blue-700',
@@ -62,6 +63,32 @@ export default function PostDetailPage() {
   const [reportTargetTopicId, setReportTargetTopicId] = useState<number | undefined>(undefined);
   const [reportReason, setReportReason] = useState<ReportReason>('spam');
   const [reportDetails, setReportDetails] = useState('');
+
+  // Signalement d'un MEMBRE (compte), distinct du signalement de contenu.
+  const [reportMember, setReportMember] = useState<{ id: number; name: string } | null>(null);
+  const [memberReason, setMemberReason] = useState<UserReportReason>('inappropriate');
+  const [memberDetails, setMemberDetails] = useState('');
+  const [memberSubmitting, setMemberSubmitting] = useState(false);
+
+  const submitMemberReport = async () => {
+    if (!reportMember) return;
+    setMemberSubmitting(true);
+    try {
+      await userReportApi.create({
+        reportedUserId: reportMember.id,
+        reason: memberReason,
+        details: memberDetails || undefined,
+      });
+      setReportMember(null);
+      setMemberDetails('');
+      showFeedback(t('forum.postDetail.reportSuccess'), 'success');
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { message?: string } } };
+      showFeedback(axiosErr?.response?.data?.message || t('forum.postDetail.submitError'));
+    } finally {
+      setMemberSubmitting(false);
+    }
+  };
 
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
   const [feedbackType, setFeedbackType] = useState<'error' | 'success'>('error');
@@ -399,6 +426,22 @@ export default function PostDetailPage() {
                   <Flag className="w-4 h-4" />
                 </button>
               )}
+              {user && topic.user?.idUser &&
+                user.idUser !== topic.user.idUser &&
+                user.id !== topic.user.idUser && (
+                  <button
+                    onClick={() =>
+                      setReportMember({
+                        id: topic.user!.idUser as number,
+                        name: topic.user?.fullName || `#${topic.user?.idUser}`,
+                      })
+                    }
+                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                    title="Signaler ce membre"
+                  >
+                    <ShieldAlert className="w-4 h-4" />
+                  </button>
+                )}
               {user && (user.idUser === topic.user?.idUser || user.id === topic.user?.idUser) && (
                 <Link
                   to={`/forum/post/${id}/edit`}
@@ -741,6 +784,72 @@ export default function PostDetailPage() {
                   )}
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modale : signaler un membre (compte) */}
+      {reportMember && (
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          onClick={() => setReportMember(null)}
+        >
+          <div
+            className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-2 mb-1">
+              <ShieldAlert className="w-5 h-5 text-red-500" />
+              <h3 className="text-lg font-bold text-gray-900">Signaler ce membre</h3>
+            </div>
+            <p className="text-sm text-gray-500 mb-4">{reportMember.name}</p>
+
+            <label className="block text-sm font-medium text-gray-700 mb-1">Motif</label>
+            <select
+              value={memberReason}
+              onChange={(e) => setMemberReason(e.target.value as UserReportReason)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm mb-3 bg-white"
+            >
+              <option value="spam">Spam</option>
+              <option value="harassment">Harcèlement</option>
+              <option value="hate_speech">Propos haineux</option>
+              <option value="impersonation">Usurpation d'identité</option>
+              <option value="inappropriate">Comportement inapproprié</option>
+              <option value="other">Autre</option>
+            </select>
+
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Détails (optionnel)
+            </label>
+            <textarea
+              value={memberDetails}
+              onChange={(e) => setMemberDetails(e.target.value)}
+              rows={3}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm mb-4 resize-none"
+              placeholder="Précisez la raison…"
+            />
+
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setReportMember(null)}
+                className="px-4 py-2 text-sm border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={submitMemberReport}
+                disabled={memberSubmitting}
+                className="flex items-center gap-2 px-4 py-2 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 disabled:opacity-50"
+              >
+                {memberSubmitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" /> Envoi…
+                  </>
+                ) : (
+                  'Signaler'
+                )}
+              </button>
             </div>
           </div>
         </div>
