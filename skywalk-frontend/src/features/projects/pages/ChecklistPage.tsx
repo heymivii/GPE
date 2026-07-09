@@ -379,9 +379,42 @@ export default function ChecklistPage() {
     return before[0]?.s ?? incomplete[0];
   }, [profileSteps, departureDate]);
 
-  const nextActionDeadline = nextAction
-    ? getStepDeadline(nextAction.daysBeforeDeparture, departureDate)
-    : null;
+  // L'échéance « avant le … » n'a de sens que pour une étape AVANT le départ.
+  // Une étape à l'arrivée ne doit pas afficher de date relative au départ.
+  const nextActionDeadline =
+    nextAction && nextAction.phase === 'before'
+      ? getStepDeadline(nextAction.daysBeforeDeparture, departureDate)
+      : null;
+
+  // Système « intelligent » de faisabilité : un départ est-il encore tenable ?
+  // Si des démarches d'avant-départ ont une échéance DÉJÀ PASSÉE (délai requis >
+  // temps restant), le départ à cette date n'est plus réaliste.
+  const feasibility = useMemo(() => {
+    if (!departureDate) return null;
+    const lateBefore = profileSteps.filter(
+      (s) =>
+        s.phase === 'before' &&
+        !s.completed &&
+        getStepDeadline(s.daysBeforeDeparture, departureDate).isLate,
+    );
+    if (lateBefore.length === 0) return null;
+    const worst = lateBefore.reduce((a, b) =>
+      (a.daysBeforeDeparture ?? 0) >= (b.daysBeforeDeparture ?? 0) ? a : b,
+    );
+    const worstLead = worst.daysBeforeDeparture ?? 0;
+    const suggested = new Date();
+    suggested.setDate(suggested.getDate() + worstLead);
+    return {
+      count: lateBefore.length,
+      worstTitle: worst.title,
+      worstLead,
+      suggested: suggested.toLocaleDateString('fr-FR', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      }),
+    };
+  }, [profileSteps, departureDate]);
 
   const toggleExpand = (id: string) => {
     setExpandedIds((prev) => {
@@ -538,6 +571,29 @@ export default function ChecklistPage() {
             </div>
           </div>
 
+          {/* ⚠️ Verdict de faisabilité — le départ est-il encore réaliste ? */}
+          {feasibility && (
+            <div className="mt-4 rounded-xl border-2 border-red-200 bg-red-50 px-4 py-3">
+              <p className="text-sm font-bold text-red-800 flex items-center gap-2">
+                ⚠️ Ce départ n'est peut-être plus tenable
+              </p>
+              <p className="text-sm text-red-700 mt-1 leading-relaxed">
+                {feasibility.count} démarche{feasibility.count > 1 ? 's' : ''} auraient dû démarrer{' '}
+                <span className="font-semibold">avant aujourd'hui</span>.{' '}
+                « {feasibility.worstTitle} » demande environ {feasibility.worstLead} jours de délai —
+                pour la boucler à temps, un départ réaliste serait plutôt{' '}
+                <span className="font-semibold">à partir du {feasibility.suggested}</span>.
+              </p>
+              <Link
+                to={`/projects/${projectId}`}
+                className="inline-flex items-center gap-1.5 mt-2 text-sm font-semibold text-red-700 hover:text-red-900"
+              >
+                Modifier ma date de départ
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+          )}
+
           {/* Prochaine action recommandée — le guide « et maintenant, je fais quoi ? » */}
           {nextAction ? (
             <div className="mt-4 rounded-xl border border-[#5EA3C0]/30 bg-[#5EA3C0]/5 px-4 py-3">
@@ -549,14 +605,18 @@ export default function ChecklistPage() {
                   <p className="text-[11px] font-bold uppercase tracking-wider text-[#5EA3C0]">Prochaine action</p>
                   <p className="text-sm font-semibold text-gray-900 mt-0.5">{nextAction.title}</p>
                   <div className="flex items-center gap-2 mt-1 flex-wrap">
-                    {nextActionDeadline?.date && (
+                    {nextActionDeadline?.date ? (
                       <span className={`inline-flex items-center gap-1 text-[11px] font-medium ${
                         nextActionDeadline.isLate ? 'text-red-600' : nextActionDeadline.isUrgent ? 'text-orange-600' : 'text-gray-500'
                       }`}>
                         <Calendar className="w-3 h-3" />
                         avant le {nextActionDeadline.date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}
                       </span>
-                    )}
+                    ) : nextAction.phase === 'on_arrival' ? (
+                      <span className="inline-flex items-center gap-1 text-[11px] font-medium text-blue-500">
+                        🏠 à faire à l'arrivée
+                      </span>
+                    ) : null}
                     {nextAction.sourceUrl && <TrustBadge url={nextAction.sourceUrl} />}
                   </div>
                 </div>
