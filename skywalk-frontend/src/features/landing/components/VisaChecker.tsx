@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ShieldCheck, FileText, ArrowRight, BadgeCheck } from 'lucide-react';
 import { NATIONALITY_OPTIONS, isVisaExempt } from '../../../data/freeMovement';
 import { SUPPORTED_COUNTRIES } from '../../../data/supportedCountries';
@@ -10,6 +11,7 @@ import { SUPPORTED_COUNTRIES } from '../../../data/supportedCountries';
  * l'onboarding pré-rempli avec la destination.
  */
 export default function VisaChecker() {
+  const { t } = useTranslation();
   const destinations = SUPPORTED_COUNTRIES.filter((c) => c.code !== undefined);
   const [nationality, setNationality] = useState('FR');
   const [destination, setDestination] = useState(
@@ -19,20 +21,23 @@ export default function VisaChecker() {
   const exempt = isVisaExempt(nationality, destination);
   const destObj = destinations.find((d) => d.code === destination);
   const destName = destObj?.name || destination;
+  const natLabel = NATIONALITY_OPTIONS.find((n) => n.value === nationality)?.label || nationality;
 
   return (
     <div className="bg-white rounded-3xl border border-gray-100 shadow-xl p-6 sm:p-8">
       <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#5EA3C0] mb-2">
         <BadgeCheck className="w-4 h-4" />
-        Vérif visa express
+        {t('landing.visaChecker.eyebrow')}
       </div>
       <h3 className="text-xl sm:text-2xl font-bold text-gray-900 font-outfit mb-5">
-        Ai-je besoin d'un visa ?
+        {t('landing.visaChecker.title')}
       </h3>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
         <div>
-          <label className="block text-xs font-semibold text-gray-500 mb-1">Je suis…</label>
+          <label className="block text-xs font-semibold text-gray-500 mb-1">
+            {t('landing.visaChecker.iAm')}
+          </label>
           <select
             value={nationality}
             onChange={(e) => setNationality(e.target.value)}
@@ -46,7 +51,9 @@ export default function VisaChecker() {
           </select>
         </div>
         <div>
-          <label className="block text-xs font-semibold text-gray-500 mb-1">Je pars vers…</label>
+          <label className="block text-xs font-semibold text-gray-500 mb-1">
+            {t('landing.visaChecker.goingTo')}
+          </label>
           <select
             value={destination}
             onChange={(e) => setDestination(e.target.value)}
@@ -66,10 +73,9 @@ export default function VisaChecker() {
         <div className="flex items-start gap-3 rounded-2xl bg-emerald-50 border border-emerald-100 p-4">
           <ShieldCheck className="w-6 h-6 text-emerald-600 flex-shrink-0 mt-0.5" />
           <div>
-            <p className="font-bold text-emerald-800">Libre circulation — aucun visa</p>
+            <p className="font-bold text-emerald-800">{t('landing.visaChecker.exemptTitle')}</p>
             <p className="text-sm text-emerald-700/90 mt-0.5">
-              Ressortissant·e {NATIONALITY_OPTIONS.find((n) => n.value === nationality)?.label}, vous vous
-              installez en {destName} sans visa ni titre de séjour.
+              {t('landing.visaChecker.exemptText', { nationality: natLabel, country: destName })}
             </p>
           </div>
         </div>
@@ -77,24 +83,21 @@ export default function VisaChecker() {
         <div className="flex items-start gap-3 rounded-2xl bg-amber-50 border border-amber-100 p-4">
           <FileText className="w-6 h-6 text-amber-600 flex-shrink-0 mt-0.5" />
           <div>
-            <p className="font-bold text-amber-800">Visa / titre de séjour requis</p>
+            <p className="font-bold text-amber-800">{t('landing.visaChecker.visaTitle')}</p>
             <p className="text-sm text-amber-700/90 mt-0.5">
-              Pour vous installer en {destName}, une démarche visa est nécessaire. SkyWalk vous liste
-              chaque étape, à partir des <span className="font-semibold">sources officielles vérifiées</span>.
+              {t('landing.visaChecker.visaText', { country: destName })}
             </p>
           </div>
         </div>
       )}
 
-      <p className="text-[11px] text-gray-400 mt-2">
-        Estimation basée sur la libre circulation UE/EEE/CH — les détails dépendent de votre situation.
-      </p>
+      <p className="text-[11px] text-gray-400 mt-2">{t('landing.visaChecker.disclaimer')}</p>
 
       <Link
         to={`/onboarding?to=${destination}`}
         className="mt-4 w-full flex items-center justify-center gap-2 bg-[#5EA3C0] hover:bg-[#4891b0] text-white px-6 py-3.5 rounded-full font-semibold text-sm transition-colors"
       >
-        Voir mon plan complet
+        {t('landing.visaChecker.cta')}
         <ArrowRight className="w-4 h-4" />
       </Link>
     </div>

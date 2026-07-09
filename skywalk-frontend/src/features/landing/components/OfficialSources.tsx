@@ -1,4 +1,5 @@
 import { ShieldCheck } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 // Exemples de sources officielles réellement utilisées par le moteur de liens gouvernementaux.
 const SOURCES = [
@@ -11,6 +12,7 @@ const SOURCES = [
 ];
 
 export default function OfficialSources() {
+  const { t } = useTranslation();
   return (
     <section className="px-4 sm:px-8 w-full max-w-7xl mx-auto py-8">
       <div className="rounded-3xl bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-100 p-8 sm:p-10">
@@ -18,15 +20,13 @@ export default function OfficialSources() {
           <div className="flex-1">
             <div className="inline-flex items-center gap-2 rounded-full bg-white border border-emerald-200 px-3 py-1 text-xs font-bold text-emerald-700 mb-4">
               <ShieldCheck className="w-4 h-4" />
-              Source officielle vérifiée
+              {t('landing.officialSources.badge')}
             </div>
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 font-outfit mb-2">
-              Des démarches fiables — pas des blogs approximatifs
+              {t('landing.officialSources.title')}
             </h2>
             <p className="text-gray-600 text-base leading-relaxed max-w-xl">
-              Chaque étape de votre plan renvoie vers la <span className="font-semibold text-gray-800">source
-              gouvernementale officielle</span>, vérifiée en direct. Zéro info périmée, zéro rumeur — la
-              différence entre un visa obtenu et une démarche ratée.
+              {t('landing.officialSources.text')}
             </p>
           </div>
 

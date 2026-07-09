@@ -773,6 +773,59 @@
     }
   },
   "landing": {
+    "visaChecker": {
+      "eyebrow": "Vérif visa express",
+      "title": "Ai-je besoin d'un visa ?",
+      "iAm": "Je suis…",
+      "goingTo": "Je pars vers…",
+      "exemptTitle": "Libre circulation — aucun visa",
+      "exemptText": "Ressortissant·e {{nationality}}, vous vous installez en {{country}} sans visa ni titre de séjour.",
+      "visaTitle": "Visa / titre de séjour requis",
+      "visaText": "Pour vous installer en {{country}}, une démarche visa est nécessaire. SkyWalk vous liste chaque étape, à partir des sources officielles vérifiées.",
+      "disclaimer": "Estimation basée sur la libre circulation UE/EEE/CH — les détails dépendent de votre situation.",
+      "cta": "Voir mon plan complet"
+    },
+    "officialSources": {
+      "badge": "Source officielle vérifiée",
+      "title": "Des démarches fiables — pas des blogs approximatifs",
+      "text": "Chaque étape de votre plan renvoie vers la source gouvernementale officielle, vérifiée en direct. Zéro info périmée, zéro rumeur — la différence entre un visa obtenu et une démarche ratée."
+    },
+    "pricing": {
+      "title": "Un prix par projet d'expatriation",
+      "subtitle": "Explorez gratuitement. Vous ne payez que lorsque vous passez à l'action sur un vrai projet.",
+      "popular": "Le plus choisi",
+      "disclaimer": "Prix indicatifs. Sans engagement — vous ne payez qu'au lancement d'un projet.",
+      "perProject": "/ projet",
+      "perYear": "/ an",
+      "discovery": {
+        "name": "Découverte",
+        "tagline": "Pour explorer avant de se lancer",
+        "cta": "Commencer gratuitement",
+        "f1": "Explorer toutes les destinations",
+        "f2": "Comparateur & coût de la vie",
+        "f3": "Aperçu de la checklist",
+        "f4": "Accès au forum de la communauté"
+      },
+      "project": {
+        "name": "Projet",
+        "tagline": "Un projet d'expatriation, de A à Z",
+        "cta": "Lancer mon projet",
+        "f1": "Tout le plan Découverte",
+        "f2": "Checklist personnalisée complète",
+        "f3": "Liens officiels vérifiés (anti-erreur)",
+        "f4": "Deadlines & suivi de progression",
+        "f5": "Budget, documents & rappels"
+      },
+      "unlimited": {
+        "name": "Illimité",
+        "tagline": "Plusieurs destinations en tête",
+        "cta": "Passer en illimité",
+        "f1": "Projets d'expatriation illimités",
+        "f2": "Comparaison multi-pays avancée",
+        "f3": "Support prioritaire",
+        "f4": "Nouveautés en avant-première"
+      }
+    },
     "search": {
       "origin": "D'où je viens",
       "destination": "Où je vais",

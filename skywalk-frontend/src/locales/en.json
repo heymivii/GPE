@@ -773,6 +773,59 @@
     }
   },
   "landing": {
+    "visaChecker": {
+      "eyebrow": "Instant visa check",
+      "title": "Do I need a visa?",
+      "iAm": "I'm a citizen of…",
+      "goingTo": "I'm moving to…",
+      "exemptTitle": "Free movement — no visa",
+      "exemptText": "As a {{nationality}} citizen, you can settle in {{country}} with no visa or residence permit.",
+      "visaTitle": "Visa / residence permit required",
+      "visaText": "To settle in {{country}}, you'll need a visa. SkyWalk lists every step, based on verified official sources.",
+      "disclaimer": "Estimate based on EU/EEA/CH free movement — details depend on your situation.",
+      "cta": "See my full plan"
+    },
+    "officialSources": {
+      "badge": "Verified official source",
+      "title": "Reliable steps — not vague blogs",
+      "text": "Every step of your plan links to the official government source, verified live. No outdated info, no rumors — the difference between getting your visa and a failed application."
+    },
+    "pricing": {
+      "title": "One price per expatriation project",
+      "subtitle": "Explore for free. You only pay when you commit to a real project.",
+      "popular": "Most popular",
+      "disclaimer": "Indicative prices. No commitment — you only pay when starting a project.",
+      "perProject": "/ project",
+      "perYear": "/ year",
+      "discovery": {
+        "name": "Discover",
+        "tagline": "To explore before committing",
+        "cta": "Start for free",
+        "f1": "Explore all destinations",
+        "f2": "Comparator & cost of living",
+        "f3": "Checklist preview",
+        "f4": "Community forum access"
+      },
+      "project": {
+        "name": "Project",
+        "tagline": "One expatriation project, A to Z",
+        "cta": "Start my project",
+        "f1": "Everything in Discover",
+        "f2": "Full personalized checklist",
+        "f3": "Verified official links (error-proof)",
+        "f4": "Deadlines & progress tracking",
+        "f5": "Budget, documents & reminders"
+      },
+      "unlimited": {
+        "name": "Unlimited",
+        "tagline": "Several destinations in mind",
+        "cta": "Go unlimited",
+        "f1": "Unlimited expatriation projects",
+        "f2": "Advanced multi-country comparison",
+        "f3": "Priority support",
+        "f4": "Early access to new features"
+      }
+    },
     "search": {
       "origin": "Where I come from",
       "destination": "Where I'm going",
