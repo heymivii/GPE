@@ -1498,6 +1498,18 @@
           "jobOpportunities": {
             "name": "Job opportunities",
             "description": "Sectors, salaries and expat programs"
+          },
+          "countdown": {
+            "name": "Countdown",
+            "description": "Days to departure + next deadlines"
+          },
+          "requiredDocuments": {
+            "name": "Required documents",
+            "description": "Track your key documents (passport, visa…)"
+          },
+          "destinationForum": {
+            "name": "Your destination forum",
+            "description": "Latest discussions for your country"
           }
         },
         "menu": {
@@ -1568,7 +1580,11 @@
           },
           "avgSalary": "Average local salary",
           "sourceLive": "Cached market data — {{city}}",
-          "sourceStatic": "Estimated data"
+          "sourceStatic": "Estimated data",
+          "converter": {
+            "title": "Quick converter",
+            "amount": "Amount"
+          }
         },
         "localTime": {
           "title": "Local time",
@@ -1648,6 +1664,31 @@
             "j1": "Cultural and professional exchange program",
             "permisSwiss": "Residence and work permit in Switzerland"
           }
+        },
+        "countdown": {
+          "title": "Countdown",
+          "noDate": "Add a departure date to start the countdown.",
+          "addDate": "Add a date",
+          "jMinus": "D-{{days}}",
+          "until": "until departure · {{date}}",
+          "departed": "🎉 You've left!",
+          "nextDeadlines": "Next deadlines",
+          "late": "Overdue",
+          "seeChecklist": "View my checklist",
+          "allDone": "All your steps are up to date"
+        },
+        "requiredDocuments": {
+          "title": "Required documents",
+          "count": "{{done}}/{{total}} key documents",
+          "noProject": "Select a project to track your documents.",
+          "add": "Add documents",
+          "manage": "Manage my documents"
+        },
+        "destinationForum": {
+          "title": "Your destination forum",
+          "empty": "No discussion for {{country}} yet.",
+          "start": "Start a discussion",
+          "seeAll": "See the full forum"
         }
       },
       "projectSelector": "Project #{{id}} - {{country}}"

@@ -27,10 +27,11 @@ import ProfileSummaryWidget from '../widgets/ProfileSummaryWidget'
 import RecommendationsWidget from '../widgets/RecommendationsWidget'
 import ChecklistWidget from '../widgets/ChecklistWidget'
 import BudgetTrackerWidget from '../widgets/BudgetTrackerWidget'
-import LocalTimeWidget from '../widgets/LocalTimeWidget'
 import WeatherWidget from '../widgets/WeatherWidget'
-import CurrencyConverterWidget from '../widgets/CurrencyConverterWidget'
 import JobOpportunitiesWidget from '../widgets/JobOpportunitiesWidget'
+import CountdownWidget from '../widgets/CountdownWidget'
+import RequiredDocumentsWidget from '../widgets/RequiredDocumentsWidget'
+import DestinationForumWidget from '../widgets/DestinationForumWidget'
 import { useTranslation } from 'react-i18next'
 import { getLocale } from '../../../data/supportedCountries'
 
@@ -51,23 +52,34 @@ export default function PersonalizedDashboard() {
 
   const defaultLayout = [
     'checklist',
+    'countdown',
+    'required-documents',
     'profile-summary',
     'job-opportunities',
-    'local-time',
+    'destination-forum',
     'weather',
     'recommendations',
     'budget-tracker',
-    'currency-converter',
   ]
 
-  const [dashboardLayout, setDashboardLayout] = useState<string[]>(
-    widgetOrder || defaultLayout
+  // Widgets supprimés (Local Time = filler ; Currency Converter fusionné dans Budget).
+  const REMOVED_WIDGETS = ['local-time', 'currency-converter']
+
+  // Fusionne l'ordre sauvegardé avec les defaults : les nouveaux widgets apparaissent
+  // pour les utilisateurs existants, et les widgets retirés ne s'affichent plus.
+  const mergeLayout = (order?: string[] | null) => {
+    const base = order && order.length ? order : defaultLayout
+    const withNew = [...base, ...defaultLayout.filter((id) => !base.includes(id))]
+    return withNew.filter((id) => !REMOVED_WIDGETS.includes(id))
+  }
+
+  const [dashboardLayout, setDashboardLayout] = useState<string[]>(() =>
+    mergeLayout(widgetOrder)
   )
 
   useEffect(() => {
-    if (widgetOrder) {
-      setDashboardLayout(widgetOrder)
-    }
+    setDashboardLayout(mergeLayout(widgetOrder))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [widgetOrder])
 
   const sensors = useSensors(
@@ -117,13 +129,14 @@ export default function PersonalizedDashboard() {
   }, [selectedProjectId, activeProjectId, setActiveProjectId])
 
   const availableWidgets = [
-    { id: 'profile-summary', name: t('dashboard.personalized.widgets.available.profileSummary.name'), icon: '👤', description: t('dashboard.personalized.widgets.available.profileSummary.description') },
-    { id: 'local-time', name: t('dashboard.personalized.widgets.available.localTime.name'), icon: '⏰', description: t('dashboard.personalized.widgets.available.localTime.description') },
-    { id: 'weather', name: t('dashboard.personalized.widgets.available.weather.name'), icon: '🌤️', description: t('dashboard.personalized.widgets.available.weather.description') },
     { id: 'checklist', name: t('dashboard.personalized.widgets.available.checklist.name'), icon: '✅', description: t('dashboard.personalized.widgets.available.checklist.description') },
+    { id: 'countdown', name: t('dashboard.personalized.widgets.available.countdown.name', { defaultValue: 'Compte à rebours' }), icon: '⏳', description: t('dashboard.personalized.widgets.available.countdown.description', { defaultValue: 'Jours avant le départ + prochaines échéances' }) },
+    { id: 'required-documents', name: t('dashboard.personalized.widgets.available.requiredDocuments.name', { defaultValue: 'Documents requis' }), icon: '📄', description: t('dashboard.personalized.widgets.available.requiredDocuments.description', { defaultValue: 'Suivi de vos documents-clés (passeport, visa…)' }) },
+    { id: 'destination-forum', name: t('dashboard.personalized.widgets.available.destinationForum.name', { defaultValue: 'Forum de ta destination' }), icon: '💬', description: t('dashboard.personalized.widgets.available.destinationForum.description', { defaultValue: 'Derniers échanges pour votre pays' }) },
+    { id: 'profile-summary', name: t('dashboard.personalized.widgets.available.profileSummary.name'), icon: '👤', description: t('dashboard.personalized.widgets.available.profileSummary.description') },
+    { id: 'weather', name: t('dashboard.personalized.widgets.available.weather.name'), icon: '🌤️', description: t('dashboard.personalized.widgets.available.weather.description') },
     { id: 'budget-tracker', name: t('dashboard.personalized.widgets.available.budgetTracker.name'), icon: '💰', description: t('dashboard.personalized.widgets.available.budgetTracker.description') },
     { id: 'recommendations', name: t('dashboard.personalized.widgets.available.recommendations.name'), icon: '💡', description: t('dashboard.personalized.widgets.available.recommendations.description') },
-    { id: 'currency-converter', name: t('dashboard.personalized.widgets.available.currencyConverter.name'), icon: '💱', description: t('dashboard.personalized.widgets.available.currencyConverter.description') },
     { id: 'job-opportunities', name: t('dashboard.personalized.widgets.available.jobOpportunities.name'), icon: '💼', description: t('dashboard.personalized.widgets.available.jobOpportunities.description') },
   ]
 
@@ -287,13 +300,35 @@ export default function PersonalizedDashboard() {
           />
         )
 
-      case 'local-time':
+      case 'countdown':
         return (
-          <LocalTimeWidget
+          <CountdownWidget
             key={widgetId}
-            countryCode={countryData?.code || 'FR'}
-            countryName={countryData?.name || 'France'}
-            timezone={(activeProject?.destinationCity as { timezone?: string } | undefined)?.timezone || undefined}
+            projectId={activeProject?.idProject || 0}
+            departureDate={activeProject?.expectedDepartureDate}
+            project={{
+              travelType: activeProject?.travelType,
+              objective: activeProject?.mainObjective,
+            }}
+            {...commonProps}
+          />
+        )
+
+      case 'required-documents':
+        return (
+          <RequiredDocumentsWidget
+            key={widgetId}
+            projectId={activeProject?.idProject}
+            {...commonProps}
+          />
+        )
+
+      case 'destination-forum':
+        return (
+          <DestinationForumWidget
+            key={widgetId}
+            countryId={activeProject?.idDestinationCountry}
+            countryName={countryData?.name}
             {...commonProps}
           />
         )
@@ -347,14 +382,6 @@ export default function PersonalizedDashboard() {
             countryData={countryData}
             originCountryData={originCountryData}
             cityName={activeProject?.destinationCity?.name || undefined}
-            {...commonProps}
-          />
-        )
-
-      case 'currency-converter':
-        return (
-          <CurrencyConverterWidget
-            key={widgetId}
             {...commonProps}
           />
         )

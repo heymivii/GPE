@@ -59,6 +59,9 @@ const COUNTRY_CAPITAL_MAP: Record<string, { city: string; apiCountry: string }> 
   SE: { city: 'Stockholm', apiCountry: 'Sweden' },
 }
 
+// Convertisseur rapide (fusionné depuis l'ancien widget Currency Converter).
+const CONVERT_CURRENCIES = ['EUR', 'USD', 'GBP', 'JPY', 'CHF', 'CAD', 'AUD']
+
 export default function BudgetTrackerWidget({
   housingBudget,
   countryData,
@@ -105,6 +108,23 @@ export default function BudgetTrackerWidget({
   }, [originCurrency, destCurrency, sameCurrency])
 
   const budgetInDest = exchangeRate ? Math.round(budget * exchangeRate) : null
+
+  // --- Convertisseur rapide interactif (ex-widget Currency Converter) ---
+  const [convAmount, setConvAmount] = useState<string>('100')
+  const [convFrom, setConvFrom] = useState<string>(originCurrency)
+  const [convTo, setConvTo] = useState<string>(destCurrency)
+  const [convRate, setConvRate] = useState<number | null>(convFrom === convTo ? 1 : null)
+
+  useEffect(() => {
+    let alive = true
+    if (convFrom === convTo) { setConvRate(1); return }
+    setConvRate(null)
+    fetchExchangeRate(convFrom, convTo).then(r => { if (alive) setConvRate(r) })
+    return () => { alive = false }
+  }, [convFrom, convTo])
+
+  const convResult =
+    convRate != null ? parseFloat(convAmount || '0') * convRate : null
 
   const rents = {
     oneBedroom: liveRent1 || countryData?.costOfLiving?.averageRent?.oneBedroom || 0,
@@ -232,6 +252,48 @@ export default function BudgetTrackerWidget({
           <p className="text-sm">{t('dashboard.personalized.widgets.budgetTracker.noData.message')}</p>
         </div>
       )}
+
+      {/* Convertisseur rapide */}
+      <div className="mt-4 pt-4 border-t border-gray-100">
+        <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400 mb-2 flex items-center gap-1">
+          <ArrowRightLeft className="w-3 h-3" />
+          {t('dashboard.personalized.widgets.budgetTracker.converter.title', { defaultValue: 'Convertisseur rapide' })}
+        </p>
+        <div className="flex items-center gap-2">
+          <input
+            type="number"
+            inputMode="decimal"
+            value={convAmount}
+            onChange={(e) => setConvAmount(e.target.value)}
+            className="w-20 px-2 py-1.5 border border-gray-200 rounded-lg text-sm focus:border-[#5EA3C0] outline-none"
+            aria-label={t('dashboard.personalized.widgets.budgetTracker.converter.amount', { defaultValue: 'Montant' })}
+          />
+          <select
+            value={convFrom}
+            onChange={(e) => setConvFrom(e.target.value)}
+            className="px-1.5 py-1.5 border border-gray-200 rounded-lg text-sm bg-white focus:border-[#5EA3C0] outline-none"
+          >
+            {CONVERT_CURRENCIES.map((c) => <option key={c} value={c}>{c}</option>)}
+          </select>
+          <ArrowRightLeft className="w-3.5 h-3.5 text-gray-300 flex-shrink-0" />
+          <select
+            value={convTo}
+            onChange={(e) => setConvTo(e.target.value)}
+            className="px-1.5 py-1.5 border border-gray-200 rounded-lg text-sm bg-white focus:border-[#5EA3C0] outline-none"
+          >
+            {CONVERT_CURRENCIES.map((c) => <option key={c} value={c}>{c}</option>)}
+          </select>
+        </div>
+        <p className="text-sm text-gray-800 mt-2">
+          {convResult != null ? (
+            <span className="font-semibold">
+              {convResult.toLocaleString(undefined, { maximumFractionDigits: 2 })} {convTo}
+            </span>
+          ) : (
+            <span className="text-gray-400">…</span>
+          )}
+        </p>
+      </div>
     </Widget>
   )
 }

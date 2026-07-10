@@ -1498,6 +1498,18 @@
           "jobOpportunities": {
             "name": "Opportunités emploi",
             "description": "Secteurs, salaires et programmes d'expatriation"
+          },
+          "countdown": {
+            "name": "Compte à rebours",
+            "description": "Jours avant le départ + prochaines échéances"
+          },
+          "requiredDocuments": {
+            "name": "Documents requis",
+            "description": "Suivi de vos documents-clés (passeport, visa…)"
+          },
+          "destinationForum": {
+            "name": "Forum de ta destination",
+            "description": "Derniers échanges pour votre pays"
           }
         },
         "menu": {
@@ -1568,7 +1580,11 @@
           },
           "avgSalary": "Salaire moyen local",
           "sourceLive": "Données de marché (en cache) — {{city}}",
-          "sourceStatic": "Données estimatives"
+          "sourceStatic": "Données estimatives",
+          "converter": {
+            "title": "Convertisseur rapide",
+            "amount": "Montant"
+          }
         },
         "localTime": {
           "title": "Heure locale",
@@ -1648,6 +1664,31 @@
             "j1": "Programme d'échange culturel et professionnel",
             "permisSwiss": "Permis de séjour et travail en Suisse"
           }
+        },
+        "countdown": {
+          "title": "Compte à rebours",
+          "noDate": "Ajoutez une date de départ pour activer le compte à rebours.",
+          "addDate": "Ajouter une date",
+          "jMinus": "J-{{days}}",
+          "until": "avant votre départ · {{date}}",
+          "departed": "🎉 Vous êtes parti·e !",
+          "nextDeadlines": "Prochaines échéances",
+          "late": "En retard",
+          "seeChecklist": "Voir ma checklist",
+          "allDone": "Toutes vos démarches sont à jour"
+        },
+        "requiredDocuments": {
+          "title": "Documents requis",
+          "count": "{{done}}/{{total}} documents-clés",
+          "noProject": "Sélectionnez un projet pour suivre vos documents.",
+          "add": "Ajouter des documents",
+          "manage": "Gérer mes documents"
+        },
+        "destinationForum": {
+          "title": "Forum de ta destination",
+          "empty": "Aucune discussion pour {{country}} pour le moment.",
+          "start": "Lancer une discussion",
+          "seeAll": "Voir tout le forum"
         }
       },
       "projectSelector": "Projet #{{id}} - {{country}}"
