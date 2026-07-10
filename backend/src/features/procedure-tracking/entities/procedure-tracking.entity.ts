@@ -31,9 +31,9 @@ export class ProcedureTracking {
   @Column({ name: 'comments', type: 'text', nullable: true })
   comments: string | null;
 
-  /** completed action texts (content-keyed; survives regeneration — only reworded actions reset) */
+  /** Index des sous-étapes cochées (le front les identifie par position). Colonne jsonb. */
   @Column({ name: 'completed_facts', type: 'jsonb', default: () => "'[]'" })
-  completedFacts: string[];
+  completedFacts: number[];
 
   /** Dernier palier de rappel d'échéance envoyé (30 puis 7) — évite les doublons. */
   @Column({ name: 'last_reminder_days', type: 'int', nullable: true })

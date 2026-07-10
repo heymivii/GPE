@@ -171,7 +171,7 @@ describe('ProcedureTrackingService', () => {
       const tracking = {
         idProcedureTracking: trackingId,
         status: 'not_started',
-        completedFacts: [] as string[],
+        completedFacts: [] as number[],
         end_date: null as string | null,
         user: { idUser: 1 },
         admin_procedure: { idAdminProcedure: 1 },
@@ -184,28 +184,25 @@ describe('ProcedureTrackingService', () => {
       return tracking;
     }
 
-    it('persists completedFacts as action texts when provided', async () => {
+    it('persists completedFacts as substep indices when provided', async () => {
       stubFindOne();
 
       const result = await service.update(trackingId, 1, {
-        completedFacts: ['Préparer le passeport', 'Remplir le formulaire'],
+        completedFacts: [0, 2],
       });
 
       expect(trackingRepo.save).toHaveBeenCalledTimes(1);
-      expect(result.completedFacts).toEqual([
-        'Préparer le passeport',
-        'Remplir le formulaire',
-      ]);
+      expect(result.completedFacts).toEqual([0, 2]);
     });
 
     it('does not overwrite completedFacts when not provided in dto', async () => {
-      stubFindOne({ completedFacts: ['Préparer le passeport'] });
+      stubFindOne({ completedFacts: [0] });
 
       const result = await service.update(trackingId, 1, {
         status: 'in_progress',
       });
 
-      expect(result.completedFacts).toEqual(['Préparer le passeport']);
+      expect(result.completedFacts).toEqual([0]);
     });
 
     it('updates status alongside completedFacts in the same call', async () => {
@@ -213,11 +210,11 @@ describe('ProcedureTrackingService', () => {
 
       const result = await service.update(trackingId, 1, {
         status: 'in_progress',
-        completedFacts: ['Obtenir le visa'],
+        completedFacts: [1],
       });
 
       expect(result.status).toBe('in_progress');
-      expect(result.completedFacts).toEqual(['Obtenir le visa']);
+      expect(result.completedFacts).toEqual([1]);
     });
   });
 
