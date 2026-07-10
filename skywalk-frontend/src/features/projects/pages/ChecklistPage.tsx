@@ -8,6 +8,7 @@ import { getLinksForStep } from '../../../data/checklist-links';
 import { useGovLink } from '../../../api/useGovLink';
 import OfficialLinkCard from '../../../components/OfficialLinkCard';
 import TrustBadge from '../../../components/TrustBadge';
+import VisaNotice from '../../../components/VisaNotice';
 import { personalizeFilter, sortByPriorities } from '../../dashboard/hooks/personalize';
 
 // ---- Types ----
@@ -623,6 +624,15 @@ export default function ChecklistPage() {
               </div>
             )}
           </div>
+
+          {/* Conditions d'entrée selon la nationalité (installation, pas tourisme) */}
+          <VisaNotice
+            className="mt-4"
+            nationality={project?.nationality}
+            destinationIso={countryCode}
+            destinationName={project?.destinationCountry?.countryName}
+            sourceUrl={allSteps.find((s) => s.category === 'visa')?.sourceUrl}
+          />
 
           {/* ⚠️ Verdict de faisabilité — le départ est-il encore réaliste ? */}
           {feasibility && (

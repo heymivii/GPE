@@ -6,6 +6,7 @@ import type { CountryData } from '../../../hooks/useCountryData';
 import { useChecklistProgress, getStepDeadline, filterStepsForProject } from '../hooks/useChecklistProgress';
 import { personalizeFilter } from '../hooks/personalize';
 import TrustBadge from '../../../components/TrustBadge';
+import VisaNotice from '../../../components/VisaNotice';
 import { getLinksForStep } from '../../../data/checklist-links';
 import { useTranslation } from 'react-i18next';
 import { getLocale } from '../../../data/supportedCountries';
@@ -509,6 +510,14 @@ export default function ChecklistWidget({
             </div>
           )}
         </div>
+
+        {/* Conditions d'entrée selon la nationalité (installation, pas tourisme) */}
+        <VisaNotice
+          nationality={project?.nationality}
+          destinationIso={countryCode}
+          destinationName={(_countryData as any)?.name}
+          sourceUrl={allChecklist.find((s) => s.category === 'visa')?.sourceUrl}
+        />
 
         {/* ✅ Alerte date de départ manquante */}
         {!departureDate && (

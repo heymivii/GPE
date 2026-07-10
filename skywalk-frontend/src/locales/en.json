@@ -27,6 +27,13 @@
     "markRead": "Mark as read",
     "aria": "{{count}} unread notification(s)"
   },
+  "visaNotice": {
+    "thisCountry": "this country",
+    "exempt": "Free movement — no visa required to settle in {{country}} (EU/EEA/CH citizen).",
+    "required": "Settling in: a long-stay visa is required to move to {{country}} (not a tourist stay).",
+    "check": "Depending on your nationality, a long-stay visa may be required to settle in {{country}}.",
+    "officialSource": "Check the official source"
+  },
   "countries": {
     "france": "France",
     "canada": "Canada",

@@ -27,6 +27,13 @@
     "markRead": "Marquer comme lue",
     "aria": "{{count}} notification(s) non lue(s)"
   },
+  "visaNotice": {
+    "thisCountry": "ce pays",
+    "exempt": "Libre circulation — aucun visa n’est requis pour vous installer en {{country}} (ressortissant·e UE/EEE/CH).",
+    "required": "Installation : un visa long séjour est requis pour vous installer en {{country}} (≠ un simple séjour touristique).",
+    "check": "Selon votre nationalité, un visa long séjour peut être requis pour vous installer en {{country}}.",
+    "officialSource": "Vérifier sur la source officielle"
+  },
   "countries": {
     "france": "France",
     "canada": "Canada",
