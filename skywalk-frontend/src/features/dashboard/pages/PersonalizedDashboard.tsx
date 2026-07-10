@@ -309,7 +309,11 @@ export default function PersonalizedDashboard() {
             project={{
               travelType: activeProject?.travelType,
               objective: activeProject?.mainObjective,
+              nationality: activeProject?.nationality,
+              hasChildren: activeProject?.hasChildren,
+              priorities: activeProject?.priorities,
             }}
+            countryCode={countryData?.code}
             {...commonProps}
           />
         )

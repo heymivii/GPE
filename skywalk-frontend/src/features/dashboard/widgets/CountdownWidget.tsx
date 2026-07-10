@@ -5,12 +5,21 @@ import { CalendarClock, ArrowRight, AlertTriangle, Plane } from 'lucide-react';
 import Widget from './Widget';
 import type { WidgetSize } from '../hooks/useDashboardPreferences';
 import { useChecklistProgress, getStepDeadline, filterStepsForProject } from '../hooks/useChecklistProgress';
+import { personalizeFilter } from '../hooks/personalize';
 
 interface Props {
   projectId: number;
   departureDate?: string | null;
-  /** Profil du projet — pour n'afficher QUE les étapes applicables (comme la checklist). */
-  project?: { travelType?: string | null; objective?: string | null };
+  /** Profil du projet — pour n'afficher QUE les étapes applicables (mêmes filtres que la checklist). */
+  project?: {
+    travelType?: string | null;
+    objective?: string | null;
+    nationality?: string | null;
+    hasChildren?: boolean | null;
+    priorities?: string | null;
+  };
+  /** ISO du pays de destination — nécessaire à l'exemption de visa (UE/CH). */
+  countryCode?: string;
   onHide?: () => void;
   onResize?: (size: WidgetSize) => void;
   currentSize?: WidgetSize;
@@ -22,6 +31,7 @@ export default function CountdownWidget({
   projectId,
   departureDate,
   project,
+  countryCode,
   onHide,
   onResize,
   currentSize,
@@ -34,20 +44,36 @@ export default function CountdownWidget({
     return Math.ceil((new Date(departureDate).getTime() - Date.now()) / MS_DAY);
   }, [departureDate]);
 
-  // Les 3 prochaines échéances non terminées, en n'incluant QUE les étapes applicables
-  // au profil (même filtre que la checklist) — sinon on affiche des étapes qu'elle masque.
-  const upcoming = useMemo(() => {
-    if (!Array.isArray(progress) || !departureDate) return [];
+  // Étapes RÉELLEMENT applicables au profil — EXACTEMENT les deux filtres de la checklist :
+  // filterStepsForProject (type/objectif) puis personalizeFilter (nationalité/visa, enfants…).
+  // Sans ça, on afficherait une étape que la checklist masque (ex. visa exempté UE→CH).
+  const applicable = useMemo(() => {
+    if (!Array.isArray(progress)) return [] as Array<{
+      title: string; category: string; daysBeforeDeparture: number | undefined; completed: boolean;
+    }>;
     const steps = progress.map((tr: any) => ({
       title: tr.admin_procedure?.procedureType ?? '',
+      category: tr.admin_procedure?.category ?? 'other',
       onlyFor: tr.admin_procedure?.onlyFor ?? null,
       daysBeforeDeparture: tr.admin_procedure?.daysBeforeDeparture,
       completed: tr.status === 'completed',
     }));
-    return filterStepsForProject(steps, {
+    const byProfile = filterStepsForProject(steps, {
       travelType: project?.travelType,
       objective: project?.objective,
-    })
+    });
+    return personalizeFilter(byProfile, {
+      nationality: project?.nationality,
+      destinationIso: countryCode,
+      hasChildren: project?.hasChildren,
+      priorities: project?.priorities,
+    });
+  }, [progress, project?.travelType, project?.objective, project?.nationality, project?.hasChildren, project?.priorities, countryCode]);
+
+  // Les 3 prochaines échéances non terminées parmi les étapes applicables.
+  const upcoming = useMemo(() => {
+    if (!departureDate) return [];
+    return applicable
       .filter((s) => !s.completed)
       .map((s) => ({
         title: s.title,
@@ -56,20 +82,12 @@ export default function CountdownWidget({
       .filter((s) => s.deadline.date !== null)
       .sort((a, b) => (a.deadline.daysLeft ?? 0) - (b.deadline.daysLeft ?? 0))
       .slice(0, 3);
-  }, [progress, departureDate, project?.travelType, project?.objective]);
+  }, [applicable, departureDate]);
 
-  // Y a-t-il encore des étapes applicables non terminées ? (pour l'état « tout est à jour »)
-  const hasApplicableIncomplete = useMemo(() => {
-    if (!Array.isArray(progress)) return false;
-    const steps = progress.map((tr: any) => ({
-      onlyFor: tr.admin_procedure?.onlyFor ?? null,
-      completed: tr.status === 'completed',
-    }));
-    return filterStepsForProject(steps, {
-      travelType: project?.travelType,
-      objective: project?.objective,
-    }).some((s) => !s.completed);
-  }, [progress, project?.travelType, project?.objective]);
+  const hasApplicableIncomplete = useMemo(
+    () => applicable.some((s) => !s.completed),
+    [applicable],
+  );
 
   const fmtDate = (d: Date) =>
     d.toLocaleDateString(i18n.language === 'en' ? 'en-GB' : 'fr-FR', {
