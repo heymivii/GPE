@@ -433,21 +433,13 @@ export default function ChecklistWidget({
     }
   }, [checklist, updateFacts]);
 
-  const { totalSteps, completedSteps } = useMemo(() => {
-    return checklist.reduce(
-      (acc, item) => {
-        if (item.substeps && item.substeps.length > 0) {
-          acc.totalSteps += item.substeps.length;
-          acc.completedSteps += item.substeps.filter((sub) => sub.completed).length;
-        } else {
-          acc.totalSteps += 1;
-          acc.completedSteps += item.completed ? 1 : 0;
-        }
-        return acc;
-      },
-      { totalSteps: 0, completedSteps: 0 },
-    );
-  }, [checklist]);
+  // Progression = étapes complétées (statut), identique à la page checklist du projet.
+  // (Auparavant pondérée par sous-pas → chiffre différent de la fiche projet = incohérent.)
+  const totalSteps = checklist.length;
+  const completedSteps = useMemo(
+    () => checklist.filter((item) => item.completed).length,
+    [checklist],
+  );
 
   const completionPercentage =
     totalSteps > 0 ? (completedSteps / totalSteps) * 100 : 0;
