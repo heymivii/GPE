@@ -71,6 +71,9 @@ export class DeadlineReminderService {
           userId: tr.user.idUser,
           notificationType: 'reminder',
           message: `⏰ J-${daysLeft} — « ${tr.admin_procedure.procedureType} » à préparer avant votre départ.`,
+          // Cliquable → checklist du projet concerné.
+          contextType: 'project',
+          contextId: tr.project?.idProject,
         } as CreateNotificationDto);
         tr.lastReminderDays = milestone;
         await this.trackingRepo.save(tr);

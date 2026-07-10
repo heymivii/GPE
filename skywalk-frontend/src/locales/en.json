@@ -20,6 +20,13 @@
     "preferences": "Preferences",
     "blog": "Blog"
   },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "No notifications.",
+    "markAllRead": "Mark all read",
+    "markRead": "Mark as read",
+    "aria": "{{count}} unread notification(s)"
+  },
   "countries": {
     "france": "France",
     "canada": "Canada",

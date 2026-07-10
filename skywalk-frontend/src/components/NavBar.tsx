@@ -6,6 +6,7 @@ import { useAuth } from '../hooks/useAuth';
 import GlobalSearchModal from './GlobalSearchModal';
 import CurrencySelector from './CurrencySelector';
 import ProjectSwitcher from './ProjectSwitcher';
+import NotificationBell from '../features/notifications/NotificationBell';
 import { useCurrency, DISPLAY_CURRENCIES } from '../contexts/CurrencyContext';
 
 const languages = [
@@ -215,7 +216,9 @@ export default function NavBar() {
             )}
 
             {isAuthenticated && user ? (
-              <div className="relative hidden sm:block" ref={userMenuRef}>
+              <div className="flex items-center gap-1">
+                <NotificationBell />
+                <div className="relative hidden sm:block" ref={userMenuRef}>
                 <button
                   className="flex items-center gap-2 px-3 py-1.5 border border-gray-200 rounded-full bg-white hover:bg-gray-50 transition-colors"
                   onClick={() => setUserMenuOpen((v) => !v)}
@@ -324,6 +327,7 @@ export default function NavBar() {
                     </button>
                   </div>
                 )}
+                </div>
               </div>
             ) : (
               <div className="hidden sm:flex items-center gap-3">

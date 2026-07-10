@@ -40,6 +40,12 @@ export class NotificationController {
     return this.notificationService.findOne(+id, req.user.userId);
   }
 
+  // Déclaré AVANT les routes ':id' pour ne pas être capturé comme un paramètre.
+  @Patch('read-all')
+  markAllAsRead(@Request() req) {
+    return this.notificationService.markAllAsRead(req.user.userId);
+  }
+
   @Patch(':id/read')
   markAsRead(@Request() req, @Param('id') id: string) {
     return this.notificationService.markAsRead(+id, req.user.userId);

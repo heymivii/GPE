@@ -22,6 +22,8 @@ export class NotificationService {
     const notification = this.notificationRepository.create({
       notifType: createDto.notificationType ?? 'info',
       message: createDto.message,
+      contextType: createDto.contextType ?? null,
+      contextId: createDto.contextId ?? null,
       user: { idUser: createDto.userId } as any,
     });
     return await this.notificationRepository.save(notification);
@@ -53,6 +55,15 @@ export class NotificationService {
     const notification = await this.findOne(id, userId);
     notification.isRead = true;
     return await this.notificationRepository.save(notification);
+  }
+
+  /** Marque toutes les notifications non lues de l'utilisateur comme lues. */
+  async markAllAsRead(userId: number): Promise<{ updated: number }> {
+    const result = await this.notificationRepository.update(
+      { user: { idUser: userId }, isRead: false },
+      { isRead: true },
+    );
+    return { updated: result.affected ?? 0 };
   }
 
   async update(

@@ -2,11 +2,14 @@ import apiClient from '../lib/api';
 
 export interface AppNotification {
   idNotification: number;
-  notifType: string; // 'alert' (review request) | 'info' (decision) | ...
+  notifType: string; // 'reminder' (deadline) | 'info' (decision) | 'alert' (review) | ...
   message: string;
   isRead: boolean;
   sentAt: string;
   userId: number;
+  // Contexte cliquable optionnel — ex. 'project' + idProject → /projects/:id/checklist
+  contextType?: string | null;
+  contextId?: number | null;
 }
 
 export const notificationsApi = {
@@ -18,6 +21,11 @@ export const notificationsApi = {
 
   markAsRead: async (id: number): Promise<AppNotification> => {
     const { data } = await apiClient.patch<AppNotification>(`/notification/${id}/read`);
+    return data;
+  },
+
+  markAllAsRead: async (): Promise<{ updated: number }> => {
+    const { data } = await apiClient.patch<{ updated: number }>('/notification/read-all');
     return data;
   },
 };

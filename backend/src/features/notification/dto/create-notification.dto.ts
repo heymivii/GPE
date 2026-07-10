@@ -27,4 +27,13 @@ export class CreateNotificationDto {
   @IsNotEmpty()
   @IsNumber()
   userId: number;
+
+  /** Contexte cliquable optionnel — ex. 'project' + idProject. */
+  @IsOptional()
+  @IsString()
+  contextType?: string;
+
+  @IsOptional()
+  @IsNumber()
+  contextId?: number;
 }
