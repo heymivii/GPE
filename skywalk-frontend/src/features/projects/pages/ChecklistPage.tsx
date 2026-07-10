@@ -361,7 +361,10 @@ export default function ChecklistPage() {
   }, [filteredSteps, departureDate]);
 
   // Stats — deadlines/urgency only apply to 'before' phase items
-  const { totalSteps, completedSteps, lateSteps, urgentSteps } = useMemo(() => {
+  const {
+    totalSteps, completedSteps, lateSteps, urgentSteps,
+    beforeTotal, beforeDone, arrivalTotal, arrivalDone,
+  } = useMemo(() => {
     const total = profileSteps.length;
     const completed = profileSteps.filter((s) => s.completed).length;
     const late = profileSteps.filter((s) => {
@@ -374,10 +377,21 @@ export default function ChecklistPage() {
       const d = getStepDeadline(s.daysBeforeDeparture, departureDate);
       return !s.completed && d.isUrgent;
     }).length;
-    return { totalSteps: total, completedSteps: completed, lateSteps: late, urgentSteps: urgent };
+    const before = profileSteps.filter((s) => s.phase === 'before');
+    const arrival = profileSteps.filter((s) => s.phase !== 'before');
+    return {
+      totalSteps: total,
+      completedSteps: completed,
+      lateSteps: late,
+      urgentSteps: urgent,
+      beforeTotal: before.length,
+      beforeDone: before.filter((s) => s.completed).length,
+      arrivalTotal: arrival.length,
+      arrivalDone: arrival.filter((s) => s.completed).length,
+    };
   }, [profileSteps, departureDate]);
 
-  const completionPercentage = totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0;
+  const pct = (done: number, total: number) => (total > 0 ? Math.round((done / total) * 100) : 0);
 
   // Jours avant le départ
   const daysUntilDeparture = useMemo(() => {
@@ -561,7 +575,7 @@ export default function ChecklistPage() {
                     </span>
                   )}
                   <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">
-                    {completionPercentage}% fait
+                    {pct(completedSteps, totalSteps)}% fait
                   </span>
                 </div>
               </div>
@@ -573,20 +587,41 @@ export default function ChecklistPage() {
             </p>
           )}
 
-          {/* Barre de progression */}
-          <div className="mt-4">
-            <div className="flex items-center justify-between mb-1.5">
-              <span className="text-sm text-gray-600">
-                {completedSteps} / {totalSteps} étapes complétées
-              </span>
-              <span className="text-sm font-bold text-gray-900">{completionPercentage}%</span>
-            </div>
-            <div className="w-full bg-gray-100 rounded-full h-2.5">
-              <div
-                className="bg-gray-900 h-2.5 rounded-full transition-all duration-500"
-                style={{ width: `${completionPercentage}%` }}
-              />
-            </div>
+          {/* Progression par phase — on ne mélange plus « avant le départ » et « sur place » :
+              dire « 100% » alors que la personne n'est pas encore installée n'aurait pas de sens. */}
+          <div className="mt-4 space-y-3">
+            {beforeTotal > 0 && (
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-sm text-gray-600">
+                    ✈️ Avant le départ — {beforeDone} / {beforeTotal}
+                  </span>
+                  <span className="text-sm font-bold text-gray-900">{pct(beforeDone, beforeTotal)}%</span>
+                </div>
+                <div className="w-full bg-gray-100 rounded-full h-2.5">
+                  <div
+                    className="bg-gray-900 h-2.5 rounded-full transition-all duration-500"
+                    style={{ width: `${pct(beforeDone, beforeTotal)}%` }}
+                  />
+                </div>
+              </div>
+            )}
+            {arrivalTotal > 0 && (
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-sm text-gray-600">
+                    🏠 Sur place — {arrivalDone} / {arrivalTotal}
+                  </span>
+                  <span className="text-sm font-bold text-gray-900">{pct(arrivalDone, arrivalTotal)}%</span>
+                </div>
+                <div className="w-full bg-gray-100 rounded-full h-2.5">
+                  <div
+                    className="bg-[#5EA3C0] h-2.5 rounded-full transition-all duration-500"
+                    style={{ width: `${pct(arrivalDone, arrivalTotal)}%` }}
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
           {/* ⚠️ Verdict de faisabilité — le départ est-il encore réaliste ? */}

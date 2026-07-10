@@ -433,16 +433,19 @@ export default function ChecklistWidget({
     }
   }, [checklist, updateFacts]);
 
-  // Progression = étapes complétées (statut), identique à la page checklist du projet.
-  // (Auparavant pondérée par sous-pas → chiffre différent de la fiche projet = incohérent.)
-  const totalSteps = checklist.length;
-  const completedSteps = useMemo(
-    () => checklist.filter((item) => item.completed).length,
-    [checklist],
-  );
-
-  const completionPercentage =
-    totalSteps > 0 ? (completedSteps / totalSteps) * 100 : 0;
+  // Progression par PHASE — on ne mélange plus « avant le départ » et « sur place » :
+  // sinon on afficherait « 100% terminé » alors que la personne n'est même pas partie.
+  const phase = useMemo(() => {
+    const before = checklist.filter((i) => i.phase === 'before');
+    const arrival = checklist.filter((i) => i.phase !== 'before');
+    return {
+      beforeTotal: before.length,
+      beforeDone: before.filter((i) => i.completed).length,
+      arrivalTotal: arrival.length,
+      arrivalDone: arrival.filter((i) => i.completed).length,
+    };
+  }, [checklist]);
+  const pct = (done: number, total: number) => (total > 0 ? (done / total) * 100 : 0);
 
   if (isLoading) {
     return (
@@ -467,26 +470,44 @@ export default function ChecklistWidget({
   return (
     <Widget title={t('dashboard.personalized.widgets.checklist.title')} onEdit={onEdit} onHide={onHide} onResize={onResize} currentSize={currentSize}>
       <div className="space-y-4">
-        {/* Barre de progression */}
-        <div className="bg-gray-50 rounded-lg p-3">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-700">
-              {t('dashboard.personalized.widgets.checklist.progression')}
-            </span>
-            <span className="text-sm font-semibold text-gray-900">
-              {t('dashboard.personalized.widgets.checklist.completed', {
-                completed: completedSteps,
-                total: totalSteps,
-                percentage: Math.round(completionPercentage),
-              })}
-            </span>
-          </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
-            <div
-              className="bg-gray-900 h-2 rounded-full transition-all duration-500"
-              style={{ width: `${completionPercentage}%` }}
-            />
-          </div>
+        {/* Progression par phase — jamais un « 100% » global tant que « sur place » n'est pas fait */}
+        <div className="bg-gray-50 rounded-lg p-3 space-y-3">
+          {phase.beforeTotal > 0 && (
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-sm font-medium text-gray-700">
+                  {t(`${CK}.beforeDeparture`)}
+                </span>
+                <span className="text-sm font-semibold text-gray-900">
+                  {phase.beforeDone}/{phase.beforeTotal}
+                </span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div
+                  className="bg-gray-900 h-2 rounded-full transition-all duration-500"
+                  style={{ width: `${pct(phase.beforeDone, phase.beforeTotal)}%` }}
+                />
+              </div>
+            </div>
+          )}
+          {phase.arrivalTotal > 0 && (
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-sm font-medium text-gray-700">
+                  {t(`${CK}.onArrival`)}
+                </span>
+                <span className="text-sm font-semibold text-gray-900">
+                  {phase.arrivalDone}/{phase.arrivalTotal}
+                </span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div
+                  className="bg-[#5EA3C0] h-2 rounded-full transition-all duration-500"
+                  style={{ width: `${pct(phase.arrivalDone, phase.arrivalTotal)}%` }}
+                />
+              </div>
+            </div>
+          )}
         </div>
 
         {/* ✅ Alerte date de départ manquante */}

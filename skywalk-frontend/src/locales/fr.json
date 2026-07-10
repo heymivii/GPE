@@ -1675,7 +1675,8 @@
           "nextDeadlines": "Prochaines échéances",
           "late": "En retard",
           "seeChecklist": "Voir ma checklist",
-          "allDone": "Toutes vos démarches sont à jour"
+          "allDone": "Toutes vos démarches sont à jour",
+          "prepDone": "Préparation terminée — les démarches sur place vous attendent à l’arrivée"
         },
         "requiredDocuments": {
           "title": "Documents requis",

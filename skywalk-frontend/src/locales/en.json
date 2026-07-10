@@ -1675,7 +1675,8 @@
           "nextDeadlines": "Next deadlines",
           "late": "Overdue",
           "seeChecklist": "View my checklist",
-          "allDone": "All your steps are up to date"
+          "allDone": "All your steps are up to date",
+          "prepDone": "Preparation complete — your on-site steps await you on arrival"
         },
         "requiredDocuments": {
           "title": "Required documents",

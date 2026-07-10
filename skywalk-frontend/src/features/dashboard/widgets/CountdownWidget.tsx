@@ -49,11 +49,12 @@ export default function CountdownWidget({
   // Sans ça, on afficherait une étape que la checklist masque (ex. visa exempté UE→CH).
   const applicable = useMemo(() => {
     if (!Array.isArray(progress)) return [] as Array<{
-      title: string; category: string; daysBeforeDeparture: number | undefined; completed: boolean;
+      title: string; category: string; phase: string; daysBeforeDeparture: number | undefined; completed: boolean;
     }>;
     const steps = progress.map((tr: any) => ({
       title: tr.admin_procedure?.procedureType ?? '',
       category: tr.admin_procedure?.category ?? 'other',
+      phase: tr.admin_procedure?.phase ?? 'on_arrival',
       onlyFor: tr.admin_procedure?.onlyFor ?? null,
       daysBeforeDeparture: tr.admin_procedure?.daysBeforeDeparture,
       completed: tr.status === 'completed',
@@ -70,11 +71,12 @@ export default function CountdownWidget({
     });
   }, [progress, project?.travelType, project?.objective, project?.nationality, project?.hasChildren, project?.priorities, countryCode]);
 
-  // Les 3 prochaines échéances non terminées parmi les étapes applicables.
+  // Échéances = uniquement les étapes AVANT LE DÉPART (les démarches sur place n'ont pas
+  // de deadline pré-départ — on ne peut les faire qu'une fois arrivé·e).
   const upcoming = useMemo(() => {
     if (!departureDate) return [];
     return applicable
-      .filter((s) => !s.completed)
+      .filter((s) => s.phase === 'before' && !s.completed)
       .map((s) => ({
         title: s.title,
         deadline: getStepDeadline(s.daysBeforeDeparture, departureDate),
@@ -84,8 +86,13 @@ export default function CountdownWidget({
       .slice(0, 3);
   }, [applicable, departureDate]);
 
-  const hasApplicableIncomplete = useMemo(
-    () => applicable.some((s) => !s.completed),
+  // État de préparation par phase (pour le message honnête quand plus d'échéance).
+  const beforeIncomplete = useMemo(
+    () => applicable.filter((s) => s.phase === 'before' && !s.completed).length,
+    [applicable],
+  );
+  const arrivalIncomplete = useMemo(
+    () => applicable.filter((s) => s.phase !== 'before' && !s.completed).length,
     [applicable],
   );
 
@@ -185,13 +192,18 @@ export default function CountdownWidget({
             </div>
           )}
 
-          {upcoming.length === 0 && !hasApplicableIncomplete && (
+          {upcoming.length === 0 && beforeIncomplete === 0 && (
             <div className="mt-3 pt-3 border-t border-gray-50 text-center">
-              <p className="text-xs font-medium text-emerald-600">
+              <p className="text-xs font-medium text-emerald-600 leading-snug">
                 ✅{' '}
-                {t('dashboard.personalized.widgets.countdown.allDone', {
-                  defaultValue: 'Toutes vos démarches sont à jour',
-                })}
+                {arrivalIncomplete > 0
+                  ? t('dashboard.personalized.widgets.countdown.prepDone', {
+                      defaultValue:
+                        'Préparation terminée — les démarches sur place vous attendent à l’arrivée',
+                    })
+                  : t('dashboard.personalized.widgets.countdown.allDone', {
+                      defaultValue: 'Toutes vos démarches sont à jour',
+                    })}
               </p>
             </div>
           )}
