@@ -18,7 +18,8 @@
     "profile": "My Profile",
     "myDashboard": "My Dashboard",
     "preferences": "Preferences",
-    "blog": "Blog"
+    "blog": "Blog",
+    "settings": "Settings"
   },
   "notifications": {
     "title": "Notifications",
@@ -3625,5 +3626,14 @@
         "content": "## Japan, a dream come true\n\nI had dreamed of Japan since my teenage years. When a professional opportunity presented itself in Tokyo, I didn't hesitate. Here's my feedback after 18 months there.\n\n## Japanese corporate culture\n\nRespect for hierarchy, absolute punctuality and teamwork are the pillars of Japanese professional culture. Meetings are numerous and consensus is sought before any decision. You need to adapt to a different rhythm but it's very enriching.\n\n## Daily life\n\nTokyo is an incredibly organized and safe city. Public transport is exemplarily punctual, food is excellent and affordable (a bento for 500-800¥), and conveniences are everywhere. The only major challenge: apartment sizes. My 25m² studio costs ¥130,000 per month.\n\n## The language barrier\n\nContrary to what you might think, English is not widely spoken in everyday Japan. Learning hiragana and katakana is essential for daily life. Kanji will come gradually. Japanese people greatly appreciate efforts to speak their language.\n\n## Daily surprises\n\n- Konbini (24/7 convenience stores) quickly become indispensable\n- Waste sorting is an art in itself\n- Onsen (hot springs) are an absolute delight\n- Politeness is ubiquitous and contagious\n- Local festivals (matsuri) are magical moments"
       }
     }
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Your display preferences and account.",
+    "preferences": "Preferences",
+    "currency": "Display currency",
+    "language": "Language",
+    "account": "Account",
+    "viewProfile": "Edit my profile"
   }
 }

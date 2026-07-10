@@ -1,13 +1,12 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Search, Menu, X, ChevronDown, Globe, LogOut, User, LayoutDashboard, FolderKanban, FolderLock, Compass, BarChart3, MapPin, Briefcase, BookOpen, ShieldAlert } from 'lucide-react';
+import { Search, Menu, X, ChevronDown, Globe, LogOut, User, LayoutDashboard, FolderKanban, FolderLock, Settings, Compass, BarChart3, MapPin, Briefcase, BookOpen, ShieldAlert } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import GlobalSearchModal from './GlobalSearchModal';
 import CurrencySelector from './CurrencySelector';
 import ProjectSwitcher from './ProjectSwitcher';
 import NotificationBell from '../features/notifications/NotificationBell';
-import { useCurrency, DISPLAY_CURRENCIES } from '../contexts/CurrencyContext';
 
 const languages = [
   { code: 'fr', label: 'Français', flag: '🇫🇷' },
@@ -28,7 +27,6 @@ export default function NavBar() {
   const langRef = useRef<HTMLDivElement>(null);
   
   const { user, isAuthenticated, logout } = useAuth();
-  const { displayCurrency, setDisplayCurrency } = useCurrency();
   const navigate = useNavigate();
 
   const userRole = (user as any)?.roles || user?.role || user?.userRole || '';
@@ -279,43 +277,14 @@ export default function NavBar() {
                       </Link>
                     )}
 
-                    {/* Préférences (devise + langue) — regroupées ici pour désencombrer la barre. */}
-                    <div className="px-4 pt-3 pb-2 border-t border-gray-100">
-                      <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400 mb-2">
-                        {t('nav.preferences', { defaultValue: 'Préférences' })}
-                      </p>
-                      <div className="flex flex-wrap gap-1.5 mb-2">
-                        {DISPLAY_CURRENCIES.map((cur) => (
-                          <button
-                            key={cur.code}
-                            onClick={() => setDisplayCurrency(cur.code)}
-                            className={`px-2 py-1 rounded-md text-xs font-medium border transition-colors ${
-                              displayCurrency === cur.code
-                                ? 'bg-gray-900 text-white border-gray-900'
-                                : 'border-gray-200 text-gray-600 hover:bg-gray-50'
-                            }`}
-                          >
-                            {cur.symbol} {cur.code}
-                          </button>
-                        ))}
-                      </div>
-                      <div className="flex gap-1.5">
-                        {languages.map((lang) => (
-                          <button
-                            key={lang.code}
-                            onClick={() => handleLanguageChange(lang.code)}
-                            className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-md text-xs font-medium border transition-colors ${
-                              currentLang.code === lang.code
-                                ? 'bg-[#5EA3C0]/10 text-[#5EA3C0] border-[#5EA3C0]/30'
-                                : 'border-gray-200 text-gray-600 hover:bg-gray-50'
-                            }`}
-                          >
-                            <span>{lang.flag}</span>
-                            {lang.label}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
+                    <Link
+                      to="/settings"
+                      className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-gray-700 text-sm border-t border-gray-100"
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      <Settings className="w-4 h-4 text-gray-400" />
+                      {t('nav.settings', { defaultValue: 'Réglages' })}
+                    </Link>
 
                     <hr className="my-1 border-gray-100" />
                     <button
@@ -405,6 +374,14 @@ export default function NavBar() {
                       <p className="font-medium text-gray-900 text-sm">{user.fullName}</p>
                       <p className="text-xs text-gray-500">{t('nav.profile')}</p>
                     </div>
+                  </Link>
+                  <Link
+                    to="/settings"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-gray-700 text-sm"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    <Settings className="w-4 h-4 text-gray-400" />
+                    {t('nav.settings', { defaultValue: 'Réglages' })}
                   </Link>
                   {isAdmin && (
                     <Link

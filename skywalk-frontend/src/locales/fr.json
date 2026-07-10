@@ -18,7 +18,8 @@
     "profile": "Mon profil",
     "myDashboard": "Mon tableau de bord",
     "preferences": "Préférences",
-    "blog": "Blog"
+    "blog": "Blog",
+    "settings": "Réglages"
   },
   "notifications": {
     "title": "Notifications",
@@ -3625,5 +3626,14 @@
         "content": "## Le Japon, un rêve devenu réalité\n\nJe rêvais du Japon depuis l'adolescence. Quand une opportunité professionnelle s'est présentée à Tokyo, je n'ai pas hésité. Voici mon retour d'expérience après 18 mois sur place.\n\n## La culture d'entreprise japonaise\n\nLe respect de la hiérarchie, la ponctualité absolue et le travail en équipe sont les piliers de la culture professionnelle japonaise. Les réunions sont nombreuses et le consensus est recherché avant toute décision. Il faut s'adapter à un rythme différent mais très enrichissant.\n\n## La vie quotidienne\n\nTokyo est une ville incroyablement organisée et sûre. Les transports en commun sont d'une ponctualité exemplaire, la nourriture est excellente et abordable (un bento à 500-800¥), et les commodités sont partout. Le seul défi majeur : la taille des logements. Mon studio de 25m² coûte 130 000¥ par mois.\n\n## La barrière de la langue\n\nContrairement à ce qu'on peut penser, l'anglais n'est pas très répandu au quotidien au Japon. Apprendre les hiragana et katakana est indispensable pour la vie de tous les jours. Le kanji viendra progressivement. Les Japonais apprécient énormément les efforts pour parler leur langue.\n\n## Les surprises du quotidien\n\n- Les konbini (supérettes ouvertes 24h/24) deviennent vite indispensables\n- Le tri des déchets est un art en soi\n- Les onsen (bains thermaux) sont un bonheur absolu\n- La politesse est omniprésente et contagieuse\n- Les festivals locaux (matsuri) sont des moments magiques"
       }
     }
+  },
+  "settings": {
+    "title": "Réglages",
+    "subtitle": "Vos préférences d’affichage et votre compte.",
+    "preferences": "Préférences",
+    "currency": "Devise d’affichage",
+    "language": "Langue",
+    "account": "Compte",
+    "viewProfile": "Modifier mon profil"
   }
 }
