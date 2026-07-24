@@ -4,6 +4,7 @@ import { CheckCircle, Circle, ChevronDown, ChevronRight, ExternalLink, ArrowLeft
 import { useProject } from '../hooks/useProjectMutations';
 import { useChecklistProgress, getStepDeadline, filterStepsForProject } from '../../dashboard/hooks/useChecklistProgress';
 import { getLinksForStep } from '../../../data/checklist-links';
+import BuddyList from '../components/BuddyList';
 
 // ---- Types ----
 type FilterType = 'all' | 'todo' | 'urgent' | 'late' | 'completed';
@@ -93,6 +94,7 @@ export default function ChecklistPage() {
     if (!progress || !Array.isArray(progress)) return [];
     return progress.map((t) => ({
       id: t.idProcedureTracking.toString(),
+      adminProcedureId: t.admin_procedure?.idAdminProcedure ?? 0,
       title: t.admin_procedure?.procedureType || '',
       completed: t.status === 'completed',
       completedAt: t.end_date || null, // ✅ date de complétion
@@ -354,14 +356,25 @@ export default function ChecklistPage() {
                           />
                         )}
                         {item.completed && item.completedAt && (
-                          <span className="text-[11px] text-green-600 bg-green-50 px-2 py-0.5 rounded-full font-medium">
-                            ✅ Complété le {new Date(item.completedAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
-                          </span>
+                          <>
+                            <span className="text-[11px] text-green-600 bg-green-50 px-2 py-0.5 rounded-full font-medium">
+                              Complete le {new Date(item.completedAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
+                            </span>
+                            <span className="text-[11px] text-blue-500">
+                              Tu apparais dans le Buddy System pour cette etape
+                            </span>
+                          </>
                         )}
                       </div>
-
                       {!item.completed && (
-                        <StepLinks category={item.category} countryCode={countryCode} />
+                        <>
+                          <StepLinks category={item.category} countryCode={countryCode} />
+                          <BuddyList
+                            procedureId={item.adminProcedureId}
+                            procedureTitle={item.title}
+                            countryId={project?.idDestinationCountry ?? 0}
+                          />
+                        </>
                       )}
                     </div>
 

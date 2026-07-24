@@ -21,3 +21,4 @@ export class AddBuddyMessage1782300000000 implements MigrationInterface {
     await queryRunner.query(`DROP TABLE IF EXISTS "buddy_message"`);
   }
 }
+//jd

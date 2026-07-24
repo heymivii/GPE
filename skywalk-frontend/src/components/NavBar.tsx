@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Search, Menu, X, ChevronDown, Globe, LogOut, User, LayoutDashboard, FolderKanban, Compass, BarChart3, MapPin, Briefcase, BookOpen, ShieldAlert } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import GlobalSearchModal from './GlobalSearchModal';
+import NotificationBell from './NotificationBell';
 
 const languages = [
   { code: 'fr', label: 'Français', flag: '🇫🇷' },
@@ -195,6 +196,8 @@ export default function NavBar() {
                 </div>
               )}
             </div>
+
+            {isAuthenticated && <NotificationBell />}
             
             {isAuthenticated && user ? (
               <div className="relative hidden sm:block" ref={userMenuRef}>

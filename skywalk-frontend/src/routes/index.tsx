@@ -37,6 +37,7 @@ import AdminContinents from '../features/admin/pages/AdminContinents';
 import AdminCountries from '../features/admin/pages/AdminCountries';
 import AdminCities from '../features/admin/pages/AdminCities';
 import AdminRoles from '../features/admin/pages/AdminRoles';
+import MessagesPage from '../features/messages/pages/MessagesPage';
 
 export const router = createBrowserRouter([
   {
@@ -130,6 +131,13 @@ export const router = createBrowserRouter([
         element: <MainLayout />,
         children: [
           { index: true, element: <ProfilePage /> },
+        ],
+      },
+      {
+        path: '/messages',
+        element: <MainLayout />,
+        children: [
+          { index: true, element: <MessagesPage /> },
         ],
       },
     ],
