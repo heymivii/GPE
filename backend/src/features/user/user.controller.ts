@@ -24,6 +24,7 @@ import { UpdateRoleDto, ADMIN_LEVEL_ROLES } from './dto/update-role.dto';
 import { VerifyExpertDto } from './dto/verify-expert.dto';
 import { UpdateExpertProfileDto } from './dto/update-expert-profile.dto';
 import { AdminLogService } from '../admin-log/admin-log.service';
+import { SupportRatingService } from '../support-rating/support-rating.service';
 
 @ApiTags('User')
 @Controller('users')
@@ -31,7 +32,14 @@ export class UserController {
   constructor(
     private readonly userService: UserService,
     private readonly adminLogService: AdminLogService,
+    private readonly supportRatingService: SupportRatingService,
   ) {}
+
+  @ApiOperation({ summary: 'Get a user’s support rating (public)' })
+  @Get(':id/rating')
+  getUserRating(@Param('id', ParseIntPipe) id: number) {
+    return this.supportRatingService.getUserRating(id);
+  }
 
   // ── F1 : réseau d'experts vérifiés ──────────────────────────────
 

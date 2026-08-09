@@ -3651,7 +3651,9 @@
       "subtitle": "Vetted professionals (immigration lawyers, relocation consultants…) for your destination country.",
       "searchPlaceholder": "Search an expert…",
       "allCountries": "All countries",
-      "empty": "No verified expert for this filter yet."
+      "empty": "No verified expert for this filter yet.",
+      "reviews": "{{count}} reviews",
+      "noRating": "No reviews yet"
     },
     "admin": {
       "title": "Expert verification",
@@ -3666,5 +3668,13 @@
       "bioPlaceholder": "Short bio",
       "countryPlaceholder": "Country of expertise (optional)"
     }
+  },
+  "rating": {
+    "helpful": "Was this reply helpful?",
+    "rateThis": "Rate this help",
+    "rateAuthor": "Rate {{name}}’s help",
+    "stars": "{{count}} star(s)",
+    "readAloud": "{{value}} out of 5",
+    "thanks": "Thanks!"
   }
 }

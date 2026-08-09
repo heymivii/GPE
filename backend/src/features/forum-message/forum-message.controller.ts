@@ -16,14 +16,52 @@ import { ForumMessageService } from './forum-message.service';
 import { CreateForumMessageDto } from './dto/create-forum-message.dto';
 import { UpdateForumMessageDto } from './dto/update-forum-message.dto';
 import { CreateReportDto } from './dto/create-report.dto';
+import { RateMessageDto } from './dto/rate-message.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { SupportRatingService } from '../support-rating/support-rating.service';
 
 @ApiTags('Forum Message')
 @Controller('forum-message')
 export class ForumMessageController {
-  constructor(private readonly forumMessageService: ForumMessageService) {}
+  constructor(
+    private readonly forumMessageService: ForumMessageService,
+    private readonly supportRatingService: SupportRatingService,
+  ) {}
+
+  // ── F4 : notation de l'aide reçue ──────────────────────────────
+
+  @Post(':id/rate')
+  @UseGuards(JwtAuthGuard)
+  rate(
+    @Req() req: any,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: RateMessageDto,
+  ) {
+    return this.supportRatingService.rate(
+      req.user.userId,
+      id,
+      dto.stars,
+      dto.comment,
+    );
+  }
+
+  @Delete(':id/rate')
+  @UseGuards(JwtAuthGuard)
+  unrate(@Req() req: any, @Param('id', ParseIntPipe) id: number) {
+    return this.supportRatingService.unrate(req.user.userId, id);
+  }
+
+  /** Mes notes pour les messages d'un topic — hydrate l'UI au chargement. */
+  @Get('ratings/mine')
+  @UseGuards(JwtAuthGuard)
+  myRatings(@Req() req: any, @Query('topicId', ParseIntPipe) topicId: number) {
+    return this.supportRatingService.getMyRatingsForTopic(
+      req.user.userId,
+      topicId,
+    );
+  }
 
   @Post()
   @UseGuards(JwtAuthGuard)

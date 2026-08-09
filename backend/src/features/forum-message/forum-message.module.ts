@@ -8,12 +8,14 @@ import { ForumTopicFollow } from '../forum-topic/entities/forum-topic-follow.ent
 import { ContentFilterService } from './content-filter.service';
 import { ForumModerationModule } from '../forum-moderation/forum-moderation.module';
 import { NotificationModule } from '../notification/notification.module';
+import { SupportRatingModule } from '../support-rating/support-rating.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([ForumMessage, ForumReport, ForumTopicFollow]),
     ForumModerationModule,
     NotificationModule,
+    SupportRatingModule,
   ],
   controllers: [ForumMessageController],
   providers: [ForumMessageService, ContentFilterService],

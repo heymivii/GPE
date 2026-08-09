@@ -37,6 +37,8 @@ import {
 } from '../../../hooks/useForum';
 import { useAuth } from '../../../hooks/useAuth';
 import ExpertBadge from '../../../components/ExpertBadge';
+import StarRating from '../../../components/StarRating';
+import { useMyTopicRatings, useRateMessage } from '../../../hooks/useRatings';
 import { useTranslation } from 'react-i18next';
 import type { ReportReason } from '../../../types/forum';
 import { ReportReasonValues } from '../../../types/forum';
@@ -120,6 +122,12 @@ export default function PostDetailPage() {
 
   const isModOrAdmin = user?.userRole === 'admin' || user?.userRole === 'moderator';
   const isTopicLocked = topic?.is_locked ?? false;
+
+  // F4 — notation de l'aide reçue
+  const currentUserId = user ? (user.idUser || user.id) : undefined;
+  const { data: myRatings = [] } = useMyTopicRatings(topicId, !!user);
+  const myRatingByMessage = new Map(myRatings.map((r) => [r.messageId, r.stars]));
+  const rateMutation = useRateMessage(topicId);
 
   // F2 — suivi de discussion (« Rejoindre »)
   const followMutation = useFollowTopic();
@@ -676,6 +684,29 @@ export default function PostDetailPage() {
                     ) : (
                       <div className="text-gray-700 whitespace-pre-wrap">
                         {message.content}
+                      </div>
+                    )}
+
+                    {/* F4 — noter l'aide reçue (connecté, pas l'auteur du message) */}
+                    {user && !isEditing && message.user?.idUser !== currentUserId && (
+                      <div className="mt-3 pt-3 border-t border-gray-50 flex items-center gap-2 flex-wrap">
+                        <span className="text-xs text-gray-500">
+                          {t('rating.helpful', { defaultValue: 'Cette réponse t’a aidé ?' })}
+                        </span>
+                        <StarRating
+                          value={myRatingByMessage.get(message.message_id) ?? 0}
+                          onChange={(stars) => rateMutation.mutate({ messageId: message.message_id, stars })}
+                          size="sm"
+                          ariaLabel={t('rating.rateAuthor', {
+                            name: message.user?.fullName || '',
+                            defaultValue: 'Noter l’aide de {{name}}',
+                          })}
+                        />
+                        {myRatingByMessage.has(message.message_id) && (
+                          <span className="text-[11px] text-emerald-600">
+                            {t('rating.thanks', { defaultValue: 'Merci !' })}
+                          </span>
+                        )}
                       </div>
                     )}
                   </div>

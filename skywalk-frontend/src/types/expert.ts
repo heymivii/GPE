@@ -5,7 +5,9 @@ export interface Expert {
   expertBio: string | null;
   expertCountry: { idCountry: number; countryName: string } | null;
   expertVerifiedAt: string | null;
-  // F4 renseignera averageRating / ratingCount.
+  // F4
+  averageRating?: number;
+  ratingCount?: number;
 }
 
 export interface VerifyExpertDto {

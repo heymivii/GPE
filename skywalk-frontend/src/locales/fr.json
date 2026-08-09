@@ -3651,7 +3651,9 @@
       "subtitle": "Des professionnels vérifiés (avocats en immigration, consultants en relocation…) pour votre pays de destination.",
       "searchPlaceholder": "Rechercher un expert…",
       "allCountries": "Tous les pays",
-      "empty": "Aucun expert vérifié pour ce filtre pour le moment."
+      "empty": "Aucun expert vérifié pour ce filtre pour le moment.",
+      "reviews": "{{count}} avis",
+      "noRating": "Pas encore d’avis"
     },
     "admin": {
       "title": "Vérification des experts",
@@ -3666,5 +3668,13 @@
       "bioPlaceholder": "Bio courte",
       "countryPlaceholder": "Pays d’expertise (optionnel)"
     }
+  },
+  "rating": {
+    "helpful": "Cette réponse t’a aidé ?",
+    "rateThis": "Noter cette aide",
+    "rateAuthor": "Noter l’aide de {{name}}",
+    "stars": "{{count}} étoile(s)",
+    "readAloud": "{{value}} sur 5",
+    "thanks": "Merci !"
   }
 }

@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ForumMessageController } from './forum-message.controller';
 import { ForumMessageService } from './forum-message.service';
+import { SupportRatingService } from '../support-rating/support-rating.service';
 
 const mockService = () => ({
   create: jest.fn(),
@@ -25,7 +26,17 @@ describe('ForumMessageController', () => {
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ForumMessageController],
-      providers: [{ provide: ForumMessageService, useValue: service }],
+      providers: [
+        { provide: ForumMessageService, useValue: service },
+        {
+          provide: SupportRatingService,
+          useValue: {
+            rate: jest.fn(),
+            unrate: jest.fn(),
+            getMyRatingsForTopic: jest.fn(),
+          },
+        },
+      ],
     }).compile();
 
     controller = module.get<ForumMessageController>(ForumMessageController);

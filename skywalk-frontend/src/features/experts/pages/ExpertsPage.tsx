@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Search, MapPin, Loader2, UserCheck } from 'lucide-react';
 import { PageHeader } from '../../../components/PageHeader';
 import ExpertBadge from '../../../components/ExpertBadge';
+import StarRating from '../../../components/StarRating';
 import { useExperts } from '../../../hooks/useExperts';
 import { countryApi } from '../../../api/country';
 
@@ -102,8 +103,25 @@ export default function ExpertsPage() {
                   </div>
                 </div>
 
+                {/* F4 — note moyenne */}
+                {(e.ratingCount ?? 0) > 0 ? (
+                  <div className="mt-3 flex items-center gap-1.5">
+                    <StarRating value={e.averageRating ?? 0} readOnly size="sm" />
+                    <span className="text-xs text-gray-500">
+                      {e.averageRating} · {t('experts.page.reviews', {
+                        count: e.ratingCount ?? 0,
+                        defaultValue: '{{count}} avis',
+                      })}
+                    </span>
+                  </div>
+                ) : (
+                  <p className="mt-3 text-xs text-gray-400">
+                    {t('experts.page.noRating', { defaultValue: 'Pas encore d’avis' })}
+                  </p>
+                )}
+
                 {e.expertCountry && (
-                  <p className="mt-3 inline-flex items-center gap-1 text-xs text-[#5EA3C0] font-medium">
+                  <p className="mt-2 inline-flex items-center gap-1 text-xs text-[#5EA3C0] font-medium">
                     <MapPin className="w-3.5 h-3.5" />
                     {e.expertCountry.countryName}
                   </p>

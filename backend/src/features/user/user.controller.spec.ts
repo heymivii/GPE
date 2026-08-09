@@ -3,6 +3,7 @@ import { ForbiddenException, ConflictException } from '@nestjs/common';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { AdminLogService } from '../admin-log/admin-log.service';
+import { SupportRatingService } from '../support-rating/support-rating.service';
 
 const mockService = () => ({
   findOne: jest.fn(),
@@ -23,6 +24,10 @@ describe('UserController', () => {
       providers: [
         { provide: UserService, useValue: service },
         { provide: AdminLogService, useValue: { log: jest.fn() } },
+        {
+          provide: SupportRatingService,
+          useValue: { getUserRating: jest.fn() },
+        },
       ],
     }).compile();
     controller = module.get<UserController>(UserController);

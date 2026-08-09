@@ -11,12 +11,14 @@ import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PaginationDto, PaginatedResponseDto } from '../../common/dto/pagination.dto';
+import { SupportRatingService } from '../support-rating/support-rating.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly supportRatingService: SupportRatingService,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
@@ -154,7 +156,18 @@ export class UserService {
       );
     }
     const users = await qb.orderBy('u.expertVerifiedAt', 'DESC').getMany();
-    return users.map((u) => this.toExpertPublic(u));
+    // F4 : note moyenne + nombre d'avis, en une requête pour tout le lot.
+    const ratings = await this.supportRatingService.getRatingsForUsers(
+      users.map((u) => u.idUser),
+    );
+    return users.map((u) => {
+      const r = ratings.get(u.idUser) ?? { average: 0, count: 0 };
+      return {
+        ...this.toExpertPublic(u),
+        averageRating: r.average,
+        ratingCount: r.count,
+      };
+    });
   }
 
   /** Vérifie un expert (admin) : renseigne titre/bio/pays + horodatage + vérificateur. */

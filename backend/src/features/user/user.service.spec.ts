@@ -8,6 +8,7 @@ import {
 import * as bcrypt from 'bcrypt';
 import { UserService } from './user.service';
 import { User } from './entities/user.entity';
+import { SupportRatingService } from '../support-rating/support-rating.service';
 
 jest.mock('bcrypt');
 
@@ -33,6 +34,13 @@ describe('UserService', () => {
       providers: [
         UserService,
         { provide: getRepositoryToken(User), useValue: repo },
+        {
+          provide: SupportRatingService,
+          useValue: {
+            getRatingsForUsers: jest.fn().mockResolvedValue(new Map()),
+            getUserRating: jest.fn().mockResolvedValue({ average: 0, count: 0 }),
+          },
+        },
       ],
     }).compile();
 
