@@ -32,6 +32,10 @@ function mapMessage(raw: any) {
       fullName: raw.user.fullName ?? (raw.user.firstName ? `${raw.user.firstName} ${raw.user.lastName || ''}`.trim() : 'Anonymous'),
       email: raw.user.email,
       roles: raw.user.roles ?? raw.user.role,
+      // F1 — statut expert (pour l'ExpertBadge à côté de l'auteur)
+      isExpert: raw.user.isExpert ?? false,
+      expertTitle: raw.user.expertTitle ?? null,
+      expertVerifiedAt: raw.user.expertVerifiedAt ?? null,
     } : undefined,
   };
 }

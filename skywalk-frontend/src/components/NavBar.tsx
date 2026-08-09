@@ -1,7 +1,7 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Search, Menu, X, ChevronDown, Globe, LogOut, User, LayoutDashboard, FolderKanban, FolderLock, Settings, Compass, BarChart3, MapPin, Briefcase, BookOpen, ShieldAlert } from 'lucide-react';
+import { Search, Menu, X, ChevronDown, Globe, LogOut, User, LayoutDashboard, FolderKanban, FolderLock, Settings, Compass, BarChart3, MapPin, Briefcase, BookOpen, BadgeCheck, ShieldAlert } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import GlobalSearchModal from './GlobalSearchModal';
 import CurrencySelector from './CurrencySelector';
@@ -148,6 +148,10 @@ export default function NavBar() {
                         <Link to="/blog" onClick={() => setExploreOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-gray-700 text-sm">
                           <BookOpen className="w-4 h-4 text-[#5EA3C0]" />
                           {t('nav.blog')}
+                        </Link>
+                        <Link to="/experts" onClick={() => setExploreOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-gray-700 text-sm">
+                          <BadgeCheck className="w-4 h-4 text-[#5EA3C0]" />
+                          {t('nav.experts', { defaultValue: 'Experts' })}
                         </Link>
                       </div>
                     )}

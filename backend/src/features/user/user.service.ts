@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
@@ -113,5 +114,91 @@ export class UserService {
   async getStats(): Promise<{ totalUsers: number }> {
     const totalUsers = await this.userRepository.count();
     return { totalUsers };
+  }
+
+  // ── F1 : réseau d'experts vérifiés ──────────────────────────────
+
+  /** Forme publique d'un expert — JAMAIS l'email. */
+  private toExpertPublic(u: User) {
+    return {
+      idUser: u.idUser,
+      fullName: [u.firstName, u.lastName].filter(Boolean).join(' '),
+      expertTitle: u.expertTitle ?? null,
+      expertBio: u.expertBio ?? null,
+      expertCountry: u.expertCountry
+        ? {
+            idCountry: u.expertCountry.idCountry,
+            countryName: u.expertCountry.countryName,
+          }
+        : null,
+      expertVerifiedAt: u.expertVerifiedAt ?? null,
+      // averageRating / ratingCount seront renseignés par F4.
+    };
+  }
+
+  /** Experts VÉRIFIÉS (isExpert = true ET expertVerifiedAt non nul), filtrables. */
+  async findExperts(countryId?: number, q?: string) {
+    const qb = this.userRepository
+      .createQueryBuilder('u')
+      .leftJoinAndSelect('u.expertCountry', 'country')
+      .where('u.isExpert = :ex', { ex: true })
+      .andWhere('u.expertVerifiedAt IS NOT NULL');
+
+    if (countryId) {
+      qb.andWhere('u.expertCountryId = :cid', { cid: countryId });
+    }
+    if (q && q.trim()) {
+      qb.andWhere(
+        '(u.firstName ILIKE :q OR u.lastName ILIKE :q OR u.expertTitle ILIKE :q OR u.expertBio ILIKE :q)',
+        { q: `%${q.trim()}%` },
+      );
+    }
+    const users = await qb.orderBy('u.expertVerifiedAt', 'DESC').getMany();
+    return users.map((u) => this.toExpertPublic(u));
+  }
+
+  /** Vérifie un expert (admin) : renseigne titre/bio/pays + horodatage + vérificateur. */
+  async verifyExpert(
+    id: number,
+    dto: { expertTitle?: string; expertBio?: string; expertCountryId?: number },
+    verifiedById: number,
+  ): Promise<User> {
+    const user = await this.findOne(id);
+    user.isExpert = true;
+    if (dto.expertTitle !== undefined) user.expertTitle = dto.expertTitle;
+    if (dto.expertBio !== undefined) user.expertBio = dto.expertBio;
+    if (dto.expertCountryId !== undefined)
+      user.expertCountryId = dto.expertCountryId;
+    user.expertVerifiedAt = new Date();
+    user.expertVerifiedBy = verifiedById;
+    return this.userRepository.save(user);
+  }
+
+  /** Révoque la vérification d'un expert (admin). */
+  async revokeExpert(id: number): Promise<User> {
+    const user = await this.findOne(id);
+    user.isExpert = false;
+    user.expertVerifiedAt = null;
+    user.expertVerifiedBy = null;
+    return this.userRepository.save(user);
+  }
+
+  /**
+   * Un expert modifie son propre titre/bio — SANS jamais toucher au statut de
+   * vérification (isExpert / expertVerifiedAt / expertVerifiedBy).
+   */
+  async updateExpertProfile(
+    id: number,
+    dto: { expertTitle?: string; expertBio?: string },
+  ): Promise<User> {
+    const user = await this.findOne(id);
+    if (!user.isExpert || !user.expertVerifiedAt) {
+      throw new ForbiddenException(
+        "Vous n'êtes pas un expert vérifié.",
+      );
+    }
+    if (dto.expertTitle !== undefined) user.expertTitle = dto.expertTitle;
+    if (dto.expertBio !== undefined) user.expertBio = dto.expertBio;
+    return this.userRepository.save(user);
   }
 }

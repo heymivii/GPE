@@ -19,7 +19,8 @@
     "myDashboard": "Mon tableau de bord",
     "preferences": "Préférences",
     "blog": "Blog",
-    "settings": "Réglages"
+    "settings": "Réglages",
+    "experts": "Experts"
   },
   "notifications": {
     "title": "Notifications",
@@ -71,7 +72,8 @@
       "close": "Fermer"
     },
     "quit": "Quitter",
-    "remove": "Supprimer"
+    "remove": "Supprimer",
+    "cancel": "Annuler"
   },
   "services": {
     "citySelector": {
@@ -3640,5 +3642,29 @@
     "language": "Langue",
     "account": "Compte",
     "viewProfile": "Modifier mon profil"
+  },
+  "experts": {
+    "verified": "Expert vérifié",
+    "verifiedExpert": "Expert vérifié",
+    "page": {
+      "title": "Experts vérifiés",
+      "subtitle": "Des professionnels vérifiés (avocats en immigration, consultants en relocation…) pour votre pays de destination.",
+      "searchPlaceholder": "Rechercher un expert…",
+      "allCountries": "Tous les pays",
+      "empty": "Aucun expert vérifié pour ce filtre pour le moment."
+    },
+    "admin": {
+      "title": "Vérification des experts",
+      "subtitle": "Attribuez ou révoquez le statut d’expert vérifié.",
+      "search": "Rechercher un membre…",
+      "verify": "Vérifier",
+      "revoke": "Révoquer",
+      "verified": "Expert vérifié",
+      "revoked": "Vérification révoquée",
+      "confirm": "Confirmer la vérification",
+      "titlePlaceholder": "Titre (ex. Avocat en immigration)",
+      "bioPlaceholder": "Bio courte",
+      "countryPlaceholder": "Pays d’expertise (optionnel)"
+    }
   }
 }

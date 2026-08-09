@@ -59,6 +59,31 @@ export class User {
   @Column({ name: 'spoken_languages', type: 'text', array: true, nullable: true })
   spokenLanguages?: string[];
 
+  // ── F1 : réseau d'experts vérifiés ──────────────────────────────
+  // Un expert n'est « vérifié » que si isExpert = true ET expertVerifiedAt non nul.
+  // (On n'utilise PAS `roles`, qui est mono-valué et sert à admin/modérateur.)
+  @Column({ name: 'is_expert', type: 'boolean', default: false })
+  isExpert: boolean;
+
+  @Column({ name: 'expert_title', type: 'varchar', length: 120, nullable: true })
+  expertTitle?: string | null;
+
+  @Column({ name: 'expert_bio', type: 'text', nullable: true })
+  expertBio?: string | null;
+
+  @Column({ name: 'expert_country_id', type: 'int', nullable: true })
+  expertCountryId?: number | null;
+
+  @ManyToOne(() => Country, { nullable: true })
+  @JoinColumn({ name: 'expert_country_id' })
+  expertCountry?: Country | null;
+
+  @Column({ name: 'expert_verified_at', type: 'timestamp', nullable: true })
+  expertVerifiedAt?: Date | null;
+
+  @Column({ name: 'expert_verified_by', type: 'int', nullable: true })
+  expertVerifiedBy?: number | null;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 

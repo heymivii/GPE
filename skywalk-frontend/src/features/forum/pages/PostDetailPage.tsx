@@ -36,6 +36,7 @@ import {
   useUnfollowTopic,
 } from '../../../hooks/useForum';
 import { useAuth } from '../../../hooks/useAuth';
+import ExpertBadge from '../../../components/ExpertBadge';
 import { useTranslation } from 'react-i18next';
 import type { ReportReason } from '../../../types/forum';
 import { ReportReasonValues } from '../../../types/forum';
@@ -425,7 +426,10 @@ export default function PostDetailPage() {
                   <Clock className="w-4 h-4" />
                   {formatTimeAgo(topic.created_at)}
                 </span>
-                <span>{t('forum.postDetail.by', { name: topic.user?.fullName || t('forum.user', { id: topic.user?.idUser }) })}</span>
+                <span className="inline-flex items-center gap-1.5">
+                  {t('forum.postDetail.by', { name: topic.user?.fullName || t('forum.user', { id: topic.user?.idUser }) })}
+                  <ExpertBadge user={topic.user} showTitle={false} />
+                </span>
                 {topic.country?.countryName && (
                   <span className="flex items-center gap-1">
                     📍 {topic.country.countryName}
@@ -534,6 +538,7 @@ export default function PostDetailPage() {
                   <span className="font-semibold text-gray-900">
                     {initialMessage.user?.fullName || t('forum.user', { id: initialMessage.user?.idUser })}
                   </span>
+                  <ExpertBadge user={initialMessage.user} showTitle={false} />
                   <span className="text-sm text-gray-500">{formatTimeAgo(initialMessage.sent_at)}</span>
                   <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-medium rounded">
                     {t('forum.postDetail.author')}
@@ -577,6 +582,7 @@ export default function PostDetailPage() {
                         <span className="font-semibold text-gray-900">
                           {message.user?.fullName || t('forum.user', { id: message.user?.idUser })}
                         </span>
+                        <ExpertBadge user={message.user} showTitle={false} />
                         <span className="text-sm text-gray-500">
                           {formatTimeAgo(message.sent_at)}
                         </span>

@@ -22,6 +22,9 @@ export interface ForumTopic {
     idUser: number;
     fullName: string;
     email: string;
+    isExpert?: boolean;
+    expertTitle?: string | null;
+    expertVerifiedAt?: string | null;
   };
   country?: {
     idCountry: number;
@@ -46,6 +49,10 @@ export interface ForumMessage {
     fullName: string;
     email: string;
     roles?: string;
+    // F1 — statut expert vérifié (ExpertBadge)
+    isExpert?: boolean;
+    expertTitle?: string | null;
+    expertVerifiedAt?: string | null;
   };
 }
 

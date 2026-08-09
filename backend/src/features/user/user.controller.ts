@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Post,
   Patch,
   Delete,
   Body,
@@ -20,6 +21,8 @@ import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdateRoleDto, ADMIN_LEVEL_ROLES } from './dto/update-role.dto';
+import { VerifyExpertDto } from './dto/verify-expert.dto';
+import { UpdateExpertProfileDto } from './dto/update-expert-profile.dto';
 import { AdminLogService } from '../admin-log/admin-log.service';
 
 @ApiTags('User')
@@ -29,6 +32,74 @@ export class UserController {
     private readonly userService: UserService,
     private readonly adminLogService: AdminLogService,
   ) {}
+
+  // ── F1 : réseau d'experts vérifiés ──────────────────────────────
+
+  @ApiOperation({ summary: 'List verified experts (public)' })
+  @Get('experts')
+  findExperts(
+    @Query('countryId') countryId?: string,
+    @Query('q') q?: string,
+  ) {
+    const cid = countryId ? parseInt(countryId, 10) : undefined;
+    return this.userService.findExperts(
+      Number.isNaN(cid as number) ? undefined : cid,
+      q,
+    );
+  }
+
+  @ApiOperation({ summary: 'Verify a user as an expert (Admin only)' })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @Post(':id/verify-expert')
+  async verifyExpert(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: VerifyExpertDto,
+    @Request() req,
+  ) {
+    const updated = await this.userService.verifyExpert(id, dto, req.user.userId);
+    await this.adminLogService.log(
+      req.user.userId,
+      'UPDATE',
+      'User',
+      id.toString(),
+      `Vérification expert : "${updated.email}" (${dto.expertTitle ?? ''})`,
+    );
+    const { password: _pw, ...result } = updated;
+    return result;
+  }
+
+  @ApiOperation({ summary: 'Revoke an expert verification (Admin only)' })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @Delete(':id/verify-expert')
+  async revokeExpert(@Param('id', ParseIntPipe) id: number, @Request() req) {
+    const updated = await this.userService.revokeExpert(id);
+    await this.adminLogService.log(
+      req.user.userId,
+      'UPDATE',
+      'User',
+      id.toString(),
+      `Révocation du statut expert : "${updated.email}"`,
+    );
+    const { password: _pw, ...result } = updated;
+    return result;
+  }
+
+  @ApiOperation({ summary: 'Update my own expert title/bio (verified expert)' })
+  @UseGuards(JwtAuthGuard)
+  @Patch('me/expert-profile')
+  async updateExpertProfile(
+    @Request() req,
+    @Body() dto: UpdateExpertProfileDto,
+  ) {
+    const updated = await this.userService.updateExpertProfile(
+      req.user.userId,
+      dto,
+    );
+    const { password: _pw, ...result } = updated;
+    return result;
+  }
 
   @UseGuards(JwtAuthGuard)
   @Get('me')

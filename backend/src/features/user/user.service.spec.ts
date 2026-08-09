@@ -1,6 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { UserService } from './user.service';
 import { User } from './entities/user.entity';
@@ -12,8 +16,10 @@ const mockUserRepo = () => ({
   findAndCount: jest.fn(),
   findOne: jest.fn(),
   create: jest.fn(),
-  save: jest.fn(),
+  save: jest.fn((u) => Promise.resolve(u)),
   remove: jest.fn(),
+  count: jest.fn(),
+  createQueryBuilder: jest.fn(),
 });
 
 describe('UserService', () => {
@@ -179,6 +185,125 @@ describe('UserService', () => {
       repo.findOne.mockResolvedValue(null);
 
       await expect(service.remove(999)).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  // ─── F1 : experts vérifiés ─────────────────────────────────────
+
+  describe('verifyExpert()', () => {
+    it('marks the user as a verified expert (title/bio/country + who + when)', async () => {
+      repo.findOne.mockResolvedValue({ idUser: 5, isExpert: false });
+
+      const res = await service.verifyExpert(
+        5,
+        { expertTitle: 'Immigration lawyer', expertBio: 'bio', expertCountryId: 1 },
+        99,
+      );
+
+      expect(res.isExpert).toBe(true);
+      expect(res.expertTitle).toBe('Immigration lawyer');
+      expect(res.expertCountryId).toBe(1);
+      expect(res.expertVerifiedAt).toBeInstanceOf(Date);
+      expect(res.expertVerifiedBy).toBe(99);
+    });
+  });
+
+  describe('revokeExpert()', () => {
+    it('clears the verification', async () => {
+      repo.findOne.mockResolvedValue({
+        idUser: 5,
+        isExpert: true,
+        expertVerifiedAt: new Date(),
+        expertVerifiedBy: 99,
+      });
+
+      const res = await service.revokeExpert(5);
+      expect(res.isExpert).toBe(false);
+      expect(res.expertVerifiedAt).toBeNull();
+      expect(res.expertVerifiedBy).toBeNull();
+    });
+  });
+
+  describe('updateExpertProfile()', () => {
+    it('updates title/bio for a verified expert WITHOUT touching verification', async () => {
+      const verifiedAt = new Date();
+      repo.findOne.mockResolvedValue({
+        idUser: 5,
+        isExpert: true,
+        expertVerifiedAt: verifiedAt,
+        expertVerifiedBy: 99,
+        expertTitle: 'old',
+      });
+
+      const res = await service.updateExpertProfile(5, { expertTitle: 'new' });
+      expect(res.expertTitle).toBe('new');
+      // Vérification intacte.
+      expect(res.isExpert).toBe(true);
+      expect(res.expertVerifiedAt).toBe(verifiedAt);
+      expect(res.expertVerifiedBy).toBe(99);
+    });
+
+    it('forbids a non-expert from using the expert profile endpoint', async () => {
+      repo.findOne.mockResolvedValue({ idUser: 5, isExpert: false });
+      await expect(
+        service.updateExpertProfile(5, { expertTitle: 'x' }),
+      ).rejects.toThrow(ForbiddenException);
+    });
+  });
+
+  describe('findExperts()', () => {
+    const makeQb = () => ({
+      leftJoinAndSelect: jest.fn().mockReturnThis(),
+      where: jest.fn().mockReturnThis(),
+      andWhere: jest.fn().mockReturnThis(),
+      orderBy: jest.fn().mockReturnThis(),
+      getMany: jest.fn().mockResolvedValue([
+        {
+          idUser: 5,
+          firstName: 'Ana',
+          lastName: 'Lee',
+          email: 'secret@x.com',
+          expertTitle: 'Lawyer',
+          expertBio: 'bio',
+          expertVerifiedAt: new Date(),
+          expertCountry: { idCountry: 1, countryName: 'France' },
+        },
+      ]),
+    });
+
+    it('filters to verified experts and NEVER exposes email', async () => {
+      const qb = makeQb();
+      repo.createQueryBuilder.mockReturnValue(qb);
+
+      const res = await service.findExperts();
+
+      // filtre « vérifié »
+      expect(qb.where).toHaveBeenCalledWith('u.isExpert = :ex', { ex: true });
+      expect(qb.andWhere).toHaveBeenCalledWith('u.expertVerifiedAt IS NOT NULL');
+      // forme publique
+      expect(res[0]).toEqual(
+        expect.objectContaining({
+          idUser: 5,
+          fullName: 'Ana Lee',
+          expertTitle: 'Lawyer',
+          expertCountry: { idCountry: 1, countryName: 'France' },
+        }),
+      );
+      expect((res[0] as any).email).toBeUndefined();
+    });
+
+    it('applies the country + text filters when provided', async () => {
+      const qb = makeQb();
+      repo.createQueryBuilder.mockReturnValue(qb);
+
+      await service.findExperts(1, 'visa');
+      expect(qb.andWhere).toHaveBeenCalledWith('u.expertCountryId = :cid', {
+        cid: 1,
+      });
+      expect(qb.andWhere).toHaveBeenCalledWith(
+        expect.stringContaining('ILIKE :q'),
+        { q: '%visa%' },
+      );
     });
   });
 });
