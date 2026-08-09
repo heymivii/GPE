@@ -11,8 +11,11 @@ import { UpdateForumMessageDto } from './dto/update-forum-message.dto';
 import { CreateReportDto } from './dto/create-report.dto';
 import { ForumMessage } from './entities/forum-message.entity';
 import { ForumReport } from './entities/forum-report.entity';
+import { ForumTopicFollow } from '../forum-topic/entities/forum-topic-follow.entity';
 import { ContentFilterService } from './content-filter.service';
 import { ForumModerationService } from '../forum-moderation/forum-moderation.service';
+import { NotificationService } from '../notification/notification.service';
+import { CreateNotificationDto } from '../notification/dto/create-notification.dto';
 
 @Injectable()
 export class ForumMessageService {
@@ -21,9 +24,39 @@ export class ForumMessageService {
     private readonly forumMessageRepository: Repository<ForumMessage>,
     @InjectRepository(ForumReport)
     private readonly forumReportRepository: Repository<ForumReport>,
+    @InjectRepository(ForumTopicFollow)
+    private readonly followRepository: Repository<ForumTopicFollow>,
     private readonly contentFilter: ContentFilterService,
     private readonly moderation: ForumModerationService,
+    private readonly notifications: NotificationService,
   ) {}
+
+  /** Prévient les abonnés d'un topic qu'un nouveau message y a été publié (jamais l'auteur). */
+  private async notifyFollowers(
+    topicId: number,
+    authorId: number,
+  ): Promise<void> {
+    try {
+      const follows = await this.followRepository.find({ where: { topicId } });
+      const recipients = follows
+        .map((f) => f.userId)
+        .filter((uid) => uid !== authorId);
+      await Promise.all(
+        recipients.map((uid) =>
+          this.notifications.create({
+            userId: uid,
+            notificationType: 'info',
+            message:
+              '💬 Nouveau message dans une discussion que vous suivez.',
+            contextType: 'forum-topic',
+            contextId: topicId,
+          } as CreateNotificationDto),
+        ),
+      );
+    } catch {
+      // Les notifications ne doivent jamais empêcher la publication d'un message.
+    }
+  }
 
   async create(
     userId: number,
@@ -54,7 +87,10 @@ export class ForumMessageService {
       moderatedAt: flagged ? new Date() : null,
     });
 
-    return await this.forumMessageRepository.save(message);
+    const saved = await this.forumMessageRepository.save(message);
+    // Bonus F2 : prévenir les abonnés du topic (sauf l'auteur).
+    await this.notifyFollowers(createForumMessageDto.topicId, userId);
+    return saved;
   }
 
   async findAll(): Promise<ForumMessage[]> {

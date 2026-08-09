@@ -15,6 +15,8 @@ function mapTopic(raw: any): ForumTopic {
     is_pinned: raw.is_pinned ?? raw.isPinned ?? false,
     is_locked: raw.is_locked ?? raw.isLocked ?? false,
     views_count: raw.views_count ?? raw.viewsCount ?? 0,
+    followersCount: raw.followersCount ?? 0,
+    isFollowedByMe: raw.isFollowedByMe ?? false,
     messages: Array.isArray(raw.messages) ? raw.messages.map(mapMessage) : undefined,
   };
 }
@@ -71,6 +73,26 @@ export const forumTopicsApi = {
 
   moderatorRemove: async (id: number): Promise<void> => {
     await apiClient.delete(`/forum-topic/moderate/${id}`);
+  },
+
+  // F2 — suivi de discussions
+  getFollowed: async (): Promise<ForumTopic[]> => {
+    const response = await apiClient.get<any[]>('/forum-topic/followed');
+    return response.data.map(mapTopic);
+  },
+
+  follow: async (id: number): Promise<{ following: boolean; followersCount: number }> => {
+    const response = await apiClient.post<{ following: boolean; followersCount: number }>(
+      `/forum-topic/${id}/follow`,
+    );
+    return response.data;
+  },
+
+  unfollow: async (id: number): Promise<{ following: boolean; followersCount: number }> => {
+    const response = await apiClient.delete<{ following: boolean; followersCount: number }>(
+      `/forum-topic/${id}/follow`,
+    );
+    return response.data;
   },
 };
 

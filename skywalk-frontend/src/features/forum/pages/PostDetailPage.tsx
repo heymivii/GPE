@@ -18,18 +18,22 @@ import {
   PinOff,
   Shield,
   ShieldAlert,
-  CheckCircle2
+  CheckCircle2,
+  Bell,
+  BellOff
 } from 'lucide-react';
-import { 
-  useForumTopic, 
-  useCreateForumMessage, 
-  useUpdateForumMessage, 
+import {
+  useForumTopic,
+  useCreateForumMessage,
+  useUpdateForumMessage,
   useDeleteForumMessage,
   useReportContent,
   useLockTopic,
   usePinTopic,
   useModeratorDeleteMessage,
   useModeratorDeleteTopic,
+  useFollowTopic,
+  useUnfollowTopic,
 } from '../../../hooks/useForum';
 import { useAuth } from '../../../hooks/useAuth';
 import { useTranslation } from 'react-i18next';
@@ -115,6 +119,20 @@ export default function PostDetailPage() {
 
   const isModOrAdmin = user?.userRole === 'admin' || user?.userRole === 'moderator';
   const isTopicLocked = topic?.is_locked ?? false;
+
+  // F2 — suivi de discussion (« Rejoindre »)
+  const followMutation = useFollowTopic();
+  const unfollowMutation = useUnfollowTopic();
+  const isFollowing = topic?.isFollowedByMe ?? false;
+  const followBusy = followMutation.isPending || unfollowMutation.isPending;
+  const toggleFollow = () => {
+    if (!user) {
+      navigate('/auth/login');
+      return;
+    }
+    if (isFollowing) unfollowMutation.mutate(topicId);
+    else followMutation.mutate(topicId);
+  };
 
   const handleReply = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -417,6 +435,25 @@ export default function PostDetailPage() {
             </div>
             
             <div className="flex items-center gap-2">
+              <button
+                onClick={toggleFollow}
+                disabled={followBusy}
+                aria-pressed={isFollowing}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-60 ${
+                  isFollowing
+                    ? 'bg-[#5EA3C0]/10 text-[#5EA3C0] border border-[#5EA3C0]/30'
+                    : 'bg-[#5EA3C0] text-white hover:bg-[#4891b0]'
+                }`}
+                title={isFollowing ? t('forum.follow.unfollow') : t('forum.follow.follow')}
+              >
+                {isFollowing ? <BellOff className="w-4 h-4" /> : <Bell className="w-4 h-4" />}
+                <span>
+                  {isFollowing ? t('forum.follow.following') : t('forum.follow.follow')}
+                </span>
+                {typeof topic.followersCount === 'number' && topic.followersCount > 0 && (
+                  <span className="text-xs opacity-80">· {topic.followersCount}</span>
+                )}
+              </button>
               {user && (
                 <button
                   onClick={() => openReportModal(undefined, topicId)}

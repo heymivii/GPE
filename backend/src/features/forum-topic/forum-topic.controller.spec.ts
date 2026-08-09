@@ -13,6 +13,9 @@ const mockService = () => ({
   lockTopic: jest.fn(),
   pinTopic: jest.fn(),
   moderatorRemove: jest.fn(),
+  follow: jest.fn(),
+  unfollow: jest.fn(),
+  getFollowed: jest.fn(),
 });
 
 describe('ForumTopicController', () => {
@@ -81,12 +84,46 @@ describe('ForumTopicController', () => {
   // ─── findOne ───────────────────────────────────────────────────
 
   describe('findOne()', () => {
-    it('should return a single topic', async () => {
+    it('should return a single topic and pass the optional user id', async () => {
       service.findOnePublic.mockResolvedValue({ idForumTopic: 5 });
 
-      const result = await controller.findOne(5);
-      expect(service.findOnePublic).toHaveBeenCalledWith(5);
+      const result = await controller.findOne({ user: { userId: 9 } }, 5);
+      expect(service.findOnePublic).toHaveBeenCalledWith(5, 9);
       expect(result.idForumTopic).toBe(5);
+    });
+
+    it('passes undefined userId when anonymous', async () => {
+      service.findOnePublic.mockResolvedValue({ idForumTopic: 5 });
+      await controller.findOne({ user: null }, 5);
+      expect(service.findOnePublic).toHaveBeenCalledWith(5, undefined);
+    });
+  });
+
+  // ─── follow / unfollow / followed ──────────────────────────────
+
+  describe('follow()', () => {
+    it('delegates to service.follow with the authenticated user', async () => {
+      service.follow.mockResolvedValue({ following: true, followersCount: 1 });
+      const result = await controller.follow({ user: { userId: 7 } }, 3);
+      expect(service.follow).toHaveBeenCalledWith(7, 3);
+      expect(result.following).toBe(true);
+    });
+  });
+
+  describe('unfollow()', () => {
+    it('delegates to service.unfollow with the authenticated user', async () => {
+      service.unfollow.mockResolvedValue({ following: false, followersCount: 0 });
+      await controller.unfollow({ user: { userId: 7 } }, 3);
+      expect(service.unfollow).toHaveBeenCalledWith(7, 3);
+    });
+  });
+
+  describe('getFollowed()', () => {
+    it('returns the topics followed by the current user', async () => {
+      service.getFollowed.mockResolvedValue([{ idForumTopic: 1 }]);
+      const result = await controller.getFollowed({ user: { userId: 7 } });
+      expect(service.getFollowed).toHaveBeenCalledWith(7);
+      expect(result).toHaveLength(1);
     });
   });
 

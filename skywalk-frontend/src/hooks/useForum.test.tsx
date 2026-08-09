@@ -7,6 +7,9 @@ import {
   useForumTopics,
   useForumTopic,
   useForumMessages,
+  useFollowedTopics,
+  useFollowTopic,
+  useUnfollowTopic,
 } from './useForum';
 
 // Mock both API modules
@@ -20,6 +23,9 @@ vi.mock('../api/forum-topics', () => ({
     lockTopic: vi.fn(),
     pinTopic: vi.fn(),
     moderatorRemove: vi.fn(),
+    getFollowed: vi.fn(),
+    follow: vi.fn(),
+    unfollow: vi.fn(),
   },
 }));
 
@@ -64,6 +70,7 @@ describe('forumKeys', () => {
     expect(forumKeys.messagesByTopic(1)).toEqual(['forum', 'messages', 'topic', 1]);
     expect(forumKeys.reports('pending')).toEqual(['forum', 'reports', 'pending']);
     expect(forumKeys.reportStats()).toEqual(['forum', 'report-stats']);
+    expect(forumKeys.followed()).toEqual(['forum', 'followed']);
   });
 });
 
@@ -120,5 +127,58 @@ describe('useForumMessages', () => {
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(result.current.data).toHaveLength(1);
+  });
+});
+
+// ─── F2 : suivi de discussions ─────────────────────────────────────
+
+describe('useFollowedTopics', () => {
+  it('fetches the followed topics when enabled', async () => {
+    mockedTopicsApi.getFollowed.mockResolvedValue([
+      { topic_id: 9, title: 'Followed' } as any,
+    ]);
+
+    const { result } = renderHook(() => useFollowedTopics(true), {
+      wrapper: createWrapper(),
+    });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.data).toHaveLength(1);
+    expect(mockedTopicsApi.getFollowed).toHaveBeenCalled();
+  });
+
+  it('does not fetch when disabled (anonymous)', () => {
+    mockedTopicsApi.getFollowed.mockClear();
+    const { result } = renderHook(() => useFollowedTopics(false), {
+      wrapper: createWrapper(),
+    });
+    expect(result.current.fetchStatus).toBe('idle');
+    expect(mockedTopicsApi.getFollowed).not.toHaveBeenCalled();
+  });
+});
+
+describe('useFollowTopic / useUnfollowTopic', () => {
+  it('follow calls the API and resolves', async () => {
+    mockedTopicsApi.follow.mockResolvedValue({ following: true, followersCount: 1 });
+
+    const { result } = renderHook(() => useFollowTopic(), {
+      wrapper: createWrapper(),
+    });
+
+    result.current.mutate(5);
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(mockedTopicsApi.follow).toHaveBeenCalledWith(5);
+  });
+
+  it('unfollow calls the API and resolves', async () => {
+    mockedTopicsApi.unfollow.mockResolvedValue({ following: false, followersCount: 0 });
+
+    const { result } = renderHook(() => useUnfollowTopic(), {
+      wrapper: createWrapper(),
+    });
+
+    result.current.mutate(5);
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(mockedTopicsApi.unfollow).toHaveBeenCalledWith(5);
   });
 });

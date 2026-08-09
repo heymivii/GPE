@@ -29,7 +29,10 @@ export interface ForumTopic {
     isoCode?: string;
     flagUrl?: string;
   };
-  messages?: ForumMessage[]; 
+  // F2 — suivi de discussions
+  followersCount?: number;
+  isFollowedByMe?: boolean;
+  messages?: ForumMessage[];
 }
 
 

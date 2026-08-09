@@ -1249,6 +1249,11 @@
       "mustBeLoggedIn": "You must be logged in",
       "titleRequired": "Title is required",
       "updateError": "Error while updating"
+    },
+    "follow": {
+      "follow": "Follow",
+      "following": "Following",
+      "unfollow": "Unfollow"
     }
   },
   "comparison": {

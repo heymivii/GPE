@@ -8,8 +8,10 @@ import {
 import { ForumMessageService } from './forum-message.service';
 import { ForumMessage } from './entities/forum-message.entity';
 import { ForumReport } from './entities/forum-report.entity';
+import { ForumTopicFollow } from '../forum-topic/entities/forum-topic-follow.entity';
 import { ContentFilterService } from './content-filter.service';
 import { ForumModerationService } from '../forum-moderation/forum-moderation.service';
+import { NotificationService } from '../notification/notification.service';
 
 const mockMessageRepo = () => ({
   create: jest.fn(),
@@ -50,11 +52,16 @@ describe('ForumMessageService', () => {
         ForumMessageService,
         { provide: getRepositoryToken(ForumMessage), useValue: messageRepo },
         { provide: getRepositoryToken(ForumReport), useValue: reportRepo },
+        {
+          provide: getRepositoryToken(ForumTopicFollow),
+          useValue: { find: jest.fn().mockResolvedValue([]) },
+        },
         { provide: ContentFilterService, useValue: contentFilter },
         {
           provide: ForumModerationService,
           useValue: { moderate: jest.fn().mockResolvedValue({ action: 'ok' }) },
         },
+        { provide: NotificationService, useValue: { create: jest.fn() } },
       ],
     }).compile();
 

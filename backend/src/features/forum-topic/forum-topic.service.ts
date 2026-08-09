@@ -9,6 +9,7 @@ import { MoreThanOrEqual, Repository } from 'typeorm';
 import { CreateForumTopicDto } from './dto/create-forum-topic.dto';
 import { UpdateForumTopicDto } from './dto/update-forum-topic.dto';
 import { ForumTopic } from './entities/forum-topic.entity';
+import { ForumTopicFollow } from './entities/forum-topic-follow.entity';
 import { ForumMessage } from '../forum-message/entities/forum-message.entity';
 import { ContentFilterService } from '../forum-message/content-filter.service';
 import { ForumModerationService } from '../forum-moderation/forum-moderation.service';
@@ -18,6 +19,8 @@ export class ForumTopicService {
   constructor(
     @InjectRepository(ForumTopic)
     private readonly forumTopicRepository: Repository<ForumTopic>,
+    @InjectRepository(ForumTopicFollow)
+    private readonly followRepository: Repository<ForumTopicFollow>,
     @InjectRepository(ForumMessage)
     private readonly forumMessageRepository: Repository<ForumMessage>,
     private readonly contentFilterService: ContentFilterService,
@@ -153,14 +156,87 @@ export class ForumTopicService {
     return topic;
   }
 
-  /** Lecture publique d'un topic : incrémente le compteur de vues (jamais fait avant). */
-  async findOnePublic(id: number): Promise<ForumTopic> {
+  /** Lecture publique d'un topic : incrémente les vues + expose le suivi. */
+  async findOnePublic(
+    id: number,
+    userId?: number,
+  ): Promise<ForumTopic & { followersCount: number; isFollowedByMe: boolean }> {
     await this.forumTopicRepository.increment(
       { idForumTopic: id },
       'viewsCount',
       1,
     );
-    return this.findOne(id);
+    const topic = await this.findOne(id);
+    const followersCount = await this.followRepository.count({
+      where: { topicId: id },
+    });
+    const isFollowedByMe = userId
+      ? (await this.followRepository.count({ where: { topicId: id, userId } })) >
+        0
+      : false;
+    return Object.assign(topic, { followersCount, isFollowedByMe });
+  }
+
+  /** Suivre un topic. Idempotent : re-suivre ne crée pas de doublon. */
+  async follow(
+    userId: number,
+    topicId: number,
+  ): Promise<{ following: boolean; followersCount: number }> {
+    await this.findOne(topicId); // 404 si le topic n'existe pas
+    const existing = await this.followRepository.findOne({
+      where: { userId, topicId },
+    });
+    if (!existing) {
+      try {
+        await this.followRepository.save(
+          this.followRepository.create({ userId, topicId }),
+        );
+      } catch {
+        // Unique(user_id, topic_id) : doublon concurrent → on ignore (idempotent).
+      }
+    }
+    const followersCount = await this.followRepository.count({
+      where: { topicId },
+    });
+    return { following: true, followersCount };
+  }
+
+  /** Ne plus suivre un topic. */
+  async unfollow(
+    userId: number,
+    topicId: number,
+  ): Promise<{ following: boolean; followersCount: number }> {
+    await this.followRepository.delete({ userId, topicId });
+    const followersCount = await this.followRepository.count({
+      where: { topicId },
+    });
+    return { following: false, followersCount };
+  }
+
+  /** Topics suivis par l'utilisateur (avec messagesCount, comme findAll). */
+  async getFollowed(userId: number): Promise<ForumTopic[]> {
+    const rows = await this.followRepository.find({
+      where: { userId },
+      order: { createdAt: 'DESC' },
+    });
+    const ids = rows.map((r) => r.topicId);
+    if (ids.length === 0) return [];
+    return this.forumTopicRepository
+      .createQueryBuilder('topic')
+      .leftJoinAndSelect('topic.user', 'user')
+      .leftJoinAndSelect('topic.country', 'country')
+      .loadRelationCountAndMap('topic.messagesCount', 'topic.messages')
+      .where('topic.idForumTopic IN (:...ids)', { ids })
+      .orderBy('topic.createdAt', 'DESC')
+      .getMany();
+  }
+
+  /** Abonnés d'un topic (hors un user donné) — pour notifier sur nouveau message. */
+  async getFollowerIds(topicId: number, exceptUserId?: number): Promise<number[]> {
+    const rows = await this.followRepository.find({ where: { topicId } });
+    return rows
+      .map((r) => r.userId)
+      .filter((uid) => uid !== exceptUserId);
   }
 
   async update(

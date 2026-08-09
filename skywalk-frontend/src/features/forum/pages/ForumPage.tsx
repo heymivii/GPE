@@ -15,7 +15,7 @@ import {
   X,
   Globe
 } from 'lucide-react'
-import { useForumTopics } from '../../../hooks/useForum'
+import { useForumTopics, useFollowedTopics } from '../../../hooks/useForum'
 import { useAuth } from '../../../hooks/useAuth'
 import { PageHeader } from '../../../components/PageHeader'
 import { PageSearch } from '../../../components/PageSearch'
@@ -40,9 +40,15 @@ export default function ForumPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('')
   const [selectedCountry, setSelectedCountry] = useState<number | null>(null)
   const [showMyTopics, setShowMyTopics] = useState(false)
+  const [showFollowed, setShowFollowed] = useState(false)
   const topicsListRef = useRef<HTMLDivElement>(null)
-  
+
   const { data: topics, isLoading, error } = useForumTopics()
+  const { data: followedTopics } = useFollowedTopics(!!user)
+  const followedIds = useMemo(
+    () => new Set((followedTopics ?? []).map((t) => t.topic_id)),
+    [followedTopics],
+  )
 
   const scrollToResults = () => {
     setTimeout(() => {
@@ -138,7 +144,11 @@ export default function ForumPage() {
       const userId = user.idUser || user.id
       result = result.filter(topic => topic.user?.idUser === userId)
     }
-    
+
+    if (showFollowed && user) {
+      result = result.filter(topic => followedIds.has(topic.topic_id))
+    }
+
     if (searchQuery) {
       result = result.filter(topic => 
         topic.title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -154,7 +164,7 @@ export default function ForumPage() {
     }
     
     return result
-  }, [topics, searchQuery, selectedCategory, selectedCountry, showMyTopics, user])
+  }, [topics, searchQuery, selectedCategory, selectedCountry, showMyTopics, showFollowed, followedIds, user])
 
   const updatedStats = {
     totalPosts: stats.totalTopics,
@@ -308,7 +318,14 @@ export default function ForumPage() {
             <div ref={topicsListRef} className="bg-white rounded-lg border border-gray-200">
               <div className="p-6 border-b border-gray-200 flex items-center justify-between">
                 <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
-                  {showMyTopics ? (
+                  {showFollowed ? (
+                    <>
+                      {t('forum.followedTopics')}
+                      <span className="text-sm font-normal text-gray-500">
+                        ({filteredTopics.length})
+                      </span>
+                    </>
+                  ) : showMyTopics ? (
                     <>
                       {t('forum.myTopicsTitle')}
                       <span className="text-sm font-normal text-gray-500">
@@ -331,11 +348,12 @@ export default function ForumPage() {
                     </>
                   )}
                 </h2>
-                {(selectedCategory || showMyTopics || selectedCountry) && (
+                {(selectedCategory || showMyTopics || showFollowed || selectedCountry) && (
                   <button
                     onClick={() => {
                       setSelectedCategory('')
                       setShowMyTopics(false)
+                      setShowFollowed(false)
                       setSelectedCountry(null)
                     }}
                     className="flex items-center gap-1 text-sm text-[#5EA3C0] hover:text-[#4A8299] font-medium"
@@ -474,10 +492,10 @@ export default function ForumPage() {
                 {user ? (
                   <>
                     <button
-                      onClick={() => setShowMyTopics(!showMyTopics)}
+                      onClick={() => { setShowMyTopics(!showMyTopics); setShowFollowed(false) }}
                       className={`flex items-center gap-2 p-3 w-full text-sm rounded-lg transition-colors ${
-                        showMyTopics 
-                          ? 'bg-[#5EA3C0]/10 text-[#5EA3C0] font-medium' 
+                        showMyTopics
+                          ? 'bg-[#5EA3C0]/10 text-[#5EA3C0] font-medium'
                           : 'text-gray-700 hover:bg-gray-50'
                       }`}
                     >
@@ -486,11 +504,16 @@ export default function ForumPage() {
                       {showMyTopics && <span className="ml-auto text-xs">✓</span>}
                     </button>
                     <button
-                      onClick={() => alert(t('forum.comingSoon'))}
-                      className="flex items-center gap-2 p-3 w-full text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+                      onClick={() => { setShowFollowed(!showFollowed); setShowMyTopics(false) }}
+                      className={`flex items-center gap-2 p-3 w-full text-sm rounded-lg transition-colors ${
+                        showFollowed
+                          ? 'bg-[#5EA3C0]/10 text-[#5EA3C0] font-medium'
+                          : 'text-gray-700 hover:bg-gray-50'
+                      }`}
                     >
                       <Bookmark className="w-4 h-4" />
-                      {t('forum.followedTopics')}
+                      <span>{t('forum.followedTopics')} ({followedIds.size})</span>
+                      {showFollowed && <span className="ml-auto text-xs">✓</span>}
                     </button>
                   </>
                 ) : (
