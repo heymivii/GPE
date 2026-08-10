@@ -73,7 +73,9 @@
     },
     "quit": "Quit",
     "remove": "Remove",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "back": "Back",
+    "save": "Save"
   },
   "services": {
     "citySelector": {
@@ -3641,7 +3643,12 @@
     "currency": "Display currency",
     "language": "Language",
     "account": "Account",
-    "viewProfile": "Edit my profile"
+    "viewProfile": "Edit my profile",
+    "expert": {
+      "title": "Expert profile",
+      "subtitle": "Your public title and bio. Verification is handled by the team.",
+      "saved": "Expert profile updated"
+    }
   },
   "experts": {
     "verified": "Verified expert",
@@ -3676,5 +3683,18 @@
     "stars": "{{count}} star(s)",
     "readAloud": "{{value}} out of 5",
     "thanks": "Thanks!"
+  },
+  "messages": {
+    "title": "Messages",
+    "subtitle": "Your private conversations with members and experts.",
+    "conversations": "Conversations",
+    "empty": "No conversation yet.",
+    "pickConversation": "Select a conversation.",
+    "startConversation": "Write the first message.",
+    "placeholder": "Your message…",
+    "send": "Send a message",
+    "report": "Report this member",
+    "reported": "Member reported",
+    "member": "Member"
   }
 }

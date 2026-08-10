@@ -1,4 +1,4 @@
-import { BadgeCheck } from 'lucide-react';
+import { BadgeCheck, Star } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 interface ExpertLike {
@@ -13,6 +13,9 @@ interface Props {
   /** Titre à afficher directement (ex. depuis l'annuaire /experts). */
   title?: string | null;
   showTitle?: boolean;
+  /** Note moyenne (F4) — affichée en compact quand fournie. */
+  averageRating?: number;
+  ratingCount?: number;
   className?: string;
 }
 
@@ -21,7 +24,14 @@ interface Props {
  * - avec `user` : ne rend rien si l'utilisateur n'est pas un expert vérifié ;
  * - avec `title` seul : rend toujours (l'appelant sait déjà que c'est un expert).
  */
-export default function ExpertBadge({ user, title, showTitle = true, className = '' }: Props) {
+export default function ExpertBadge({
+  user,
+  title,
+  showTitle = true,
+  averageRating,
+  ratingCount,
+  className = '',
+}: Props) {
   const { t } = useTranslation();
 
   if (user && !(user.isExpert && !!user.expertVerifiedAt)) return null;
@@ -37,6 +47,12 @@ export default function ExpertBadge({ user, title, showTitle = true, className =
       {showTitle && label ? (
         <span className="font-normal text-emerald-600">· {label}</span>
       ) : null}
+      {(ratingCount ?? 0) > 0 && (
+        <span className="inline-flex items-center gap-0.5 font-normal text-amber-600">
+          · <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+          {averageRating}
+        </span>
+      )}
     </span>
   );
 }

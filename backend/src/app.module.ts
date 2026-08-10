@@ -42,6 +42,7 @@ import { GovLinksModule } from './features/gov-links/gov-links.module';
 import { SearchHintModule } from './features/search-hint/search-hint.module';
 import { ForumModerationModule } from './features/forum-moderation/forum-moderation.module';
 import { UserReportModule } from './features/user-report/user-report.module';
+import { PrivateMessageModule } from './features/private-message/private-message.module';
 import { DocumentModule } from './features/document/document.module';
 
 @Module({
@@ -77,6 +78,7 @@ import { DocumentModule } from './features/document/document.module';
     ForumMessageModule,
     ForumModerationModule,
     UserReportModule,
+    PrivateMessageModule,
     DocumentModule,
     NotificationModule,
     ExperienceModule,

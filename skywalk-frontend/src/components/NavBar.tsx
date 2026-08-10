@@ -1,12 +1,13 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Search, Menu, X, ChevronDown, Globe, LogOut, User, LayoutDashboard, FolderKanban, FolderLock, Settings, Compass, BarChart3, MapPin, Briefcase, BookOpen, BadgeCheck, ShieldAlert } from 'lucide-react';
+import { Search, Menu, X, ChevronDown, Globe, LogOut, User, LayoutDashboard, FolderKanban, FolderLock, Settings, Compass, BarChart3, MapPin, Briefcase, BookOpen, BadgeCheck, Mail, ShieldAlert } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import GlobalSearchModal from './GlobalSearchModal';
 import CurrencySelector from './CurrencySelector';
 import ProjectSwitcher from './ProjectSwitcher';
 import NotificationBell from '../features/notifications/NotificationBell';
+import { useUnreadMessages } from '../hooks/usePrivateMessages';
 
 const languages = [
   { code: 'fr', label: 'Français', flag: '🇫🇷' },
@@ -27,6 +28,8 @@ export default function NavBar() {
   const langRef = useRef<HTMLDivElement>(null);
   
   const { user, isAuthenticated, logout } = useAuth();
+  const { data: unreadMessages } = useUnreadMessages(isAuthenticated);
+  const unreadCount = unreadMessages?.count ?? 0;
   const navigate = useNavigate();
 
   const userRole = (user as any)?.roles || user?.role || user?.userRole || '';
@@ -219,6 +222,18 @@ export default function NavBar() {
 
             {isAuthenticated && user ? (
               <div className="flex items-center gap-1">
+                <Link
+                  to="/messages"
+                  className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-600"
+                  aria-label={t('messages.title', { defaultValue: 'Messages' })}
+                >
+                  <Mail className="w-5 h-5" />
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </span>
+                  )}
+                </Link>
                 <NotificationBell />
                 <div className="relative hidden sm:block" ref={userMenuRef}>
                 <button

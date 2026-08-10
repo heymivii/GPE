@@ -1,15 +1,19 @@
 import { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { Search, MapPin, Loader2, UserCheck } from 'lucide-react';
+import { Search, MapPin, Loader2, UserCheck, Mail } from 'lucide-react';
 import { PageHeader } from '../../../components/PageHeader';
 import ExpertBadge from '../../../components/ExpertBadge';
 import StarRating from '../../../components/StarRating';
 import { useExperts } from '../../../hooks/useExperts';
+import { useAuth } from '../../../hooks/useAuth';
 import { countryApi } from '../../../api/country';
 
 export default function ExpertsPage() {
   const { t } = useTranslation();
+  const { user } = useAuth();
+  const currentUserId = user ? (user.idUser || user.id) : undefined;
   const [countryId, setCountryId] = useState<number | undefined>(undefined);
   const [search, setSearch] = useState('');
   // Recherche « debounced » simple : on filtre côté serveur au submit / changement de pays,
@@ -99,16 +103,21 @@ export default function ExpertsPage() {
                   </div>
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-gray-900 truncate">{e.fullName}</p>
-                    <ExpertBadge title={e.expertTitle} className="mt-0.5" />
+                    <ExpertBadge
+                      title={e.expertTitle}
+                      averageRating={e.averageRating}
+                      ratingCount={e.ratingCount}
+                      className="mt-0.5"
+                    />
                   </div>
                 </div>
 
-                {/* F4 — note moyenne */}
+                {/* F4 — note visuelle + nombre d'avis (ou « pas encore d'avis ») */}
                 {(e.ratingCount ?? 0) > 0 ? (
                   <div className="mt-3 flex items-center gap-1.5">
                     <StarRating value={e.averageRating ?? 0} readOnly size="sm" />
                     <span className="text-xs text-gray-500">
-                      {e.averageRating} · {t('experts.page.reviews', {
+                      {t('experts.page.reviews', {
                         count: e.ratingCount ?? 0,
                         defaultValue: '{{count}} avis',
                       })}
@@ -132,7 +141,17 @@ export default function ExpertsPage() {
                     {e.expertBio}
                   </p>
                 )}
-                {/* Note moyenne (F4) et bouton « Envoyer un message » (F3) viendront ici. */}
+
+                {/* F3 — contacter l'expert (connecté, pas soi-même) */}
+                {user && e.idUser !== currentUserId && (
+                  <Link
+                    to={`/messages?to=${e.idUser}&name=${encodeURIComponent(e.fullName)}`}
+                    className="mt-auto pt-3 inline-flex items-center justify-center gap-1.5 text-sm font-medium text-white bg-[#5EA3C0] hover:bg-[#4891b0] rounded-lg py-2 transition-colors"
+                  >
+                    <Mail className="w-4 h-4" />
+                    {t('messages.send', { defaultValue: 'Envoyer un message' })}
+                  </Link>
+                )}
               </div>
             ))}
           </div>

@@ -24,6 +24,7 @@ import ProjectDetailPage from '../features/projects/pages/ProjectDetailPage';
 import ChecklistPage from '../features/projects/pages/ChecklistPage'; // ✅ AJOUT
 import DocumentsPage from '../features/documents/DocumentsPage';
 import SettingsPage from '../features/settings/pages/SettingsPage';
+import MessagesPage from '../features/messages/pages/MessagesPage';
 import CountryComparison from '../features/comparison/pages/CountryComparison';
 import ServicePage from '../features/services/pages/ServicePage';
 import ServicesIndexPage from '../features/services/pages/ServicesIndexPage';
@@ -152,6 +153,13 @@ export const router = createBrowserRouter([
         element: <MainLayout />,
         children: [
           { index: true, element: <SettingsPage /> },
+        ],
+      },
+      {
+        path: '/messages',
+        element: <MainLayout />,
+        children: [
+          { index: true, element: <MessagesPage /> },
         ],
       },
     ],

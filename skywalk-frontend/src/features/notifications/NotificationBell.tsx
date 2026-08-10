@@ -16,6 +16,10 @@ function notifLink(n: AppNotification): string | null {
   if (n.contextType === 'project' && n.contextId) {
     return `/projects/${n.contextId}/checklist`;
   }
+  // F2 — un nouveau message dans une discussion suivie ouvre le sujet.
+  if (n.contextType === 'forum-topic' && n.contextId) {
+    return `/forum/post/${n.contextId}`;
+  }
   return null;
 }
 
