@@ -15,16 +15,28 @@
 | **Frontend (l'app)** | https://skywalk-chi.vercel.app |
 | **API backend** | https://skywalk-backend-api-50c5bfcb5a94.herokuapp.com/api |
 
-**Comptes de démonstration** (mot de passe commun : **`SkyWalkDemo2026!`**) :
+**Tous les comptes ci-dessous ont le même mot de passe : `SkyWalkDemo2026!`**
+
+👑 **Comptes admin de l'équipe** (accès back-office complet) :
+
+| Email | Mot de passe |
+|---|---|
+| `admin@skywalk.com` | `SkyWalkDemo2026!` |
+| `briac@skywalk.com` | `SkyWalkDemo2026!` |
+| `elmahdi@skywalk.com` | `SkyWalkDemo2026!` |
+| `fatou@skywalk.com` | `SkyWalkDemo2026!` |
+| `arphan@skywalk.com` | `SkyWalkDemo2026!` |
+| `aminata@skywalk.com` | `SkyWalkDemo2026!` |
+| `hocine@skywalk.com` | `SkyWalkDemo2026!` |
+
+👤 **Comptes de test côté utilisateur** :
 
 | Rôle | Email | Mot de passe | Pour tester… |
 |---|---|---|---|
-| 👑 **Admin** | `admin@skywalk.com` | `SkyWalkDemo2026!` | back-office : modération, experts, pays/villes, gov-links |
-| 👤 **Utilisateur** | `maya.dubois@demo.skywalk` | `SkyWalkDemo2026!` | parcours expatrié : projet, checklist, forum, messagerie |
-| 🎓 **Expert vérifié** | `yuki.tanaka@demo.skywalk` | `SkyWalkDemo2026!` | côté expert : profil vérifié, réception de messages |
+| Utilisateur | `maya.dubois@demo.skywalk` | `SkyWalkDemo2026!` | parcours expatrié : projet, checklist, forum, messagerie |
+| Expert vérifié | `yuki.tanaka@demo.skywalk` | `SkyWalkDemo2026!` | côté expert : profil vérifié, réception de messages |
 
-> ⚠️ **Mot de passe de démo partagé** — à ne réutiliser nulle part ailleurs. Le compte admin donne accès au back-office complet.
-> Chaque membre de l'équipe a aussi son propre compte admin (`briac@`, `elmahdi@`, `fatou@`, `arphan@`, `aminata@`, `hocine@skywalk.com`) avec son mot de passe perso.
+> ⚠️ **Mot de passe commun de démo** — à ne réutiliser nulle part ailleurs. Les comptes admin donnent accès au back-office complet de la prod.
 
 **Tester en 30 s :** aller sur le front → *Se connecter* → un des comptes ci-dessus.
 Ou en direct sur l'API :
