@@ -16,6 +16,10 @@ interface ProfileStepData {
   status: string
   travelParty: string
   languageLevel: string
+  /** Drives school / childcare steps. */
+  hasChildren?: boolean
+  /** Drives the work-visa path vs job search. */
+  hasJobOffer?: boolean
 }
 
 interface ProfileStepProps {
@@ -32,7 +36,9 @@ export default function ProfileStep({ data, onNext, onBack }: ProfileStepProps) 
     spokenLanguages: data?.spokenLanguages || [],
     status: data?.status || '',
     travelParty: data?.travelParty || '',
-    languageLevel: data?.languageLevel || ''
+    languageLevel: data?.languageLevel || '',
+    hasChildren: data?.hasChildren,
+    hasJobOffer: data?.hasJobOffer
   })
 
   const availableLanguages = useMemo(() => {
@@ -200,6 +206,36 @@ export default function ProfileStep({ data, onNext, onBack }: ProfileStepProps) 
             onChange={handleFieldChange('languageLevel')}
             placeholder={t('onboarding.profile.languageLevelPlaceholder')}
             aria-describedby={errors.languageLevel ? 'languageLevel-error' : 'languageLevel-helper'}
+          />
+        </FormField>
+
+        <FormField
+          label={t('onboarding.profile.hasChildren', { defaultValue: 'Des enfants vous accompagnent ?' })}
+          helper={t('onboarding.profile.hasChildrenHelper', { defaultValue: 'Ajoute les démarches école / crèche à votre plan.' })}
+          id="hasChildren"
+        >
+          <ToggleGroup
+            options={[
+              { value: 'yes', label: t('common.yes', { defaultValue: 'Oui' }) },
+              { value: 'no', label: t('common.no', { defaultValue: 'Non' }) },
+            ]}
+            value={formData.hasChildren === true ? 'yes' : formData.hasChildren === false ? 'no' : ''}
+            onChange={(v) => setFormData((f) => ({ ...f, hasChildren: v === 'yes' }))}
+          />
+        </FormField>
+
+        <FormField
+          label={t('onboarding.profile.hasJobOffer', { defaultValue: 'Avez-vous déjà une offre d’emploi sur place ?' })}
+          helper={t('onboarding.profile.hasJobOfferHelper', { defaultValue: 'Oriente vers le visa de travail plutôt que la recherche d’emploi.' })}
+          id="hasJobOffer"
+        >
+          <ToggleGroup
+            options={[
+              { value: 'yes', label: t('common.yes', { defaultValue: 'Oui' }) },
+              { value: 'no', label: t('common.no', { defaultValue: 'Non' }) },
+            ]}
+            value={formData.hasJobOffer === true ? 'yes' : formData.hasJobOffer === false ? 'no' : ''}
+            onChange={(v) => setFormData((f) => ({ ...f, hasJobOffer: v === 'yes' }))}
           />
         </FormField>
       </div>

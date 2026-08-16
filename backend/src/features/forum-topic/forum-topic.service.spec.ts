@@ -1,10 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { ForumTopicService } from './forum-topic.service';
 import { ForumTopic } from './entities/forum-topic.entity';
+import { ForumTopicFollow } from './entities/forum-topic-follow.entity';
 import { ForumMessage } from '../forum-message/entities/forum-message.entity';
 import { ContentFilterService } from '../forum-message/content-filter.service';
+import { ForumModerationService } from '../forum-moderation/forum-moderation.service';
 
 const mockTopicRepo = () => ({
   create: jest.fn(),
@@ -14,6 +20,7 @@ const mockTopicRepo = () => ({
   delete: jest.fn(),
   remove: jest.fn(),
   count: jest.fn(),
+  increment: jest.fn(),
   createQueryBuilder: jest.fn(),
 });
 
@@ -22,6 +29,16 @@ const mockMessageRepo = () => ({
   save: jest.fn(),
   findOne: jest.fn(),
   remove: jest.fn(),
+  delete: jest.fn(),
+  count: jest.fn(),
+});
+
+const mockFollowRepo = () => ({
+  create: jest.fn((v) => v),
+  save: jest.fn(),
+  find: jest.fn(),
+  findOne: jest.fn(),
+  delete: jest.fn(),
   count: jest.fn(),
 });
 
@@ -35,11 +52,13 @@ const mockContentFilter = () => ({
 describe('ForumTopicService', () => {
   let service: ForumTopicService;
   let topicRepo: ReturnType<typeof mockTopicRepo>;
+  let followRepo: ReturnType<typeof mockFollowRepo>;
   let messageRepo: ReturnType<typeof mockMessageRepo>;
   let contentFilter: ReturnType<typeof mockContentFilter>;
 
   beforeEach(async () => {
     topicRepo = mockTopicRepo();
+    followRepo = mockFollowRepo();
     messageRepo = mockMessageRepo();
     contentFilter = mockContentFilter();
 
@@ -47,8 +66,13 @@ describe('ForumTopicService', () => {
       providers: [
         ForumTopicService,
         { provide: getRepositoryToken(ForumTopic), useValue: topicRepo },
+        { provide: getRepositoryToken(ForumTopicFollow), useValue: followRepo },
         { provide: getRepositoryToken(ForumMessage), useValue: messageRepo },
         { provide: ContentFilterService, useValue: contentFilter },
+        {
+          provide: ForumModerationService,
+          useValue: { moderate: jest.fn().mockResolvedValue({ action: 'ok' }) },
+        },
       ],
     }).compile();
 
@@ -124,7 +148,7 @@ describe('ForumTopicService', () => {
         content: dto.content,
       });
 
-      const result = await service.create(dto as any);
+      const result = await service.create(1, dto as any);
 
       expect(contentFilter.validate).toHaveBeenCalledTimes(2); // title + content
       expect(contentFilter.sanitize).toHaveBeenCalledTimes(2);
@@ -139,7 +163,7 @@ describe('ForumTopicService', () => {
         reason: 'profanity',
       });
 
-      await expect(service.create(dto as any)).rejects.toThrow(
+      await expect(service.create(1, dto as any)).rejects.toThrow(
         BadRequestException,
       );
     });
@@ -149,7 +173,7 @@ describe('ForumTopicService', () => {
         .mockResolvedValueOnce({ ok: true }) // title passes
         .mockResolvedValueOnce({ ok: false, reason: 'hate speech' }); // content fails
 
-      await expect(service.create(dto as any)).rejects.toThrow(
+      await expect(service.create(1, dto as any)).rejects.toThrow(
         BadRequestException,
       );
     });
@@ -187,18 +211,28 @@ describe('ForumTopicService', () => {
 
   describe('update()', () => {
     it('should update topic title with content filtering', async () => {
-      const topic = { idForumTopic: 1, title: 'Old Title', messages: [] };
+      const topic = {
+        idForumTopic: 1,
+        title: 'Old Title',
+        messages: [],
+        user: { idUser: 1 },
+      };
       topicRepo.findOne.mockResolvedValue(topic);
       topicRepo.save.mockResolvedValue({ ...topic, title: 'New Title' });
 
-      await service.update(1, { title: 'New Title' } as any);
+      await service.update(1, 1, { title: 'New Title' } as any);
 
       expect(contentFilter.validate).toHaveBeenCalledWith('New Title');
       expect(topicRepo.save).toHaveBeenCalled();
     });
 
     it('should reject bad title on update', async () => {
-      const topic = { idForumTopic: 1, title: 'Old', messages: [] };
+      const topic = {
+        idForumTopic: 1,
+        title: 'Old',
+        messages: [],
+        user: { idUser: 1 },
+      };
       topicRepo.findOne.mockResolvedValue(topic);
       contentFilter.validate.mockResolvedValue({
         ok: false,
@@ -206,7 +240,7 @@ describe('ForumTopicService', () => {
       });
 
       await expect(
-        service.update(1, { title: 'bad title' } as any),
+        service.update(1, 1, { title: 'bad title' } as any),
       ).rejects.toThrow(BadRequestException);
     });
   });
@@ -270,16 +304,123 @@ describe('ForumTopicService', () => {
   // ─── remove() ──────────────────────────────────────────────────
 
   describe('remove()', () => {
-    it('should delete a topic', async () => {
-      topicRepo.delete.mockResolvedValue({ affected: 1 });
+    it('should delete a topic and its messages (owner)', async () => {
+      const topic = { idForumTopic: 1, user: { idUser: 1 }, messages: [] };
+      topicRepo.findOne.mockResolvedValue(topic);
+      messageRepo.delete.mockResolvedValue({ affected: 0 });
+      topicRepo.remove.mockResolvedValue(topic);
 
-      await expect(service.remove(1)).resolves.toBeUndefined();
+      await expect(service.remove(1, 1)).resolves.toBeUndefined();
+      expect(topicRepo.remove).toHaveBeenCalledWith(topic);
     });
 
-    it('should throw NotFoundException if nothing deleted', async () => {
-      topicRepo.delete.mockResolvedValue({ affected: 0 });
+    it('should throw ForbiddenException if not the owner', async () => {
+      const topic = { idForumTopic: 1, user: { idUser: 2 }, messages: [] };
+      topicRepo.findOne.mockResolvedValue(topic);
 
-      await expect(service.remove(999)).rejects.toThrow(NotFoundException);
+      await expect(service.remove(1, 99)).rejects.toThrow(ForbiddenException);
+    });
+
+    it('should throw NotFoundException if topic not found', async () => {
+      topicRepo.findOne.mockResolvedValue(null);
+
+      await expect(service.remove(999, 1)).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  // ─── follow() ──────────────────────────────────────────────────
+
+  describe('follow()', () => {
+    it('creates a follow when none exists (idempotent) and returns the count', async () => {
+      topicRepo.findOne.mockResolvedValue({ idForumTopic: 3, messages: [] });
+      followRepo.findOne.mockResolvedValue(null);
+      followRepo.save.mockResolvedValue({});
+      followRepo.count.mockResolvedValue(1);
+
+      const res = await service.follow(7, 3);
+
+      expect(followRepo.save).toHaveBeenCalled();
+      expect(res).toEqual({ following: true, followersCount: 1 });
+    });
+
+    it('does NOT create a duplicate when already following', async () => {
+      topicRepo.findOne.mockResolvedValue({ idForumTopic: 3, messages: [] });
+      followRepo.findOne.mockResolvedValue({ idForumTopicFollow: 1 });
+      followRepo.count.mockResolvedValue(1);
+
+      await service.follow(7, 3);
+      expect(followRepo.save).not.toHaveBeenCalled();
+    });
+
+    it('throws NotFound when following a missing topic', async () => {
+      topicRepo.findOne.mockResolvedValue(null);
+      await expect(service.follow(7, 999)).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  // ─── unfollow() ────────────────────────────────────────────────
+
+  describe('unfollow()', () => {
+    it('deletes the follow row and returns the updated count', async () => {
+      followRepo.delete.mockResolvedValue({ affected: 1 });
+      followRepo.count.mockResolvedValue(0);
+
+      const res = await service.unfollow(7, 3);
+      expect(followRepo.delete).toHaveBeenCalledWith({ userId: 7, topicId: 3 });
+      expect(res).toEqual({ following: false, followersCount: 0 });
+    });
+  });
+
+  // ─── getFollowed() ─────────────────────────────────────────────
+
+  describe('getFollowed()', () => {
+    it('returns [] when the user follows nothing', async () => {
+      followRepo.find.mockResolvedValue([]);
+      expect(await service.getFollowed(7)).toEqual([]);
+    });
+
+    it('loads the followed topics with messagesCount', async () => {
+      followRepo.find.mockResolvedValue([{ topicId: 1 }, { topicId: 2 }]);
+      const qb = {
+        leftJoinAndSelect: jest.fn().mockReturnThis(),
+        loadRelationCountAndMap: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        getMany: jest.fn().mockResolvedValue([{ idForumTopic: 1 }]),
+      };
+      topicRepo.createQueryBuilder.mockReturnValue(qb);
+
+      const res = await service.getFollowed(7);
+      expect(qb.where).toHaveBeenCalledWith('topic.idForumTopic IN (:...ids)', {
+        ids: [1, 2],
+      });
+      expect(res).toHaveLength(1);
+    });
+  });
+
+  // ─── findOnePublic() : followersCount / isFollowedByMe ─────────
+
+  describe('findOnePublic()', () => {
+    it('adds followersCount and isFollowedByMe=true for a follower', async () => {
+      topicRepo.increment.mockResolvedValue(undefined);
+      topicRepo.findOne.mockResolvedValue({ idForumTopic: 5, messages: [] });
+      followRepo.count
+        .mockResolvedValueOnce(3) // followersCount
+        .mockResolvedValueOnce(1); // this user's follow
+
+      const res = await service.findOnePublic(5, 7);
+      expect(res.followersCount).toBe(3);
+      expect(res.isFollowedByMe).toBe(true);
+    });
+
+    it('isFollowedByMe is false for an anonymous reader', async () => {
+      topicRepo.increment.mockResolvedValue(undefined);
+      topicRepo.findOne.mockResolvedValue({ idForumTopic: 5, messages: [] });
+      followRepo.count.mockResolvedValueOnce(3); // followersCount only
+
+      const res = await service.findOnePublic(5);
+      expect(res.isFollowedByMe).toBe(false);
+      expect(res.followersCount).toBe(3);
     });
   });
 });

@@ -32,6 +32,8 @@ export type CitiesByCountry = Record<string, string[]>;
 
 export interface UseSupportedCountriesResult {
     countries: SupportedCountry[];
+    /** ISO2 codes visibles mais NON sélectionnables comme destination de projet. */
+    nonSelectableCodes: Set<string>;
     citiesByCountry: CitiesByCountry;
     /** Active cities (full DB records) grouped by ISO2 country code — for value=idCity dropdowns. */
     citiesByCode: Record<string, City[]>;
@@ -150,6 +152,14 @@ export function useSupportedCountries(): UseSupportedCountriesResult {
     const dbCountries = countriesQuery.data ?? [];
     const dbCities    = citiesQuery.data   ?? [];
 
+    // Countries excluded from project-destination choices ("visible mais non sélectionnable").
+    const nonSelectableCodes = new Set(
+        dbCountries
+            .filter(c => (c as { selectableAsDestination?: boolean }).selectableAsDestination === false)
+            .map(c => (c.isoCode ?? '').toUpperCase())
+            .filter(Boolean),
+    );
+
     // Build merged list when both queries have resolved.
     const countries: SupportedCountry[] = (() => {
         if (!countriesQuery.data) return SUPPORTED_COUNTRIES;
@@ -203,5 +213,7 @@ export function useSupportedCountries(): UseSupportedCountriesResult {
         }
     }, [countries, isLoading, error, countriesQuery.data]);
 
-    return { countries, citiesByCountry, citiesByCode, isLoading, error };
+    return {
+        /** ISO2 codes visible mais NON sélectionnables comme destination. */
+        nonSelectableCodes, countries, citiesByCountry, citiesByCode, isLoading, error };
 }

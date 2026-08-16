@@ -60,7 +60,9 @@ describe('CityController', () => {
     });
 
     it('should pass both countryId and status to service.findByCountry()', async () => {
-      service.findByCountry.mockResolvedValue([{ idCity: 2, countryId: 5, status: 'active' }]);
+      service.findByCountry.mockResolvedValue([
+        { idCity: 2, countryId: 5, status: 'active' },
+      ]);
       await controller.findAll('5', 'active');
       expect(service.findByCountry).toHaveBeenCalledWith(5, 'active');
     });

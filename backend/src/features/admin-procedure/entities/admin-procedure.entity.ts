@@ -49,6 +49,10 @@ export class AdminProcedure {
   @Column({ name: 'phase', type: 'varchar', length: 20, nullable: true })
   phase?: string;
 
+  /** Lifecycle status: 'active' (visible in checklist) | 'archived' (hidden; no active gov_link). */
+  @Column({ name: 'status', type: 'varchar', length: 20, default: 'active' })
+  status: string;
+
   @ManyToOne(() => Country, { nullable: false })
   @JoinColumn({ name: 'country_id' })
   country: Country;

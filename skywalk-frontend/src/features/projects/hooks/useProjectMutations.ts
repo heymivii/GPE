@@ -108,6 +108,20 @@ export function useDeleteProject() {
   });
 }
 
+export function useUnlockProject() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (projectId: number) => expatriationProjectApi.unlock(projectId),
+    onSuccess: (_, projectId) => {
+      queryClient.invalidateQueries({ queryKey: ['expatriation-project', projectId] });
+      queryClient.invalidateQueries({ queryKey: ['expatriation-projects'] });
+      toast.success('Projet débloqué — plan complet activé 🎉');
+    },
+    onError: () => toast.error('Le déblocage a échoué'),
+  });
+}
+
 export function useCompleteProject() {
   const queryClient = useQueryClient();
   const { t } = useTranslation();

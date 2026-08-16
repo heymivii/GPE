@@ -22,6 +22,9 @@ export interface ForumTopic {
     idUser: number;
     fullName: string;
     email: string;
+    isExpert?: boolean;
+    expertTitle?: string | null;
+    expertVerifiedAt?: string | null;
   };
   country?: {
     idCountry: number;
@@ -29,7 +32,10 @@ export interface ForumTopic {
     isoCode?: string;
     flagUrl?: string;
   };
-  messages?: ForumMessage[]; 
+  // F2 — suivi de discussions
+  followersCount?: number;
+  isFollowedByMe?: boolean;
+  messages?: ForumMessage[];
 }
 
 
@@ -43,6 +49,10 @@ export interface ForumMessage {
     fullName: string;
     email: string;
     roles?: string;
+    // F1 — statut expert vérifié (ExpertBadge)
+    isExpert?: boolean;
+    expertTitle?: string | null;
+    expertVerifiedAt?: string | null;
   };
 }
 
@@ -53,9 +63,9 @@ export interface ForumTopicWithMessages extends ForumTopic {
 
 export interface CreateForumTopicDto {
   title: string;
-  content: string; 
+  content: string;
   category?: TopicCategory;
-  userId: number;
+  // NB: pas de userId — l'auteur est dérivé du token JWT côté serveur.
   countryId?: number;
 }
 
@@ -69,7 +79,7 @@ export interface UpdateForumTopicDto {
 export interface CreateForumMessageDto {
   content: string;
   topicId: number;
-  userId: number;
+  // NB: pas de userId — l'auteur vient du token JWT côté serveur.
 }
 
 
@@ -118,7 +128,7 @@ export interface ForumReport {
 }
 
 export interface CreateReportDto {
-  reporterId: number;
+  // NB: pas de reporterId — le rapporteur vient du token JWT côté serveur.
   messageId?: number;
   topicId?: number;
   reason: ReportReason;

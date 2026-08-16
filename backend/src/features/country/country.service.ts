@@ -1,31 +1,69 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Country } from './entities/country.entity';
+import { Country, ContentReviewStatus } from './entities/country.entity';
 import { CreateCountryDto } from './dto/create-country.dto';
 import { UpdateCountryDto } from './dto/update-country.dto';
 import restCountriesService from '../../services/restCountries.service';
+import { ReviewService } from '../review/review.service';
+import { User } from '../user/entities/user.entity';
 
 @Injectable()
 export class CountryService {
   constructor(
     @InjectRepository(Country)
     private readonly countryRepository: Repository<Country>,
+    private readonly review: ReviewService,
   ) {}
 
-  async create(createDto: CreateCountryDto): Promise<Country> {
+  /**
+   * Countries are published DIRECTLY (team decision: a confirm popup client-side suffices;
+   * no 4-eyes gate here — unlike cities). Still traced to the author + admins notified.
+   */
+  async create(
+    createDto: CreateCountryDto,
+    creatorId?: number,
+  ): Promise<Country> {
     const country = this.countryRepository.create({
       ...createDto,
-      status: createDto.status ?? 'active',
+      status: 'active',
+      createdById: creatorId ?? null,
     });
-    return await this.countryRepository.save(country);
+    const saved = await this.countryRepository.save(country);
+    await this.review.notifyAdminsOfAddition(
+      `Pays « ${saved.countryName} »`,
+      creatorId,
+    );
+    return saved;
   }
 
   async findAll(status?: string): Promise<Country[]> {
-    return await this.countryRepository.find({
-      relations: ['continent'],
-      ...(status !== undefined && { where: { status: status as 'active' | 'archived' } }),
+    const countries = await this.countryRepository.find({
+      relations: ['continent', 'createdBy', 'reviewedBy'],
+      ...(status !== undefined && {
+        where: { status: status as ContentReviewStatus },
+      }),
     });
+    // NEVER serialize full User rows (password hash!) — keep display fields only.
+    return countries.map((c) => this.sanitizeReviewers(c));
+  }
+
+  private sanitizeReviewers(country: Country): Country {
+    const strip = (u?: User | null): User | null | undefined =>
+      u
+        ? ({
+            idUser: u.idUser,
+            firstName: u.firstName,
+            lastName: u.lastName,
+          } as unknown as User)
+        : u;
+    country.createdBy = strip(country.createdBy);
+    country.reviewedBy = strip(country.reviewedBy);
+    return country;
   }
 
   // Reference list of all ~250 countries (name + ISO + region + flag) for admin pickers.

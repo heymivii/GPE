@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, FolderKanban, ClipboardList, LogOut, ShieldAlert, Menu, X, Globe, MapPin, Compass, Users, Link2, ArrowLeft } from 'lucide-react';
+import { LayoutDashboard, FolderKanban, ClipboardList, LogOut, ShieldAlert, Menu, X, Globe, MapPin, Compass, Users, Link2, BookMarked, BadgeCheck, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../../../hooks/useAuth';
 import { Toaster } from 'react-hot-toast';
+import NotificationBell from './NotificationBell';
 
 export default function AdminLayout() {
   const location = useLocation();
@@ -51,6 +52,21 @@ export default function AdminLayout() {
       label: 'Liens Gouvernementaux',
       icon: Link2,
     },
+    {
+      path: '/admin/search-hints',
+      label: 'Carnet de recherche',
+      icon: BookMarked,
+    },
+    {
+      path: '/admin/moderation',
+      label: 'Modération Forum',
+      icon: ShieldAlert,
+    },
+    {
+      path: '/admin/experts',
+      label: 'Experts vérifiés',
+      icon: BadgeCheck,
+    },
   ];
 
   const handleLogout = async () => {
@@ -95,15 +111,16 @@ export default function AdminLayout() {
             </div>
           </div>
 
-          {/* User Profile Summary */}
+          {/* User Profile Summary + review notifications */}
           <div className="px-6 py-4 flex items-center gap-3 bg-slate-950/40 border-b border-slate-800 flex-shrink-0">
             <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#5EA3C0] to-[#4891b0] text-white flex items-center justify-center font-bold text-sm">
               {user?.fullName?.charAt(0).toUpperCase() || 'A'}
             </div>
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <p className="text-sm font-semibold text-white truncate">{user?.fullName}</p>
               <p className="text-[10px] text-gray-400 truncate">{user?.email}</p>
             </div>
+            <NotificationBell />
           </div>
 
           {/* Nav links */}

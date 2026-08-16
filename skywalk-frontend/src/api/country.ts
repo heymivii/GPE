@@ -5,6 +5,9 @@ export interface CreateCountryDto {
   countryName: string;
   isoCode?: string;
   continentId: number;
+  govLinkEnabled?: boolean;
+  selectableAsDestination?: boolean;
+  officialDomains?: string[];
 }
 
 export interface UpdateCountryDto {
@@ -12,6 +15,9 @@ export interface UpdateCountryDto {
   isoCode?: string;
   continentId?: number;
   status?: 'active' | 'archived';
+  govLinkEnabled?: boolean;
+  selectableAsDestination?: boolean;
+  officialDomains?: string[];
 }
 
 export const countryApi = {
@@ -53,6 +59,18 @@ export const countryApi = {
 
   delete: async (id: number): Promise<void> => {
     await apiClient.delete(`/country/${id}`);
+  },
+
+  /** Approve a pending country (4-eyes: the author cannot approve their own addition). */
+  approve: async (id: number): Promise<Country> => {
+    const response = await apiClient.patch<Country>(`/country/${id}/approve`);
+    return response.data;
+  },
+
+  /** Reject a pending country — stays invisible user-side. */
+  reject: async (id: number): Promise<Country> => {
+    const response = await apiClient.patch<Country>(`/country/${id}/reject`);
+    return response.data;
   },
 };
 

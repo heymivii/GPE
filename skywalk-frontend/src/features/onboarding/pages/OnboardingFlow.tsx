@@ -12,7 +12,7 @@ import PreparationStep from '../pages/PreparationStep'
 import NeedsStep from '../pages/NeedsStep'
 import SummaryStep from '../pages/SummaryStep'
 import AuthGateStep from '../pages/AuthGateStep'
-import useOnboarding from '../hooks/useOnboarding'
+import useOnboarding, { type OnboardingData } from '../hooks/useOnboarding'
 import { useCreateProject, useUpdateProject } from '../../projects/hooks/useProjectMutations'
 import { useProjects } from '../../projects/hooks/useProjectMutations'
 import { countryApi } from '../../../api/country'
@@ -50,11 +50,9 @@ export default function OnboardingFlow() {
   const { mutateAsync: updateProject, isPending: isUpdatingProject } = useUpdateProject()
   const { data: projects } = useProjects(editMode)
 
-  useEffect(() => {
-    if (!isAuthLoading && !isAuthenticated) {
-      navigate('/auth/register?redirect=/onboarding');
-    }
-  }, [isAuthLoading, isAuthenticated, navigate]);
+  // NB: no auth wall here — the wizard runs ANONYMOUSLY (draft kept in localStorage) so the
+  // user gets value before committing. Registration is requested only at save time via
+  // handleComplete → AuthGateStep (redirect …?save=true → auto-save on return).
 
   const { data: countries = [] } = useQuery({
     queryKey: ['countries'],
@@ -75,6 +73,17 @@ export default function OnboardingFlow() {
     canGoToStep,
     clearDraft
   } = useOnboarding(editMode)
+
+  // Prefill destination from the landing preview (?to=XX), once, if not already set.
+  const preInitRef = useRef(false)
+  useEffect(() => {
+    if (preInitRef.current || editMode) return
+    const to = searchParams.get('to')
+    if (to && !data.destination?.toCountry) {
+      preInitRef.current = true
+      updateStepData('destination', { toCountry: to.toUpperCase() } as OnboardingData['destination'])
+    }
+  }, [searchParams, editMode, data.destination?.toCountry, updateStepData])
 
   const formOriginCountryData = useCountryDataByCode(data.destination?.fromCountry)
   const rawCurrency = formOriginCountryData?.currency || originCountryData?.currency || 'EUR'
@@ -113,15 +122,21 @@ export default function OnboardingFlow() {
           targetCity: existingProject.idDestinationCity?.toString() || '',
           departureYear: existingProject.expectedDepartureDate
             ? new Date(existingProject.expectedDepartureDate).getFullYear().toString()
-            : new Date().getFullYear().toString()
+            : new Date().getFullYear().toString(),
+          departureDate: existingProject.expectedDepartureDate
+            ? new Date(existingProject.expectedDepartureDate).toISOString().slice(0, 10)
+            : '',
+          nationality: existingProject.nationality || ''
         },
         profile: {
           age: user.age?.toString() || '25',
-          status: user.status || 'single',
+          status: user.status || '',
           travelParty: existingProject.travelType || 'alone',
-          languageLevel: user.languageLevel || existingProject.languageLevel || 'intermediate',
+          languageLevel: user.languageLevel || existingProject.languageLevel || '',
           motherTongue: user.motherTongue || '',
-          spokenLanguages: user.spokenLanguages || []
+          spokenLanguages: user.spokenLanguages || [],
+          hasChildren: existingProject.hasChildren ?? undefined,
+          hasJobOffer: existingProject.hasJobOffer ?? undefined
         },
         objective: {
           goal: objectiveReverseMapping[existingProject.mainObjective || ''] || 'other',
@@ -235,7 +250,10 @@ export default function OnboardingFlow() {
         try {
           await userApi.updateProfile({
             age: data.profile.age ? parseInt(data.profile.age) : undefined,
-            // status et languageLevel sauvegardés dans ExpatriationProject, pas sur User
+            // status (emploi) et languageLevel vivent sur le User — c'est ce que la page
+            // profil affiche. Les y écrire ici, sinon ces deux champs restent vides.
+            status: data.profile.status || undefined,
+            languageLevel: data.profile.languageLevel || undefined,
             motherTongue: data.profile.motherTongue,
             spokenLanguages: data.profile.spokenLanguages,
             countryOriginId: originCountryId,
@@ -283,7 +301,12 @@ export default function OnboardingFlow() {
         stepsDone: data.preparation?.stepsDone?.join(',') || '',
         priorities: data.needs?.priorities?.join(', ') || '',
         projectStatus: 'planning' as const,
-        expectedDepartureDate: data.destination?.departureYear ? `${data.destination.departureYear}-01-01` : undefined,
+        expectedDepartureDate:
+          data.destination?.departureDate ||
+          (data.destination?.departureYear ? `${data.destination.departureYear}-01-01` : undefined),
+        nationality: data.destination?.nationality || undefined,
+        hasChildren: data.profile?.hasChildren,
+        hasJobOffer: data.profile?.hasJobOffer,
       };
 
 
@@ -440,6 +463,7 @@ export default function OnboardingFlow() {
               nextStep()
             }}
             onBack={prevStep}
+            onSkip={nextStep}
           />
         )
       case 4:
@@ -451,6 +475,7 @@ export default function OnboardingFlow() {
               nextStep()
             }}
             onBack={prevStep}
+            onSkip={nextStep}
             currency={currency}
           />
         )
@@ -463,6 +488,7 @@ export default function OnboardingFlow() {
               nextStep()
             }}
             onBack={prevStep}
+            onSkip={nextStep}
           />
         )
       case 6:

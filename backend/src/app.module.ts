@@ -3,6 +3,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { ScheduleModule } from '@nestjs/schedule';
 import { typeOrmConfigAsync } from './config/typeorm.config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -38,6 +39,11 @@ import { TravelTypeModule } from './features/project/travel-type/travel-type.mod
 import { AdminStatsModule } from './features/admin-stats/admin-stats.module';
 import { AdminLogModule } from './features/admin-log/admin-log.module';
 import { GovLinksModule } from './features/gov-links/gov-links.module';
+import { SearchHintModule } from './features/search-hint/search-hint.module';
+import { ForumModerationModule } from './features/forum-moderation/forum-moderation.module';
+import { UserReportModule } from './features/user-report/user-report.module';
+import { PrivateMessageModule } from './features/private-message/private-message.module';
+import { DocumentModule } from './features/document/document.module';
 
 @Module({
   imports: [
@@ -47,6 +53,8 @@ import { GovLinksModule } from './features/gov-links/gov-links.module';
     }),
 
     ThrottlerModule.forRoot([{ ttl: 60_000, limit: 60 }]),
+
+    ScheduleModule.forRoot(),
 
     TypeOrmModule.forRootAsync(typeOrmConfigAsync),
 
@@ -68,6 +76,10 @@ import { GovLinksModule } from './features/gov-links/gov-links.module';
     ProcedureTrackingModule,
     ForumTopicModule,
     ForumMessageModule,
+    ForumModerationModule,
+    UserReportModule,
+    PrivateMessageModule,
+    DocumentModule,
     NotificationModule,
     ExperienceModule,
     ExpatriationProjectModule,
@@ -80,8 +92,9 @@ import { GovLinksModule } from './features/gov-links/gov-links.module';
     AdminStatsModule,
     AdminLogModule,
     GovLinksModule,
+    SearchHintModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
-export class AppModule { }
+export class AppModule {}

@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -10,7 +11,11 @@ import { UpdateForumMessageDto } from './dto/update-forum-message.dto';
 import { CreateReportDto } from './dto/create-report.dto';
 import { ForumMessage } from './entities/forum-message.entity';
 import { ForumReport } from './entities/forum-report.entity';
+import { ForumTopicFollow } from '../forum-topic/entities/forum-topic-follow.entity';
 import { ContentFilterService } from './content-filter.service';
+import { ForumModerationService } from '../forum-moderation/forum-moderation.service';
+import { NotificationService } from '../notification/notification.service';
+import { CreateNotificationDto } from '../notification/dto/create-notification.dto';
 
 @Injectable()
 export class ForumMessageService {
@@ -19,10 +24,42 @@ export class ForumMessageService {
     private readonly forumMessageRepository: Repository<ForumMessage>,
     @InjectRepository(ForumReport)
     private readonly forumReportRepository: Repository<ForumReport>,
+    @InjectRepository(ForumTopicFollow)
+    private readonly followRepository: Repository<ForumTopicFollow>,
     private readonly contentFilter: ContentFilterService,
+    private readonly moderation: ForumModerationService,
+    private readonly notifications: NotificationService,
   ) {}
 
+  /** Prévient les abonnés d'un topic qu'un nouveau message y a été publié (jamais l'auteur). */
+  private async notifyFollowers(
+    topicId: number,
+    authorId: number,
+  ): Promise<void> {
+    try {
+      const follows = await this.followRepository.find({ where: { topicId } });
+      const recipients = follows
+        .map((f) => f.userId)
+        .filter((uid) => uid !== authorId);
+      await Promise.all(
+        recipients.map((uid) =>
+          this.notifications.create({
+            userId: uid,
+            notificationType: 'info',
+            message:
+              '💬 Nouveau message dans une discussion que vous suivez.',
+            contextType: 'forum-topic',
+            contextId: topicId,
+          } as CreateNotificationDto),
+        ),
+      );
+    } catch {
+      // Les notifications ne doivent jamais empêcher la publication d'un message.
+    }
+  }
+
   async create(
+    userId: number,
     createForumMessageDto: CreateForumMessageDto,
   ): Promise<ForumMessage> {
     const sanitized = this.contentFilter.sanitize(
@@ -33,13 +70,27 @@ export class ForumMessageService {
       throw new BadRequestException(`Content rejected: ${check.reason}`);
     }
 
+    // Modération pilotée par la BDD (mots interdits) : high/critical bloque,
+    // low/medium publie mais flague + crée un avertissement.
+    const mod = await this.moderation.moderate(userId, sanitized);
+    if (mod.action === 'block') {
+      throw new BadRequestException(`Content rejected: ${mod.reason}`);
+    }
+
+    const flagged = mod.action === 'flag';
     const message = this.forumMessageRepository.create({
       content: sanitized,
       topic: { idForumTopic: createForumMessageDto.topicId } as any,
-      user: { idUser: createForumMessageDto.userId } as any,
+      user: { idUser: userId } as any,
+      isModerated: flagged,
+      moderationReason: flagged ? (mod.reason ?? null) : null,
+      moderatedAt: flagged ? new Date() : null,
     });
 
-    return await this.forumMessageRepository.save(message);
+    const saved = await this.forumMessageRepository.save(message);
+    // Bonus F2 : prévenir les abonnés du topic (sauf l'auteur).
+    await this.notifyFollowers(createForumMessageDto.topicId, userId);
+    return saved;
   }
 
   async findAll(): Promise<ForumMessage[]> {
@@ -64,9 +115,13 @@ export class ForumMessageService {
 
   async update(
     id: number,
+    userId: number,
     updateForumMessageDto: UpdateForumMessageDto,
   ): Promise<ForumMessage> {
     const message = await this.findOne(id);
+    if (message.user?.idUser !== userId) {
+      throw new ForbiddenException('Vous ne pouvez modifier que vos messages');
+    }
 
     if (updateForumMessageDto.content) {
       const sanitized = this.contentFilter.sanitize(
@@ -84,12 +139,12 @@ export class ForumMessageService {
     return await this.forumMessageRepository.save(message);
   }
 
-  async remove(id: number): Promise<void> {
-    const result = await this.forumMessageRepository.delete(id);
-
-    if (result.affected === 0) {
-      throw new NotFoundException(`Message with ID ${id} not found`);
+  async remove(id: number, userId: number): Promise<void> {
+    const message = await this.findOne(id);
+    if (message.user?.idUser !== userId) {
+      throw new ForbiddenException('Vous ne pouvez supprimer que vos messages');
     }
+    await this.forumMessageRepository.delete(id);
   }
 
   async moderatorRemove(id: number): Promise<void> {
@@ -108,10 +163,13 @@ export class ForumMessageService {
     });
   }
 
-  async createReport(dto: CreateReportDto): Promise<ForumReport> {
+  async createReport(
+    reporterId: number,
+    dto: CreateReportDto,
+  ): Promise<ForumReport> {
     const existing = await this.forumReportRepository.findOne({
       where: {
-        reporter: { idUser: dto.reporterId },
+        reporter: { idUser: reporterId },
         ...(dto.messageId ? { message: { idForumMessage: dto.messageId } } : {}),
         ...(dto.topicId ? { topic: { idForumTopic: dto.topicId } } : {}),
         status: 'pending' as const,
@@ -125,7 +183,7 @@ export class ForumMessageService {
     const report = this.forumReportRepository.create({
       reason: dto.reason,
       details: dto.details,
-      reporter: { idUser: dto.reporterId } as any,
+      reporter: { idUser: reporterId } as any,
       message: dto.messageId
         ? ({ idForumMessage: dto.messageId } as any)
         : undefined,

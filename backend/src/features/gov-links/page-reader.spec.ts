@@ -28,7 +28,8 @@ describe('extractText', () => {
 describe('LocalPageReader', () => {
   it('returns clean text, stripping script contents', async () => {
     const reader = new LocalPageReader();
-    const html = '<html><script>visa</script><body>Bonjour le monde</body></html>';
+    const html =
+      '<html><script>visa</script><body>Bonjour le monde</body></html>';
     const result = await reader.read('x', html);
     expect(result).toContain('bonjour le monde');
     expect(result).not.toContain('visa');
@@ -41,15 +42,22 @@ describe('JinaPageReader', () => {
   });
 
   it('returns lowercased clean text from Jina when request succeeds', async () => {
-    mockedAxios.get = jest.fn().mockResolvedValueOnce({ data: '# Clean Title\nVisa application page' });
+    mockedAxios.get = jest
+      .fn()
+      .mockResolvedValueOnce({ data: '# Clean Title\nVisa application page' });
     const reader = new JinaPageReader('https://r.jina.ai');
-    const result = await reader.read('https://example.gov/visa', '<html>raw</html>');
+    const result = await reader.read(
+      'https://example.gov/visa',
+      '<html>raw</html>',
+    );
     expect(result).toContain('visa application page');
     expect(result).toBe(result.toLowerCase());
   });
 
   it('falls back to extractText(rawHtml) when axios.get rejects', async () => {
-    mockedAxios.get = jest.fn().mockRejectedValueOnce(new Error('network error'));
+    mockedAxios.get = jest
+      .fn()
+      .mockRejectedValueOnce(new Error('network error'));
     const reader = new JinaPageReader('https://r.jina.ai');
     const html = '<html><body>Fallback content</body></html>';
     const result = await reader.read('https://example.gov/visa', html);

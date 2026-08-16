@@ -75,7 +75,7 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
       sourceCurrency: string,
       exchangeRates?: Record<string, number> | null,
     ): number | null => {
-      if (amount == null || amount === 0) return null;
+      if (amount == null) return null;
 
       if (sourceCurrency === displayCurrency) return amount;
 

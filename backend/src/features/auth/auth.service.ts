@@ -91,6 +91,8 @@ export class AuthService {
   async getProfile(userId: number) {
     const user = await this.userRepository.findOne({
       where: { idUser: userId },
+      // Aligné sur GET /users/me : charge le pays d'origine pour un profil cohérent.
+      relations: ['originCountry'],
     });
 
     if (!user) {

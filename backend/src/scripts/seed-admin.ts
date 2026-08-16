@@ -14,7 +14,9 @@ async function seedAdmin() {
     const adminEmail = 'admin@skywalk.com';
 
     // Check if admin already exists
-    const existingAdmin = await userRepo.findOne({ where: { email: adminEmail } });
+    const existingAdmin = await userRepo.findOne({
+      where: { email: adminEmail },
+    });
 
     if (existingAdmin) {
       if (existingAdmin.roles !== 'admin') {

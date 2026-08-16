@@ -5,13 +5,14 @@ import {
   IsNumber,
   IsIn,
   Length,
+  IsBoolean,
+  IsArray,
 } from 'class-validator';
 
 export class CreateCountryDto {
   @IsNotEmpty()
   @IsString()
   countryName: string;
-
 
   @IsOptional()
   @IsString()
@@ -25,4 +26,17 @@ export class CreateCountryDto {
   @IsNotEmpty()
   @IsNumber()
   continentId: number;
+
+  @IsOptional()
+  @IsBoolean()
+  govLinkEnabled?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  selectableAsDestination?: boolean;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  officialDomains?: string[];
 }

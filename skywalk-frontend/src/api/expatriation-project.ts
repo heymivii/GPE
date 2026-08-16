@@ -57,7 +57,11 @@ const mapBackendToFrontendProject = (bp: any): ExpatriationProject => {
     expectedDuration: bp.expectedDuration || 12,
     housingBudget: bp.budget ? parseFloat(bp.budget) : undefined,
     projectStatus: bp.status || 'planning',
+    isPaid: bp.isPaid ?? false,
     expectedDepartureDate: bp.expectedDepartureDate,
+    nationality: bp.nationality ?? undefined,
+    hasChildren: bp.hasChildren ?? undefined,
+    hasJobOffer: bp.hasJobOffer ?? undefined,
     stepsDone: bp.stepsDone || '',
     priorities: bp.priorities || '',
     needsSupport: bp.needsSupport || false,
@@ -81,6 +85,11 @@ const mapFrontendToBackendCreateDto = (feDto: CreateExpatriationProjectDto): any
     budget: feDto.housingBudget,
     status: feDto.projectStatus,
     expectedDepartureDate: feDto.expectedDepartureDate,
+    nationality: feDto.nationality,
+    hasChildren: feDto.hasChildren,
+    hasJobOffer: feDto.hasJobOffer,
+    priorities: feDto.priorities,
+    stepsDone: feDto.stepsDone,
   };
 };
 
@@ -97,6 +106,11 @@ const mapFrontendToBackendUpdateDto = (feDto: UpdateExpatriationProjectDto): any
   if (feDto.housingBudget !== undefined) beDto.budget = feDto.housingBudget;
   if (feDto.projectStatus !== undefined) beDto.status = feDto.projectStatus;
   if (feDto.expectedDepartureDate !== undefined) beDto.expectedDepartureDate = feDto.expectedDepartureDate;
+  if (feDto.nationality !== undefined) beDto.nationality = feDto.nationality;
+  if (feDto.hasChildren !== undefined) beDto.hasChildren = feDto.hasChildren;
+  if (feDto.hasJobOffer !== undefined) beDto.hasJobOffer = feDto.hasJobOffer;
+  if (feDto.priorities !== undefined) beDto.priorities = feDto.priorities;
+  if (feDto.stepsDone !== undefined) beDto.stepsDone = feDto.stepsDone;
   if (feDto.checklistProgress !== undefined) beDto.checklistProgress = feDto.checklistProgress;
 
   return beDto;
@@ -138,6 +152,14 @@ export const expatriationProjectApi = {
 
   delete: async (projectId: number): Promise<void> => {
     await apiClient.delete(`/expatriation-project/${projectId}`);
+  },
+
+  // Débloque le projet (paiement mock) → plan complet.
+  unlock: async (projectId: number): Promise<ExpatriationProject> => {
+    const response = await apiClient.patch<any>(
+      `/expatriation-project/${projectId}/unlock`,
+    );
+    return mapBackendToFrontendProject(response.data);
   },
 
   complete: async (

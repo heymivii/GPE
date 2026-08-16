@@ -16,10 +16,6 @@ export enum ReportReasonEnum {
 }
 
 export class CreateReportDto {
-  @IsNotEmpty()
-  @IsNumber()
-  reporterId: number;
-
   @IsOptional()
   @IsNumber()
   messageId?: number;

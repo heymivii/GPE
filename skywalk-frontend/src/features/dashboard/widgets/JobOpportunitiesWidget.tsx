@@ -1,4 +1,5 @@
-import { Briefcase, ExternalLink, TrendingUp, Globe, MapPin, GraduationCap, Users } from 'lucide-react'
+import { Briefcase, ExternalLink, TrendingUp, Globe, MapPin, GraduationCap, Users, BadgeCheck, ArrowRight } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import type { CountryData } from '../../../hooks/useCountryData'
 import { searchJobs } from '../../../api/jobOffers'
@@ -15,6 +16,9 @@ interface JobOpportunitiesWidgetProps {
     mainObjective?: string
     languages?: string[]
   }
+  /** Une offre déjà en poche → on arrête de pousser la recherche d'emploi. */
+  hasJobOffer?: boolean | null
+  projectId?: number
   onEdit?: () => void
   onHide?: () => void
   onResize?: (size: WidgetSize) => void
@@ -69,6 +73,8 @@ function getProgramIcon(icon: string) {
 export default function JobOpportunitiesWidget({
   countryData,
   userProfile,
+  hasJobOffer,
+  projectId,
   onEdit,
   onHide,
   onResize,
@@ -113,6 +119,39 @@ export default function JobOpportunitiesWidget({
   const topSectorSalaries = jobMarket?.salaryBySector
     ? Object.entries(jobMarket.salaryBySector).sort(([, a], [, b]) => b - a).slice(0, 3)
     : []
+
+  // Offre déjà décrochée → inutile de pousser la recherche d'emploi : on oriente vers
+  // le visa de travail (la promesse faite à l'onboarding « hasJobOffer »).
+  if (hasJobOffer) {
+    return (
+      <Widget
+        title={t('dashboard.personalized.widgets.jobOpportunities.title', { country: countryData?.name || '' })}
+        icon={Briefcase}
+        iconColor="text-emerald-600"
+        onEdit={onEdit}
+        onHide={onHide}
+        onResize={onResize}
+        currentSize={currentSize}
+      >
+        <div className="rounded-xl bg-emerald-50 border border-emerald-100 p-5 text-center space-y-3">
+          <BadgeCheck className="w-9 h-9 text-emerald-600 mx-auto" />
+          <p className="font-semibold text-emerald-800">Offre d'emploi déjà décrochée 🎉</p>
+          <p className="text-sm text-emerald-700/90">
+            Pas besoin de chercher un job — priorité au <span className="font-semibold">visa de travail</span> et aux démarches d'installation.
+          </p>
+          {projectId != null && (
+            <Link
+              to={`/projects/${projectId}/checklist`}
+              className="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-medium hover:bg-emerald-700 transition-colors"
+            >
+              Voir mes démarches
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          )}
+        </div>
+      </Widget>
+    )
+  }
 
   return (
     <Widget

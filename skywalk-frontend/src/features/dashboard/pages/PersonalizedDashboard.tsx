@@ -21,15 +21,17 @@ import { CSS } from '@dnd-kit/utilities'
 import { useProjects } from '../../projects/hooks/useProjectMutations'
 import { useCountryData } from '../../../hooks/useCountryData'
 import { useAuth } from '../../../hooks/useAuth'
+import { useActiveProject } from '../../../contexts/ActiveProjectContext'
 import { useDashboardPreferences } from '../hooks/useDashboardPreferences'
 import ProfileSummaryWidget from '../widgets/ProfileSummaryWidget'
 import RecommendationsWidget from '../widgets/RecommendationsWidget'
 import ChecklistWidget from '../widgets/ChecklistWidget'
 import BudgetTrackerWidget from '../widgets/BudgetTrackerWidget'
-import LocalTimeWidget from '../widgets/LocalTimeWidget'
 import WeatherWidget from '../widgets/WeatherWidget'
-import CurrencyConverterWidget from '../widgets/CurrencyConverterWidget'
 import JobOpportunitiesWidget from '../widgets/JobOpportunitiesWidget'
+import CountdownWidget from '../widgets/CountdownWidget'
+import RequiredDocumentsWidget from '../widgets/RequiredDocumentsWidget'
+import DestinationForumWidget from '../widgets/DestinationForumWidget'
 import { useTranslation } from 'react-i18next'
 import { getLocale } from '../../../data/supportedCountries'
 
@@ -39,32 +41,45 @@ export default function PersonalizedDashboard() {
   const { user } = useAuth()
   const { hiddenWidgets, toggleWidget, widgetOrder, updateWidgetOrder, getWidgetSize, setWidgetSize } = useDashboardPreferences()
   const [searchParams] = useSearchParams()
+  const { activeProjectId, setActiveProjectId } = useActiveProject()
   const [selectedProjectId, setSelectedProjectId] = useState<number | null>(() => {
     const projectParam = searchParams.get('project')
-    return projectParam ? Number(projectParam) : null
+    // URL param wins (deep links), else the site-wide active project.
+    return projectParam ? Number(projectParam) : activeProjectId
   })
   const [editMode, setEditMode] = useState(false)
   const [showAddWidget, setShowAddWidget] = useState(false)
 
   const defaultLayout = [
     'checklist',
+    'countdown',
+    'required-documents',
     'profile-summary',
     'job-opportunities',
-    'local-time',
+    'destination-forum',
     'weather',
     'recommendations',
     'budget-tracker',
-    'currency-converter',
   ]
 
-  const [dashboardLayout, setDashboardLayout] = useState<string[]>(
-    widgetOrder || defaultLayout
+  // Widgets supprimés (Local Time = filler ; Currency Converter fusionné dans Budget).
+  const REMOVED_WIDGETS = ['local-time', 'currency-converter']
+
+  // Fusionne l'ordre sauvegardé avec les defaults : les nouveaux widgets apparaissent
+  // pour les utilisateurs existants, et les widgets retirés ne s'affichent plus.
+  const mergeLayout = (order?: string[] | null) => {
+    const base = order && order.length ? order : defaultLayout
+    const withNew = [...base, ...defaultLayout.filter((id) => !base.includes(id))]
+    return withNew.filter((id) => !REMOVED_WIDGETS.includes(id))
+  }
+
+  const [dashboardLayout, setDashboardLayout] = useState<string[]>(() =>
+    mergeLayout(widgetOrder)
   )
 
   useEffect(() => {
-    if (widgetOrder) {
-      setDashboardLayout(widgetOrder)
-    }
+    setDashboardLayout(mergeLayout(widgetOrder))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [widgetOrder])
 
   const sensors = useSensors(
@@ -92,14 +107,36 @@ export default function PersonalizedDashboard() {
     }
   }, [projects, selectedProjectId])
 
+  // Follow the URL ?project param — the NavBar switcher navigates to
+  // /dashboard?project=id, and when the dashboard is already mounted the
+  // useState initializer above won't rerun, so without this the selection
+  // would silently do nothing.
+  useEffect(() => {
+    const projectParam = searchParams.get('project')
+    if (projectParam) {
+      const id = Number(projectParam)
+      if (!Number.isNaN(id) && id !== selectedProjectId) {
+        setSelectedProjectId(id)
+      }
+    }
+  }, [searchParams, selectedProjectId])
+
+  // Keep the site-wide active project in sync with what the dashboard shows.
+  useEffect(() => {
+    if (selectedProjectId != null && selectedProjectId !== activeProjectId) {
+      setActiveProjectId(selectedProjectId)
+    }
+  }, [selectedProjectId, activeProjectId, setActiveProjectId])
+
   const availableWidgets = [
-    { id: 'profile-summary', name: t('dashboard.personalized.widgets.available.profileSummary.name'), icon: '👤', description: t('dashboard.personalized.widgets.available.profileSummary.description') },
-    { id: 'local-time', name: t('dashboard.personalized.widgets.available.localTime.name'), icon: '⏰', description: t('dashboard.personalized.widgets.available.localTime.description') },
-    { id: 'weather', name: t('dashboard.personalized.widgets.available.weather.name'), icon: '🌤️', description: t('dashboard.personalized.widgets.available.weather.description') },
     { id: 'checklist', name: t('dashboard.personalized.widgets.available.checklist.name'), icon: '✅', description: t('dashboard.personalized.widgets.available.checklist.description') },
+    { id: 'countdown', name: t('dashboard.personalized.widgets.available.countdown.name', { defaultValue: 'Compte à rebours' }), icon: '⏳', description: t('dashboard.personalized.widgets.available.countdown.description', { defaultValue: 'Jours avant le départ + prochaines échéances' }) },
+    { id: 'required-documents', name: t('dashboard.personalized.widgets.available.requiredDocuments.name', { defaultValue: 'Documents requis' }), icon: '📄', description: t('dashboard.personalized.widgets.available.requiredDocuments.description', { defaultValue: 'Suivi de vos documents-clés (passeport, visa…)' }) },
+    { id: 'destination-forum', name: t('dashboard.personalized.widgets.available.destinationForum.name', { defaultValue: 'Forum de ta destination' }), icon: '💬', description: t('dashboard.personalized.widgets.available.destinationForum.description', { defaultValue: 'Derniers échanges pour votre pays' }) },
+    { id: 'profile-summary', name: t('dashboard.personalized.widgets.available.profileSummary.name'), icon: '👤', description: t('dashboard.personalized.widgets.available.profileSummary.description') },
+    { id: 'weather', name: t('dashboard.personalized.widgets.available.weather.name'), icon: '🌤️', description: t('dashboard.personalized.widgets.available.weather.description') },
     { id: 'budget-tracker', name: t('dashboard.personalized.widgets.available.budgetTracker.name'), icon: '💰', description: t('dashboard.personalized.widgets.available.budgetTracker.description') },
     { id: 'recommendations', name: t('dashboard.personalized.widgets.available.recommendations.name'), icon: '💡', description: t('dashboard.personalized.widgets.available.recommendations.description') },
-    { id: 'currency-converter', name: t('dashboard.personalized.widgets.available.currencyConverter.name'), icon: '💱', description: t('dashboard.personalized.widgets.available.currencyConverter.description') },
     { id: 'job-opportunities', name: t('dashboard.personalized.widgets.available.jobOpportunities.name'), icon: '💼', description: t('dashboard.personalized.widgets.available.jobOpportunities.description') },
   ]
 
@@ -171,8 +208,8 @@ export default function PersonalizedDashboard() {
           : new Date().getFullYear().toString()
       },
       profile: {
-        age: user?.age?.toString() || '25',
-        status: user?.status || 'employee',
+        age: user?.age?.toString() || '',
+        status: user?.status || '',
         travelParty: activeProject?.travelType || 'alone'
       },
       objective: {
@@ -263,12 +300,39 @@ export default function PersonalizedDashboard() {
           />
         )
 
-      case 'local-time':
+      case 'countdown':
         return (
-          <LocalTimeWidget
+          <CountdownWidget
             key={widgetId}
-            countryCode={countryData?.code || 'FR'}
-            countryName={countryData?.name || 'France'}
+            projectId={activeProject?.idProject || 0}
+            departureDate={activeProject?.expectedDepartureDate}
+            project={{
+              travelType: activeProject?.travelType,
+              objective: activeProject?.mainObjective,
+              nationality: activeProject?.nationality,
+              hasChildren: activeProject?.hasChildren,
+              priorities: activeProject?.priorities,
+            }}
+            countryCode={countryData?.code}
+            {...commonProps}
+          />
+        )
+
+      case 'required-documents':
+        return (
+          <RequiredDocumentsWidget
+            key={widgetId}
+            projectId={activeProject?.idProject}
+            {...commonProps}
+          />
+        )
+
+      case 'destination-forum':
+        return (
+          <DestinationForumWidget
+            key={widgetId}
+            countryId={activeProject?.idDestinationCountry}
+            countryName={countryData?.name}
             {...commonProps}
           />
         )
@@ -278,7 +342,7 @@ export default function PersonalizedDashboard() {
           <WeatherWidget
             key={widgetId}
             countryName={countryData?.name || 'France'}
-            cityName={countryData?.capital || ''}
+            cityName={activeProject?.destinationCity?.name || countryData?.capital || ''}
             {...commonProps}
           />
         )
@@ -305,6 +369,10 @@ export default function PersonalizedDashboard() {
               objective: activeProject?.mainObjective,
               expectedDepartureDate: activeProject?.expectedDepartureDate,
               idProject: activeProject?.idProject,
+              nationality: activeProject?.nationality,
+              hasChildren: activeProject?.hasChildren,
+              priorities: activeProject?.priorities,
+              isPaid: activeProject?.isPaid,
             }}
             {...commonProps}
           />
@@ -317,14 +385,7 @@ export default function PersonalizedDashboard() {
             housingBudget={activeProject?.housingBudget?.toString() || '0'}
             countryData={countryData}
             originCountryData={originCountryData}
-            {...commonProps}
-          />
-        )
-
-      case 'currency-converter':
-        return (
-          <CurrencyConverterWidget
-            key={widgetId}
+            cityName={activeProject?.destinationCity?.name || undefined}
             {...commonProps}
           />
         )
@@ -334,6 +395,8 @@ export default function PersonalizedDashboard() {
           <JobOpportunitiesWidget
             key={widgetId}
             countryData={countryData}
+            hasJobOffer={activeProject?.hasJobOffer}
+            projectId={activeProject?.idProject}
             userProfile={{
               age: user?.age || undefined,
               status: user?.status || undefined,
@@ -363,28 +426,7 @@ export default function PersonalizedDashboard() {
               </p>
             </div>
             <div className="flex items-center flex-wrap gap-2">
-              {projects.length >= 1 && selectedProjectId && (
-                <select
-                  value={selectedProjectId}
-                  onChange={(e) => setSelectedProjectId(Number(e.target.value))}
-                  className="px-3 py-2 border border-gray-300 rounded-lg bg-white text-sm font-medium hover:border-gray-400 transition-colors"
-                >
-                  {projects.map((project) => {
-                    const countryNames: Record<number, string> = {
-                      1: t('countries.france'), 2: t('countries.switzerland'), 3: t('countries.unitedStates'), 4: t('countries.japan'),
-                      5: t('countries.canada'), 6: t('countries.italy'), 7: t('countries.portugal'), 8: t('countries.belgium'),
-                      9: t('countries.netherlands'), 10: t('countries.luxembourg'), 11: t('countries.unitedKingdom'),
-                      12: t('countries.ireland'), 13: t('countries.germany'), 14: t('countries.australia'), 16: t('countries.sweden')
-                    }
-                    const countryName = countryNames[project.idDestinationCountry] || t('dashboard.personalized.defaultDestination')
-                    return (
-                      <option key={project.idProject} value={project.idProject}>
-                        {countryName}
-                      </option>
-                    )
-                  })}
-                </select>
-              )}
+              {/* Project selection now lives site-wide in the NavBar (ProjectSwitcher) — no duplicate here. */}
               {selectedProjectId && (
                 <Link
                   to={`/onboarding/${selectedProjectId}`}

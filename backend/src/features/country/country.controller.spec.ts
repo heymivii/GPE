@@ -37,7 +37,10 @@ describe('CountryController', () => {
   describe('create()', () => {
     it('should create a country', async () => {
       service.create.mockResolvedValue({ idCountry: 1, countryName: 'France' });
-      const result = await controller.create({ countryName: 'France' } as any, mockReq);
+      const result = await controller.create(
+        { countryName: 'France' } as any,
+        mockReq,
+      );
       expect(result.countryName).toBe('France');
     });
   });
@@ -73,9 +76,13 @@ describe('CountryController', () => {
         idCountry: 1,
         countryName: 'Updated',
       });
-      const result = await controller.update('1', {
-        countryName: 'Updated',
-      } as any, mockReq);
+      const result = await controller.update(
+        '1',
+        {
+          countryName: 'Updated',
+        } as any,
+        mockReq,
+      );
       expect(result.countryName).toBe('Updated');
     });
   });

@@ -22,6 +22,16 @@ export class Notification {
   @Column({ name: 'is_read', type: 'boolean', default: false })
   isRead: boolean;
 
+  /**
+   * Contexte cliquable (facultatif) : le front mappe (contextType, contextId)
+   * vers une route — ex. 'project' + idProject → /projects/:id/checklist.
+   */
+  @Column({ name: 'context_type', type: 'varchar', length: 40, nullable: true })
+  contextType: string | null;
+
+  @Column({ name: 'context_id', type: 'int', nullable: true })
+  contextId: number | null;
+
   @CreateDateColumn({ name: 'sent_at' })
   sentAt: Date;
 

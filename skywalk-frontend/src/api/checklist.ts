@@ -9,6 +9,7 @@ export interface AdminProcedure {
   averageDelayDays?: number;
   // ✅ Ajouts pour la checklist personnalisée
   daysBeforeDeparture?: number;
+  phase?: 'before' | 'on_arrival';
   onlyFor?: {
     travelType?: string[];
     objective?: string[];

@@ -8,6 +8,7 @@ import {
   JoinColumn,
   OneToMany,
 } from 'typeorm';
+import { Exclude, Expose } from 'class-transformer';
 import { Country } from '../../country/entities/country.entity';
 import { ProcedureTracking } from '../../procedure-tracking/entities/procedure-tracking.entity';
 
@@ -25,11 +26,16 @@ export class User {
   @Column({ type: 'varchar', length: 255, unique: true })
   email: string;
 
+  @Exclude()
   @Column({ name: 'password', type: 'varchar', length: 255 })
   password: string;
 
   @Column({ name: 'roles', type: 'varchar', length: 50, default: 'user' })
   roles: string;
+
+  // Compteur dénormalisé d'avertissements (schéma modération d'Arphan).
+  @Column({ name: 'warning_count', type: 'int', default: 0 })
+  warningCount: number;
 
   @Column({ type: 'integer', nullable: true })
   age?: number;
@@ -53,6 +59,31 @@ export class User {
   @Column({ name: 'spoken_languages', type: 'text', array: true, nullable: true })
   spokenLanguages?: string[];
 
+  // ── F1 : réseau d'experts vérifiés ──────────────────────────────
+  // Un expert n'est « vérifié » que si isExpert = true ET expertVerifiedAt non nul.
+  // (On n'utilise PAS `roles`, qui est mono-valué et sert à admin/modérateur.)
+  @Column({ name: 'is_expert', type: 'boolean', default: false })
+  isExpert: boolean;
+
+  @Column({ name: 'expert_title', type: 'varchar', length: 120, nullable: true })
+  expertTitle?: string | null;
+
+  @Column({ name: 'expert_bio', type: 'text', nullable: true })
+  expertBio?: string | null;
+
+  @Column({ name: 'expert_country_id', type: 'int', nullable: true })
+  expertCountryId?: number | null;
+
+  @ManyToOne(() => Country, { nullable: true })
+  @JoinColumn({ name: 'expert_country_id' })
+  expertCountry?: Country | null;
+
+  @Column({ name: 'expert_verified_at', type: 'timestamp', nullable: true })
+  expertVerifiedAt?: Date | null;
+
+  @Column({ name: 'expert_verified_by', type: 'int', nullable: true })
+  expertVerifiedBy?: number | null;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
@@ -68,4 +99,11 @@ export class User {
 
   @OneToMany(() => ProcedureTracking, (tracking) => tracking.user)
   processTrackings: ProcedureTracking[];
+
+  // Nom complet dérivé — le front lit `fullName` (en-tête profil, NavBar) mais il n'y a
+  // pas de colonne. @Expose() l'inclut dans toute réponse sérialisée via l'interceptor global.
+  @Expose()
+  get fullName(): string {
+    return [this.firstName, this.lastName].filter(Boolean).join(' ');
+  }
 }

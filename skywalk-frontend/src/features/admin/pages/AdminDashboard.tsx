@@ -906,7 +906,6 @@ function TopicModerationModal({ topicId, onClose, queryClient }: TopicModeration
     createMessageMutation.mutate({
       content: replyText.trim(),
       topicId,
-      userId,
     }, {
       onSuccess: () => {
         setReplyText('');

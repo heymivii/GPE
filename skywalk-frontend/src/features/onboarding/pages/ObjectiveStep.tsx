@@ -15,9 +15,10 @@ interface ObjectiveStepProps {
   data?: ObjectiveStepData
   onNext: (data: ObjectiveStepData) => void
   onBack?: () => void
+  onSkip?: () => void
 }
 
-export default function ObjectiveStep({ data, onNext, onBack }: ObjectiveStepProps) {
+export default function ObjectiveStep({ data, onNext, onBack, onSkip }: ObjectiveStepProps) {
   const { t } = useTranslation()
   const [formData, setFormData] = useState<ObjectiveStepData>({
     goal: data?.goal || '',
@@ -104,6 +105,7 @@ export default function ObjectiveStep({ data, onNext, onBack }: ObjectiveStepPro
 
       <WizardNav
         onBack={onBack}
+        onSkip={onSkip}
         onNext={handleNext}
         isNextDisabled={isNextDisabled}
       />

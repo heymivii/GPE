@@ -2,26 +2,35 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MoreThanOrEqual, Repository } from 'typeorm';
 import { CreateForumTopicDto } from './dto/create-forum-topic.dto';
 import { UpdateForumTopicDto } from './dto/update-forum-topic.dto';
 import { ForumTopic } from './entities/forum-topic.entity';
+import { ForumTopicFollow } from './entities/forum-topic-follow.entity';
 import { ForumMessage } from '../forum-message/entities/forum-message.entity';
 import { ContentFilterService } from '../forum-message/content-filter.service';
+import { ForumModerationService } from '../forum-moderation/forum-moderation.service';
 
 @Injectable()
 export class ForumTopicService {
   constructor(
     @InjectRepository(ForumTopic)
     private readonly forumTopicRepository: Repository<ForumTopic>,
+    @InjectRepository(ForumTopicFollow)
+    private readonly followRepository: Repository<ForumTopicFollow>,
     @InjectRepository(ForumMessage)
     private readonly forumMessageRepository: Repository<ForumMessage>,
     private readonly contentFilterService: ContentFilterService,
+    private readonly moderation: ForumModerationService,
   ) {}
 
-  async create(createForumTopicDto: CreateForumTopicDto): Promise<ForumTopic> {
+  async create(
+    userId: number,
+    createForumTopicDto: CreateForumTopicDto,
+  ): Promise<ForumTopic> {
     const titleFilter = await this.contentFilterService.validate(
       createForumTopicDto.title,
     );
@@ -47,10 +56,21 @@ export class ForumTopicService {
       createForumTopicDto.content.trim(),
     );
 
+    // Modération BDD sur titre + contenu : high/critical bloque la création,
+    // low/medium laisse passer mais flague le message initial + avertit l'auteur.
+    const mod = await this.moderation.moderate(
+      userId,
+      `${sanitizedTitle}\n${sanitizedContent}`,
+    );
+    if (mod.action === 'block') {
+      throw new BadRequestException(`Topic rejected: ${mod.reason}`);
+    }
+    const flagged = mod.action === 'flag';
+
     const topic = this.forumTopicRepository.create({
       title: sanitizedTitle,
       category: createForumTopicDto.category,
-      user: { idUser: createForumTopicDto.userId } as any,
+      user: { idUser: userId } as any,
       country: createForumTopicDto.countryId
         ? ({ idCountry: createForumTopicDto.countryId } as any)
         : undefined,
@@ -61,7 +81,10 @@ export class ForumTopicService {
     const initialMessage = this.forumMessageRepository.create({
       content: sanitizedContent,
       topic: { idForumTopic: savedTopic.idForumTopic } as any,
-      user: { idUser: createForumTopicDto.userId } as any,
+      user: { idUser: userId } as any,
+      isModerated: flagged,
+      moderationReason: flagged ? (mod.reason ?? null) : null,
+      moderatedAt: flagged ? new Date() : null,
     });
 
     await this.forumMessageRepository.save(initialMessage);
@@ -69,10 +92,16 @@ export class ForumTopicService {
     return savedTopic;
   }
   async findAll(): Promise<ForumTopic[]> {
-    return await this.forumTopicRepository.find({
-      relations: ['user', 'country'],
-      order: { createdAt: 'DESC' },
-    });
+    // loadRelationCountAndMap → chaque topic reçoit messagesCount (compteur de réponses
+    // réel), sans charger tous les messages. Avant, le front lisait messages?.length
+    // toujours undefined → « 0 réponses » partout.
+    return await this.forumTopicRepository
+      .createQueryBuilder('topic')
+      .leftJoinAndSelect('topic.user', 'user')
+      .leftJoinAndSelect('topic.country', 'country')
+      .loadRelationCountAndMap('topic.messagesCount', 'topic.messages')
+      .orderBy('topic.createdAt', 'DESC')
+      .getMany();
   }
 
   async getStats(): Promise<{
@@ -127,11 +156,98 @@ export class ForumTopicService {
     return topic;
   }
 
+  /** Lecture publique d'un topic : incrémente les vues + expose le suivi. */
+  async findOnePublic(
+    id: number,
+    userId?: number,
+  ): Promise<ForumTopic & { followersCount: number; isFollowedByMe: boolean }> {
+    await this.forumTopicRepository.increment(
+      { idForumTopic: id },
+      'viewsCount',
+      1,
+    );
+    const topic = await this.findOne(id);
+    const followersCount = await this.followRepository.count({
+      where: { topicId: id },
+    });
+    const isFollowedByMe = userId
+      ? (await this.followRepository.count({ where: { topicId: id, userId } })) >
+        0
+      : false;
+    return Object.assign(topic, { followersCount, isFollowedByMe });
+  }
+
+  /** Suivre un topic. Idempotent : re-suivre ne crée pas de doublon. */
+  async follow(
+    userId: number,
+    topicId: number,
+  ): Promise<{ following: boolean; followersCount: number }> {
+    await this.findOne(topicId); // 404 si le topic n'existe pas
+    const existing = await this.followRepository.findOne({
+      where: { userId, topicId },
+    });
+    if (!existing) {
+      try {
+        await this.followRepository.save(
+          this.followRepository.create({ userId, topicId }),
+        );
+      } catch {
+        // Unique(user_id, topic_id) : doublon concurrent → on ignore (idempotent).
+      }
+    }
+    const followersCount = await this.followRepository.count({
+      where: { topicId },
+    });
+    return { following: true, followersCount };
+  }
+
+  /** Ne plus suivre un topic. */
+  async unfollow(
+    userId: number,
+    topicId: number,
+  ): Promise<{ following: boolean; followersCount: number }> {
+    await this.followRepository.delete({ userId, topicId });
+    const followersCount = await this.followRepository.count({
+      where: { topicId },
+    });
+    return { following: false, followersCount };
+  }
+
+  /** Topics suivis par l'utilisateur (avec messagesCount, comme findAll). */
+  async getFollowed(userId: number): Promise<ForumTopic[]> {
+    const rows = await this.followRepository.find({
+      where: { userId },
+      order: { createdAt: 'DESC' },
+    });
+    const ids = rows.map((r) => r.topicId);
+    if (ids.length === 0) return [];
+    return this.forumTopicRepository
+      .createQueryBuilder('topic')
+      .leftJoinAndSelect('topic.user', 'user')
+      .leftJoinAndSelect('topic.country', 'country')
+      .loadRelationCountAndMap('topic.messagesCount', 'topic.messages')
+      .where('topic.idForumTopic IN (:...ids)', { ids })
+      .orderBy('topic.createdAt', 'DESC')
+      .getMany();
+  }
+
+  /** Abonnés d'un topic (hors un user donné) — pour notifier sur nouveau message. */
+  async getFollowerIds(topicId: number, exceptUserId?: number): Promise<number[]> {
+    const rows = await this.followRepository.find({ where: { topicId } });
+    return rows
+      .map((r) => r.userId)
+      .filter((uid) => uid !== exceptUserId);
+  }
+
   async update(
     id: number,
+    userId: number,
     updateForumTopicDto: UpdateForumTopicDto,
   ): Promise<ForumTopic> {
     const topic = await this.findOne(id);
+    if (topic.user?.idUser !== userId) {
+      throw new ForbiddenException('Vous ne pouvez modifier que vos sujets');
+    }
 
     if (updateForumTopicDto.title) {
       const titleFilter = await this.contentFilterService.validate(
@@ -207,16 +323,27 @@ export class ForumTopicService {
     return this.forumTopicRepository.save(topic);
   }
 
-  async moderatorRemove(id: number): Promise<void> {
-    const topic = await this.findOne(id);
+  // Supprime le topic ET ses messages — forum_message.topic est NOT NULL sans cascade,
+  // donc supprimer un topic qui a des messages violait la FK (500).
+  private async deleteTopicWithMessages(topic: ForumTopic): Promise<void> {
+    await this.forumMessageRepository.delete({
+      topic: { idForumTopic: topic.idForumTopic } as any,
+    });
     await this.forumTopicRepository.remove(topic);
   }
 
-  async remove(id: number): Promise<void> {
-    const result = await this.forumTopicRepository.delete(id);
+  /** Modération (admin/mod) : supprime n'importe quel topic. */
+  async moderatorRemove(id: number): Promise<void> {
+    const topic = await this.findOne(id);
+    await this.deleteTopicWithMessages(topic);
+  }
 
-    if (result.affected === 0) {
-      throw new NotFoundException(`Topic with ID ${id} not found`);
+  /** Suppression par l'auteur uniquement. */
+  async remove(id: number, userId: number): Promise<void> {
+    const topic = await this.findOne(id);
+    if (topic.user?.idUser !== userId) {
+      throw new ForbiddenException('Vous ne pouvez supprimer que vos sujets');
     }
+    await this.deleteTopicWithMessages(topic);
   }
 }

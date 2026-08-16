@@ -33,6 +33,10 @@ export class ExpatriationProjectService {
   async findAllByUser(userId: number): Promise<ExpatriationProject[]> {
     return await this.projectRepository.find({
       where: { userId: userId },
+      // Load the country so consumers (NavBar project switcher, dashboard) can label
+      // a project by its destination — findOne/findAll already do this; the list must too.
+      relations: ['destinationCountry', 'destinationCity', 'travelType'],
+      order: { idProject: 'ASC' },
     });
   }
 
@@ -70,6 +74,13 @@ export class ExpatriationProjectService {
   async remove(projectId: number, userId: number): Promise<void> {
     const project = await this.findOne(projectId, userId);
     await this.projectRepository.remove(project);
+  }
+
+  /** Débloque le projet (paiement mock) → plan complet accessible. */
+  async unlock(projectId: number, userId: number): Promise<ExpatriationProject> {
+    const project = await this.findOne(projectId, userId);
+    project.isPaid = true;
+    return await this.projectRepository.save(project);
   }
 
   async countByUser(userId: number): Promise<number> {

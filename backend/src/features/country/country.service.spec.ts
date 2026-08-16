@@ -3,6 +3,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { NotFoundException } from '@nestjs/common';
 import { CountryService } from './country.service';
 import { Country } from './entities/country.entity';
+import { ReviewService } from '../review/review.service';
 
 const mockRepo = () => ({
   find: jest.fn(),
@@ -10,6 +11,15 @@ const mockRepo = () => ({
   create: jest.fn(),
   save: jest.fn(),
   remove: jest.fn(),
+});
+
+const mockReview = () => ({
+  notifyAdminsOfAddition: jest.fn(async () => undefined),
+  notifyAdminsOfPending: jest.fn(async () => undefined),
+  notifyAuthorOfDecision: jest.fn(async () => undefined),
+  notifyUser: jest.fn(async () => undefined),
+  nameOf: jest.fn(async () => 'Admin'),
+  assertNotSelfReview: jest.fn(),
 });
 
 describe('CountryService', () => {
@@ -22,6 +32,7 @@ describe('CountryService', () => {
       providers: [
         CountryService,
         { provide: getRepositoryToken(Country), useValue: repo },
+        { provide: ReviewService, useValue: mockReview() },
       ],
     }).compile();
     service = module.get<CountryService>(CountryService);
@@ -49,7 +60,9 @@ describe('CountryService', () => {
       const result = await service.findAll();
       expect(result).toHaveLength(1);
       expect(repo.find).toHaveBeenCalledWith(
-        expect.objectContaining({ relations: ['continent'] }),
+        expect.objectContaining({
+          relations: ['continent', 'createdBy', 'reviewedBy'],
+        }),
       );
       // No where.status when no arg passed
       const callArg = repo.find.mock.calls[0][0];

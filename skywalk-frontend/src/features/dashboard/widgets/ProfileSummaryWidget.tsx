@@ -51,6 +51,17 @@ export default function ProfileSummaryWidget({ userData, onEdit, onHide, onResiz
 
   const { destination, profile, objective } = userData.onboardingData
 
+  // Ne montre que ce qui est réellement renseigné (plus de faux « 25 ans • Salarié »).
+  const profileBits = [
+    profile.age ? `${profile.age} ${t('dashboard.personalized.widgets.profileSummary.age')}` : null,
+    profile.status ? t(`onboarding.constants.status.${profile.status}`) : null,
+    profile.travelParty ? t(`onboarding.constants.travelParty.${profile.travelParty}`) : null,
+  ].filter(Boolean).join(' • ')
+
+  // Complétion réelle (plus de 100% codé en dur).
+  const completionFields = [profile.age, profile.status, profile.travelParty, destination.targetCity, objective.goal]
+  const completion = Math.round((completionFields.filter(Boolean).length / completionFields.length) * 100)
+
   return (
     <Widget title={t('dashboard.personalized.widgets.profileSummary.title')} onEdit={onEdit} onHide={onHide} onResize={onResize} currentSize={currentSize}>
       <div className="space-y-4">
@@ -59,7 +70,7 @@ export default function ProfileSummaryWidget({ userData, onEdit, onHide, onResiz
           <div>
             <p className="font-medium text-gray-900">{userData.name}</p>
             <p className="text-sm text-gray-600">
-              {profile.age} {t('dashboard.personalized.widgets.profileSummary.age')} • {t(`onboarding.constants.status.${profile.status}`)} • {t(`onboarding.constants.travelParty.${profile.travelParty}`)}
+              {profileBits || t('profilePage.notProvided')}
             </p>
           </div>
         </div>
@@ -89,10 +100,10 @@ export default function ProfileSummaryWidget({ userData, onEdit, onHide, onResiz
         <div className="mt-6 pt-4 border-t border-gray-200">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium text-gray-700">{t('dashboard.personalized.widgets.profileSummary.profileCompleted')}</span>
-            <span className="text-sm font-medium text-green-600">100%</span>
+            <span className="text-sm font-medium text-green-600">{completion}%</span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
-            <div className="bg-green-600 h-2 rounded-full w-full transition-all duration-300"></div>
+            <div className="bg-green-600 h-2 rounded-full transition-all duration-300" style={{ width: `${completion}%` }}></div>
           </div>
         </div>
       </div>

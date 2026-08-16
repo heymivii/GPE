@@ -9,7 +9,7 @@ export interface GovLink {
   sourceQuery?: string;
   confidence: number;
   verifiedAt?: string;
-  status: 'active' | 'needs_review' | 'dead';
+  status: 'pending_review' | 'active' | 'needs_review' | 'dead';
   summary?: string[];
 }
 
@@ -27,17 +27,76 @@ export interface GovLinksHealth {
   search: { ok: boolean; provider: string };
 }
 
+/** A country the gov-links engine can process — served by the backend registry (single source of truth). */
+export interface GovLinksCountry {
+  code: string;
+  name: string;
+  flag: string;
+}
+
+export interface GenerationRunResultItem {
+  category: string;
+  result: 'verified' | 'needs_review' | 'failed' | null;
+  url: string | null;
+  confidence: number | null;
+  message: string | null;
+}
+
+export interface GenerationRun {
+  id: number;
+  countryCode: string;
+  status: 'running' | 'done' | 'failed';
+  total: number;
+  results: GenerationRunResultItem[];
+  startedAt: string;
+  finishedAt: string | null;
+}
+
 export const govLinksApi = {
   list: async (params?: { country?: string; category?: string; status?: string }): Promise<GovLink[]> => {
     const { data } = await apiClient.get<GovLink[]>('/gov-links', { params });
     return data;
   },
   generate: async (country: string, category: string): Promise<GovLinkGenerateResult> => {
-    const { data } = await apiClient.post<GovLinkGenerateResult>('/gov-links/generate', null, { params: { country, category } });
+    const { data } = await apiClient.post<GovLinkGenerateResult>('/gov-links/generate', undefined, { params: { country, category } });
     return data;
   },
   health: async (): Promise<GovLinksHealth> => {
     const { data } = await apiClient.get<GovLinksHealth>('/gov-links/health');
+    return data;
+  },
+  /** HUMAN review of a machine-found link: approve publishes it, reject keeps it hidden. */
+  approveLink: async (id: number): Promise<GovLink> => {
+    const { data } = await apiClient.patch<GovLink>(`/gov-links/${id}/approve`);
+    return data;
+  },
+  rejectLink: async (id: number): Promise<GovLink> => {
+    const { data } = await apiClient.patch<GovLink>(`/gov-links/${id}/reject`);
+    return data;
+  },
+  getSupportedCountries: async (): Promise<GovLinksCountry[]> => {
+    const { data } = await apiClient.get<GovLinksCountry[]>('/gov-links/supported-countries');
+    return data;
+  },
+  generateCountry: async (country: string): Promise<{ runId: number }> => {
+    const { data } = await apiClient.post<{ runId: number }>('/gov-links/generate-country', undefined, { params: { country } });
+    return data;
+  },
+  getRun: async (id: number): Promise<GenerationRun> => {
+    const { data } = await apiClient.get<GenerationRun>(`/gov-links/runs/${id}`);
+    return data;
+  },
+  getLatestRun: async (country: string): Promise<GenerationRun | null> => {
+    try {
+      const { data } = await apiClient.get<GenerationRun>('/gov-links/runs/latest', { params: { country } });
+      return data;
+    } catch (e: any) {
+      if (e.response?.status === 404) return null;
+      throw e;
+    }
+  },
+  rerunCategory: async (runId: number, category: string): Promise<GenerationRun> => {
+    const { data } = await apiClient.post<GenerationRun>(`/gov-links/runs/${runId}/rerun`, undefined, { params: { category } });
     return data;
   },
 };

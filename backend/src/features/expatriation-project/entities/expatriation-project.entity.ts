@@ -4,6 +4,8 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { TravelType } from '../../project/travel-type/travel-type.entity';
 import { User } from '../../user/entities/user.entity';
@@ -47,8 +49,25 @@ export class ExpatriationProject {
   @Column({ name: 'status', length: 50, default: 'planning' })
   status: string;
 
+  /** Projet débloqué (payé) → checklist complète + liens officiels. Gratuit = aperçu. */
+  @Column({ name: 'is_paid', type: 'boolean', default: false })
+  isPaid: boolean;
+
   @Column({ name: 'expected_departure_date', type: 'date', nullable: true })
   expectedDepartureDate: Date;
+
+  // ── Personalisation drivers ────────────────────────────────────────────────
+  /** Citizenship (ISO2) — the visa determinant (EU/EEA free movement vs third-country). */
+  @Column({ name: 'nationality', type: 'varchar', length: 2, nullable: true })
+  nationality?: string | null;
+
+  /** Has children → school / childcare steps become relevant. */
+  @Column({ name: 'has_children', type: 'boolean', nullable: true })
+  hasChildren?: boolean | null;
+
+  /** Already has a job offer at destination → work-visa path vs job search. */
+  @Column({ name: 'has_job_offer', type: 'boolean', nullable: true })
+  hasJobOffer?: boolean | null;
 
   @Column({ name: 'user_id' })
   userId: number;
@@ -85,6 +104,10 @@ export class ExpatriationProject {
   @Column({ name: 'priorities', type: 'varchar', length: 100, nullable: true })
   priorities: string | null;
 
+  /** Étapes de préparation déjà faites (liste « id,id » saisie à l'onboarding). */
+  @Column({ name: 'steps_done', type: 'varchar', length: 255, nullable: true })
+  stepsDone: string | null;
+
   @Column({ name: 'completed_at', type: 'timestamp', nullable: true })
   completedAt: Date | null;
 
@@ -102,4 +125,10 @@ export class ExpatriationProject {
 
   @Column({ name: 'cancellation_details', type: 'text', nullable: true })
   cancellationDetails: string | null;
+
+  @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
+  updatedAt: Date;
 }

@@ -9,7 +9,11 @@ describe('SearxngSearchProvider', () => {
     mockedAxios.get = jest.fn().mockResolvedValue({
       data: {
         results: [
-          { url: 'https://france-visas.gouv.fr/x', title: 'Visa', content: 'snippet text' },
+          {
+            url: 'https://france-visas.gouv.fr/x',
+            title: 'Visa',
+            content: 'snippet text',
+          },
         ],
       },
     });
@@ -18,7 +22,11 @@ describe('SearxngSearchProvider', () => {
     const results = await provider.search('q', []);
 
     expect(results).toEqual([
-      { url: 'https://france-visas.gouv.fr/x', title: 'Visa', snippet: 'snippet text' },
+      {
+        url: 'https://france-visas.gouv.fr/x',
+        title: 'Visa',
+        snippet: 'snippet text',
+      },
     ]);
 
     expect(mockedAxios.get).toHaveBeenCalledWith(

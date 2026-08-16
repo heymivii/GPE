@@ -9,6 +9,7 @@
     "visa": "Visa",
     "dashboard": "Tableau de bord",
     "projects": "Mes Projets",
+    "documents": "Mes documents",
     "explore": "Explorer",
     "myProject": "Mon Projet",
     "login": "Connexion",
@@ -16,7 +17,24 @@
     "logout": "Déconnexion",
     "profile": "Mon profil",
     "myDashboard": "Mon tableau de bord",
-    "blog": "Blog"
+    "preferences": "Préférences",
+    "blog": "Blog",
+    "settings": "Réglages",
+    "experts": "Experts"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "Aucune notification.",
+    "markAllRead": "Tout marquer comme lu",
+    "markRead": "Marquer comme lue",
+    "aria": "{{count}} notification(s) non lue(s)"
+  },
+  "visaNotice": {
+    "thisCountry": "ce pays",
+    "exempt": "Libre circulation — aucun visa n’est requis pour vous installer en {{country}} (ressortissant·e UE/EEE/CH).",
+    "required": "Installation : un visa long séjour est requis pour vous installer en {{country}} (≠ un simple séjour touristique).",
+    "check": "Selon votre nationalité, un visa long séjour peut être requis pour vous installer en {{country}}.",
+    "officialSource": "Vérifier sur la source officielle"
   },
   "countries": {
     "france": "France",
@@ -54,7 +72,10 @@
       "close": "Fermer"
     },
     "quit": "Quitter",
-    "remove": "Supprimer"
+    "remove": "Supprimer",
+    "cancel": "Annuler",
+    "back": "Retour",
+    "save": "Enregistrer"
   },
   "services": {
     "citySelector": {
@@ -771,7 +792,106 @@
       }
     }
   },
+  "documents": {
+    "title": "Mes documents",
+    "subtitle": "Chiffrés et accessibles à vous seul·e",
+    "dropzone": "Glissez un fichier ou cliquez",
+    "uploading": "Envoi…",
+    "constraints": "PDF, JPEG ou PNG · 10 Mo max",
+    "empty": "Aucun document pour l'instant.",
+    "typeLabel": "Type de document",
+    "download": "Télécharger",
+    "delete": "Supprimer",
+    "added": "Document ajouté",
+    "deleted": "Document supprimé",
+    "uploadError": "Échec de l'envoi",
+    "deleteError": "Échec de la suppression",
+    "formatError": "Format non autorisé (PDF, JPEG ou PNG)",
+    "sizeError": "Fichier trop lourd (10 Mo max)",
+    "downloadError": "Téléchargement impossible",
+    "page": {
+      "title": "Mes documents",
+      "subtitle": "Votre coffre-fort personnel : passeport, visa, contrats… chiffrés et accessibles à tout moment.",
+      "uploadTitle": "Ajouter un document",
+      "projectLabel": "Projet (optionnel)",
+      "noProject": "Aucun (personnel)",
+      "searchPlaceholder": "Rechercher un document…",
+      "filterAll": "Tous les types",
+      "count": "{{count}} document(s)",
+      "personal": "Personnel",
+      "preview": "Aperçu",
+      "close": "Fermer",
+      "noResults": "Aucun document ne correspond à votre recherche."
+    },
+    "types": {
+      "passport": "Passeport",
+      "id_card": "Carte d'identité",
+      "visa": "Visa",
+      "residence_permit": "Titre de séjour",
+      "work_contract": "Contrat de travail",
+      "lease": "Bail",
+      "birth_certificate": "Acte de naissance",
+      "diploma": "Diplôme",
+      "bank_details": "RIB / coordonnées bancaires",
+      "insurance": "Assurance",
+      "payslip": "Fiche de paie",
+      "other": "Autre"
+    }
+  },
   "landing": {
+    "visaChecker": {
+      "eyebrow": "Vérif visa express",
+      "title": "Ai-je besoin d'un visa ?",
+      "iAm": "Je suis…",
+      "goingTo": "Je pars vers…",
+      "exemptTitle": "Libre circulation — aucun visa",
+      "exemptText": "Ressortissant·e {{nationality}}, vous vous installez en {{country}} sans visa ni titre de séjour.",
+      "visaTitle": "Visa / titre de séjour requis",
+      "visaText": "Pour vous installer en {{country}}, une démarche visa est nécessaire. SkyWalk vous liste chaque étape, à partir des sources officielles vérifiées.",
+      "disclaimer": "Estimation basée sur la libre circulation UE/EEE/CH — les détails dépendent de votre situation.",
+      "cta": "Voir mon plan complet"
+    },
+    "officialSources": {
+      "badge": "Source officielle vérifiée",
+      "title": "Des démarches fiables — pas des blogs approximatifs",
+      "text": "Chaque étape de votre plan renvoie vers la source gouvernementale officielle, vérifiée en direct. Zéro info périmée, zéro rumeur — la différence entre un visa obtenu et une démarche ratée."
+    },
+    "pricing": {
+      "title": "Un prix par projet d'expatriation",
+      "subtitle": "Explorez gratuitement. Vous ne payez que lorsque vous passez à l'action sur un vrai projet.",
+      "popular": "Le plus choisi",
+      "disclaimer": "Prix indicatifs. Sans engagement — vous ne payez qu'au lancement d'un projet.",
+      "perProject": "/ projet",
+      "perYear": "/ an",
+      "discovery": {
+        "name": "Découverte",
+        "tagline": "Pour explorer avant de se lancer",
+        "cta": "Commencer gratuitement",
+        "f1": "Explorer toutes les destinations",
+        "f2": "Comparateur & coût de la vie",
+        "f3": "Aperçu de la checklist",
+        "f4": "Accès au forum de la communauté"
+      },
+      "project": {
+        "name": "Projet",
+        "tagline": "Un projet d'expatriation, de A à Z",
+        "cta": "Lancer mon projet",
+        "f1": "Tout le plan Découverte",
+        "f2": "Checklist personnalisée complète",
+        "f3": "Liens officiels vérifiés (anti-erreur)",
+        "f4": "Deadlines & suivi de progression",
+        "f5": "Budget, documents & rappels"
+      },
+      "unlimited": {
+        "name": "Illimité",
+        "tagline": "Plusieurs destinations en tête",
+        "cta": "Passer en illimité",
+        "f1": "Projets d'expatriation illimités",
+        "f2": "Comparaison multi-pays avancée",
+        "f3": "Support prioritaire",
+        "f4": "Nouveautés en avant-première"
+      }
+    },
     "search": {
       "origin": "D'où je viens",
       "destination": "Où je vais",
@@ -836,9 +956,9 @@
       "subtitle2": "Commencez par répondre à notre questionnaire pour un accompagnement personnalisé.",
       "cta": "Je prépare mon départ",
       "stats": {
-        "expats": "expatriés accompagnés",
-        "satisfaction": "de satisfaction",
-        "countries": "destinations couvertes"
+        "destinations": "destinations couvertes",
+        "officialSources": "sources officielles",
+        "freeToExplore": "pour explorer"
       }
     },
     "destinations": {
@@ -1133,6 +1253,11 @@
       "mustBeLoggedIn": "Vous devez être connecté",
       "titleRequired": "Le titre est requis",
       "updateError": "Erreur lors de la mise à jour"
+    },
+    "follow": {
+      "follow": "Suivre",
+      "following": "Suivi",
+      "unfollow": "Ne plus suivre"
     }
   },
   "comparison": {
@@ -1390,6 +1515,18 @@
           "jobOpportunities": {
             "name": "Opportunités emploi",
             "description": "Secteurs, salaires et programmes d'expatriation"
+          },
+          "countdown": {
+            "name": "Compte à rebours",
+            "description": "Jours avant le départ + prochaines échéances"
+          },
+          "requiredDocuments": {
+            "name": "Documents requis",
+            "description": "Suivi de vos documents-clés (passeport, visa…)"
+          },
+          "destinationForum": {
+            "name": "Forum de ta destination",
+            "description": "Derniers échanges pour votre pays"
           }
         },
         "menu": {
@@ -1418,6 +1555,16 @@
           "hide": "Masquer",
           "show": "{{count}} sous-étapes",
           "optional": "optionnel",
+          "deadlineLate": "🔴 En retard — {{date}}",
+          "deadlineUrgent": "🟠 {{days}} j — {{date}}",
+          "deadlineNormal": "📅 {{date}}",
+          "seeService": "Voir le service",
+          "onSite": "sur place",
+          "missingDepartureDate": "Ajoutez votre date de départ pour voir les deadlines de chaque étape.",
+          "priorityToDo": "À faire en priorité",
+          "beforeDeparture": "✈️ Avant le départ",
+          "onArrival": "🏠 À l'arrivée",
+          "seeFullChecklist": "Voir toute la checklist",
           "categories": {
             "visa": "Visa",
             "preDeparture": "Pré-départ",
@@ -1450,7 +1597,11 @@
           },
           "avgSalary": "Salaire moyen local",
           "sourceLive": "Données de marché (en cache) — {{city}}",
-          "sourceStatic": "Données estimatives"
+          "sourceStatic": "Données estimatives",
+          "converter": {
+            "title": "Convertisseur rapide",
+            "amount": "Montant"
+          }
         },
         "localTime": {
           "title": "Heure locale",
@@ -1530,6 +1681,32 @@
             "j1": "Programme d'échange culturel et professionnel",
             "permisSwiss": "Permis de séjour et travail en Suisse"
           }
+        },
+        "countdown": {
+          "title": "Compte à rebours",
+          "noDate": "Ajoutez une date de départ pour activer le compte à rebours.",
+          "addDate": "Ajouter une date",
+          "jMinus": "J-{{days}}",
+          "until": "avant votre départ · {{date}}",
+          "departed": "🎉 Vous êtes parti·e !",
+          "nextDeadlines": "Prochaines échéances",
+          "late": "En retard",
+          "seeChecklist": "Voir ma checklist",
+          "allDone": "Toutes vos démarches sont à jour",
+          "prepDone": "Préparation terminée — les démarches sur place vous attendent à l’arrivée"
+        },
+        "requiredDocuments": {
+          "title": "Documents requis",
+          "count": "{{done}}/{{total}} documents-clés",
+          "noProject": "Sélectionnez un projet pour suivre vos documents.",
+          "add": "Ajouter des documents",
+          "manage": "Gérer mes documents"
+        },
+        "destinationForum": {
+          "title": "Forum de ta destination",
+          "empty": "Aucune discussion pour {{country}} pour le moment.",
+          "start": "Lancer une discussion",
+          "seeAll": "Voir tout le forum"
         }
       },
       "projectSelector": "Projet #{{id}} - {{country}}"
@@ -1905,7 +2082,8 @@
         "alone": "Seul",
         "couple": "En couple",
         "family": "En famille",
-        "friends": "Avec des amis"
+        "friends": "Avec des amis",
+        "other": "Autre"
       },
       "goal": {
         "studies": "Études",
@@ -2118,6 +2296,7 @@
     "destination": "Destination",
     "country": "Pays",
     "cityId": "Ville (ID)",
+    "city": "Ville",
     "generalInfo": "Informations générales",
     "objective": "Objectif",
     "notDefined": "Non défini",
@@ -3456,5 +3635,66 @@
         "content": "## Le Japon, un rêve devenu réalité\n\nJe rêvais du Japon depuis l'adolescence. Quand une opportunité professionnelle s'est présentée à Tokyo, je n'ai pas hésité. Voici mon retour d'expérience après 18 mois sur place.\n\n## La culture d'entreprise japonaise\n\nLe respect de la hiérarchie, la ponctualité absolue et le travail en équipe sont les piliers de la culture professionnelle japonaise. Les réunions sont nombreuses et le consensus est recherché avant toute décision. Il faut s'adapter à un rythme différent mais très enrichissant.\n\n## La vie quotidienne\n\nTokyo est une ville incroyablement organisée et sûre. Les transports en commun sont d'une ponctualité exemplaire, la nourriture est excellente et abordable (un bento à 500-800¥), et les commodités sont partout. Le seul défi majeur : la taille des logements. Mon studio de 25m² coûte 130 000¥ par mois.\n\n## La barrière de la langue\n\nContrairement à ce qu'on peut penser, l'anglais n'est pas très répandu au quotidien au Japon. Apprendre les hiragana et katakana est indispensable pour la vie de tous les jours. Le kanji viendra progressivement. Les Japonais apprécient énormément les efforts pour parler leur langue.\n\n## Les surprises du quotidien\n\n- Les konbini (supérettes ouvertes 24h/24) deviennent vite indispensables\n- Le tri des déchets est un art en soi\n- Les onsen (bains thermaux) sont un bonheur absolu\n- La politesse est omniprésente et contagieuse\n- Les festivals locaux (matsuri) sont des moments magiques"
       }
     }
+  },
+  "settings": {
+    "title": "Réglages",
+    "subtitle": "Vos préférences d’affichage et votre compte.",
+    "preferences": "Préférences",
+    "currency": "Devise d’affichage",
+    "language": "Langue",
+    "account": "Compte",
+    "viewProfile": "Modifier mon profil",
+    "expert": {
+      "title": "Profil expert",
+      "subtitle": "Votre titre et votre bio publics. La vérification est gérée par l’équipe.",
+      "saved": "Profil expert mis à jour"
+    }
+  },
+  "experts": {
+    "verified": "Expert vérifié",
+    "verifiedExpert": "Expert vérifié",
+    "page": {
+      "title": "Experts vérifiés",
+      "subtitle": "Des professionnels vérifiés (avocats en immigration, consultants en relocation…) pour votre pays de destination.",
+      "searchPlaceholder": "Rechercher un expert…",
+      "allCountries": "Tous les pays",
+      "empty": "Aucun expert vérifié pour ce filtre pour le moment.",
+      "reviews": "{{count}} avis",
+      "noRating": "Pas encore d’avis"
+    },
+    "admin": {
+      "title": "Vérification des experts",
+      "subtitle": "Attribuez ou révoquez le statut d’expert vérifié.",
+      "search": "Rechercher un membre…",
+      "verify": "Vérifier",
+      "revoke": "Révoquer",
+      "verified": "Expert vérifié",
+      "revoked": "Vérification révoquée",
+      "confirm": "Confirmer la vérification",
+      "titlePlaceholder": "Titre (ex. Avocat en immigration)",
+      "bioPlaceholder": "Bio courte",
+      "countryPlaceholder": "Pays d’expertise (optionnel)"
+    }
+  },
+  "rating": {
+    "helpful": "Cette réponse t’a aidé ?",
+    "rateThis": "Noter cette aide",
+    "rateAuthor": "Noter l’aide de {{name}}",
+    "stars": "{{count}} étoile(s)",
+    "readAloud": "{{value}} sur 5",
+    "thanks": "Merci !"
+  },
+  "messages": {
+    "title": "Messages",
+    "subtitle": "Vos échanges privés avec les membres et les experts.",
+    "conversations": "Conversations",
+    "empty": "Aucune conversation.",
+    "pickConversation": "Sélectionnez une conversation.",
+    "startConversation": "Écrivez le premier message.",
+    "placeholder": "Votre message…",
+    "send": "Envoyer un message",
+    "report": "Signaler ce membre",
+    "reported": "Membre signalé",
+    "member": "Membre"
   }
 }

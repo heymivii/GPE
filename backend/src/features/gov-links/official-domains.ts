@@ -1,16 +1,22 @@
-// Official / authoritative domains per supported country (suffix match on hostname).
-const OFFICIAL_SUFFIXES: Record<string, string[]> = {
-  FR: ['gouv.fr', 'service-public.fr', 'ameli.fr', 'campusfrance.org'],
-  US: ['.gov', 'uscis.gov', 'state.gov'],
-  JP: ['go.jp', 'moj.go.jp', 'isa.go.jp'],
-  CH: ['admin.ch', 'ch.ch'],
-};
+import {
+  SUPPORTED_COUNTRY_REGISTRY,
+  SupportedCountry,
+} from './supported-countries';
 
+// Official / authoritative domains per supported country (suffix match on hostname).
+// Derived from the single country registry — do not duplicate the list here.
 export function officialSuffixes(countryCode: string): string[] {
-  return OFFICIAL_SUFFIXES[countryCode.toUpperCase()] ?? [];
+  return (
+    SUPPORTED_COUNTRY_REGISTRY[countryCode.toUpperCase() as SupportedCountry]
+      ?.officialSuffixes ?? []
+  );
 }
 
-export function isOfficialDomain(url: string, countryCode: string): boolean {
+export function isOfficialDomain(
+  url: string,
+  countryCode: string,
+  suffixes?: string[],
+): boolean {
   let host: string;
   try {
     host = new URL(url).hostname.toLowerCase();
@@ -19,7 +25,7 @@ export function isOfficialDomain(url: string, countryCode: string): boolean {
   }
   // Match exact host OR a proper subdomain only. The dot boundary is critical:
   // a bare `endsWith('gouv.fr')` would wrongly accept `evilgouv.fr`.
-  return officialSuffixes(countryCode).some((sfx) => {
+  return (suffixes ?? officialSuffixes(countryCode)).some((sfx) => {
     const bare = sfx.replace(/^\./, '');
     return host === bare || host.endsWith(`.${bare}`);
   });
