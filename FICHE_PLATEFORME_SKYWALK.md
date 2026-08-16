@@ -19,6 +19,29 @@ Le fil conducteur produit : *« Où j'en suis dans mon projet, et quoi faire ens
 
 ---
 
+## 1.1 À quoi sert chaque fonctionnalité (vue utilisateur)
+
+| Fonctionnalité | À quoi ça sert (le besoin réel de l'expatrié) |
+|---|---|
+| **Projet d'expatriation + onboarding** | Décrire mon projet (pays, ville, budget, date, situation) pour que tout soit personnalisé. |
+| **Checklist / démarches** | Savoir **quelles démarches faire, dans quel ordre**, avant le départ vs une fois sur place. |
+| **Gov-links (IA + sources officielles)** | Ne **jamais** tomber sur une info périmée ou fausse : chaque étape pointe vers **la source gouvernementale officielle vérifiée**. |
+| **Compte à rebours + faisabilité** | Voir combien de temps il me reste, les prochaines échéances, et **si mon départ est encore tenable**. |
+| **Visa selon nationalité** | Savoir si **j'ai besoin d'un visa** pour m'installer (pas pour du tourisme) — sans qu'on invente : libre circulation UE si vérifiée, sinon lien officiel. |
+| **Coût de la vie / emploi / comparateur** | **Décider où partir** : loyers, salaires, marché de l'emploi, comparaison de pays. |
+| **Coffre de documents (chiffré)** | **Centraliser et sécuriser** mes papiers (passeport, visa, contrats…) et voir ce qu'il me manque. |
+| **Forum** | **Poser mes questions** et échanger avec d'autres expatriés / la communauté. |
+| **Experts vérifiés (F1)** | **Trouver un pro vérifié** (avocat immigration, consultant relocation) pour mon pays. |
+| **Suivi de discussions (F2)** | **Ne rien rater** d'une discussion qui me concerne (notif sur nouveau message). |
+| **Notation (F4)** | **Savoir à qui faire confiance** : les réponses/experts utiles remontent (étoiles). |
+| **Messagerie privée (F3)** | **Contacter en privé** un expert ou un membre (le chaînon « trouver → contacter »). |
+| **Notifications** | Être **prévenu** au bon moment (échéance, réponse, décision admin) — et cliquer pour y aller. |
+| **Tableau de bord** | Voir **où j'en suis d'un coup d'œil** (widgets personnalisables). |
+| **Réglages / langue / devise** | **Adapter l'app** à moi (FR/EN, monnaie d'affichage). |
+| **Admin & modération** | Côté équipe : **gérer le contenu**, **modérer** le forum, **vérifier les experts**, valider les liens officiels. |
+
+---
+
 ## 2. Stack & architecture
 
 **Backend** — `backend/`
@@ -103,14 +126,71 @@ Le fil conducteur produit : *« Où j'en suis dans mon projet, et quoi faire ens
 
 ---
 
-## 6. Gov-links — la fonctionnalité phare (anti-hallucination)
+## 6. Moteur IA & Recherche (la fonctionnalité phare — anti-hallucination)
 
-- `gov-links` : récupération et **vérification en direct** de **liens gouvernementaux officiels** pour
-  chaque démarche (ex. le portail visa officiel du pays). Composants : query-builder, search provider
-  (SearXNG), page-reader, link-verifier, official-domains, LLM-ranker.
-- Principe : **zéro info périmée, zéro rumeur** — chaque étape renvoie vers la source officielle vérifiée.
-  C'est le différenciateur central du produit (on ne réplique pas la donnée, on pointe vers l'autorité).
-- Admin : gestion des liens (`/admin/gov-links`) + carnet de recherche (`/admin/search-hints`).
+C'est le cœur différenciateur de SkyWalk. Objectif : pour chaque démarche d'un pays, trouver **le lien
+gouvernemental officiel** (ex. le portail visa) et en extraire des **faits + actions**, **sans jamais
+inventer** (anti-hallucination) et avec **validation humaine** avant publication.
+
+### 6.1 Deux IA distinctes
+
+| IA | Où | Rôle | Techno |
+|---|---|---|---|
+| **IA LOCALE (gov-links)** | `gov-links/llm-ranker.ts` → `OllamaRanker` | **classer** les liens officiels vérifiés + **résumer** le texte réel d'une page en faits/actions | **Ollama en local** (API OpenAI-compatible), modèle par défaut **`qwen2.5:7b-instruct`**. Env : `LLM_BASE_URL` (ex. `http://localhost:11434/v1`), `LLM_MODEL`, `LLM_API_KEY=ollama` (clé factice). **Aucune API payante, données privées.** |
+| **IA cloud (modération)** | `forum-message/content-filter.service.ts` | modérer le contenu (forum + messages privés) | **OpenAI** (`OPENAI_API_KEY`), **optionnel** : si la clé est absente, repli sur blocklist + patterns spam (regex). |
+
+### 6.2 Deux recherches distinctes
+
+- **Recherche web (pour gov-links)** — `gov-links/search-provider.ts` : **SearXNG** par défaut
+  (métamoteur libre, auto-hébergé, `SEARXNG_BASE_URL`) ; en prod on peut passer à **Tavily**
+  (`SEARCH_PROVIDER=tavily` + `TAVILY_API_KEY`). Interface `SearchProvider` → provider interchangeable.
+- **Recherche globale in-app** — `global-search/` : **Full-Text Search PostgreSQL** sur une vue
+  matérialisée `global_search_index` (`search_vector`, `to_tsquery`, `ts_rank_cd`), avec **repli ILIKE**
+  si la matview n'existe pas encore. Cherche pays, villes, sujets forum… (barre ⌘K).
+
+### 6.3 Le pipeline gov-links, étape par étape (`gov-links.service.ts → generate(country, category)`)
+
+1. **Config pays** — le pays est-il activé pour le moteur ? (piloté BDD, registre statique en repli) +
+   récupération des **suffixes de domaines officiels** autorisés.
+2. **Court-circuit « pinnedUrl »** — si un admin a épinglé une URL exacte : on la **vérifie en direct**,
+   on **bypasse** l'allowlist + le ranker, et on résume son **vrai texte**.
+3. **Construction des requêtes** (`query-builder.ts`) — à partir du **carnet de recherche** éditable
+   (search-hint) + catégorie + pays + **langue** (FR → `site officiel`, EN → `official government site`).
+   **Fan-out** : plusieurs requêtes, dont une `site:<domaine> <mots-clés>` par domaine officiel connu.
+4. **Recherche** (`SearchProvider`) — exécute toutes les requêtes (avec retry), collecte les URL candidates.
+5. **Filtre domaines officiels** (`official-domains.ts`) — ne garde que les candidats sur un **domaine
+   gouvernemental autorisé**.
+6. **Plafond** avant vérification (chaque vérif = un fetch HTTP réel ; le fan-out peut sortir des dizaines
+   de candidats).
+7. **Vérification en direct** (`link-verifier.ts` + `PageReader`) — fetch réel de chaque candidat : est-il
+   **joignable** et **cohérent** avec les mots-clés ? Puis **re-dédup** par `finalUrl` (redirections).
+8. **Classement IA** (`OllamaRanker.pickBest`) — le **LLM local** choisit **le meilleur** lien **parmi les
+   candidats DÉJÀ vérifiés**. 🛡️ **Garde anti-hallucination** : le modèle ne peut renvoyer qu'un **index**
+   dans la liste (borné/clampé) — il **ne peut PAS inventer d'URL**. Retour : `{index, label, confidence}`.
+9. **Résumé IA** (`OllamaRanker.summarize`) — le LLM local lit le **texte brut réel** de la page et en
+   extrait des **faits + actions** en **JSON strict** (basé uniquement sur le contenu réel — zéro invention).
+10. **Repli gracieux** — si l'IA locale est indisponible, on prend **le meilleur lien officiel vérifié**
+    (dégradation propre, jamais de crash).
+11. **Statut `pending_review`** — un résultat vérifié-machine **attend une approbation HUMAINE** avant
+    publication. **L'IA ne publie jamais seule** (human-in-the-loop).
+
+### 6.4 Les garanties anti-hallucination (à retenir)
+
+- L'IA **ne choisit que parmi des liens officiels déjà vérifiés en direct** (index-only, pas d'invention).
+- Les **résumés viennent du vrai texte** de la page officielle.
+- **Domaines officiels only** (allowlist par pays).
+- **Validation humaine obligatoire** avant qu'un lien soit publié côté utilisateur.
+- **Health check** exposé à l'admin : joignabilité de l'IA locale (Ollama) **et** du moteur de recherche.
+
+### 6.5 Orchestration & admin
+
+- `generation-orchestrator.service.ts` : génère **par pays, sur toutes les catégories**, avec un
+  **throttle entre catégories** (évite de faire sauter SearXNG/Google ou de heurter le rate-limit du LLM) ;
+  produit des enregistrements **`generation_run`** pour la revue admin.
+- Admin : **`/admin/gov-links`** (onglets Liens / Runs, génération par pays, validation humaine) +
+  **`/admin/search-hints`** (le **carnet de recherche** éditable qui pilote les requêtes).
+- Côté utilisateur : chaque étape de la checklist porte un **badge « Source officielle vérifiée »** +
+  le lien officiel.
 
 ---
 
