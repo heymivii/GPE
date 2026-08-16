@@ -4,7 +4,7 @@ Stack de prod :
 - **Backend** → Heroku (Node, `backend/Procfile`)
 - **Frontend** → Vercel (`skywalk-frontend/`, `vercel.json` présent)
 - **Base de données** → Heroku Postgres (add-on)
-- **Source** → GitHub `CoulibalyT/GPE_SKYWALK` (Heroku auto-deploy depuis GitHub)
+- **Source** → GitHub `CoulibalyT/skywalk` (Heroku auto-deploy depuis GitHub)
 
 > ⚠️ Aucun secret n'est versionné : `.env`, `backend/storage/` sont dans `.gitignore`. **Ne jamais committer de `.env`.**
 
@@ -13,7 +13,7 @@ Stack de prod :
 ## 0. Vue d'ensemble du flux
 
 ```
-git push GitHub (main)  ──►  Heroku détecte le push  ──►  build (nest build)
+git push GitHub (develop)  ──►  Heroku détecte le push  ──►  build (nest build)
                                                       ──►  release: npm run migration:run   (crée/màj les tables)
                                                       ──►  web: node dist/main               (démarre l'API)
 
@@ -107,7 +107,7 @@ heroku config:get DATABASE_URL -a <TON_APP>
 
 ## 4. Déploiement backend (auto-deploy GitHub → Heroku)
 
-1. **Connecter le repo** : Heroku dashboard → ton app → **Deploy** → *Deployment method* = **GitHub** → connecter `CoulibalyT/GPE_SKYWALK`.
+1. **Connecter le repo** : Heroku dashboard → ton app → **Deploy** → *Deployment method* = **GitHub** → connecter `CoulibalyT/skywalk`.
 2. **Monorepo** : le backend est dans `backend/`. Configure l'app pour ce sous-dossier via le buildpack monorepo :
    ```bash
    heroku buildpacks:add -i 1 https://github.com/lstoll/heroku-buildpack-monorepo -a <TON_APP>
@@ -115,7 +115,7 @@ heroku config:get DATABASE_URL -a <TON_APP>
    heroku config:set APP_BASE=backend -a <TON_APP>
    ```
    (Si ton app Heroku existante marche déjà, elle est déjà configurée ainsi — ne touche à rien.)
-3. **Activer l'auto-deploy** sur la branche `main` (ou clique *Deploy Branch* manuellement).
+3. **Activer l'auto-deploy** sur la branche `develop` (ou clique *Deploy Branch* manuellement).
 4. Vérifie : `heroku logs --tail -a <TON_APP>` → tu dois voir la release (migrations) puis `Nest application successfully started`.
 
 Test rapide :
@@ -127,7 +127,7 @@ curl https://<TON_APP>.herokuapp.com/api/health   # ou une route publique
 
 ## 5. Frontend — Vercel
 
-1. Vercel → **New Project** → importer `CoulibalyT/GPE_SKYWALK`.
+1. Vercel → **New Project** → importer `CoulibalyT/skywalk`.
 2. **Root Directory** = `skywalk-frontend`. Framework détecté = **Vite**.
 3. **Env var** :
    | Clé | Valeur |
@@ -188,7 +188,7 @@ psql "$(heroku config:get DATABASE_URL -a <TON_APP>)" < skywalk_ref.sql
 - [ ] Heroku Postgres provisionné, `DB_*` + `DB_SSL=true` posés
 - [ ] `NPM_CONFIG_PRODUCTION=false` (migrations)
 - [ ] `JWT_SECRET`, `DOCUMENT_ENCRYPTION_KEY` générés (`openssl rand -hex 32`)
-- [ ] Repo `CoulibalyT/GPE_SKYWALK` connecté à Heroku, `APP_BASE=backend`
+- [ ] Repo `CoulibalyT/skywalk` connecté à Heroku, `APP_BASE=backend`
 - [ ] Déploiement OK (`heroku logs` : migrations + Nest started)
 - [ ] Vercel : `VITE_API_URL` = URL Heroku `/api`
 - [ ] `FRONTEND_URL` (Heroku) = URL Vercel → CORS OK
