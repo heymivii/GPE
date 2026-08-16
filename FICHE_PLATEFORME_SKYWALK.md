@@ -93,6 +93,60 @@ npm run start:dev                # http://localhost:3000/api
 
 > Les mêmes identifiants de connexion à l'app (`SkyWalkDemo2026!`) fonctionnent en local — le dump contient les mêmes comptes/hash.
 
+### Démarrer (pour l'équipe) — tests, CI/CD, démo
+
+**👉 La branche de référence est `develop`. Tout le code à jour (features, déploiement) y est.**
+Avant de commencer quoi que ce soit :
+
+```bash
+git checkout develop
+git pull                      # récupère la dernière version (source de vérité)
+```
+
+**1. Faire tourner le projet en local**
+- Backend + base : voir la section **« Accès à la base de données (en local) »** ci-dessus (clone → `.env` → migrate/restore → `npm run start:dev`).
+- Frontend :
+  ```bash
+  cd skywalk-frontend
+  npm install
+  npm run dev                 # http://localhost:5173 (met VITE_API_URL=http://localhost:3000/api dans .env si besoin)
+  ```
+
+**2. Lancer les tests (avant tout push)**
+```bash
+# Backend (NestJS + Jest)
+cd backend && npm run lint && npm test
+
+# Frontend (Vitest + ESLint)
+cd skywalk-frontend && npm run lint && npm run test
+```
+
+**3. CI/CD — le pipeline GitLab (ETNA)**
+À **chaque push sur le repo ETNA**, `.gitlab-ci.yml` déclenche automatiquement 3 étapes :
+| Stage | Ce qu'il fait |
+|---|---|
+| **test** | lint backend + tests backend (avec une vraie base `postgres:15`) + lint/tests frontend |
+| **build** | compile le backend (`nest build`) et le frontend (build Vite) |
+| **docker** | build de l'image Docker du backend |
+> Avant d'ouvrir une Merge Request, vérifie que **le pipeline est vert** (onglet *CI/CD → Pipelines* sur GitLab).
+> ⚠️ La CI tourne sur **GitLab/ETNA** (pas sur GitHub — le repo GitHub sert au déploiement Heroku).
+
+**4. Workflow de contribution**
+```bash
+git checkout develop && git pull
+git checkout -b feat/ma-tache         # branche dédiée depuis develop
+# ... code + tests ...
+git push -u origin feat/ma-tache
+# → ouvrir une Merge Request VERS develop sur GitLab
+```
+> On ne commit **jamais** directement sur `develop` : on passe par une branche + Merge Request.
+
+**5. Pour la démo**
+La prod est **déjà déployée** — rien à installer pour montrer l'app :
+- Front : **https://skywalk-chi.vercel.app** · API : **…herokuapp.com/api**
+- Comptes de démo : section ci-dessus (`SkyWalkDemo2026!`).
+- Pour explorer les données pendant la prépa : base **en local** (dump identique à la prod), section ci-dessus.
+
 ---
 
 ## 1. En une phrase
