@@ -144,14 +144,21 @@ curl https://<TON_APP>.herokuapp.com/api/health   # ou une route publique
 
 ⚠️ **Ta BDD locale contient beaucoup de données de test** (17 comptes `e2e_*`/`*.test`, forum/messages/ratings de test). Deux options :
 
+> 🧩 **Attention version** : ton serveur local est en Postgres **16**, mais le `pg_dump` du PATH est en 14 → erreur *server version mismatch*.
+> Utilise le binaire v16 de Postgres.app :
+> ```bash
+> PGDUMP=/Applications/Postgres.app/Contents/Versions/16/bin/pg_dump
+> ```
+> (un dump prêt à restaurer est déjà généré dans le scratchpad : `skywalk_local.dump`, 212 Ko)
+
 ### Option A — Copie intégrale (recommandé pour une démo/soutenance)
 Remplace la prod par une copie exacte du local (schéma + data + table `migrations`).
 Les migrations suivantes seront alors des **no-op** (déjà appliquées).
 
 ```bash
-# 1. Dump du local (déjà généré : voir scratchpad, ou régénère)
-pg_dump --no-owner --no-privileges -Fc \
-  -h localhost -U tenecoulibaly skywalk > skywalk_local.dump
+# 1. Dump du local (déjà généré : voir scratchpad, ou régénère avec le pg_dump v16)
+$PGDUMP --no-owner --no-privileges -Fc \
+  -h localhost -U tenecoulibaly skywalk -f skywalk_local.dump
 
 # 2. Réinitialise la prod puis restaure
 heroku pg:reset DATABASE_URL -a <TON_APP> --confirm <TON_APP>
@@ -163,10 +170,10 @@ pg_restore --no-owner --no-privileges --no-acl \
 Ne copie que le contenu « catalogue » (pays, villes, procédures…), les tables sont créées par les migrations (§2) :
 
 ```bash
-pg_dump --no-owner --no-privileges --data-only \
+$PGDUMP --no-owner --no-privileges --data-only \
   -t continent -t country -t city -t admin_procedure \
   -t gov_link -t search_hint -t role \
-  -h localhost -U tenecoulibaly skywalk > skywalk_ref.sql
+  -h localhost -U tenecoulibaly skywalk -f skywalk_ref.sql
 
 psql "$(heroku config:get DATABASE_URL -a <TON_APP>)" < skywalk_ref.sql
 ```
