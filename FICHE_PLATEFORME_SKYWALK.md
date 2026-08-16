@@ -47,6 +47,52 @@ curl -X POST https://skywalk-backend-api-50c5bfcb5a94.herokuapp.com/api/auth/log
 # → { "access_token": "eyJ..." }  puis: Authorization: Bearer <token>
 ```
 
+### Accès à la base de données (en local)
+
+Pour inspecter **les mêmes données que la prod sans toucher à la prod**, on reconstruit la base en local.
+*(La BDD prod est sur Heroku Postgres — pas d'accès direct distribué : identifiants sensibles + rotation automatique.)*
+
+**Prérequis** : PostgreSQL **16**, Node ≥ 18, le repo cloné.
+
+```bash
+# 1. Cloner + installer
+git clone https://github.com/CoulibalyT/skywalk.git
+cd skywalk/backend
+npm install
+
+# 2. Créer la base locale (adapte le user/mdp Postgres à ta machine)
+createdb skywalk
+
+# 3. Configurer backend/.env (copie de backend/.env.example)
+#    DB_HOST=localhost  DB_PORT=5432  DB_USER=<ton_user>  DB_PASS=<ton_mdp>
+#    DB_NAME=skywalk    DB_SSL=false  JWT_SECRET=dev-secret  JWT_EXPIRES_IN=1h
+```
+
+Puis, au choix :
+
+```bash
+# 4a. Schéma SEUL (tables vides, depuis le repo)
+npm run migration:run            # crée les 45 tables
+
+# 4b. Schéma + DONNÉES (recommandé) — restaurer le dump
+#     Fichier skywalk_seed.dump (~212 Ko) fourni séparément par Téné (pas dans le repo : il contient des hash).
+#     pg_restore v16 requis (dump au format custom PostgreSQL 16) :
+pg_restore --no-owner --no-privileges -d skywalk skywalk_seed.dump
+# → schéma + données + table migrations complète : rien d'autre à faire
+```
+
+```bash
+# 5. Lancer l'API
+npm run start:dev                # http://localhost:3000/api
+```
+
+**Inspecter la base** :
+- CLI : `psql -h localhost -U <user> -d skywalk`
+- GUI : **DBeaver** / **pgAdmin** / **TablePlus** → host `localhost`, port `5432`, base `skywalk`
+- Tables clés : `app_user`, `country`, `city`, `admin_procedure`, `forum_topic`, `forum_message`, `private_message`, `support_rating`, `expatriation_project`, `migrations`.
+
+> Les mêmes identifiants de connexion à l'app (`SkyWalkDemo2026!`) fonctionnent en local — le dump contient les mêmes comptes/hash.
+
 ---
 
 ## 1. En une phrase

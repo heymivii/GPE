@@ -17,3 +17,6 @@ build/
 
 # Playwright MCP output (screenshots, snapshots, console logs)
 .playwright-mcp/
+
+# DB dumps (contiennent des hash — jamais committés)
+*.dump
