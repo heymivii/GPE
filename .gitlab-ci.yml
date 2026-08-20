@@ -28,7 +28,6 @@ backend:lint:
     - npm ci --prefer-offline
   script:
     - npm run lint
-  when: manual
   allow_failure: true
 
 backend:test:
@@ -57,8 +56,6 @@ backend:test:
   script:
     - npm run test -- --passWithNoTests --forceExit
   coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
-  when: manual
-  allow_failure: true
 
 frontend:lint:
   stage: test
@@ -69,7 +66,6 @@ frontend:lint:
     - npm ci --prefer-offline
   script:
     - npm run lint
-  when: manual
   allow_failure: true
 
 frontend:test:
@@ -82,8 +78,6 @@ frontend:test:
   script:
     - npm run test
   coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
-  when: manual
-  allow_failure: true
 
 backend:build:
   stage: build
@@ -98,8 +92,8 @@ backend:build:
     paths:
       - backend/dist/
     expire_in: 1 hour
-  when: manual
-  allow_failure: true
+  needs:
+    - backend:test
 
 frontend:build:
   stage: build
@@ -114,8 +108,8 @@ frontend:build:
     paths:
       - skywalk-frontend/dist/
     expire_in: 1 hour
-  when: manual
-  allow_failure: true
+  needs:
+    - frontend:test
 
 docker:build:
   stage: docker
@@ -128,5 +122,10 @@ docker:build:
     - docker info
   script:
     - docker compose build --no-cache
-  when: manual
+  needs:
+    - backend:build
+    - frontend:build
   allow_failure: true
+  only:
+    - main
+    - develop
