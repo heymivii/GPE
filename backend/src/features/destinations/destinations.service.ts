@@ -120,6 +120,9 @@ export class DestinationsService {
     const countries = await this.countryRepository
       .createQueryBuilder('country')
       .leftJoinAndSelect('country.continent', 'continent')
+      // Ne jamais exposer les pays archivés : la liste des destinations reflète
+      // uniquement les pays actifs de l'admin (source de vérité unique).
+      .where('country.status = :status', { status: 'active' })
       .orderBy('country.name', 'ASC')
       .getMany();
 

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ShieldCheck, FileText, ArrowRight, BadgeCheck } from 'lucide-react';
 import { NATIONALITY_OPTIONS, isVisaExempt } from '../../../data/freeMovement';
-import { SUPPORTED_COUNTRIES } from '../../../data/supportedCountries';
+import { useSupportedCountries } from '../../../hooks/useSupportedCountries';
 
 /**
  * Widget « héros » : répond à la peur n°1 du futur expatrié — « ai-je besoin d'un visa ? ».
@@ -12,7 +12,9 @@ import { SUPPORTED_COUNTRIES } from '../../../data/supportedCountries';
  */
 export default function VisaChecker() {
   const { t } = useTranslation();
-  const destinations = SUPPORTED_COUNTRIES.filter((c) => c.code !== undefined);
+  // Destinations = pays ACTIFS de l'admin (source de vérité unique), hors non-sélectionnables.
+  const { countries, nonSelectableCodes } = useSupportedCountries();
+  const destinations = countries.filter((c) => !nonSelectableCodes.has(c.code));
   const [nationality, setNationality] = useState('FR');
   const [destination, setDestination] = useState(
     destinations.find((d) => d.code === 'US')?.code || destinations[0]?.code || 'US',
