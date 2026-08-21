@@ -56,16 +56,15 @@ export class ForumTopicService {
       createForumTopicDto.content.trim(),
     );
 
-    // Modération BDD sur titre + contenu : high/critical bloque la création,
-    // low/medium laisse passer mais flague le message initial + avertit l'auteur.
+    // Modération sur titre + contenu : TOUT mot de la liste admin (toute sévérité)
+    // refuse la création → le sujet n'est jamais affiché.
     const mod = await this.moderation.moderate(
       userId,
       `${sanitizedTitle}\n${sanitizedContent}`,
     );
-    if (mod.action === 'block') {
+    if (mod.action !== 'ok') {
       throw new BadRequestException(`Topic rejected: ${mod.reason}`);
     }
-    const flagged = mod.action === 'flag';
 
     const topic = this.forumTopicRepository.create({
       title: sanitizedTitle,
@@ -82,9 +81,6 @@ export class ForumTopicService {
       content: sanitizedContent,
       topic: { idForumTopic: savedTopic.idForumTopic } as any,
       user: { idUser: userId } as any,
-      isModerated: flagged,
-      moderationReason: flagged ? (mod.reason ?? null) : null,
-      moderatedAt: flagged ? new Date() : null,
     });
 
     await this.forumMessageRepository.save(initialMessage);
@@ -258,6 +254,15 @@ export class ForumTopicService {
           `Topic title rejected: ${titleFilter.reason}`,
         );
       }
+      const titleMod = await this.moderation.moderate(
+        userId,
+        updateForumTopicDto.title,
+      );
+      if (titleMod.action !== 'ok') {
+        throw new BadRequestException(
+          `Topic title rejected: ${titleMod.reason}`,
+        );
+      }
       topic.title = this.contentFilterService.sanitize(
         updateForumTopicDto.title,
       );
@@ -275,6 +280,15 @@ export class ForumTopicService {
         if (!contentFilter.ok) {
           throw new BadRequestException(
             `Topic content rejected: ${contentFilter.reason}`,
+          );
+        }
+        const contentMod = await this.moderation.moderate(
+          userId,
+          updateForumTopicDto.content,
+        );
+        if (contentMod.action !== 'ok') {
+          throw new BadRequestException(
+            `Topic content rejected: ${contentMod.reason}`,
           );
         }
         const sanitizedContent = this.contentFilterService.sanitize(

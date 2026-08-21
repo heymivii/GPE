@@ -70,21 +70,18 @@ export class ForumMessageService {
       throw new BadRequestException(`Content rejected: ${check.reason}`);
     }
 
-    // Modération pilotée par la BDD (mots interdits) : high/critical bloque,
-    // low/medium publie mais flague + crée un avertissement.
+    // Modération pilotée par la liste admin (mots interdits) : TOUT mot de la liste,
+    // quelle que soit sa sévérité, refuse le message → il n'est jamais affiché.
+    // (moderate() enregistre malgré tout un avertissement pour tracer l'auteur.)
     const mod = await this.moderation.moderate(userId, sanitized);
-    if (mod.action === 'block') {
+    if (mod.action !== 'ok') {
       throw new BadRequestException(`Content rejected: ${mod.reason}`);
     }
 
-    const flagged = mod.action === 'flag';
     const message = this.forumMessageRepository.create({
       content: sanitized,
       topic: { idForumTopic: createForumMessageDto.topicId } as any,
       user: { idUser: userId } as any,
-      isModerated: flagged,
-      moderationReason: flagged ? (mod.reason ?? null) : null,
-      moderatedAt: flagged ? new Date() : null,
     });
 
     const saved = await this.forumMessageRepository.save(message);
@@ -130,6 +127,11 @@ export class ForumMessageService {
       const check = await this.contentFilter.validate(sanitized);
       if (!check.ok) {
         throw new BadRequestException(`Content rejected: ${check.reason}`);
+      }
+      // Même règle qu'à la création : un mot interdit inséré à l'édition = refusé.
+      const mod = await this.moderation.moderate(userId, sanitized);
+      if (mod.action !== 'ok') {
+        throw new BadRequestException(`Content rejected: ${mod.reason}`);
       }
       updateForumMessageDto.content = sanitized;
     }
