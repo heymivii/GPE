@@ -9,6 +9,7 @@ const mockService = () => ({
   findOne: jest.fn(),
   update: jest.fn(),
   remove: jest.fn(),
+  getBuddies: jest.fn(),
 });
 
 describe('ProcedureTrackingController', () => {
@@ -77,6 +78,13 @@ describe('ProcedureTrackingController', () => {
     it('should delegate to service.findOne() with numeric id and user id', () => {
       controller.findOne(req, '5');
       expect(service.findOne).toHaveBeenCalledWith(5, 7);
+    });
+  });
+
+  describe('getBuddies()', () => {
+    it('should parse the query params and delegate to service.getBuddies()', () => {
+      controller.getBuddies(req, '5', '10');
+      expect(service.getBuddies).toHaveBeenCalledWith(5, 10, 7);
     });
   });
 

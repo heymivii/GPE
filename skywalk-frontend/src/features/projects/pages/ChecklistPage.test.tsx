@@ -21,6 +21,7 @@ vi.mock('../../dashboard/hooks/useChecklistProgress', async (importOriginal) => 
 vi.mock('../../../data/checklist-links', () => ({ getLinksForStep: () => null }));
 vi.mock('../../../api/useGovLink', () => ({ useGovLink: () => ({ link: undefined, isLoading: false }) }));
 vi.mock('../../documents/DocumentsVault', () => ({ default: () => null }));
+vi.mock('../components/BuddyList', () => ({ default: () => null }));
 
 import { useProject, useUnlockProject } from '../hooks/useProjectMutations';
 import { useChecklistProgress } from '../../dashboard/hooks/useChecklistProgress';

@@ -64,6 +64,8 @@ export class BuddyContactService {
       userId: recipientId,
       notificationType: 'message' as any,
       message: `Quelqu'un souhaite vous contacter a propos de "${procedure?.procedureType ?? 'une etape'}". Acceptez-vous ?`,
+      contextType: 'buddy-request',
+      contextId: saved.id,
     });
 
     return saved;
@@ -106,6 +108,9 @@ export class BuddyContactService {
       message: accept
         ? `Votre demande de contact pour "${request.procedure?.procedureType}" a ete acceptee !`
         : `Ce buddy n'est pas disponible pour le moment.`,
+      ...(accept
+        ? { contextType: 'user', contextId: request.recipientId }
+        : {}),
     });
 
     return updated;
