@@ -113,6 +113,42 @@ describe('GovLinksController', () => {
     ]);
   });
 
+  it('supportedCountries delegates to service.listSupportedCountries', async () => {
+    const result = await ctrl.supportedCountries();
+    expect(mockService.listSupportedCountries).toHaveBeenCalled();
+    expect(result).toEqual([{ code: 'FR', name: 'France', flag: '🇫🇷' }]);
+  });
+
+  describe('approveLink()', () => {
+    it('approves the link then re-syncs the checklist publication', async () => {
+      const approved = { id: 3, countryCode: 'FR', status: 'active' };
+      const reviewLink = jest.fn(async () => approved);
+      (mockService as any).reviewLink = reviewLink;
+
+      const result = await ctrl.approveLink('3');
+
+      expect(reviewLink).toHaveBeenCalledWith(3, true);
+      expect(mockProcedureGenerator.generateFromGovLinks).toHaveBeenCalledWith(
+        'FR',
+      );
+      expect(result).toEqual(approved);
+    });
+  });
+
+  describe('rejectLink()', () => {
+    it('rejects the link without re-syncing publication', async () => {
+      const rejected = { id: 3, countryCode: 'FR', status: 'needs_review' };
+      const reviewLink = jest.fn(async () => rejected);
+      (mockService as any).reviewLink = reviewLink;
+
+      const result = await ctrl.rejectLink('3');
+
+      expect(reviewLink).toHaveBeenCalledWith(3, false);
+      expect(mockProcedureGenerator.generateFromGovLinks).not.toHaveBeenCalled();
+      expect(result).toEqual(rejected);
+    });
+  });
+
   it('health delegates to service.checkHealth', async () => {
     const result = await ctrl.health();
     expect(mockService.checkHealth).toHaveBeenCalled();

@@ -96,5 +96,77 @@ describe('NotificationService', () => {
       repo.findOne.mockResolvedValue(null);
       await expect(service.findOne(123, 7)).rejects.toThrow(NotFoundException);
     });
+
+    it('returns the notification when it belongs to the requester', async () => {
+      repo.findOne.mockResolvedValue({
+        idNotification: 1,
+        user: { idUser: 7 },
+      });
+      const result = await service.findOne(1, 7);
+      expect(result.idNotification).toBe(1);
+    });
+  });
+
+  describe('findAllByUser', () => {
+    it('returns notifications ordered by sentAt DESC', async () => {
+      repo.find.mockResolvedValue([{ idNotification: 1 }]);
+      const result = await service.findAllByUser(7);
+      expect(result).toHaveLength(1);
+      expect(repo.find).toHaveBeenCalledWith({
+        where: { user: { idUser: 7 } },
+        order: { sentAt: 'DESC' },
+      });
+    });
+  });
+
+  describe('markAsRead', () => {
+    it('flips isRead and saves the notification', async () => {
+      const notification = { idNotification: 1, user: { idUser: 7 }, isRead: false };
+      repo.findOne.mockResolvedValue(notification);
+      repo.save.mockImplementation(async (n: any) => n);
+
+      const result = await service.markAsRead(1, 7);
+
+      expect(result.isRead).toBe(true);
+    });
+  });
+
+  describe('update', () => {
+    it('refuses to update another user’s notification', async () => {
+      repo.findOne.mockResolvedValue({ idNotification: 1, user: { idUser: 99 } });
+      await expect(
+        service.update(1, 7, { message: 'hi' } as any),
+      ).rejects.toThrow(ForbiddenException);
+    });
+
+    it('merges the dto into the notification and saves it', async () => {
+      const notification = {
+        idNotification: 1,
+        user: { idUser: 7 },
+        message: 'old',
+      };
+      repo.findOne.mockResolvedValue(notification);
+      repo.save.mockImplementation(async (n: any) => n);
+
+      const result = await service.update(1, 7, { message: 'new' } as any);
+
+      expect(result.message).toBe('new');
+    });
+  });
+
+  describe('remove', () => {
+    it('refuses to remove another user’s notification', async () => {
+      repo.findOne.mockResolvedValue({ idNotification: 1, user: { idUser: 99 } });
+      await expect(service.remove(1, 7)).rejects.toThrow(ForbiddenException);
+    });
+
+    it('removes the notification when owned by the requester', async () => {
+      const notification = { idNotification: 1, user: { idUser: 7 } };
+      repo.findOne.mockResolvedValue(notification);
+
+      await service.remove(1, 7);
+
+      expect(repo.remove).toHaveBeenCalledWith(notification);
+    });
   });
 });

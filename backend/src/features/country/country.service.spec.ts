@@ -5,6 +5,12 @@ import { CountryService } from './country.service';
 import { Country } from './entities/country.entity';
 import { ReviewService } from '../review/review.service';
 
+jest.mock('../../services/restCountries.service', () => ({
+  __esModule: true,
+  default: { getAllCountries: jest.fn() },
+}));
+import restCountriesService from '../../services/restCountries.service';
+
 const mockRepo = () => ({
   find: jest.fn(),
   findOne: jest.fn(),
@@ -40,6 +46,16 @@ describe('CountryService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+  });
+
+  describe('getAvailableCountries()', () => {
+    it('should delegate to restCountriesService.getAllCountries()', async () => {
+      (restCountriesService.getAllCountries as jest.Mock).mockResolvedValue([
+        { code: 'FR', name: 'France' },
+      ]);
+      const result = await service.getAvailableCountries();
+      expect(result).toEqual([{ code: 'FR', name: 'France' }]);
+    });
   });
 
   describe('create()', () => {

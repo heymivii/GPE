@@ -20,9 +20,19 @@ const mockService = () => ({
 describe('ForumMessageController', () => {
   let controller: ForumMessageController;
   let service: ReturnType<typeof mockService>;
+  let supportRating: {
+    rate: jest.Mock;
+    unrate: jest.Mock;
+    getMyRatingsForTopic: jest.Mock;
+  };
 
   beforeEach(async () => {
     service = mockService();
+    supportRating = {
+      rate: jest.fn(),
+      unrate: jest.fn(),
+      getMyRatingsForTopic: jest.fn(),
+    };
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ForumMessageController],
@@ -30,11 +40,7 @@ describe('ForumMessageController', () => {
         { provide: ForumMessageService, useValue: service },
         {
           provide: SupportRatingService,
-          useValue: {
-            rate: jest.fn(),
-            unrate: jest.fn(),
-            getMyRatingsForTopic: jest.fn(),
-          },
+          useValue: supportRating,
         },
       ],
     }).compile();
@@ -44,6 +50,46 @@ describe('ForumMessageController', () => {
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
+  });
+
+  // ─── rate / unrate / myRatings ─────────────────────────────────
+
+  describe('rate()', () => {
+    it('should delegate to supportRatingService.rate', async () => {
+      const req = { user: { userId: 1 } };
+      const dto = { stars: 4, comment: 'merci' };
+      supportRating.rate.mockResolvedValue({ idSupportRating: 1 });
+
+      const result = await controller.rate(req, 10, dto as any);
+
+      expect(supportRating.rate).toHaveBeenCalledWith(1, 10, 4, 'merci');
+      expect(result.idSupportRating).toBe(1);
+    });
+  });
+
+  describe('unrate()', () => {
+    it('should delegate to supportRatingService.unrate', async () => {
+      const req = { user: { userId: 1 } };
+      supportRating.unrate.mockResolvedValue(undefined);
+
+      await controller.unrate(req, 10);
+
+      expect(supportRating.unrate).toHaveBeenCalledWith(1, 10);
+    });
+  });
+
+  describe('myRatings()', () => {
+    it('should delegate to supportRatingService.getMyRatingsForTopic', async () => {
+      const req = { user: { userId: 1 } };
+      supportRating.getMyRatingsForTopic.mockResolvedValue([
+        { messageId: 1, stars: 5 },
+      ]);
+
+      const result = await controller.myRatings(req, 99);
+
+      expect(supportRating.getMyRatingsForTopic).toHaveBeenCalledWith(1, 99);
+      expect(result).toEqual([{ messageId: 1, stars: 5 }]);
+    });
   });
 
   // ─── create ────────────────────────────────────────────────────

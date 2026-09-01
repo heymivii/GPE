@@ -121,4 +121,50 @@ describe('SupportRatingService', () => {
       expect(await service.getUserRating(2)).toEqual({ average: 0, count: 0 });
     });
   });
+
+  describe('getRatingsForUsers()', () => {
+    it('returns an empty map without querying when userIds is empty', async () => {
+      const res = await service.getRatingsForUsers([]);
+      expect(res.size).toBe(0);
+      expect(ratingRepo.createQueryBuilder).not.toHaveBeenCalled();
+    });
+
+    it('maps rated_user_id rows to a summary map keyed by user id', async () => {
+      ratingRepo.createQueryBuilder.mockReturnValue({
+        select: jest.fn().mockReturnThis(),
+        addSelect: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        groupBy: jest.fn().mockReturnThis(),
+        getRawMany: jest.fn().mockResolvedValue([
+          { userId: 2, avg: '4.666', count: '3' },
+          { userId: 5, avg: '3', count: '1' },
+        ]),
+      });
+
+      const res = await service.getRatingsForUsers([2, 5]);
+      expect(res.get(2)).toEqual({ average: 4.7, count: 3 });
+      expect(res.get(5)).toEqual({ average: 3, count: 1 });
+    });
+  });
+
+  describe('getMyRatingsForTopic()', () => {
+    it('returns the rater’s ratings for a topic’s messages', async () => {
+      ratingRepo.createQueryBuilder.mockReturnValue({
+        innerJoin: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        select: jest.fn().mockReturnThis(),
+        getRawMany: jest.fn().mockResolvedValue([
+          { messageId: '10', stars: '4' },
+          { messageId: '11', stars: '5' },
+        ]),
+      });
+
+      const res = await service.getMyRatingsForTopic(1, 99);
+      expect(res).toEqual([
+        { messageId: 10, stars: 4 },
+        { messageId: 11, stars: 5 },
+      ]);
+    });
+  });
 });
