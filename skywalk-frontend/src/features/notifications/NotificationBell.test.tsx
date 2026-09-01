@@ -160,6 +160,16 @@ describe('NotificationBell (user)', () => {
     expect(navigate).toHaveBeenCalledWith('/messages?to=6');
   });
 
+  it('carries the contact name along so the conversation header does not fall back to a generic label', () => {
+    setup([
+      notification({ contextType: 'user', contextId: 6, contextLabel: 'Jane', message: 'Demande acceptee !' }),
+    ]);
+    renderBell();
+    fireEvent.click(screen.getByRole('button', { name: /unread notification/ }));
+    fireEvent.click(screen.getByText('Demande acceptee !'));
+    expect(navigate).toHaveBeenCalledWith('/messages?to=6&name=Jane');
+  });
+
   it('excludes the raw buddy-request notification from the regular list to avoid duplicating the actionable card', () => {
     setup([notification({ contextType: 'buddy-request', contextId: 6, message: 'Jane souhaite vous contacter' })]);
     renderBell();

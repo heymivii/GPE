@@ -127,6 +127,7 @@ describe('BuddyContactService', () => {
       status: 'pending',
       senderId: 1,
       recipientId: 2,
+      recipient: { firstName: 'Jane' },
       expiresAt: new Date(Date.now() + 3600_000),
       procedure: { procedureType: 'Visa long séjour' },
       ...overrides,
@@ -177,9 +178,10 @@ describe('BuddyContactService', () => {
       expect(notificationService.create).toHaveBeenCalledWith({
         userId: 1,
         notificationType: 'message',
-        message: expect.stringContaining('acceptee'),
+        message: expect.stringContaining('Jane'),
         contextType: 'user',
         contextId: 2,
+        contextLabel: 'Jane',
       });
     });
 

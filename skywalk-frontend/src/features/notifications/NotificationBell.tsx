@@ -27,8 +27,11 @@ function notifLink(n: AppNotification): string | null {
     return `/forum/post/${n.contextId}`;
   }
   // Demande de contact buddy acceptée → ouvre directement la conversation.
+  // Le nom passe en query param : tant qu'aucun message n'a encore été échangé,
+  // il n'existe aucune conversation dont on pourrait déduire le nom du contact.
   if (n.contextType === 'user' && n.contextId) {
-    return `/messages?to=${n.contextId}`;
+    const name = n.contextLabel ? `&name=${encodeURIComponent(n.contextLabel)}` : '';
+    return `/messages?to=${n.contextId}${name}`;
   }
   return null;
 }
