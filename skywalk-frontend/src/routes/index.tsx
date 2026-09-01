@@ -22,6 +22,9 @@ import { DestinationDetailPage } from '../features/destinations/pages/Destinatio
 import ProjectsPage from '../features/projects/pages/ProjectsPage';
 import ProjectDetailPage from '../features/projects/pages/ProjectDetailPage';
 import ChecklistPage from '../features/projects/pages/ChecklistPage'; // ✅ AJOUT
+import DocumentsPage from '../features/documents/DocumentsPage';
+import SettingsPage from '../features/settings/pages/SettingsPage';
+import MessagesPage from '../features/messages/pages/MessagesPage';
 import CountryComparison from '../features/comparison/pages/CountryComparison';
 import ServicePage from '../features/services/pages/ServicePage';
 import ServicesIndexPage from '../features/services/pages/ServicesIndexPage';
@@ -37,7 +40,11 @@ import AdminContinents from '../features/admin/pages/AdminContinents';
 import AdminCountries from '../features/admin/pages/AdminCountries';
 import AdminCities from '../features/admin/pages/AdminCities';
 import AdminRoles from '../features/admin/pages/AdminRoles';
-import MessagesPage from '../features/messages/pages/MessagesPage';
+import AdminGovLinks from '../features/admin/pages/AdminGovLinks';
+import AdminSearchHints from '../features/admin/pages/AdminSearchHints';
+import AdminModeration from '../features/admin/pages/AdminModeration';
+import AdminExperts from '../features/admin/pages/AdminExperts';
+import ExpertsPage from '../features/experts/pages/ExpertsPage';
 
 export const router = createBrowserRouter([
   {
@@ -75,6 +82,7 @@ export const router = createBrowserRouter([
       { path: 'comparison', element: <CountryComparison /> },
       { path: 'blog', element: <BlogPage /> },
       { path: 'blog/:id', element: <BlogArticlePage /> },
+      { path: 'experts', element: <ExpertsPage /> },
       { path: 'visa', element: <Navigate to="/services/visa" replace /> },
       { path: 'test/cost-of-living', element: <CostOfLivingTestPage /> },
     ],
@@ -134,6 +142,20 @@ export const router = createBrowserRouter([
         ],
       },
       {
+        path: '/documents',
+        element: <MainLayout />,
+        children: [
+          { index: true, element: <DocumentsPage /> },
+        ],
+      },
+      {
+        path: '/settings',
+        element: <MainLayout />,
+        children: [
+          { index: true, element: <SettingsPage /> },
+        ],
+      },
+      {
         path: '/messages',
         element: <MainLayout />,
         children: [
@@ -157,6 +179,10 @@ export const router = createBrowserRouter([
           { path: 'continents', element: <AdminContinents /> },
           { path: 'countries', element: <AdminCountries /> },
           { path: 'cities', element: <AdminCities /> },
+          { path: 'gov-links', element: <AdminGovLinks /> },
+          { path: 'search-hints', element: <AdminSearchHints /> },
+          { path: 'moderation', element: <AdminModeration /> },
+          { path: 'experts', element: <AdminExperts /> },
         ],
       },
     ],

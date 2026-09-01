@@ -28,10 +28,6 @@ export class CreateForumTopicDto {
   @IsEnum(TopicCategory)
   category?: TopicCategory;
 
-  @IsNotEmpty()
-  @IsNumber()
-  userId: number;
-
   @IsOptional()
   @IsNumber()
   countryId?: number;

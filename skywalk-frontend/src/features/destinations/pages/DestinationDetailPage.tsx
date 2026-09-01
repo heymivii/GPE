@@ -134,7 +134,7 @@ export function DestinationDetailPage() {
             <div className="flex items-center gap-6 text-white/90">
               <span className="flex items-center gap-2">
                 <Globe className="w-5 h-5" />
-                {country.continent && t(`comparison.data.continents.${country.continent.continentName}`, { defaultValue: country.continent.continentName })}
+                {country.continent && t(`comparison.data.continents.${country.continent.name}`, { defaultValue: country.continent.name })}
               </span>
               <span className="flex items-center gap-2">
                 <Building2 className="w-5 h-5" />

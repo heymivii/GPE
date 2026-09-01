@@ -30,6 +30,16 @@ export class ForumMessage {
   })
   updatedAt: Date;
 
+  // ── Modération (schéma d'Arphan, add-fields-row-db) ──
+  @Column({ name: 'is_moderated', type: 'boolean', default: false })
+  isModerated: boolean;
+
+  @Column({ name: 'moderation_reason', type: 'text', nullable: true })
+  moderationReason: string | null;
+
+  @Column({ name: 'moderated_at', type: 'timestamp', nullable: true })
+  moderatedAt: Date | null;
+
   @ManyToOne(() => ForumTopic, { nullable: false })
   @JoinColumn({ name: 'topic_id' })
   topic: ForumTopic;

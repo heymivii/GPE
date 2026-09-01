@@ -21,7 +21,7 @@ export const getStepDeadline = (
   daysBeforeDeparture: number | undefined,
   departureDate: string | Date | undefined | null
 ): StepDeadline => {
-  if (!daysBeforeDeparture || !departureDate) {
+  if (daysBeforeDeparture == null || !departureDate) {
     return { date: null, isUrgent: false, isLate: false, daysLeft: null };
   }
 
@@ -99,10 +99,22 @@ export function useChecklistProgress(projectId: number) {
     },
   });
 
+  const updateFactsMutation = useMutation({
+    mutationFn: ({ trackingId, completedFacts }: { trackingId: number; completedFacts: number[] }) =>
+      checklistApi.updateCompletedFacts(trackingId, completedFacts),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['checklist-progress', projectId],
+      });
+    },
+  });
+
   return {
     progress,
     isLoading,
     updateStep: updateMutation.mutateAsync,
     isUpdating: updateMutation.isPending,
+    updateFacts: updateFactsMutation.mutateAsync,
+    isUpdatingFacts: updateFactsMutation.isPending,
   };
 }

@@ -36,12 +36,12 @@ export class CityComparisonController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.cityComparisonService.findOne(+id);
+  findOne(@Request() req, @Param('id') id: string) {
+    return this.cityComparisonService.findOne(+id, req.user.userId);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.cityComparisonService.remove(+id);
+  remove(@Request() req, @Param('id') id: string) {
+    return this.cityComparisonService.remove(+id, req.user.userId);
   }
 }

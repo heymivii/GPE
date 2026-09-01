@@ -17,6 +17,9 @@ import EmploiStats from '../components/EmploiStats';
 import VisaStats from '../components/VisaStats';
 import { useServiceContent } from '../hooks/useServiceContent';
 import { useTranslation } from 'react-i18next';
+import { SUPPORTED_COUNTRIES } from '../../../data/supportedCountries';
+import { useGovLink } from '../../../api/useGovLink';
+import OfficialLinkCard from '../../../components/OfficialLinkCard';
 
 export default function ServicePage() {
   const { t } = useTranslation();
@@ -68,6 +71,11 @@ export default function ServicePage() {
   const hasSidebarTools = categoriesWithTools.includes(category || '');
 
   const selectedCityName = availableCities.find(c => c.slug === selectedCity)?.name || undefined;
+
+  // Convert country slug → ISO2 for the gov-link lookup
+  const selectedCountryCode =
+    SUPPORTED_COUNTRIES.find((c) => c.slug === selectedCountry)?.code ?? undefined;
+  const { link: govLink } = useGovLink(selectedCountryCode, category);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -197,6 +205,15 @@ export default function ServicePage() {
             ) : content.stats && content.stats.length > 0 ? (
               <ServiceStats stats={content.stats} color={service.color} />
             ) : null}
+
+            {govLink && (
+              <OfficialLinkCard
+                label={govLink.label}
+                url={govLink.url}
+                verifiedAt={govLink.verifiedAt}
+                summary={govLink.summary}
+              />
+            )}
 
             <ServiceGuides
               guides={content.guides}

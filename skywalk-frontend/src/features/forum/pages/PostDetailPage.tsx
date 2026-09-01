@@ -18,23 +18,31 @@ import {
   PinOff,
   Shield,
   ShieldAlert,
-  CheckCircle2
+  CheckCircle2,
+  Bell,
+  BellOff
 } from 'lucide-react';
-import { 
-  useForumTopic, 
-  useCreateForumMessage, 
-  useUpdateForumMessage, 
+import {
+  useForumTopic,
+  useCreateForumMessage,
+  useUpdateForumMessage,
   useDeleteForumMessage,
   useReportContent,
   useLockTopic,
   usePinTopic,
   useModeratorDeleteMessage,
   useModeratorDeleteTopic,
+  useFollowTopic,
+  useUnfollowTopic,
 } from '../../../hooks/useForum';
 import { useAuth } from '../../../hooks/useAuth';
+import ExpertBadge from '../../../components/ExpertBadge';
+import StarRating from '../../../components/StarRating';
+import { useMyTopicRatings, useRateMessage } from '../../../hooks/useRatings';
 import { useTranslation } from 'react-i18next';
 import type { ReportReason } from '../../../types/forum';
 import { ReportReasonValues } from '../../../types/forum';
+import { userReportApi, type UserReportReason } from '../../../api/user-report';
 
 const categoryColors: Record<string, string> = {
   question: 'bg-blue-50 text-blue-700',
@@ -63,6 +71,32 @@ export default function PostDetailPage() {
   const [reportReason, setReportReason] = useState<ReportReason>('spam');
   const [reportDetails, setReportDetails] = useState('');
 
+  // Signalement d'un MEMBRE (compte), distinct du signalement de contenu.
+  const [reportMember, setReportMember] = useState<{ id: number; name: string } | null>(null);
+  const [memberReason, setMemberReason] = useState<UserReportReason>('inappropriate');
+  const [memberDetails, setMemberDetails] = useState('');
+  const [memberSubmitting, setMemberSubmitting] = useState(false);
+
+  const submitMemberReport = async () => {
+    if (!reportMember) return;
+    setMemberSubmitting(true);
+    try {
+      await userReportApi.create({
+        reportedUserId: reportMember.id,
+        reason: memberReason,
+        details: memberDetails || undefined,
+      });
+      setReportMember(null);
+      setMemberDetails('');
+      showFeedback(t('forum.postDetail.reportSuccess'), 'success');
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { message?: string } } };
+      showFeedback(axiosErr?.response?.data?.message || t('forum.postDetail.submitError'));
+    } finally {
+      setMemberSubmitting(false);
+    }
+  };
+
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
   const [feedbackType, setFeedbackType] = useState<'error' | 'success'>('error');
 
@@ -89,6 +123,26 @@ export default function PostDetailPage() {
   const isModOrAdmin = user?.userRole === 'admin' || user?.userRole === 'moderator';
   const isTopicLocked = topic?.is_locked ?? false;
 
+  // F4 — notation de l'aide reçue
+  const currentUserId = user ? (user.idUser || user.id) : undefined;
+  const { data: myRatings = [] } = useMyTopicRatings(topicId, !!user);
+  const myRatingByMessage = new Map(myRatings.map((r) => [r.messageId, r.stars]));
+  const rateMutation = useRateMessage(topicId);
+
+  // F2 — suivi de discussion (« Rejoindre »)
+  const followMutation = useFollowTopic();
+  const unfollowMutation = useUnfollowTopic();
+  const isFollowing = topic?.isFollowedByMe ?? false;
+  const followBusy = followMutation.isPending || unfollowMutation.isPending;
+  const toggleFollow = () => {
+    if (!user) {
+      navigate('/auth/login');
+      return;
+    }
+    if (isFollowing) unfollowMutation.mutate(topicId);
+    else followMutation.mutate(topicId);
+  };
+
   const handleReply = async (e: React.FormEvent) => {
     e.preventDefault();
     clearFeedback();
@@ -114,7 +168,6 @@ export default function PostDetailPage() {
       await createMessage.mutateAsync({
         content: replyContent.trim(),
         topicId: topicId,
-        userId: userId,
       });
 
       setReplyContent('');
@@ -207,7 +260,6 @@ export default function PostDetailPage() {
 
     try {
       await reportContent.mutateAsync({
-        reporterId: userId,
         messageId: reportTargetMessageId,
         topicId: reportTargetTopicId,
         reason: reportReason,
@@ -382,7 +434,10 @@ export default function PostDetailPage() {
                   <Clock className="w-4 h-4" />
                   {formatTimeAgo(topic.created_at)}
                 </span>
-                <span>{t('forum.postDetail.by', { name: topic.user?.fullName || t('forum.user', { id: topic.user?.idUser }) })}</span>
+                <span className="inline-flex items-center gap-1.5">
+                  {t('forum.postDetail.by', { name: topic.user?.fullName || t('forum.user', { id: topic.user?.idUser }) })}
+                  <ExpertBadge user={topic.user} showTitle={false} />
+                </span>
                 {topic.country?.countryName && (
                   <span className="flex items-center gap-1">
                     📍 {topic.country.countryName}
@@ -392,6 +447,25 @@ export default function PostDetailPage() {
             </div>
             
             <div className="flex items-center gap-2">
+              <button
+                onClick={toggleFollow}
+                disabled={followBusy}
+                aria-pressed={isFollowing}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-60 ${
+                  isFollowing
+                    ? 'bg-[#5EA3C0]/10 text-[#5EA3C0] border border-[#5EA3C0]/30'
+                    : 'bg-[#5EA3C0] text-white hover:bg-[#4891b0]'
+                }`}
+                title={isFollowing ? t('forum.follow.unfollow') : t('forum.follow.follow')}
+              >
+                {isFollowing ? <BellOff className="w-4 h-4" /> : <Bell className="w-4 h-4" />}
+                <span>
+                  {isFollowing ? t('forum.follow.following') : t('forum.follow.follow')}
+                </span>
+                {typeof topic.followersCount === 'number' && topic.followersCount > 0 && (
+                  <span className="text-xs opacity-80">· {topic.followersCount}</span>
+                )}
+              </button>
               {user && (
                 <button
                   onClick={() => openReportModal(undefined, topicId)}
@@ -401,6 +475,22 @@ export default function PostDetailPage() {
                   <Flag className="w-4 h-4" />
                 </button>
               )}
+              {user && topic.user?.idUser &&
+                user.idUser !== topic.user.idUser &&
+                user.id !== topic.user.idUser && (
+                  <button
+                    onClick={() =>
+                      setReportMember({
+                        id: topic.user!.idUser as number,
+                        name: topic.user?.fullName || `#${topic.user?.idUser}`,
+                      })
+                    }
+                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                    title="Signaler ce membre"
+                  >
+                    <ShieldAlert className="w-4 h-4" />
+                  </button>
+                )}
               {user && (user.idUser === topic.user?.idUser || user.id === topic.user?.idUser) && (
                 <Link
                   to={`/forum/post/${id}/edit`}
@@ -456,6 +546,7 @@ export default function PostDetailPage() {
                   <span className="font-semibold text-gray-900">
                     {initialMessage.user?.fullName || t('forum.user', { id: initialMessage.user?.idUser })}
                   </span>
+                  <ExpertBadge user={initialMessage.user} showTitle={false} />
                   <span className="text-sm text-gray-500">{formatTimeAgo(initialMessage.sent_at)}</span>
                   <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-medium rounded">
                     {t('forum.postDetail.author')}
@@ -499,6 +590,7 @@ export default function PostDetailPage() {
                         <span className="font-semibold text-gray-900">
                           {message.user?.fullName || t('forum.user', { id: message.user?.idUser })}
                         </span>
+                        <ExpertBadge user={message.user} showTitle={false} />
                         <span className="text-sm text-gray-500">
                           {formatTimeAgo(message.sent_at)}
                         </span>
@@ -592,6 +684,29 @@ export default function PostDetailPage() {
                     ) : (
                       <div className="text-gray-700 whitespace-pre-wrap">
                         {message.content}
+                      </div>
+                    )}
+
+                    {/* F4 — noter l'aide reçue (connecté, pas l'auteur du message) */}
+                    {user && !isEditing && message.user?.idUser !== currentUserId && (
+                      <div className="mt-3 pt-3 border-t border-gray-50 flex items-center gap-2 flex-wrap">
+                        <span className="text-xs text-gray-500">
+                          {t('rating.helpful', { defaultValue: 'Cette réponse t’a aidé ?' })}
+                        </span>
+                        <StarRating
+                          value={myRatingByMessage.get(message.message_id) ?? 0}
+                          onChange={(stars) => rateMutation.mutate({ messageId: message.message_id, stars })}
+                          size="sm"
+                          ariaLabel={t('rating.rateAuthor', {
+                            name: message.user?.fullName || '',
+                            defaultValue: 'Noter l’aide de {{name}}',
+                          })}
+                        />
+                        {myRatingByMessage.has(message.message_id) && (
+                          <span className="text-[11px] text-emerald-600">
+                            {t('rating.thanks', { defaultValue: 'Merci !' })}
+                          </span>
+                        )}
                       </div>
                     )}
                   </div>
@@ -743,6 +858,72 @@ export default function PostDetailPage() {
                   )}
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modale : signaler un membre (compte) */}
+      {reportMember && (
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          onClick={() => setReportMember(null)}
+        >
+          <div
+            className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-2 mb-1">
+              <ShieldAlert className="w-5 h-5 text-red-500" />
+              <h3 className="text-lg font-bold text-gray-900">Signaler ce membre</h3>
+            </div>
+            <p className="text-sm text-gray-500 mb-4">{reportMember.name}</p>
+
+            <label className="block text-sm font-medium text-gray-700 mb-1">Motif</label>
+            <select
+              value={memberReason}
+              onChange={(e) => setMemberReason(e.target.value as UserReportReason)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm mb-3 bg-white"
+            >
+              <option value="spam">Spam</option>
+              <option value="harassment">Harcèlement</option>
+              <option value="hate_speech">Propos haineux</option>
+              <option value="impersonation">Usurpation d'identité</option>
+              <option value="inappropriate">Comportement inapproprié</option>
+              <option value="other">Autre</option>
+            </select>
+
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Détails (optionnel)
+            </label>
+            <textarea
+              value={memberDetails}
+              onChange={(e) => setMemberDetails(e.target.value)}
+              rows={3}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm mb-4 resize-none"
+              placeholder="Précisez la raison…"
+            />
+
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setReportMember(null)}
+                className="px-4 py-2 text-sm border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={submitMemberReport}
+                disabled={memberSubmitting}
+                className="flex items-center gap-2 px-4 py-2 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 disabled:opacity-50"
+              >
+                {memberSubmitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" /> Envoi…
+                  </>
+                ) : (
+                  'Signaler'
+                )}
+              </button>
             </div>
           </div>
         </div>

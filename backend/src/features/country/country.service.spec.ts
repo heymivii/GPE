@@ -3,6 +3,13 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { NotFoundException } from '@nestjs/common';
 import { CountryService } from './country.service';
 import { Country } from './entities/country.entity';
+import { ReviewService } from '../review/review.service';
+
+jest.mock('../../services/restCountries.service', () => ({
+  __esModule: true,
+  default: { getAllCountries: jest.fn() },
+}));
+import restCountriesService from '../../services/restCountries.service';
 
 const mockRepo = () => ({
   find: jest.fn(),
@@ -10,6 +17,15 @@ const mockRepo = () => ({
   create: jest.fn(),
   save: jest.fn(),
   remove: jest.fn(),
+});
+
+const mockReview = () => ({
+  notifyAdminsOfAddition: jest.fn(async () => undefined),
+  notifyAdminsOfPending: jest.fn(async () => undefined),
+  notifyAuthorOfDecision: jest.fn(async () => undefined),
+  notifyUser: jest.fn(async () => undefined),
+  nameOf: jest.fn(async () => 'Admin'),
+  assertNotSelfReview: jest.fn(),
 });
 
 describe('CountryService', () => {
@@ -22,6 +38,7 @@ describe('CountryService', () => {
       providers: [
         CountryService,
         { provide: getRepositoryToken(Country), useValue: repo },
+        { provide: ReviewService, useValue: mockReview() },
       ],
     }).compile();
     service = module.get<CountryService>(CountryService);
@@ -29,6 +46,16 @@ describe('CountryService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+  });
+
+  describe('getAvailableCountries()', () => {
+    it('should delegate to restCountriesService.getAllCountries()', async () => {
+      (restCountriesService.getAllCountries as jest.Mock).mockResolvedValue([
+        { code: 'FR', name: 'France' },
+      ]);
+      const result = await service.getAvailableCountries();
+      expect(result).toEqual([{ code: 'FR', name: 'France' }]);
+    });
   });
 
   describe('create()', () => {
@@ -44,13 +71,34 @@ describe('CountryService', () => {
   });
 
   describe('findAll()', () => {
-    it('should return countries with continent relation', async () => {
+    it('should return countries with continent relation (no status filter)', async () => {
       repo.find.mockResolvedValue([{ idCountry: 1 }]);
       const result = await service.findAll();
       expect(result).toHaveLength(1);
       expect(repo.find).toHaveBeenCalledWith(
-        expect.objectContaining({ relations: ['continent'] }),
+        expect.objectContaining({
+          relations: ['continent', 'createdBy', 'reviewedBy'],
+        }),
       );
+      // No where.status when no arg passed
+      const callArg = repo.find.mock.calls[0][0];
+      expect(callArg.where).toBeUndefined();
+    });
+
+    it('should filter by status when status arg is provided', async () => {
+      repo.find.mockResolvedValue([{ idCountry: 2, status: 'active' }]);
+      const result = await service.findAll('active');
+      expect(result).toHaveLength(1);
+      expect(repo.find).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { status: 'active' } }),
+      );
+    });
+
+    it('should not apply status filter when status is undefined', async () => {
+      repo.find.mockResolvedValue([{ idCountry: 1 }, { idCountry: 2 }]);
+      await service.findAll(undefined);
+      const callArg = repo.find.mock.calls[0][0];
+      expect(callArg.where).toBeUndefined();
     });
   });
 

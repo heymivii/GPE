@@ -44,7 +44,10 @@ export class CountryContentService {
     return content;
   }
 
-  async update(id: number, updateDto: UpdateCountryContentDto): Promise<CountryContent> {
+  async update(
+    id: number,
+    updateDto: UpdateCountryContentDto,
+  ): Promise<CountryContent> {
     const content = await this.findOne(id);
     Object.assign(content, updateDto);
     return await this.countryContentRepository.save(content);

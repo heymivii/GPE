@@ -27,6 +27,18 @@ export async function fetchQualityOfLifeHtml(country: string): Promise<string> {
   return data;
 }
 
+/** CITY page (e.g. /quality-of-life/in/Paris) — same index labels, same parser. */
+export async function fetchCityQualityOfLifeHtml(
+  slug: string,
+): Promise<string> {
+  const url = `https://www.numbeo.com/quality-of-life/in/${slug}`;
+  const { data } = await axios.get<string>(url, {
+    timeout: 15000,
+    headers: { 'User-Agent': UA, 'Accept-Language': 'en-US,en;q=0.9' },
+  });
+  return data;
+}
+
 const INDEX_LABELS: { key: keyof QualityOfLifeData; label: string }[] = [
   { key: 'qualityOfLife', label: 'Quality of Life Index' },
   { key: 'purchasingPower', label: 'Purchasing Power Index' },
@@ -66,7 +78,5 @@ export function parseQualityOfLife(html: string): QualityOfLifeData {
 
 // Provenance (jury-defensible): Numbeo is crowd-sourced; capture its last-update date.
 export function parseLastUpdate(html: string): string | undefined {
-  return html.match(
-    /Last update:\s*([0-9]{1,2}\s+[A-Za-z]+\s+[0-9]{4})/,
-  )?.[1];
+  return html.match(/Last update:\s*([0-9]{1,2}\s+[A-Za-z]+\s+[0-9]{4})/)?.[1];
 }

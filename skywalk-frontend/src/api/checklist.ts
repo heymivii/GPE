@@ -9,10 +9,15 @@ export interface AdminProcedure {
   averageDelayDays?: number;
   // ✅ Ajouts pour la checklist personnalisée
   daysBeforeDeparture?: number;
+  phase?: 'before' | 'on_arrival';
   onlyFor?: {
     travelType?: string[];
     objective?: string[];
   } | null;
+  // ✅ Gov-link enrichment (rempli lors de la génération depuis les liens officiels)
+  sourceUrl?: string;
+  keyFacts?: string[];
+  actionItems?: string[];
 }
 
 export interface ProcedureTracking {
@@ -20,6 +25,7 @@ export interface ProcedureTracking {
   status: 'not_started' | 'in_progress' | 'completed' | 'blocked' | 'cancelled';
   start_date?: string;
   end_date?: string;
+  completedFacts?: number[];
   admin_procedure: AdminProcedure;
   project: {
     idProject: number;
@@ -46,6 +52,17 @@ export const checklistApi = {
     const response = await api.patch<ProcedureTracking>(
       `/procedure-tracking/${trackingId}`,
       { status },
+    );
+    return response.data;
+  },
+
+  updateCompletedFacts: async (
+    trackingId: number,
+    completedFacts: number[],
+  ): Promise<ProcedureTracking> => {
+    const response = await api.patch<ProcedureTracking>(
+      `/procedure-tracking/${trackingId}`,
+      { completedFacts },
     );
     return response.data;
   },

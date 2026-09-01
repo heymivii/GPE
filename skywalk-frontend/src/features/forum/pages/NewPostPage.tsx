@@ -85,7 +85,6 @@ export default function NewPostPage() {
         title: formData.title.trim(),
         content: formData.content.trim(),
         category: formData.category,
-        userId: userId,
         countryId: formData.countryId,
       });
 

@@ -230,7 +230,7 @@ export default function CostOfLivingTab({ cities, countryCurrency, averageHousin
   }
 
   const toggleCity = (cityId: number) => {
-    setExpandedCities(prev => ({ ...prev, [cityId]: !prev[cityId] }));
+    setExpandedCities(prev => ({ ...prev, [cityId]: prev[cityId] === false }));
   };
 
   const activeCat = CATEGORIES.find(c => c.id === activeCategory)!;

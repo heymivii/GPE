@@ -14,13 +14,14 @@ const PREFS_VERSION = 2;
 
 const DEFAULT_WIDGET_SIZES: Record<string, WidgetSize> = {
   'checklist': 'large',
+  'countdown': 'medium',
+  'required-documents': 'medium',
+  'destination-forum': 'medium',
   'profile-summary': 'medium',
   'job-opportunities': 'medium',
-  'local-time': 'medium',
   'weather': 'medium',
   'recommendations': 'large',
   'budget-tracker': 'medium',
-  'currency-converter': 'medium',
 };
 
 export function useDashboardPreferences() {

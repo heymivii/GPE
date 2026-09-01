@@ -10,6 +10,7 @@ import {
   HttpStatus,
   UseGuards,
   Request,
+  Query,
 } from '@nestjs/common';
 import { CountryService } from './country.service';
 import { CreateCountryDto } from './dto/create-country.dto';
@@ -33,20 +34,26 @@ export class CountryController {
   @Roles('admin')
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() createDto: CreateCountryDto, @Request() req) {
-    const country = await this.countryService.create(createDto);
+    const country = await this.countryService.create(
+      createDto,
+      req.user.userId,
+    );
     await this.adminLogService.log(
       req.user.userId,
       'CREATE',
       'Country',
       country.idCountry.toString(),
-      `Création du pays "${country.countryName}"`
+      `Création du pays "${country.countryName}" (publié immédiatement)`,
     );
     return country;
   }
 
+  // NB: countries publish directly (team decision) — there is no pending_review state for
+  // countries, hence no approve/reject endpoints here (that workflow lives on cities).
+
   @Get()
-  findAll() {
-    return this.countryService.findAll();
+  findAll(@Query('status') status?: string) {
+    return this.countryService.findAll(status);
   }
 
   // All ~250 countries from restCountries (for the admin country picker).
@@ -66,14 +73,18 @@ export class CountryController {
   @Patch(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
-  async update(@Param('id') id: string, @Body() updateDto: UpdateCountryDto, @Request() req) {
+  async update(
+    @Param('id') id: string,
+    @Body() updateDto: UpdateCountryDto,
+    @Request() req,
+  ) {
     const country = await this.countryService.update(+id, updateDto);
     await this.adminLogService.log(
       req.user.userId,
       'UPDATE',
       'Country',
       country.idCountry.toString(),
-      `Modification du pays "${country.countryName}"`
+      `Modification du pays "${country.countryName}"`,
     );
     return country;
   }
@@ -90,7 +101,7 @@ export class CountryController {
       'DELETE',
       'Country',
       id,
-      `Suppression du pays "${country.countryName}"`
+      `Suppression du pays "${country.countryName}"`,
     );
   }
 }

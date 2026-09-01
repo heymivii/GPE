@@ -1,17 +1,18 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useQuery } from '@tanstack/react-query'
 import FormField from '../ui/FormField'
 import Select from '../ui/Select'
-import TextInput from '../ui/TextInput'
 import WizardNav from '../components/WizardNav'
-import { destinationsApi } from '../../../api/destinations'
 
 interface DestinationStepData {
   fromCountry: string
   toCountry: string
   targetCity: string
   departureYear: string
+  /** Full ISO date (YYYY-MM-DD) — precise departure, powers the deadline countdown. */
+  departureDate?: string
+  /** Citizenship (ISO2) — the visa determinant. */
+  nationality?: string
 }
 
 interface DestinationStepProps {
@@ -21,40 +22,36 @@ interface DestinationStepProps {
   onBack?: () => void
 }
 
-import { useCostOfLiving } from '../../../contexts/CostOfLivingContext';
+import { useSupportedCountries } from '../../../hooks/useSupportedCountries';
+import { NATIONALITY_OPTIONS } from '../../../data/freeMovement';
 
 export default function DestinationStep({ data, isEditMode, onNext, onBack }: DestinationStepProps) {
   const { t } = useTranslation()
-  const { supportedCountries } = useCostOfLiving();
+  const { countries: supportedCountries, nonSelectableCodes, citiesByCode, isLoading: isLoadingCities } = useSupportedCountries();
 
   const [formData, setFormData] = useState<DestinationStepData>({
     fromCountry: data?.fromCountry || '',
     toCountry: data?.toCountry || '',
     targetCity: data?.targetCity || '',
-    departureYear: data?.departureYear || ''
+    departureYear: data?.departureYear || '',
+    departureDate: data?.departureDate || '',
+    nationality: data?.nationality || ''
   })
 
 
+  // Origin: every visible country. Destination: excludes "visible mais non sélectionnable" ones.
   const countryOptions = supportedCountries.map(c => ({
     value: c.code,
-    label: t(c.i18nKey)
+    label: t(c.i18nKey, { defaultValue: c.name })
   }));
+  const destinationOptions = countryOptions.filter(o => !nonSelectableCodes.has(o.value));
 
-  const selectedCountrySlug = supportedCountries.find(c => c.code === formData.toCountry)?.slug;
-
-  const { data: countryDetail, isLoading: isLoadingCities } = useQuery({
-    queryKey: ['destination', selectedCountrySlug],
-    queryFn: () => destinationsApi.getBySlug(selectedCountrySlug!),
-    enabled: !!selectedCountrySlug,
-  });
-
-  const cityOptions = countryDetail?.cities?.map(city => {
-    const cityId = city.id || city.city_id;
-    return {
-      value: cityId ? cityId.toString() : city.name,
-      label: city.name
-    };
-  }) || [];
+  // Active cities (admin-managed `city` table) for the selected destination country.
+  // value = idCity so it matches the project's idDestinationCity FK.
+  const cityOptions = (citiesByCode[formData.toCountry] ?? []).map(city => ({
+    value: city.idCity.toString(),
+    label: city.name,
+  }));
 
   useEffect(() => {
     if (data) {
@@ -62,15 +59,17 @@ export default function DestinationStep({ data, isEditMode, onNext, onBack }: De
         fromCountry: data.fromCountry || '',
         toCountry: data.toCountry || '',
         targetCity: data.targetCity || '',
-        departureYear: data.departureYear || ''
+        departureYear: data.departureYear || '',
+        departureDate: data.departureDate || '',
+        nationality: data.nationality || ''
       })
     }
   }, [data])
 
+  const todayIso = new Date().toISOString().slice(0, 10)
+
   const [errors, setErrors] = useState<Partial<DestinationStepData>>({})
 
-  const currentYear = new Date().getFullYear()
-  const maxYear = currentYear + 10
 
   const validateForm = (): boolean => {
     const newErrors: Partial<DestinationStepData> = {}
@@ -87,13 +86,14 @@ export default function DestinationStep({ data, isEditMode, onNext, onBack }: De
       newErrors.toCountry = t('onboarding.destination.errors.sameCountry')
     }
 
-    if (!formData.departureYear) {
-      newErrors.departureYear = t('onboarding.destination.errors.departureYearRequired')
-    } else {
-      const year = parseInt(formData.departureYear)
-      if (isNaN(year) || year < currentYear || year > maxYear) {
-        newErrors.departureYear = t('onboarding.destination.errors.departureYearRange', { min: currentYear, max: maxYear })
-      }
+    if (!formData.departureDate) {
+      newErrors.departureDate = t('onboarding.destination.errors.departureDateRequired', { defaultValue: 'La date de départ est requise' })
+    } else if (formData.departureDate < todayIso) {
+      newErrors.departureDate = t('onboarding.destination.errors.departureDatePast', { defaultValue: 'La date de départ doit être dans le futur' })
+    }
+
+    if (!formData.nationality) {
+      newErrors.nationality = t('onboarding.destination.errors.nationalityRequired', { defaultValue: 'Votre nationalité est requise' })
     }
 
     setErrors(newErrors)
@@ -102,7 +102,9 @@ export default function DestinationStep({ data, isEditMode, onNext, onBack }: De
 
   const handleNext = () => {
     if (validateForm()) {
-      onNext(formData)
+      // Keep departureYear in sync (legacy consumers) derived from the precise date.
+      const year = formData.departureDate ? formData.departureDate.slice(0, 4) : formData.departureYear
+      onNext({ ...formData, departureYear: year })
     }
   }
 
@@ -124,7 +126,7 @@ export default function DestinationStep({ data, isEditMode, onNext, onBack }: De
     }
   }
 
-  const isNextDisabled = !formData.fromCountry || !formData.toCountry || !formData.departureYear
+  const isNextDisabled = !formData.fromCountry || !formData.toCountry || !formData.departureDate || !formData.nationality
 
   return (
     <div className="space-y-6">
@@ -165,7 +167,7 @@ export default function DestinationStep({ data, isEditMode, onNext, onBack }: De
         >
           <Select
             id="toCountry"
-            options={countryOptions}
+            options={destinationOptions}
             value={formData.toCountry}
             onChange={handleFieldChange('toCountry')}
             placeholder={t('onboarding.destination.toCountryPlaceholder')}
@@ -192,20 +194,37 @@ export default function DestinationStep({ data, isEditMode, onNext, onBack }: De
         </FormField>
 
         <FormField
-          label={t('onboarding.destination.departureYear')}
+          label={t('onboarding.destination.nationality', { defaultValue: 'Votre nationalité' })}
           required
-          error={errors.departureYear}
-          id="departureYear"
+          error={errors.nationality}
+          helper={t('onboarding.destination.nationalityHelper', { defaultValue: 'Détermine vos démarches de visa / titre de séjour.' })}
+          id="nationality"
         >
-          <TextInput
-            id="departureYear"
-            type="year"
-            value={formData.departureYear}
-            onChange={handleFieldChange('departureYear')}
-            placeholder={currentYear.toString()}
-            min={currentYear}
-            max={maxYear}
-            aria-describedby={errors.departureYear ? 'departureYear-error' : undefined}
+          <Select
+            id="nationality"
+            options={NATIONALITY_OPTIONS}
+            value={formData.nationality || ''}
+            onChange={handleFieldChange('nationality')}
+            placeholder={t('onboarding.destination.nationalityPlaceholder', { defaultValue: 'Choisir…' })}
+            aria-describedby={errors.nationality ? 'nationality-error' : 'nationality-helper'}
+          />
+        </FormField>
+
+        <FormField
+          label={t('onboarding.destination.departureDate', { defaultValue: 'Date de départ prévue' })}
+          required
+          error={errors.departureDate}
+          helper={t('onboarding.destination.departureDateHelper', { defaultValue: 'Une date précise active le compte à rebours et les échéances.' })}
+          id="departureDate"
+        >
+          <input
+            id="departureDate"
+            type="date"
+            value={formData.departureDate || ''}
+            min={todayIso}
+            onChange={(e) => handleFieldChange('departureDate')(e.target.value)}
+            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:border-[#5EA3C0] focus:ring-1 focus:ring-[#5EA3C0] text-sm text-gray-900"
+            aria-describedby={errors.departureDate ? 'departureDate-error' : 'departureDate-helper'}
           />
         </FormField>
       </div>

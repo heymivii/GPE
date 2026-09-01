@@ -1,10 +1,13 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Search, Menu, X, ChevronDown, Globe, LogOut, User, LayoutDashboard, FolderKanban, Compass, BarChart3, MapPin, Briefcase, BookOpen, ShieldAlert } from 'lucide-react';
+import { Search, Menu, X, ChevronDown, Globe, LogOut, User, LayoutDashboard, FolderKanban, FolderLock, Settings, Compass, BarChart3, MapPin, Briefcase, BookOpen, BadgeCheck, Mail, ShieldAlert } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import GlobalSearchModal from './GlobalSearchModal';
-import NotificationBell from './NotificationBell';
+import CurrencySelector from './CurrencySelector';
+import ProjectSwitcher from './ProjectSwitcher';
+import NotificationBell from '../features/notifications/NotificationBell';
+import { useUnreadMessages } from '../hooks/usePrivateMessages';
 
 const languages = [
   { code: 'fr', label: 'Français', flag: '🇫🇷' },
@@ -25,6 +28,8 @@ export default function NavBar() {
   const langRef = useRef<HTMLDivElement>(null);
   
   const { user, isAuthenticated, logout } = useAuth();
+  const { data: unreadMessages } = useUnreadMessages(isAuthenticated);
+  const unreadCount = unreadMessages?.count ?? 0;
   const navigate = useNavigate();
 
   const userRole = (user as any)?.roles || user?.role || user?.userRole || '';
@@ -147,6 +152,10 @@ export default function NavBar() {
                           <BookOpen className="w-4 h-4 text-[#5EA3C0]" />
                           {t('nav.blog')}
                         </Link>
+                        <Link to="/experts" onClick={() => setExploreOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-gray-700 text-sm">
+                          <BadgeCheck className="w-4 h-4 text-[#5EA3C0]" />
+                          {t('nav.experts', { defaultValue: 'Experts' })}
+                        </Link>
                       </div>
                     )}
                   </div>
@@ -169,38 +178,64 @@ export default function NavBar() {
               </kbd>
             </button>
 
-            <div className="relative hidden sm:block" ref={langRef}>
-              <button
-                className="flex items-center gap-1.5 px-2.5 py-2 border border-gray-200 rounded-lg bg-white hover:bg-gray-50 text-gray-600 text-sm"
-                onClick={() => setLangOpen((v) => !v)}
-              >
-                <Globe className="w-4 h-4" />
-                <span className="hidden md:inline">{currentLang.label}</span>
-                <span className="md:hidden">{currentLang.flag}</span>
-                <ChevronDown className={`w-3.5 h-3.5 transition-transform ${langOpen ? 'rotate-180' : ''}`} />
-              </button>
-              {langOpen && (
-                <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-xl shadow-lg z-50 py-1 animate-in fade-in slide-in-from-top-1">
-                  {languages.map((lang) => (
-                    <button
-                      key={lang.code}
-                      onClick={() => handleLanguageChange(lang.code)}
-                      className={`flex items-center gap-2 w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 ${
-                        currentLang.code === lang.code ? 'text-[#5EA3C0] font-medium' : 'text-gray-700'
-                      }`}
-                    >
-                      <span>{lang.flag}</span>
-                      {lang.label}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+            {isAuthenticated && (
+              <div className="hidden md:block">
+                <ProjectSwitcher />
+              </div>
+            )}
 
-            {isAuthenticated && <NotificationBell />}
-            
+            {/* Visitors keep currency + language visible (no profile menu to hold them);
+                signed-in users find these inside the profile menu instead. */}
+            {!isAuthenticated && (
+              <>
+                <CurrencySelector />
+
+                <div className="relative hidden sm:block" ref={langRef}>
+                  <button
+                    className="flex items-center gap-1.5 px-2.5 py-2 border border-gray-200 rounded-lg bg-white hover:bg-gray-50 text-gray-600 text-sm"
+                    onClick={() => setLangOpen((v) => !v)}
+                  >
+                    <Globe className="w-4 h-4" />
+                    <span className="hidden md:inline">{currentLang.label}</span>
+                    <span className="md:hidden">{currentLang.flag}</span>
+                    <ChevronDown className={`w-3.5 h-3.5 transition-transform ${langOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                  {langOpen && (
+                    <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-xl shadow-lg z-50 py-1 animate-in fade-in slide-in-from-top-1">
+                      {languages.map((lang) => (
+                        <button
+                          key={lang.code}
+                          onClick={() => handleLanguageChange(lang.code)}
+                          className={`flex items-center gap-2 w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 ${
+                            currentLang.code === lang.code ? 'text-[#5EA3C0] font-medium' : 'text-gray-700'
+                          }`}
+                        >
+                          <span>{lang.flag}</span>
+                          {lang.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+
             {isAuthenticated && user ? (
-              <div className="relative hidden sm:block" ref={userMenuRef}>
+              <div className="flex items-center gap-1">
+                <Link
+                  to="/messages"
+                  className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-600"
+                  aria-label={t('messages.title', { defaultValue: 'Messages' })}
+                >
+                  <Mail className="w-5 h-5" />
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </span>
+                  )}
+                </Link>
+                <NotificationBell />
+                <div className="relative hidden sm:block" ref={userMenuRef}>
                 <button
                   className="flex items-center gap-2 px-3 py-1.5 border border-gray-200 rounded-full bg-white hover:bg-gray-50 transition-colors"
                   onClick={() => setUserMenuOpen((v) => !v)}
@@ -213,7 +248,7 @@ export default function NavBar() {
                 </button>
                 
                 {userMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-52 bg-white border border-gray-200 rounded-xl shadow-lg z-50 py-2 animate-in fade-in slide-in-from-top-1">
+                  <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-xl shadow-lg z-50 py-2 animate-in fade-in slide-in-from-top-1">
                     <div className="px-4 py-2 border-b border-gray-100">
                       <p className="text-sm font-medium text-gray-900 truncate">{user.fullName}</p>
                       <p className="text-xs text-gray-500 truncate">{user.email}</p>
@@ -242,6 +277,14 @@ export default function NavBar() {
                       <FolderKanban className="w-4 h-4 text-gray-400" />
                       {t('nav.projects')}
                     </Link>
+                    <Link
+                      to="/documents"
+                      className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-gray-700 text-sm"
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      <FolderLock className="w-4 h-4 text-gray-400" />
+                      {t('nav.documents', { defaultValue: 'Mes documents' })}
+                    </Link>
                     {isAdmin && (
                       <Link
                         to="/admin"
@@ -252,6 +295,16 @@ export default function NavBar() {
                         Administration
                       </Link>
                     )}
+
+                    <Link
+                      to="/settings"
+                      className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-gray-700 text-sm border-t border-gray-100"
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      <Settings className="w-4 h-4 text-gray-400" />
+                      {t('nav.settings', { defaultValue: 'Réglages' })}
+                    </Link>
+
                     <hr className="my-1 border-gray-100" />
                     <button
                       className="flex items-center gap-3 w-full text-left px-4 py-2.5 hover:bg-red-50 text-red-600 text-sm"
@@ -262,6 +315,7 @@ export default function NavBar() {
                     </button>
                   </div>
                 )}
+                </div>
               </div>
             ) : (
               <div className="hidden sm:flex items-center gap-3">
@@ -297,6 +351,7 @@ export default function NavBar() {
               <>
                 <MobileLink to="/dashboard" label={t('nav.dashboard')} active={isActive('/dashboard')} />
                 <MobileLink to="/projects" label={t('nav.projects')} active={isActive('/projects')} />
+                <MobileLink to="/documents" label={t('nav.documents', { defaultValue: 'Mes documents' })} active={isActive('/documents')} />
                 <MobileLink to="/destinations" label={t('nav.destinations')} active={isActive('/destinations')} />
                 <MobileLink to="/comparison" label={t('nav.comparison')} active={isActive('/comparison')} />
                 <MobileLink to="/services" label={t('nav.services')} active={isActive('/services')} />
@@ -324,6 +379,10 @@ export default function NavBar() {
             </div>
 
             <div className="pt-3 border-t border-gray-100">
+              <CurrencySelector />
+            </div>
+
+            <div className="pt-3 border-t border-gray-100">
               {isAuthenticated && user ? (
                 <div className="space-y-1">
                   <Link to="/profile" className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-gray-700 text-sm">
@@ -334,6 +393,14 @@ export default function NavBar() {
                       <p className="font-medium text-gray-900 text-sm">{user.fullName}</p>
                       <p className="text-xs text-gray-500">{t('nav.profile')}</p>
                     </div>
+                  </Link>
+                  <Link
+                    to="/settings"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-gray-700 text-sm"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    <Settings className="w-4 h-4 text-gray-400" />
+                    {t('nav.settings', { defaultValue: 'Réglages' })}
                   </Link>
                   {isAdmin && (
                     <Link

@@ -4,9 +4,14 @@ import { User } from './entities/user.entity';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import { AdminLogModule } from '../admin-log/admin-log.module';
+import { SupportRatingModule } from '../support-rating/support-rating.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User]), AdminLogModule],
+  imports: [
+    TypeOrmModule.forFeature([User]),
+    AdminLogModule,
+    SupportRatingModule,
+  ],
   controllers: [UserController],
   providers: [UserService],
   exports: [UserService],

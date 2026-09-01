@@ -29,6 +29,18 @@ export async function fetchPropertyInvestmentHtml(
   return data;
 }
 
+/** CITY page (e.g. /property-investment/in/Paris) — same two-cell rows, same parser. */
+export async function fetchCityPropertyInvestmentHtml(
+  slug: string,
+): Promise<string> {
+  const url = `https://www.numbeo.com/property-investment/in/${slug}`;
+  const { data } = await axios.get<string>(url, {
+    timeout: 25000,
+    headers: { 'User-Agent': UA, 'Accept-Language': 'en-US,en;q=0.9' },
+  });
+  return data;
+}
+
 interface Row {
   label: string;
   value: string;
@@ -67,12 +79,20 @@ export function parsePropertyInvestment(html: string): PropertyInvestmentData {
   const rows = parseRows(html);
   return {
     priceToIncomeRatio: num(findValue(rows, 'Price to Income Ratio')),
-    mortgageAsPctIncome: num(findValue(rows, 'Mortgage as Percentage of Income')),
+    mortgageAsPctIncome: num(
+      findValue(rows, 'Mortgage as Percentage of Income'),
+    ),
     loanAffordabilityIndex: num(findValue(rows, 'Loan Affordability Index')),
-    priceToRentCityCentre: num(findValue(rows, 'Price to Rent Ratio - City Centre')),
+    priceToRentCityCentre: num(
+      findValue(rows, 'Price to Rent Ratio - City Centre'),
+    ),
     priceToRentOutside: num(findValue(rows, 'Price to Rent Ratio - Outside')),
-    grossRentalYieldCityCentre: num(findValue(rows, 'Gross Rental Yield (City Centre)')),
-    grossRentalYieldOutside: num(findValue(rows, 'Gross Rental Yield (Outside')),
+    grossRentalYieldCityCentre: num(
+      findValue(rows, 'Gross Rental Yield (City Centre)'),
+    ),
+    grossRentalYieldOutside: num(
+      findValue(rows, 'Gross Rental Yield (Outside'),
+    ),
     gdpPerCapita: num(findValue(rows, 'GDP Per Capita')),
     gdpGrowthRate: num(findValue(rows, 'GDP Growth Rate')),
     populationGrowthRate: num(findValue(rows, 'Population Growth Rate')),

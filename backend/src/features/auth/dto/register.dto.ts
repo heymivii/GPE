@@ -50,7 +50,7 @@ export class RegisterDto {
   status?: string;
 
   @IsOptional()
-  @IsEnum(['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'native'])
+  @IsEnum(['none', 'A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'native'])
   languageLevel?: string;
 
   @IsOptional()

@@ -3,6 +3,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { ScheduleModule } from '@nestjs/schedule';
 import { typeOrmConfigAsync } from './config/typeorm.config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -39,6 +40,12 @@ import { AdminStatsModule } from './features/admin-stats/admin-stats.module';
 import { BuddyContactModule } from './features/buddy-contact/buddy-contact.module';
 import { BuddyMessagesModule } from './features/buddy-messages/buddy-messages.module';
 import { AdminLogModule } from './features/admin-log/admin-log.module';
+import { GovLinksModule } from './features/gov-links/gov-links.module';
+import { SearchHintModule } from './features/search-hint/search-hint.module';
+import { ForumModerationModule } from './features/forum-moderation/forum-moderation.module';
+import { UserReportModule } from './features/user-report/user-report.module';
+import { PrivateMessageModule } from './features/private-message/private-message.module';
+import { DocumentModule } from './features/document/document.module';
 
 @Module({
   imports: [
@@ -48,6 +55,8 @@ import { AdminLogModule } from './features/admin-log/admin-log.module';
     }),
 
     ThrottlerModule.forRoot([{ ttl: 60_000, limit: 60 }]),
+
+    ScheduleModule.forRoot(),
 
     TypeOrmModule.forRootAsync(typeOrmConfigAsync),
 
@@ -69,6 +78,10 @@ import { AdminLogModule } from './features/admin-log/admin-log.module';
     ProcedureTrackingModule,
     ForumTopicModule,
     ForumMessageModule,
+    ForumModerationModule,
+    UserReportModule,
+    PrivateMessageModule,
+    DocumentModule,
     NotificationModule,
     ExperienceModule,
     ExpatriationProjectModule,
@@ -82,8 +95,10 @@ import { AdminLogModule } from './features/admin-log/admin-log.module';
     AdminLogModule,
     BuddyContactModule,
     BuddyMessagesModule,
+    GovLinksModule,
+    SearchHintModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
-export class AppModule { }
+export class AppModule {}

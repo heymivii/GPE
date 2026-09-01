@@ -9,6 +9,7 @@ import { Repository } from 'typeorm';
 import {
   ExpatriationProject,
 } from './entities/expatriation-project.entity';
+import { ProcedureTracking } from '../procedure-tracking/entities/procedure-tracking.entity';
 import { CreateExpatriationProjectDto } from './dto/create-expatriation-project.dto';
 import { UpdateExpatriationProjectDto } from './dto/update-expatriation-project.dto';
 
@@ -33,6 +34,10 @@ export class ExpatriationProjectService {
   async findAllByUser(userId: number): Promise<ExpatriationProject[]> {
     return await this.projectRepository.find({
       where: { userId: userId },
+      // Load the country so consumers (NavBar project switcher, dashboard) can label
+      // a project by its destination — findOne/findAll already do this; the list must too.
+      relations: ['destinationCountry', 'destinationCity', 'travelType'],
+      order: { idProject: 'ASC' },
     });
   }
 
@@ -68,8 +73,27 @@ export class ExpatriationProjectService {
   }
 
   async remove(projectId: number, userId: number): Promise<void> {
+    // Vérifie l'existence + la propriété (403/404 sinon).
+    await this.findOne(projectId, userId);
+    // `procedure_tracking` référence le projet SANS ON DELETE CASCADE → il faut
+    // supprimer les enfants d'abord, dans une transaction pour rester atomique.
+    // (`user_document` cascade déjà côté base, rien à faire pour lui.)
+    await this.projectRepository.manager.transaction(async (em) => {
+      await em
+        .createQueryBuilder()
+        .delete()
+        .from(ProcedureTracking)
+        .where('project_id = :projectId', { projectId })
+        .execute();
+      await em.delete(ExpatriationProject, projectId);
+    });
+  }
+
+  /** Débloque le projet (paiement mock) → plan complet accessible. */
+  async unlock(projectId: number, userId: number): Promise<ExpatriationProject> {
     const project = await this.findOne(projectId, userId);
-    await this.projectRepository.remove(project);
+    project.isPaid = true;
+    return await this.projectRepository.save(project);
   }
 
   async countByUser(userId: number): Promise<number> {

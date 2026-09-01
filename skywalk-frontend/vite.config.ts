@@ -12,5 +12,10 @@ export default defineConfig({
     css: false,
     include: ['src/**/*.test.{ts,tsx}'],
     exclude: ['test-comparison-logs.spec.ts'],
+    coverage: {
+      all: true,
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: ['src/**/*.test.{ts,tsx}', 'src/**/*.d.ts', 'src/main.tsx', 'src/test/**'],
+    },
   },
 })

@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, FolderKanban, ClipboardList, LogOut, ShieldAlert, Menu, X, Globe, MapPin, Compass, Users } from 'lucide-react';
+import { LayoutDashboard, FolderKanban, ClipboardList, LogOut, ShieldAlert, Menu, X, Globe, MapPin, Compass, Users, Link2, BookMarked, BadgeCheck, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../../../hooks/useAuth';
 import { Toaster } from 'react-hot-toast';
+import NotificationBell from './NotificationBell';
 
 export default function AdminLayout() {
   const location = useLocation();
@@ -45,6 +46,26 @@ export default function AdminLayout() {
       path: '/admin/cities',
       label: 'Gestion Villes',
       icon: Compass,
+    },
+    {
+      path: '/admin/gov-links',
+      label: 'Liens Gouvernementaux',
+      icon: Link2,
+    },
+    {
+      path: '/admin/search-hints',
+      label: 'Carnet de recherche',
+      icon: BookMarked,
+    },
+    {
+      path: '/admin/moderation',
+      label: 'Modération Forum',
+      icon: ShieldAlert,
+    },
+    {
+      path: '/admin/experts',
+      label: 'Experts vérifiés',
+      icon: BadgeCheck,
     },
   ];
 
@@ -90,15 +111,16 @@ export default function AdminLayout() {
             </div>
           </div>
 
-          {/* User Profile Summary */}
+          {/* User Profile Summary + review notifications */}
           <div className="px-6 py-4 flex items-center gap-3 bg-slate-950/40 border-b border-slate-800 flex-shrink-0">
             <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#5EA3C0] to-[#4891b0] text-white flex items-center justify-center font-bold text-sm">
               {user?.fullName?.charAt(0).toUpperCase() || 'A'}
             </div>
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <p className="text-sm font-semibold text-white truncate">{user?.fullName}</p>
               <p className="text-[10px] text-gray-400 truncate">{user?.email}</p>
             </div>
+            <NotificationBell />
           </div>
 
           {/* Nav links */}
@@ -126,7 +148,15 @@ export default function AdminLayout() {
         </div>
 
         {/* Footer actions */}
-        <div className="p-4 border-t border-slate-800 flex-shrink-0">
+        <div className="p-4 border-t border-slate-800 flex-shrink-0 space-y-1">
+          <Link
+            to="/dashboard"
+            onClick={() => setMobileMenuOpen(false)}
+            className="flex items-center gap-3 w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5 flex-shrink-0" />
+            Retour à la plateforme
+          </Link>
           <button
             onClick={handleLogout}
             className="flex items-center gap-3 w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-red-400 hover:bg-red-950/20 hover:text-red-300 transition-colors"

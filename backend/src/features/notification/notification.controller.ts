@@ -22,8 +22,12 @@ export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}
 
   @Post()
-  create(@Body() createNotificationDto: CreateNotificationDto) {
-    return this.notificationService.create(createNotificationDto);
+  create(@Request() req, @Body() createNotificationDto: CreateNotificationDto) {
+    // Le destinataire est forcé à l'utilisateur authentifié — on ignore tout userId du body.
+    return this.notificationService.create({
+      ...createNotificationDto,
+      userId: req.user.userId,
+    });
   }
 
   @Get()
@@ -32,25 +36,36 @@ export class NotificationController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.notificationService.findOne(+id);
+  findOne(@Request() req, @Param('id') id: string) {
+    return this.notificationService.findOne(+id, req.user.userId);
+  }
+
+  // Déclaré AVANT les routes ':id' pour ne pas être capturé comme un paramètre.
+  @Patch('read-all')
+  markAllAsRead(@Request() req) {
+    return this.notificationService.markAllAsRead(req.user.userId);
   }
 
   @Patch(':id/read')
-  markAsRead(@Param('id') id: string) {
-    return this.notificationService.markAsRead(+id);
+  markAsRead(@Request() req, @Param('id') id: string) {
+    return this.notificationService.markAsRead(+id, req.user.userId);
   }
 
   @Patch(':id')
   update(
+    @Request() req,
     @Param('id') id: string,
     @Body() updateNotificationDto: UpdateNotificationDto,
   ) {
-    return this.notificationService.update(+id, updateNotificationDto);
+    return this.notificationService.update(
+      +id,
+      req.user.userId,
+      updateNotificationDto,
+    );
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.notificationService.remove(+id);
+  remove(@Request() req, @Param('id') id: string) {
+    return this.notificationService.remove(+id, req.user.userId);
   }
 }

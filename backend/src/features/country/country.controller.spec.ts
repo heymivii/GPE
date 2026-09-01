@@ -12,6 +12,7 @@ const mockService = () => ({
   findOne: jest.fn(),
   update: jest.fn(),
   remove: jest.fn(),
+  getAvailableCountries: jest.fn(),
 });
 
 describe('CountryController', () => {
@@ -37,16 +38,38 @@ describe('CountryController', () => {
   describe('create()', () => {
     it('should create a country', async () => {
       service.create.mockResolvedValue({ idCountry: 1, countryName: 'France' });
-      const result = await controller.create({ countryName: 'France' } as any, mockReq);
+      const result = await controller.create(
+        { countryName: 'France' } as any,
+        mockReq,
+      );
       expect(result.countryName).toBe('France');
     });
   });
 
   describe('findAll()', () => {
-    it('should return all countries', async () => {
+    it('should return all countries when no status filter', async () => {
       service.findAll.mockResolvedValue([{ idCountry: 1 }]);
       const result = await controller.findAll();
       expect(result).toHaveLength(1);
+      expect(service.findAll).toHaveBeenCalledWith(undefined);
+    });
+
+    it('should pass status query param to service', async () => {
+      service.findAll.mockResolvedValue([{ idCountry: 2, status: 'active' }]);
+      const result = await controller.findAll('active');
+      expect(result).toHaveLength(1);
+      expect(service.findAll).toHaveBeenCalledWith('active');
+    });
+  });
+
+  describe('getAvailable()', () => {
+    it('should delegate to service.getAvailableCountries()', async () => {
+      service.getAvailableCountries.mockResolvedValue([
+        { code: 'FR', name: 'France' },
+      ]);
+      const result = await controller.getAvailable();
+      expect(service.getAvailableCountries).toHaveBeenCalled();
+      expect(result).toEqual([{ code: 'FR', name: 'France' }]);
     });
   });
 
@@ -65,9 +88,13 @@ describe('CountryController', () => {
         idCountry: 1,
         countryName: 'Updated',
       });
-      const result = await controller.update('1', {
-        countryName: 'Updated',
-      } as any, mockReq);
+      const result = await controller.update(
+        '1',
+        {
+          countryName: 'Updated',
+        } as any,
+        mockReq,
+      );
       expect(result.countryName).toBe('Updated');
     });
   });

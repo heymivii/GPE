@@ -72,4 +72,102 @@ describe('forumTopicsApi', () => {
     await forumTopicsApi.moderatorRemove(7);
     expect(del).toHaveBeenCalledWith('/forum-topic/moderate/7');
   });
+
+  it('getFollowed() should GET /forum-topic/followed', async () => {
+    get.mockResolvedValue({ data: [{ topic_id: 1 }] });
+    const result = await forumTopicsApi.getFollowed();
+    expect(get).toHaveBeenCalledWith('/forum-topic/followed');
+    expect(result).toHaveLength(1);
+  });
+
+  it('follow() should POST /forum-topic/:id/follow', async () => {
+    post.mockResolvedValue({ data: { following: true, followersCount: 3 } });
+    const result = await forumTopicsApi.follow(1);
+    expect(post).toHaveBeenCalledWith('/forum-topic/1/follow');
+    expect(result).toEqual({ following: true, followersCount: 3 });
+  });
+
+  it('unfollow() should DELETE /forum-topic/:id/follow', async () => {
+    del.mockResolvedValue({ data: { following: false, followersCount: 2 } });
+    const result = await forumTopicsApi.unfollow(1);
+    expect(del).toHaveBeenCalledWith('/forum-topic/1/follow');
+    expect(result).toEqual({ following: false, followersCount: 2 });
+  });
+
+  describe('field mapping', () => {
+    it('maps camelCase backend fields and nested messages/user to the frontend snake_case shape', async () => {
+      get.mockResolvedValue({
+        data: {
+          idForumTopic: 9,
+          createdAt: '2026-01-01',
+          isPinned: true,
+          isLocked: true,
+          viewsCount: 42,
+          messages: [
+            {
+              idForumMessage: 3,
+              sentAt: '2026-01-02',
+              user: {
+                id: 7,
+                firstName: 'Jean',
+                lastName: 'Dupont',
+                role: 'admin',
+                isExpert: true,
+                expertTitle: 'Notaire',
+                expertVerifiedAt: '2026-01-01',
+              },
+            },
+          ],
+        },
+      });
+
+      const result = await forumTopicsApi.findOne(9);
+
+      expect(result.topic_id).toBe(9);
+      expect(result.created_at).toBe('2026-01-01');
+      expect(result.is_pinned).toBe(true);
+      expect(result.is_locked).toBe(true);
+      expect(result.views_count).toBe(42);
+      expect(result.messages?.[0].message_id).toBe(3);
+      expect(result.messages?.[0].sent_at).toBe('2026-01-02');
+      expect(result.messages?.[0].user).toEqual({
+        idUser: 7,
+        fullName: 'Jean Dupont',
+        email: undefined,
+        roles: 'admin',
+        isExpert: true,
+        expertTitle: 'Notaire',
+        expertVerifiedAt: '2026-01-01',
+      });
+    });
+
+    it('falls back to defaults when optional fields and the message user are absent', async () => {
+      get.mockResolvedValue({
+        data: { idForumTopic: 1, messages: [null] },
+      });
+
+      const result = await forumTopicsApi.findOne(1);
+
+      expect(result.is_pinned).toBe(false);
+      expect(result.is_locked).toBe(false);
+      expect(result.views_count).toBe(0);
+      expect(result.followersCount).toBe(0);
+      expect(result.isFollowedByMe).toBe(false);
+      expect(result.messages?.[0]).toBeUndefined();
+    });
+
+    it('falls back to "Anonymous" when the message author has no first name', async () => {
+      get.mockResolvedValue({
+        data: {
+          idForumTopic: 1,
+          messages: [{ idForumMessage: 1, user: { id: 2 } }],
+        },
+      });
+
+      const result = await forumTopicsApi.findOne(1);
+
+      expect(result.messages?.[0].user?.fullName).toBe('Anonymous');
+      expect(result.messages?.[0].user?.isExpert).toBe(false);
+    });
+  });
 });

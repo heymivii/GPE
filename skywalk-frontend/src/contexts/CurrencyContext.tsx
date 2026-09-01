@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
 import { getCurrentLocale } from '../data/supportedCountries';
+import { useExchangeRates } from '../hooks/useExchangeRates';
 
 export const DISPLAY_CURRENCIES = [
   { code: 'EUR', symbol: '€', nameKey: 'currencies.EUR' },
@@ -19,12 +20,12 @@ interface CurrencyContextType {
   convert: (
     amount: number | undefined | null,
     sourceCurrency: string,
-    exchangeRates: Record<string, number> | undefined | null,
+    exchangeRates?: Record<string, number> | null,
   ) => number | null;
   formatPrice: (
     amount: number | undefined | null,
     sourceCurrency: string,
-    exchangeRates: Record<string, number> | undefined | null,
+    exchangeRates?: Record<string, number> | null,
     decimals?: number,
   ) => string;
   isSameCurrency: (sourceCurrency: string) => boolean;
@@ -51,6 +52,7 @@ function getSymbol(code: CurrencyCode): string {
 
 export function CurrencyProvider({ children }: { children: ReactNode }) {
   const [displayCurrency, setDisplayCurrencyState] = useState<CurrencyCode>(getInitialCurrency);
+  const { rates: contextRates } = useExchangeRates();
 
   const setDisplayCurrency = useCallback((code: CurrencyCode) => {
     setDisplayCurrencyState(code);
@@ -71,16 +73,21 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
     (
       amount: number | undefined | null,
       sourceCurrency: string,
-      exchangeRates: Record<string, number> | undefined | null,
+      exchangeRates?: Record<string, number> | null,
     ): number | null => {
-      if (amount == null || amount === 0) return null;
+      if (amount == null) return null;
 
       if (sourceCurrency === displayCurrency) return amount;
 
-      if (!exchangeRates) return null;
+      const effectiveRates =
+        exchangeRates && Object.keys(exchangeRates).length > 0
+          ? exchangeRates
+          : contextRates ?? null;
 
-      const sourceRate = exchangeRates[sourceCurrency];
-      const targetRate = exchangeRates[displayCurrency];
+      if (!effectiveRates) return null;
+
+      const sourceRate = effectiveRates[sourceCurrency];
+      const targetRate = effectiveRates[displayCurrency];
 
       if (!sourceRate || sourceRate <= 0 || !targetRate || targetRate <= 0) return null;
 
@@ -89,14 +96,14 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
 
       return Math.round(converted * 100) / 100;
     },
-    [displayCurrency],
+    [displayCurrency, contextRates],
   );
 
   const formatPrice = useCallback(
     (
       amount: number | undefined | null,
       sourceCurrency: string,
-      exchangeRates: Record<string, number> | undefined | null,
+      exchangeRates?: Record<string, number> | null,
       decimals = 0,
     ): string => {
       const converted = convert(amount, sourceCurrency, exchangeRates);

@@ -6,9 +6,9 @@ if (!globalThis.crypto) {
 import * as dns from 'dns';
 dns.setDefaultResultOrder('ipv4first');
 
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, ClassSerializerInterceptor } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
 
@@ -57,6 +57,10 @@ async function bootstrap() {
       transformOptions: { enableImplicitConversion: true },
     }),
   );
+
+  // Strip @Exclude()-marked fields (notably User.password) from every serialized
+  // response — defence in depth so no loaded `user` relation can leak the bcrypt hash.
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle('SkyWalk API')

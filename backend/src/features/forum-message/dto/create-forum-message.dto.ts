@@ -8,8 +8,4 @@ export class CreateForumMessageDto {
   @IsNotEmpty()
   @IsNumber()
   topicId: number;
-
-  @IsNotEmpty()
-  @IsNumber()
-  userId: number;
 }

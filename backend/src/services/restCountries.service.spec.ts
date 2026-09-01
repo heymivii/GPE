@@ -41,10 +41,32 @@ describe('RestCountriesService', () => {
       const res = await restCountries.getCitiesByCountry('Errorland');
       expect(res).toEqual([]);
     });
+
+    it('serves the cached value without hitting the API again', async () => {
+      mockedAxios.post.mockResolvedValueOnce({
+        data: { data: ['Nice'] },
+      } as never);
+
+      const first = await restCountries.getCitiesByCountry('Cacheland');
+      const second = await restCountries.getCitiesByCountry('Cacheland');
+
+      expect(second).toEqual(first);
+      expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+    });
   });
 
+  // getAllCountries has a single, unparametrized cache key ('countries:all'), so the
+  // error case must run before any successful call primes that key for the process.
   describe('getAllCountries', () => {
-    it('maps Iso2/name, drops empty names and sorts', async () => {
+    it('returns [] when the API throws', async () => {
+      mockedAxios.get.mockRejectedValueOnce(new Error('network'));
+
+      const res = await restCountries.getAllCountries();
+
+      expect(res).toEqual([]);
+    });
+
+    it('maps Iso2/name, drops empty names, sorts and caches the result', async () => {
       mockedAxios.get.mockResolvedValueOnce({
         data: {
           data: [
@@ -60,9 +82,78 @@ describe('RestCountriesService', () => {
         { code: 'ZD', name: 'Zedland' },
       ]);
     });
+
+    it('serves the cached value without hitting the API again', async () => {
+      const res = await restCountries.getAllCountries();
+
+      expect(res).toEqual([
+        { code: 'AL', name: 'Alphaland' },
+        { code: 'ZD', name: 'Zedland' },
+      ]);
+      expect(mockedAxios.get).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('getCountryByCode', () => {
+    it('fetches, caches and returns the country on success', async () => {
+      mockedAxios.get.mockResolvedValueOnce({
+        data: [{ cca2: 'FR', name: { common: 'France' } }],
+      } as never);
+
+      const res = await restCountries.getCountryByCode('FR');
+
+      expect(res).toEqual({ cca2: 'FR', name: { common: 'France' } });
+      expect(mockedAxios.get).toHaveBeenCalledWith(
+        'https://restcountries.com/v3.1/alpha/FR',
+        { timeout: 10000 },
+      );
+    });
+
+    it('serves the cached value without hitting the API again', async () => {
+      mockedAxios.get.mockResolvedValueOnce({
+        data: [{ cca2: 'BE', name: { common: 'Belgium' } }],
+      } as never);
+
+      const first = await restCountries.getCountryByCode('BE');
+      const second = await restCountries.getCountryByCode('BE');
+
+      expect(second).toEqual(first);
+      expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+    });
+
+    it('returns null when the API throws', async () => {
+      mockedAxios.get.mockRejectedValueOnce(new Error('network'));
+
+      const res = await restCountries.getCountryByCode('ZZ');
+
+      expect(res).toBeNull();
+    });
   });
 
   describe('extractEssentialInfo', () => {
+    it('extracts all fields from a full payload', () => {
+      const info = restCountries.extractEssentialInfo({
+        cca2: 'FR',
+        name: { common: 'France', official: 'French Republic' },
+        capital: ['Paris'],
+        currencies: { EUR: { name: 'Euro', symbol: '€' } },
+        languages: { fra: 'French' },
+        continents: ['Europe'],
+        timezones: ['UTC+01:00'],
+        flags: { png: 'fr.png', svg: 'fr.svg' },
+      } as never);
+      expect(info).toEqual({
+        code: 'FR',
+        name: 'France',
+        capital: 'Paris',
+        currency: { name: 'Euro', symbol: '€' },
+        primaryLanguage: 'French',
+        continent: 'Europe',
+        timezone: 'UTC+01:00',
+        flag: 'fr.svg',
+      });
+    });
+
     it('does not throw on a partial payload (missing continents/timezones/flags)', () => {
       const info = restCountries.extractEssentialInfo({
         cca2: 'FR',

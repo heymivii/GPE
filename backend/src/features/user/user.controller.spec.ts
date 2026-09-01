@@ -3,6 +3,7 @@ import { ForbiddenException, ConflictException } from '@nestjs/common';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { AdminLogService } from '../admin-log/admin-log.service';
+import { SupportRatingService } from '../support-rating/support-rating.service';
 
 const mockService = () => ({
   findOne: jest.fn(),
@@ -10,19 +11,33 @@ const mockService = () => ({
   remove: jest.fn(),
   updateRole: jest.fn(),
   countByRoles: jest.fn(),
+  findExperts: jest.fn(),
+  verifyExpert: jest.fn(),
+  revokeExpert: jest.fn(),
+  updateExpertProfile: jest.fn(),
+  findAll: jest.fn(),
+  getStats: jest.fn(),
 });
 
 describe('UserController', () => {
   let controller: UserController;
   let service: ReturnType<typeof mockService>;
+  let adminLog: { log: jest.Mock };
+  let supportRating: { getUserRating: jest.Mock };
 
   beforeEach(async () => {
     service = mockService();
+    adminLog = { log: jest.fn() };
+    supportRating = { getUserRating: jest.fn() };
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UserController],
       providers: [
         { provide: UserService, useValue: service },
-        { provide: AdminLogService, useValue: { log: jest.fn() } },
+        { provide: AdminLogService, useValue: adminLog },
+        {
+          provide: SupportRatingService,
+          useValue: supportRating,
+        },
       ],
     }).compile();
     controller = module.get<UserController>(UserController);
@@ -30,6 +45,123 @@ describe('UserController', () => {
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
+  });
+
+  describe('getUserRating()', () => {
+    it('should delegate to supportRatingService.getUserRating()', () => {
+      supportRating.getUserRating.mockReturnValue({ average: 4.5 });
+      const result = controller.getUserRating(1);
+      expect(supportRating.getUserRating).toHaveBeenCalledWith(1);
+      expect(result).toEqual({ average: 4.5 });
+    });
+  });
+
+  describe('findExperts()', () => {
+    it('should pass undefined countryId when not provided', () => {
+      controller.findExperts(undefined, undefined);
+      expect(service.findExperts).toHaveBeenCalledWith(undefined, undefined);
+    });
+
+    it('should parse a numeric countryId and forward the query', () => {
+      controller.findExperts('5', 'guide');
+      expect(service.findExperts).toHaveBeenCalledWith(5, 'guide');
+    });
+
+    it('should treat a non-numeric countryId as undefined', () => {
+      controller.findExperts('abc', undefined);
+      expect(service.findExperts).toHaveBeenCalledWith(undefined, undefined);
+    });
+  });
+
+  describe('verifyExpert()', () => {
+    it('should verify, log the action, and strip the password', async () => {
+      service.verifyExpert.mockResolvedValue({
+        idUser: 2,
+        email: 'expert@b.com',
+        password: 'secret',
+      });
+      const req = { user: { userId: 99 } };
+      const dto = { expertTitle: 'Notaire' } as any;
+
+      const result = await controller.verifyExpert(2, dto, req);
+
+      expect(service.verifyExpert).toHaveBeenCalledWith(2, dto, 99);
+      expect(adminLog.log).toHaveBeenCalledWith(
+        99,
+        'UPDATE',
+        'User',
+        '2',
+        expect.stringContaining('expert@b.com'),
+      );
+      expect((result as any).password).toBeUndefined();
+    });
+  });
+
+  describe('revokeExpert()', () => {
+    it('should revoke, log the action, and strip the password', async () => {
+      service.revokeExpert.mockResolvedValue({
+        idUser: 2,
+        email: 'expert@b.com',
+        password: 'secret',
+      });
+      const req = { user: { userId: 99 } };
+
+      const result = await controller.revokeExpert(2, req);
+
+      expect(service.revokeExpert).toHaveBeenCalledWith(2);
+      expect(adminLog.log).toHaveBeenCalledWith(
+        99,
+        'UPDATE',
+        'User',
+        '2',
+        expect.stringContaining('expert@b.com'),
+      );
+      expect((result as any).password).toBeUndefined();
+    });
+  });
+
+  describe('updateExpertProfile()', () => {
+    it('should update and strip the password', async () => {
+      service.updateExpertProfile.mockResolvedValue({
+        idUser: 1,
+        expertTitle: 'Notaire',
+        password: 'secret',
+      });
+      const req = { user: { userId: 1 } };
+
+      const result = await controller.updateExpertProfile(req, {
+        expertTitle: 'Notaire',
+      } as any);
+
+      expect(service.updateExpertProfile).toHaveBeenCalledWith(1, {
+        expertTitle: 'Notaire',
+      });
+      expect((result as any).password).toBeUndefined();
+    });
+  });
+
+  describe('findAll()', () => {
+    it('should sanitize passwords out of the paginated result', async () => {
+      service.findAll.mockResolvedValue({
+        data: [{ idUser: 1, password: 'x' }, { idUser: 2, password: 'y' }],
+        total: 2,
+      });
+
+      const result = await controller.findAll({} as any);
+
+      expect(result.data.every((u: any) => u.password === undefined)).toBe(
+        true,
+      );
+      expect(result.total).toBe(2);
+    });
+  });
+
+  describe('getStats()', () => {
+    it('should delegate to service.getStats()', async () => {
+      service.getStats.mockResolvedValue({ total: 10 });
+      const result = await controller.getStats();
+      expect(result).toEqual({ total: 10 });
+    });
   });
 
   describe('getProfile()', () => {

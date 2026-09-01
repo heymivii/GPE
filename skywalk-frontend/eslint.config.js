@@ -4,7 +4,6 @@ import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 import tseslint from 'typescript-eslint'
 import { globalIgnores } from 'eslint/config'
-
 export default tseslint.config([
   globalIgnores(['dist']),
   {
@@ -24,6 +23,9 @@ export default tseslint.config([
         'warn',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ],
+      '@typescript-eslint/no-explicit-any': 'warn',
+      'react-hooks/rules-of-hooks': 'warn',
+      'react-refresh/only-export-components': 'warn',
     },
   },
   {

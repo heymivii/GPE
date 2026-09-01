@@ -2,6 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import { ContentFilterService } from './content-filter.service';
 
+jest.mock('openai', () => ({
+  __esModule: true,
+  default: jest.fn().mockImplementation(() => ({
+    moderations: { create: jest.fn() },
+  })),
+}));
+
 describe('ContentFilterService', () => {
   let service: ContentFilterService;
 
@@ -148,6 +155,7 @@ describe('ContentFilterService', () => {
 
   describe('validate() — OpenAI integration', () => {
     let serviceWithApi: ContentFilterService;
+    let moderationsCreate: jest.Mock;
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
@@ -163,20 +171,65 @@ describe('ContentFilterService', () => {
       }).compile();
 
       serviceWithApi = module.get<ContentFilterService>(ContentFilterService);
+      moderationsCreate = (serviceWithApi as any).openai.moderations.create;
     });
 
-    it('should fallback to local filter if OpenAI fails', async () => {
-      // The OpenAI client will fail with a fake key, so it should fallback
-      const result = await serviceWithApi.validate(
-        'Bonjour, comment obtenir un visa pour le Canada ?',
+    it('does not build an OpenAI client when the key is the placeholder value', async () => {
+      const module: TestingModule = await Test.createTestingModule({
+        providers: [
+          ContentFilterService,
+          {
+            provide: ConfigService,
+            useValue: { get: jest.fn().mockReturnValue('your_openai_api_key') },
+          },
+        ],
+      }).compile();
+      const svc = module.get<ContentFilterService>(ContentFilterService);
+      expect((svc as any).openai).toBeNull();
+    });
+
+    it('rejects content flagged by the OpenAI moderation API, mapping categories to labels', async () => {
+      moderationsCreate.mockResolvedValue({
+        results: [
+          {
+            flagged: true,
+            categories: { hate: true, violence: false, harassment: true },
+          },
+        ],
+      });
+
+      const result = await serviceWithApi.validate('some content');
+
+      expect(result.ok).toBe(false);
+      expect(result.reason).toBe(
+        'Content flagged for: harassment, hate speech',
       );
-      // Should pass because local filter allows clean text
+    });
+
+    it('accepts content the OpenAI moderation API does not flag', async () => {
+      moderationsCreate.mockResolvedValue({
+        results: [{ flagged: false, categories: {} }],
+      });
+
+      const result = await serviceWithApi.validate('clean content');
+
       expect(result.ok).toBe(true);
     });
 
-    it('should still catch profanity via fallback if OpenAI fails', async () => {
+    it('falls back to the local filter when the OpenAI call throws', async () => {
+      moderationsCreate.mockRejectedValue(new Error('network down'));
+
+      const result = await serviceWithApi.validate(
+        'Bonjour, comment obtenir un visa pour le Canada ?',
+      );
+
+      expect(result.ok).toBe(true);
+    });
+
+    it('still catches profanity locally before ever calling OpenAI', async () => {
       const result = await serviceWithApi.validate('Tu es un bougnoule');
       expect(result.ok).toBe(false);
+      expect(moderationsCreate).not.toHaveBeenCalled();
     });
   });
 });

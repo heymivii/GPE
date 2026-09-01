@@ -48,4 +48,8 @@ export class CreateCityDto {
   @IsNotEmpty()
   @IsNumber()
   countryId: number;
+
+  @IsOptional()
+  @IsNumber()
+  assignedToId?: number;
 }

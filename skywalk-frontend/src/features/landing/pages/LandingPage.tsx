@@ -1,19 +1,35 @@
 import { ArrowRightIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import Dropdown from '../components/Dropdown';
+import { useQuery } from '@tanstack/react-query';
+import { countryApi } from '../../../api/country';
 import DestinationCard from '../../dashboard/components/DestinationCard';
+import VisaChecker from '../components/VisaChecker';
 import LandingToolsSection from '../components/LandingToolsSection';
 import MiddleCtaBanner from '../components/MiddleCtaBanner';
 import NewsletterCTA from '../components/NewsletterCTA';
 import HowItWorks from '../components/HowItWorks';
+import DestinationPreview from '../components/DestinationPreview';
 import Testimonials from '../components/Testimonials';
 import FAQ from '../components/FAQ';
+import OfficialSources from '../components/OfficialSources';
+import Pricing from '../components/Pricing';
 import { useAuth } from '../../../hooks/useAuth';
 
 export default function LandingPage() {
   const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
+
+  // Chiffre honnête : nombre réel de destinations ouvertes (pays actifs + sélectionnables).
+  // Endpoint public et léger (pas d'agrégation d'offres d'emploi externe).
+  const { data: activeCountries = [] } = useQuery({
+    queryKey: ['countries', 'active'],
+    queryFn: countryApi.getActive,
+    staleTime: 5 * 60 * 1000,
+  });
+  const destinationCount = activeCountries.filter(
+    (c) => c.selectableAsDestination,
+  ).length;
 
   const popularDestinations = [
     {
@@ -66,30 +82,34 @@ export default function LandingPage() {
 
             <div className="mt-12 sm:mt-20 flex items-center justify-between w-full max-w-2xl">
               <div className="flex-1 flex flex-col min-w-0">
-                <span className="text-2xl sm:text-4xl font-semibold tracking-tight whitespace-nowrap text-[#1d1d1f]">50+</span>
-                <span className="text-[#86868b] text-xs sm:text-sm font-medium mt-1 break-words">{t('landing.hero.stats.expats', { defaultValue: 'Early Expats Supported' })}</span>
+                <span className="text-2xl sm:text-4xl font-semibold tracking-tight whitespace-nowrap text-[#1d1d1f]">{destinationCount || '—'}</span>
+                <span className="text-[#86868b] text-xs sm:text-sm font-medium mt-1 break-words">{t('landing.hero.stats.destinations', { defaultValue: 'Destinations covered' })}</span>
               </div>
               <div className="h-10 sm:h-12 w-px bg-gray-200 mx-2 sm:mx-8" />
               <div className="flex-1 flex flex-col min-w-0">
-                <span className="text-2xl sm:text-4xl font-semibold tracking-tight whitespace-nowrap text-[#1d1d1f]">98%</span>
-                <span className="text-[#86868b] text-xs sm:text-sm font-medium mt-1 break-words">{t('landing.hero.stats.satisfaction', { defaultValue: 'Satisfaction Rate' })}</span>
+                <span className="text-2xl sm:text-4xl font-semibold tracking-tight whitespace-nowrap text-[#1d1d1f]">100%</span>
+                <span className="text-[#86868b] text-xs sm:text-sm font-medium mt-1 break-words">{t('landing.hero.stats.officialSources', { defaultValue: 'Official sources' })}</span>
               </div>
               <div className="h-10 sm:h-12 w-px bg-gray-200 mx-2 sm:mx-8" />
               <div className="flex-1 flex flex-col min-w-0">
-                <span className="text-2xl sm:text-4xl font-semibold tracking-tight whitespace-nowrap text-[#1d1d1f]">4</span>
-                <span className="text-[#86868b] text-xs sm:text-sm font-medium mt-1 break-words">{t('landing.hero.stats.countries', { defaultValue: 'Destinations Analyzed' })}</span>
+                <span className="text-2xl sm:text-4xl font-semibold tracking-tight whitespace-nowrap text-[#1d1d1f]">0€</span>
+                <span className="text-[#86868b] text-xs sm:text-sm font-medium mt-1 break-words">{t('landing.hero.stats.freeToExplore', { defaultValue: 'To explore' })}</span>
               </div>
             </div>
           </div>
 
           <div className="flex-1 w-full lg:w-1/2">
-            <Dropdown />
+            <VisaChecker />
           </div>
 
         </div>
       </section>
 
+      <DestinationPreview />
+
       <HowItWorks />
+
+      <OfficialSources />
 
       <LandingToolsSection />
 
@@ -156,6 +176,8 @@ export default function LandingPage() {
       </section>
 
       <Testimonials />
+
+      <Pricing />
 
       <NewsletterCTA />
 

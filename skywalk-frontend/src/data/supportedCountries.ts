@@ -14,7 +14,7 @@ export const SUPPORTED_COUNTRIES: SupportedCountry[] = [
     { code: 'US', iso3: 'USA', name: 'États-Unis', slug: 'etats-unis', flag: '🇺🇸', i18nKey: 'countries.unitedStates', apiCity: 'New York', apiCountryName: 'United States' },
     { code: 'JP', iso3: 'JPN', name: 'Japon', slug: 'japon', flag: '🇯🇵', i18nKey: 'countries.japan', apiCity: 'Tokyo', apiCountryName: 'Japan' },
     { code: 'CH', iso3: 'CHE', name: 'Suisse', slug: 'suisse', flag: '🇨🇭', i18nKey: 'countries.switzerland', apiCity: 'Geneva', apiCountryName: 'Switzerland' },
-] as const;
+];
 
 export const CITIES_BY_COUNTRY: Record<string, string[]> = {
     'France': ['Paris', 'Marseille', 'Lyon', 'Toulouse', 'Nice'],

@@ -60,7 +60,7 @@ export function CountryCard({ country }: CountryCardProps) {
             </h3>
             <div className="flex items-center mt-1 text-sm text-gray-500">
               <MapPin className="w-3.5 h-3.5 mr-1" />
-              {country.continent ? t(`comparison.data.continents.${country.continent.continentName}`, { defaultValue: country.continent.continentName }) : t('destinationsPage.card.defaultDestination')}
+              {country.continent ? t(`comparison.data.continents.${country.continent.name}`, { defaultValue: country.continent.name }) : t('destinationsPage.card.defaultDestination')}
             </div>
           </div>
         </div>

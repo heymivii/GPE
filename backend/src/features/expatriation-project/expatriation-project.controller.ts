@@ -59,6 +59,12 @@ export class ExpatriationProjectController {
     return await this.projectService.update(+id, req.user.userId, updateDto);
   }
 
+  // Débloque le projet (paiement mock) → accès au plan complet.
+  @Patch(':id/unlock')
+  async unlock(@Request() req, @Param('id') id: string) {
+    return await this.projectService.unlock(+id, req.user.userId);
+  }
+
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Request() req, @Param('id') id: string) {

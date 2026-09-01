@@ -4,9 +4,15 @@ import { useState, useMemo, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import type { CountryData } from '../../../hooks/useCountryData';
 import { useChecklistProgress, getStepDeadline, filterStepsForProject } from '../hooks/useChecklistProgress';
+import { personalizeFilter } from '../hooks/personalize';
+import TrustBadge from '../../../components/TrustBadge';
+import VisaNotice from '../../../components/VisaNotice';
 import { getLinksForStep } from '../../../data/checklist-links';
 import { useTranslation } from 'react-i18next';
+import { getLocale } from '../../../data/supportedCountries';
 import type { WidgetSize } from '../hooks/useDashboardPreferences';
+
+const CK = 'dashboard.personalized.widgets.checklist';
 
 const CATEGORY_LABELS: Record<string, string> = {
   visa: 'dashboard.personalized.widgets.checklist.categories.visa',
@@ -19,35 +25,39 @@ const CATEGORY_LABELS: Record<string, string> = {
   integration: 'dashboard.personalized.widgets.checklist.categories.integration',
 };
 
-// ✅ Badge deadline
-function DeadlineBadge({ daysBeforeDeparture, departureDate }: {
+// ✅ Badge deadline — ignoré pour les étapes à l'arrivée
+function DeadlineBadge({ daysBeforeDeparture, departureDate, phase }: {
   daysBeforeDeparture?: number;
   departureDate?: string | Date | null;
+  phase?: 'before' | 'on_arrival';
 }) {
+  const { t, i18n } = useTranslation();
+  if (phase === 'on_arrival') return null;
   const deadline = getStepDeadline(daysBeforeDeparture, departureDate);
   if (!deadline.date) return null;
 
-  const dateStr = deadline.date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+  const dateStr = deadline.date.toLocaleDateString(getLocale(i18n.language), { day: 'numeric', month: 'short', year: 'numeric' });
 
   if (deadline.isLate) return (
     <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-red-100 text-red-700 font-medium whitespace-nowrap">
-      🔴 En retard — {dateStr}
+      {t(`${CK}.deadlineLate`, { date: dateStr })}
     </span>
   );
   if (deadline.isUrgent) return (
     <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-orange-100 text-orange-700 font-medium whitespace-nowrap">
-      🟠 {deadline.daysLeft}j — {dateStr}
+      {t(`${CK}.deadlineUrgent`, { days: deadline.daysLeft, date: dateStr })}
     </span>
   );
   return (
     <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-500 whitespace-nowrap">
-      📅 {dateStr}
+      {t(`${CK}.deadlineNormal`, { date: dateStr })}
     </span>
   );
 }
 
 // ✅ Liens officiels par étape
 function StepLinks({ category, countryCode }: { category: string; countryCode?: string }) {
+  const { t } = useTranslation();
   const links = getLinksForStep(category, countryCode);
   if (!links) return null;
 
@@ -62,7 +72,7 @@ function StepLinks({ category, countryCode }: { category: string; countryCode?: 
           onClick={(e) => e.stopPropagation()}
           className="text-[10px] text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-0.5"
         >
-          Voir le service <ArrowRight className="w-2.5 h-2.5" />
+          {t(`${CK}.seeService`)} <ArrowRight className="w-2.5 h-2.5" />
         </Link>
       )}
       {links.externalLinks?.map((link) => (
@@ -81,6 +91,148 @@ function StepLinks({ category, countryCode }: { category: string; countryCode?: 
   );
 }
 
+// ---- ChecklistItemCard — renders one item row (used for both phase groups) ----
+
+interface ChecklistItemCardProps {
+  item: {
+    id: string;
+    trackingId: number;
+    title: string;
+    completed: boolean;
+    category: string;
+    substeps: { id: string; label: string; completed: boolean; isOptional: boolean }[];
+    completedFacts: number[];
+    daysBeforeDeparture?: number;
+    phase: 'before' | 'on_arrival';
+    onlyFor?: { travelType?: string[]; objective?: string[] } | null;
+  };
+  isExpanded: boolean;
+  departureDate?: string | Date | null;
+  countryCode?: string;
+  t: (key: string) => string;
+  onToggleExpand: (id: string, e: React.MouseEvent) => void;
+  onToggleItem: (id: string) => void;
+  onToggleSubstep: (itemId: string, substepId: string, e: React.MouseEvent) => void;
+}
+
+function ChecklistItemCard({
+  item,
+  isExpanded,
+  departureDate,
+  countryCode,
+  t,
+  onToggleExpand,
+  onToggleItem,
+  onToggleSubstep,
+}: ChecklistItemCardProps) {
+  const substepsDone = item.substeps?.filter((s) => s.completed).length ?? 0;
+  const substepsTotal = item.substeps?.length ?? 0;
+
+  return (
+    <div className="rounded-lg border border-gray-100 overflow-hidden">
+      <div
+        className={`flex items-start gap-3 p-3 cursor-pointer transition-colors ${
+          item.completed ? 'bg-gray-50' : 'hover:bg-gray-50'
+        }`}
+        onClick={() => substepsTotal === 0 ? onToggleItem(item.id) : onToggleExpand(item.id, { stopPropagation: () => {} } as React.MouseEvent)}
+      >
+        <button
+          className="mt-0.5 flex-shrink-0"
+          onClick={(e) => { e.stopPropagation(); onToggleItem(item.id); }}
+        >
+          {item.completed ? (
+            <CheckCircle className="w-5 h-5 text-gray-900" />
+          ) : (
+            <Circle className="w-5 h-5 text-gray-300" />
+          )}
+        </button>
+
+        <div className="flex-1 min-w-0">
+          <p className={`text-sm font-medium ${
+            item.completed ? 'text-gray-400 line-through' : 'text-gray-900'
+          }`}>
+            {item.title}
+          </p>
+
+          <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+            <span className="text-[11px] text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full font-medium">
+              {t(CATEGORY_LABELS[item.category] || item.category)}
+            </span>
+            {substepsTotal > 0 && (
+              <span className="text-[11px] text-gray-400">
+                {substepsDone}/{substepsTotal}
+              </span>
+            )}
+            {!item.completed && (
+              <>
+                <DeadlineBadge
+                  daysBeforeDeparture={item.daysBeforeDeparture}
+                  departureDate={departureDate}
+                  phase={item.phase}
+                />
+                {item.phase === 'on_arrival' && (
+                  <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-500 whitespace-nowrap">
+                    {t(`${CK}.onSite`)}
+                  </span>
+                )}
+              </>
+            )}
+          </div>
+
+          {!item.completed && substepsTotal === 0 && (
+            <StepLinks category={item.category} countryCode={countryCode} />
+          )}
+        </div>
+
+        {substepsTotal > 0 && (
+          <button
+            onClick={(e) => onToggleExpand(item.id, e)}
+            className="flex-shrink-0 mt-1 p-1 rounded-md hover:bg-gray-200 transition-colors"
+          >
+            {isExpanded ? (
+              <ChevronDown className="w-4 h-4 text-gray-400" />
+            ) : (
+              <ChevronRight className="w-4 h-4 text-gray-400" />
+            )}
+          </button>
+        )}
+      </div>
+
+      {isExpanded && substepsTotal > 0 && (
+        <div className="border-t border-gray-100 bg-gray-50/50 px-3 py-2 space-y-1">
+          {item.substeps.map((substep) => (
+            <div
+              key={substep.id}
+              onClick={(e) => onToggleSubstep(item.id, substep.id, e)}
+              className={`flex items-start gap-2.5 px-2.5 py-2 rounded-md cursor-pointer transition-colors ${
+                substep.completed ? 'bg-gray-100/60' : 'hover:bg-gray-100'
+              }`}
+            >
+              <span className="flex-shrink-0 mt-0.5">
+                {substep.completed ? (
+                  <CheckCircle className="w-3.5 h-3.5 text-gray-900" />
+                ) : (
+                  <Circle className="w-3.5 h-3.5 text-gray-300" />
+                )}
+              </span>
+              <span className={`text-xs leading-relaxed ${
+                substep.completed ? 'text-gray-400 line-through' : 'text-gray-600'
+              }`}>
+                {substep.label}
+                {substep.isOptional && (
+                  <span className="ml-1 text-gray-400 italic">
+                    ({t('dashboard.personalized.widgets.checklist.optional')})
+                  </span>
+                )}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 interface ChecklistWidgetProps {
   countryData: CountryData | null;
   projectId: number;
@@ -89,6 +241,10 @@ interface ChecklistWidgetProps {
     objective?: string | null;
     expectedDepartureDate?: string | Date | null;
     idProject?: number;
+    nationality?: string | null;
+    hasChildren?: boolean | null;
+    priorities?: string | null;
+    isPaid?: boolean;
   };
   onEdit?: () => void;
   onHide?: () => void;
@@ -105,12 +261,16 @@ interface ChecklistSubstep {
 
 interface ChecklistItem {
   id: string;
+  trackingId: number;
   title: string;
   completed: boolean;
   category: string;
   substeps: ChecklistSubstep[];
+  completedFacts: number[];
   daysBeforeDeparture?: number;
+  phase: 'before' | 'on_arrival';
   onlyFor?: { travelType?: string[]; objective?: string[] } | null;
+  sourceUrl?: string;
 }
 
 export default function ChecklistWidget({
@@ -123,7 +283,11 @@ export default function ChecklistWidget({
   currentSize,
 }: ChecklistWidgetProps) {
   const { t } = useTranslation();
-  const { progress, updateStep, isLoading } = useChecklistProgress(projectId);
+  const { progress, updateStep, updateFacts, isLoading } = useChecklistProgress(projectId);
+
+  // Projet non payé → on ne montre que l'aperçu (les étapes urgentes) ; le reste est
+  // verrouillé derrière le déblocage, comme sur la page checklist.
+  const isLocked = project?.isPaid === false;
 
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const pendingRef = useRef<Set<string>>(new Set());
@@ -135,29 +299,53 @@ export default function ChecklistWidget({
   const allChecklist = useMemo<ChecklistItem[]>(() => {
     if (!progress || !Array.isArray(progress)) return [];
 
-    return progress.map((t) => ({
-      id: t.idProcedureTracking.toString(),
-      title: t.admin_procedure?.procedureType || '',
-      completed: t.status === 'completed',
-      category: t.admin_procedure?.category || 'other',
-      substeps: [],
-      daysBeforeDeparture: t.admin_procedure?.daysBeforeDeparture,
-      onlyFor: t.admin_procedure?.onlyFor ?? null,
-    }));
+    return progress.map((t) => {
+      const trackingId = t.idProcedureTracking;
+      const completedFacts = t.completedFacts ?? [];
+      const actionItems = t.admin_procedure?.actionItems ?? [];
+
+      // Checkable sub-steps = concrete ACTIONS to do (not descriptive facts).
+      const substeps: ChecklistSubstep[] = actionItems.map((action, i) => ({
+        id: `${trackingId}-${i}`,
+        label: action,
+        completed: completedFacts.includes(i),
+        isOptional: false,
+      }));
+
+      return {
+        id: trackingId.toString(),
+        trackingId,
+        title: t.admin_procedure?.procedureType || '',
+        completed: t.status === 'completed',
+        category: t.admin_procedure?.category || 'other',
+        substeps,
+        completedFacts,
+        daysBeforeDeparture: t.admin_procedure?.daysBeforeDeparture,
+        phase: (t.admin_procedure?.phase ?? 'on_arrival') as 'before' | 'on_arrival',
+        onlyFor: t.admin_procedure?.onlyFor ?? null,
+        sourceUrl: t.admin_procedure?.sourceUrl,
+      };
+    });
   }, [progress]);
 
-  // ✅ Filtrage selon le profil du projet
+  // ✅ Filtrage profil + personnalisation par règles (nationalité/enfants)
   const checklist = useMemo(() => {
-    return filterStepsForProject(allChecklist, {
+    const base = filterStepsForProject(allChecklist, {
       travelType: project?.travelType,
       objective: project?.objective,
     });
-  }, [allChecklist, project?.travelType, project?.objective]);
+    return personalizeFilter(base, {
+      nationality: project?.nationality,
+      destinationIso: countryCode,
+      hasChildren: project?.hasChildren,
+      priorities: project?.priorities,
+    });
+  }, [allChecklist, project?.travelType, project?.objective, project?.nationality, project?.hasChildren, project?.priorities, countryCode]);
 
-  // ✅ Les 3 étapes urgentes/en retard pour l'aperçu widget
+  // ✅ Les 3 étapes urgentes/en retard pour l'aperçu widget — seulement phase 'before'
   const urgentSteps = useMemo(() => {
     return checklist
-      .filter((item) => !item.completed)
+      .filter((item) => !item.completed && item.phase === 'before')
       .map((item) => ({
         ...item,
         deadline: getStepDeadline(item.daysBeforeDeparture, departureDate),
@@ -173,6 +361,23 @@ export default function ChecklistWidget({
       })
       .slice(0, 3);
   }, [checklist, departureDate]);
+
+  // Avoid showing the priority-preview items again in the full list below.
+  const urgentIds = useMemo(() => new Set(urgentSteps.map((s) => s.id)), [urgentSteps]);
+  const remainingChecklist = useMemo(
+    () => checklist.filter((item) => !urgentIds.has(item.id)),
+    [checklist, urgentIds],
+  );
+
+  // Split remaining list by phase for grouped display
+  const remainingBefore = useMemo(
+    () => remainingChecklist.filter((item) => item.phase === 'before'),
+    [remainingChecklist],
+  );
+  const remainingArrival = useMemo(
+    () => remainingChecklist.filter((item) => item.phase !== 'before'),
+    [remainingChecklist],
+  );
 
   const toggleExpand = useCallback((id: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -204,31 +409,44 @@ export default function ChecklistWidget({
   }, [checklist, updateStep]);
 
   const toggleSubstep = useCallback(async (
-    _itemId: string,
-    _substepId: string,
+    itemId: string,
+    substepId: string,
     e: React.MouseEvent,
   ) => {
     e.stopPropagation();
-  }, []);
 
-  const { totalSteps, completedSteps } = useMemo(() => {
-    return checklist.reduce(
-      (acc, item) => {
-        if (item.substeps && item.substeps.length > 0) {
-          acc.totalSteps += item.substeps.length;
-          acc.completedSteps += item.substeps.filter((sub) => sub.completed).length;
-        } else {
-          acc.totalSteps += 1;
-          acc.completedSteps += item.completed ? 1 : 0;
-        }
-        return acc;
-      },
-      { totalSteps: 0, completedSteps: 0 },
-    );
+    const item = checklist.find((i) => i.id === itemId);
+    if (!item) return;
+
+    // substepId is `${trackingId}-${factIndex}`
+    const factIndex = parseInt(substepId.split('-').pop() ?? '', 10);
+    if (isNaN(factIndex)) return;
+
+    const current = item.completedFacts;
+    const next = current.includes(factIndex)
+      ? current.filter((f) => f !== factIndex)
+      : [...current, factIndex];
+
+    try {
+      await updateFacts({ trackingId: item.trackingId, completedFacts: next });
+    } catch (error) {
+      console.error('Error updating fact:', error);
+    }
+  }, [checklist, updateFacts]);
+
+  // Progression par PHASE — on ne mélange plus « avant le départ » et « sur place » :
+  // sinon on afficherait « 100% terminé » alors que la personne n'est même pas partie.
+  const phase = useMemo(() => {
+    const before = checklist.filter((i) => i.phase === 'before');
+    const arrival = checklist.filter((i) => i.phase !== 'before');
+    return {
+      beforeTotal: before.length,
+      beforeDone: before.filter((i) => i.completed).length,
+      arrivalTotal: arrival.length,
+      arrivalDone: arrival.filter((i) => i.completed).length,
+    };
   }, [checklist]);
-
-  const completionPercentage =
-    totalSteps > 0 ? (completedSteps / totalSteps) * 100 : 0;
+  const pct = (done: number, total: number) => (total > 0 ? (done / total) * 100 : 0);
 
   if (isLoading) {
     return (
@@ -253,32 +471,58 @@ export default function ChecklistWidget({
   return (
     <Widget title={t('dashboard.personalized.widgets.checklist.title')} onEdit={onEdit} onHide={onHide} onResize={onResize} currentSize={currentSize}>
       <div className="space-y-4">
-        {/* Barre de progression */}
-        <div className="bg-gray-50 rounded-lg p-3">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-700">
-              {t('dashboard.personalized.widgets.checklist.progression')}
-            </span>
-            <span className="text-sm font-semibold text-gray-900">
-              {t('dashboard.personalized.widgets.checklist.completed', {
-                completed: completedSteps,
-                total: totalSteps,
-                percentage: Math.round(completionPercentage),
-              })}
-            </span>
-          </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
-            <div
-              className="bg-gray-900 h-2 rounded-full transition-all duration-500"
-              style={{ width: `${completionPercentage}%` }}
-            />
-          </div>
+        {/* Progression par phase — jamais un « 100% » global tant que « sur place » n'est pas fait */}
+        <div className="bg-gray-50 rounded-lg p-3 space-y-3">
+          {phase.beforeTotal > 0 && (
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-sm font-medium text-gray-700">
+                  {t(`${CK}.beforeDeparture`)}
+                </span>
+                <span className="text-sm font-semibold text-gray-900">
+                  {phase.beforeDone}/{phase.beforeTotal}
+                </span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div
+                  className="bg-gray-900 h-2 rounded-full transition-all duration-500"
+                  style={{ width: `${pct(phase.beforeDone, phase.beforeTotal)}%` }}
+                />
+              </div>
+            </div>
+          )}
+          {phase.arrivalTotal > 0 && (
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-sm font-medium text-gray-700">
+                  {t(`${CK}.onArrival`)}
+                </span>
+                <span className="text-sm font-semibold text-gray-900">
+                  {phase.arrivalDone}/{phase.arrivalTotal}
+                </span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div
+                  className="bg-[#5EA3C0] h-2 rounded-full transition-all duration-500"
+                  style={{ width: `${pct(phase.arrivalDone, phase.arrivalTotal)}%` }}
+                />
+              </div>
+            </div>
+          )}
         </div>
+
+        {/* Conditions d'entrée selon la nationalité (installation, pas tourisme) */}
+        <VisaNotice
+          nationality={project?.nationality}
+          destinationIso={countryCode}
+          destinationName={(_countryData as any)?.name}
+          sourceUrl={allChecklist.find((s) => s.category === 'visa')?.sourceUrl}
+        />
 
         {/* ✅ Alerte date de départ manquante */}
         {!departureDate && (
           <div className="text-xs text-orange-600 bg-orange-50 border border-orange-100 rounded-lg px-3 py-2">
-            Ajoutez votre date de départ pour voir les deadlines de chaque étape.
+            {t(`${CK}.missingDepartureDate`)}
           </div>
         )}
 
@@ -286,7 +530,7 @@ export default function ChecklistWidget({
         {urgentSteps.length > 0 && (
           <div className="space-y-1.5">
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
-              À faire en priorité
+              {t(`${CK}.priorityToDo`)}
             </p>
             {urgentSteps.map((item) => (
               <div
@@ -297,125 +541,86 @@ export default function ChecklistWidget({
                 <Circle className="w-4 h-4 text-gray-300 flex-shrink-0" />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm text-gray-900 font-medium truncate">{item.title}</p>
-                  <StepLinks category={item.category} countryCode={countryCode} />
+                  {item.sourceUrl ? (
+                    <div className="mt-1"><TrustBadge url={item.sourceUrl} /></div>
+                  ) : (
+                    <StepLinks category={item.category} countryCode={countryCode} />
+                  )}
                 </div>
-                <DeadlineBadge daysBeforeDeparture={item.daysBeforeDeparture} departureDate={departureDate} />
+                <DeadlineBadge daysBeforeDeparture={item.daysBeforeDeparture} departureDate={departureDate} phase={item.phase} />
               </div>
             ))}
           </div>
         )}
 
-        {/* Liste complète */}
-        <div className="space-y-1.5 max-h-[24rem] overflow-y-auto pr-1">
-          {checklist.map((item) => {
-            const isExpanded = expandedIds.has(item.id);
-            const substepsDone = item.substeps?.filter((s) => s.completed).length ?? 0;
-            const substepsTotal = item.substeps?.length ?? 0;
+        {/* Liste complète — groupée par phase (verrouillée si projet non payé) */}
+        {!isLocked && (
+        <div className="space-y-3 max-h-[24rem] overflow-y-auto pr-1">
+          {/* ✈️ Avant le départ */}
+          {remainingBefore.length > 0 && (
+            <div className="space-y-1.5">
+              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">
+                {t(`${CK}.beforeDeparture`)}
+              </p>
+              {remainingBefore.map((item) => (
+                <ChecklistItemCard
+                  key={item.id}
+                  item={item}
+                  isExpanded={expandedIds.has(item.id)}
+                  departureDate={departureDate}
+                  countryCode={countryCode}
+                  t={t}
+                  onToggleExpand={toggleExpand}
+                  onToggleItem={toggleItem}
+                  onToggleSubstep={toggleSubstep}
+                />
+              ))}
+            </div>
+          )}
 
-            return (
-              <div key={item.id} className="rounded-lg border border-gray-100 overflow-hidden">
-                <div
-                  className={`flex items-start gap-3 p-3 cursor-pointer transition-colors ${
-                    item.completed ? 'bg-gray-50' : 'hover:bg-gray-50'
-                  }`}
-                  onClick={() => toggleItem(item.id)}
-                >
-                  <button className="mt-0.5 flex-shrink-0">
-                    {item.completed ? (
-                      <CheckCircle className="w-5 h-5 text-gray-900" />
-                    ) : (
-                      <Circle className="w-5 h-5 text-gray-300" />
-                    )}
-                  </button>
-
-                  <div className="flex-1 min-w-0">
-                    <p className={`text-sm font-medium ${
-                      item.completed ? 'text-gray-400 line-through' : 'text-gray-900'
-                    }`}>
-                      {item.title}
-                    </p>
-
-                    <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-                      <span className="text-[11px] text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full font-medium">
-                        {t(CATEGORY_LABELS[item.category] || item.category)}
-                      </span>
-                      {substepsTotal > 0 && (
-                        <span className="text-[11px] text-gray-400">
-                          {substepsDone}/{substepsTotal}
-                        </span>
-                      )}
-                      {/* ✅ Badge deadline */}
-                      {!item.completed && (
-                        <DeadlineBadge
-                          daysBeforeDeparture={item.daysBeforeDeparture}
-                          departureDate={departureDate}
-                        />
-                      )}
-                    </div>
-
-                    {/* ✅ Liens officiels */}
-                    {!item.completed && (
-                      <StepLinks category={item.category} countryCode={countryCode} />
-                    )}
-                  </div>
-
-                  {item.substeps && item.substeps.length > 0 && (
-                    <button
-                      onClick={(e) => toggleExpand(item.id, e)}
-                      className="flex-shrink-0 mt-1 p-1 rounded-md hover:bg-gray-200 transition-colors"
-                    >
-                      {isExpanded ? (
-                        <ChevronDown className="w-4 h-4 text-gray-400" />
-                      ) : (
-                        <ChevronRight className="w-4 h-4 text-gray-400" />
-                      )}
-                    </button>
-                  )}
-                </div>
-
-                {isExpanded && item.substeps && item.substeps.length > 0 && (
-                  <div className="border-t border-gray-100 bg-gray-50/50 px-3 py-2 space-y-1">
-                    {item.substeps.map((substep) => (
-                      <div
-                        key={substep.id}
-                        onClick={(e) => toggleSubstep(item.id, substep.id, e)}
-                        className={`flex items-start gap-2.5 px-2.5 py-2 rounded-md cursor-pointer transition-colors ${
-                          substep.completed ? 'bg-gray-100/60' : 'hover:bg-gray-100'
-                        }`}
-                      >
-                        <span className="flex-shrink-0 mt-0.5">
-                          {substep.completed ? (
-                            <CheckCircle className="w-3.5 h-3.5 text-gray-900" />
-                          ) : (
-                            <Circle className="w-3.5 h-3.5 text-gray-300" />
-                          )}
-                        </span>
-                        <span className={`text-xs leading-relaxed ${
-                          substep.completed ? 'text-gray-400 line-through' : 'text-gray-600'
-                        }`}>
-                          {substep.label}
-                          {substep.isOptional && (
-                            <span className="ml-1 text-gray-400 italic">
-                              ({t('dashboard.personalized.widgets.checklist.optional')})
-                            </span>
-                          )}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+          {/* 🏠 À l'arrivée */}
+          {remainingArrival.length > 0 && (
+            <div className="space-y-1.5">
+              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">
+                {t(`${CK}.onArrival`)}
+              </p>
+              {remainingArrival.map((item) => (
+                <ChecklistItemCard
+                  key={item.id}
+                  item={item}
+                  isExpanded={expandedIds.has(item.id)}
+                  departureDate={departureDate}
+                  countryCode={countryCode}
+                  t={t}
+                  onToggleExpand={toggleExpand}
+                  onToggleItem={toggleItem}
+                  onToggleSubstep={toggleSubstep}
+                />
+              ))}
+            </div>
+          )}
         </div>
+        )}
+
+        {/* 🔒 Verrou : plan complet réservé aux projets débloqués (payés) */}
+        {isLocked && project?.idProject && (
+          <Link
+            to={`/projects/${project.idProject}/checklist`}
+            className="flex flex-col items-center gap-0.5 w-full py-4 rounded-xl border-2 border-dashed border-[#5EA3C0]/40 bg-[#5EA3C0]/5 text-center hover:bg-[#5EA3C0]/10 transition-colors"
+          >
+            <span className="text-2xl">🔒</span>
+            <span className="text-sm font-semibold text-gray-800">Débloquez votre plan complet</span>
+            <span className="text-xs text-gray-500">Toutes les démarches + liens officiels vérifiés</span>
+          </Link>
+        )}
 
         {/* ✅ Lien vers la page dédiée */}
-        {project?.idProject && (
+        {!isLocked && project?.idProject && (
           <Link
             to={`/projects/${project.idProject}/checklist`}
             className="flex items-center justify-center gap-1.5 w-full py-2 text-sm text-gray-500 hover:text-gray-900 border border-gray-100 hover:border-gray-300 rounded-lg transition-colors"
           >
-            Voir toute la checklist
+            {t(`${CK}.seeFullChecklist`)}
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         )}

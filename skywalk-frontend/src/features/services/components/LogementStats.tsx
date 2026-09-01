@@ -4,22 +4,17 @@ import { useTranslation } from 'react-i18next';
 import { costOfLivingApi } from '../../../api/costOfLiving';
 import type { CleanedCostOfLivingData } from '../../../api/costOfLiving';
 import { useCurrency } from '../../../contexts/CurrencyContext';
-import CurrencySelector from '../../../components/CurrencySelector';
 import { getCountryMapping, getCurrentLocale } from '../../../data/supportedCountries';
+import { formatNumber } from '../../../lib/formatters';
 
 interface LogementStatsProps {
   countryName?: string;
   cityName?: string;
 }
 
-const fmtPrice = (v: number | undefined | null, decimals = 0): string =>
-  v != null && v !== 0
-    ? v.toLocaleString(getCurrentLocale(), { minimumFractionDigits: decimals, maximumFractionDigits: decimals })
-    : '—';
-
-function PriceRow({ label, avg, min, max, localCur, exchangeRates }: {
+function PriceRow({ label, avg, min, max, localCur }: {
   label: string; avg?: number; min?: number; max?: number;
-  localCur: string; exchangeRates: Record<string, number> | null;
+  localCur: string;
 }) {
   const { formatPrice, isSameCurrency } = useCurrency();
   const same = isSameCurrency(localCur);
@@ -28,16 +23,16 @@ function PriceRow({ label, avg, min, max, localCur, exchangeRates }: {
       <div className="flex justify-between items-center">
         <span className="text-gray-600 text-sm">{label}</span>
         <span className="font-semibold text-sm text-gray-900">
-          {formatPrice(avg, localCur, exchangeRates)}
+          {formatPrice(avg, localCur)}
           {!same && avg != null && avg > 0 && (
-            <span className="text-gray-400 text-xs font-normal ml-1.5">({fmtPrice(avg)} {localCur})</span>
+            <span className="text-gray-400 text-xs font-normal ml-1.5">({formatNumber(avg)} {localCur})</span>
           )}
         </span>
       </div>
       {min != null && max != null && min !== 0 && max !== 0 && (
         <div className="flex justify-end gap-3 mt-0.5">
-          <span className="text-xs text-gray-400">min {formatPrice(min, localCur, exchangeRates)}</span>
-          <span className="text-xs text-gray-400">max {formatPrice(max, localCur, exchangeRates)}</span>
+          <span className="text-xs text-gray-400">min {formatPrice(min, localCur)}</span>
+          <span className="text-xs text-gray-400">max {formatPrice(max, localCur)}</span>
         </div>
       )}
     </div>
@@ -89,10 +84,9 @@ export default function LogementStats({ countryName, cityName }: LogementStatsPr
   const salary = data.categories.salary;
   const localCur = data.currency.code;
   const numbeoCityName = data.city.name;
-  const rates = data.currency.exchangeRates ?? null;
 
   const same = isSameCurrency(localCur);
-  const fp = (v?: number) => formatPrice(v, localCur, rates);
+  const fp = (v?: number) => formatPrice(v, localCur);
 
   const rent1BCenter = housing.rent.oneBedroom.cityCenter.avg;
   const rent1BOutside = housing.rent.oneBedroom.outsideCenter.avg;
@@ -105,7 +99,7 @@ export default function LogementStats({ countryName, cityName }: LogementStatsPr
         {prefix}{fp(value)}
       </p>
       {!same && value != null && value > 0 && (
-        <p className="text-xs text-gray-400 mt-0.5">{prefix}{fmtPrice(value)} {localCur}</p>
+        <p className="text-xs text-gray-400 mt-0.5">{prefix}{formatNumber(value)} {localCur}</p>
       )}
     </>
   );
@@ -117,7 +111,6 @@ export default function LogementStats({ countryName, cityName }: LogementStatsPr
           {t('services.stats.logement.title', { city: mapping.displayName })}
         </h2>
         <div className="flex items-center gap-2 flex-wrap justify-end">
-          <CurrencySelector />
           {!same && (
             <div className="flex items-center space-x-1.5 px-3 py-1.5 bg-amber-50 rounded-full">
               <ArrowRightLeft className="w-3.5 h-3.5 text-amber-600" />
@@ -179,10 +172,10 @@ export default function LogementStats({ countryName, cityName }: LogementStatsPr
             <Home className="w-5 h-5 text-blue-600" />
             <h3 className="font-semibold text-gray-900">{t('services.stats.logement.monthlyRents')}</h3>
           </div>
-          <PriceRow label={t('services.stats.logement.rent1BCenter')} avg={housing.rent.oneBedroom.cityCenter.avg} min={housing.rent.oneBedroom.cityCenter.min} max={housing.rent.oneBedroom.cityCenter.max} localCur={localCur} exchangeRates={rates} />
-          <PriceRow label={t('services.stats.logement.rent1BOutside')} avg={housing.rent.oneBedroom.outsideCenter.avg} min={housing.rent.oneBedroom.outsideCenter.min} max={housing.rent.oneBedroom.outsideCenter.max} localCur={localCur} exchangeRates={rates} />
-          <PriceRow label={t('services.stats.logement.rent3BCenter')} avg={housing.rent.threeBedroom.cityCenter.avg} min={housing.rent.threeBedroom.cityCenter.min} max={housing.rent.threeBedroom.cityCenter.max} localCur={localCur} exchangeRates={rates} />
-          <PriceRow label={t('services.stats.logement.rent3BOutside')} avg={housing.rent.threeBedroom.outsideCenter.avg} min={housing.rent.threeBedroom.outsideCenter.min} max={housing.rent.threeBedroom.outsideCenter.max} localCur={localCur} exchangeRates={rates} />
+          <PriceRow label={t('services.stats.logement.rent1BCenter')} avg={housing.rent.oneBedroom.cityCenter.avg} min={housing.rent.oneBedroom.cityCenter.min} max={housing.rent.oneBedroom.cityCenter.max} localCur={localCur} />
+          <PriceRow label={t('services.stats.logement.rent1BOutside')} avg={housing.rent.oneBedroom.outsideCenter.avg} min={housing.rent.oneBedroom.outsideCenter.min} max={housing.rent.oneBedroom.outsideCenter.max} localCur={localCur} />
+          <PriceRow label={t('services.stats.logement.rent3BCenter')} avg={housing.rent.threeBedroom.cityCenter.avg} min={housing.rent.threeBedroom.cityCenter.min} max={housing.rent.threeBedroom.cityCenter.max} localCur={localCur} />
+          <PriceRow label={t('services.stats.logement.rent3BOutside')} avg={housing.rent.threeBedroom.outsideCenter.avg} min={housing.rent.threeBedroom.outsideCenter.min} max={housing.rent.threeBedroom.outsideCenter.max} localCur={localCur} />
         </div>
 
         <div className="bg-white rounded-xl p-6 border border-gray-200">
@@ -190,10 +183,10 @@ export default function LogementStats({ countryName, cityName }: LogementStatsPr
             <DollarSign className="w-5 h-5 text-emerald-600" />
             <h3 className="font-semibold text-gray-900">{t('services.stats.logement.buyAndUtilities')}</h3>
           </div>
-          <PriceRow label={t('services.stats.logement.pricePerSqmCenter')} avg={housing.buy.pricePerSqm.cityCenter.avg} min={housing.buy.pricePerSqm.cityCenter.min} max={housing.buy.pricePerSqm.cityCenter.max} localCur={localCur} exchangeRates={rates} />
-          <PriceRow label={t('services.stats.logement.pricePerSqmOutside')} avg={housing.buy.pricePerSqm.outsideCenter.avg} min={housing.buy.pricePerSqm.outsideCenter.min} max={housing.buy.pricePerSqm.outsideCenter.max} localCur={localCur} exchangeRates={rates} />
-          <PriceRow label={t('services.stats.logement.utilitiesLabel')} avg={utilities.basic85m2.avg} min={utilities.basic85m2.min} max={utilities.basic85m2.max} localCur={localCur} exchangeRates={rates} />
-          <PriceRow label={t('services.stats.logement.internet')} avg={utilities.internet.avg} min={utilities.internet.min} max={utilities.internet.max} localCur={localCur} exchangeRates={rates} />
+          <PriceRow label={t('services.stats.logement.pricePerSqmCenter')} avg={housing.buy.pricePerSqm.cityCenter.avg} min={housing.buy.pricePerSqm.cityCenter.min} max={housing.buy.pricePerSqm.cityCenter.max} localCur={localCur} />
+          <PriceRow label={t('services.stats.logement.pricePerSqmOutside')} avg={housing.buy.pricePerSqm.outsideCenter.avg} min={housing.buy.pricePerSqm.outsideCenter.min} max={housing.buy.pricePerSqm.outsideCenter.max} localCur={localCur} />
+          <PriceRow label={t('services.stats.logement.utilitiesLabel')} avg={utilities.basic85m2.avg} min={utilities.basic85m2.min} max={utilities.basic85m2.max} localCur={localCur} />
+          <PriceRow label={t('services.stats.logement.internet')} avg={utilities.internet.avg} min={utilities.internet.min} max={utilities.internet.max} localCur={localCur} />
         </div>
       </div>
 
@@ -208,7 +201,7 @@ export default function LogementStats({ countryName, cityName }: LogementStatsPr
                 <strong>
                   {fp(salary.averageMonthly.avg)}{t('services.stats.common.perMonth')}
                   {!same && (
-                    <span className="font-normal text-blue-600"> ({fmtPrice(salary.averageMonthly.avg)} {localCur})</span>
+                    <span className="font-normal text-blue-600"> ({formatNumber(salary.averageMonthly.avg)} {localCur})</span>
                   )}
                 </strong>.
                 {rent1BCenter > 0 && salary.averageMonthly.avg > 0 && (

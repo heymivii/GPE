@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSearchParams, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import {
   Shield, ChevronRight, ExternalLink, CheckCircle2, Circle,
   AlertTriangle, Lightbulb, FileText, DollarSign, Globe,
@@ -10,6 +10,8 @@ import { PageHeader } from '../../../components/PageHeader';
 import { getVisaDataForCountry, getAvailableVisaCountries } from '../../../data/visa-data';
 import type { VisaCountryData } from '../../../data/visa-data';
 import { useAuth } from '../../../hooks/useAuth';
+import { useDestination } from '../../../contexts/DestinationContext';
+import { slugFromCode, resolveCountry } from '../../../data/countryMappings';
 
 const VISA_COLOR: Record<string, string> = {
   green: 'bg-emerald-100 text-emerald-700 border-emerald-200',
@@ -40,13 +42,15 @@ const WARNING_DOT: Record<string, string> = {
 export default function VisaPage() {
   const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const { countrySlug, setCountrySlug } = useDestination();
   const countries = getAvailableVisaCountries();
 
-  const initialCountry = searchParams.get('country') || 'FR';
-  const [selectedCountry, setSelectedCountry] = useState(initialCountry);
+  // Derive ISO2 from slug for visa data lookup; fall back to 'FR' when nothing selected
+  const selectedCountry =
+    (countrySlug ? resolveCountry(countrySlug)?.code : undefined) ?? 'FR';
+
   const [visaData, setVisaData] = useState<VisaCountryData | undefined>(
-    getVisaDataForCountry(initialCountry)
+    getVisaDataForCountry(selectedCountry)
   );
   const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
   const [expandedStep, setExpandedStep] = useState<number | null>(null);
@@ -55,8 +59,7 @@ export default function VisaPage() {
     const data = getVisaDataForCountry(selectedCountry);
     setVisaData(data);
     setCheckedItems(new Set());
-    setSearchParams({ country: selectedCountry });
-  }, [selectedCountry, setSearchParams]);
+  }, [selectedCountry]);
 
   const toggleCheck = (id: string) => {
     setCheckedItems(prev => {
@@ -88,7 +91,7 @@ export default function VisaPage() {
               {countries.map(c => (
                 <button
                   key={c.code}
-                  onClick={() => setSelectedCountry(c.code)}
+                  onClick={() => setCountrySlug(slugFromCode(c.code) ?? c.code.toLowerCase())}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                     selectedCountry === c.code
                       ? 'bg-gray-900 text-white'

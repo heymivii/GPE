@@ -1,10 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { ForumMessageService } from './forum-message.service';
 import { ForumMessage } from './entities/forum-message.entity';
 import { ForumReport } from './entities/forum-report.entity';
+import { ForumTopicFollow } from '../forum-topic/entities/forum-topic-follow.entity';
 import { ContentFilterService } from './content-filter.service';
+import { ForumModerationService } from '../forum-moderation/forum-moderation.service';
+import { NotificationService } from '../notification/notification.service';
 
 const mockMessageRepo = () => ({
   create: jest.fn(),
@@ -34,18 +41,30 @@ describe('ForumMessageService', () => {
   let messageRepo: ReturnType<typeof mockMessageRepo>;
   let reportRepo: ReturnType<typeof mockReportRepo>;
   let contentFilter: ReturnType<typeof mockContentFilter>;
+  let followRepo: { find: jest.Mock };
+  let moderation: { moderate: jest.Mock };
+  let notifications: { create: jest.Mock };
 
   beforeEach(async () => {
     messageRepo = mockMessageRepo();
     reportRepo = mockReportRepo();
     contentFilter = mockContentFilter();
+    followRepo = { find: jest.fn().mockResolvedValue([]) };
+    moderation = { moderate: jest.fn().mockResolvedValue({ action: 'ok' }) };
+    notifications = { create: jest.fn() };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ForumMessageService,
         { provide: getRepositoryToken(ForumMessage), useValue: messageRepo },
         { provide: getRepositoryToken(ForumReport), useValue: reportRepo },
+        {
+          provide: getRepositoryToken(ForumTopicFollow),
+          useValue: followRepo,
+        },
         { provide: ContentFilterService, useValue: contentFilter },
+        { provide: ForumModerationService, useValue: moderation },
+        { provide: NotificationService, useValue: notifications },
       ],
     }).compile();
 
@@ -59,14 +78,14 @@ describe('ForumMessageService', () => {
   // ─── create() ──────────────────────────────────────────────────
 
   describe('create()', () => {
-    const dto = { content: 'Hello World', topicId: 1, userId: 42 };
+    const dto = { content: 'Hello World', topicId: 1 };
 
     it('should create a message with sanitized content', async () => {
       const message = { idForumMessage: 1, content: 'Hello World' };
       messageRepo.create.mockReturnValue(message);
       messageRepo.save.mockResolvedValue(message);
 
-      const result = await service.create(dto);
+      const result = await service.create(42, dto);
 
       expect(contentFilter.sanitize).toHaveBeenCalledWith('Hello World');
       expect(contentFilter.validate).toHaveBeenCalled();
@@ -81,7 +100,9 @@ describe('ForumMessageService', () => {
         reason: 'profanity',
       });
 
-      await expect(service.create(dto)).rejects.toThrow(BadRequestException);
+      await expect(service.create(42, dto)).rejects.toThrow(
+        BadRequestException,
+      );
     });
 
     it('should throw BadRequestException with rejection reason', async () => {
@@ -91,11 +112,67 @@ describe('ForumMessageService', () => {
       });
 
       try {
-        await service.create(dto);
+        await service.create(42, dto);
         fail('Should have thrown');
       } catch (err) {
         expect(err.message).toContain('hate speech');
       }
+    });
+
+    it('should reject content flagged by moderation', async () => {
+      moderation.moderate.mockResolvedValue({
+        action: 'blocked',
+        reason: 'forbidden word',
+      });
+
+      await expect(service.create(42, dto)).rejects.toThrow(
+        BadRequestException,
+      );
+      expect(messageRepo.save).not.toHaveBeenCalled();
+    });
+
+    it('should notify followers of the topic, excluding the author', async () => {
+      const message = { idForumMessage: 1, content: 'Hello World' };
+      messageRepo.create.mockReturnValue(message);
+      messageRepo.save.mockResolvedValue(message);
+      followRepo.find.mockResolvedValue([
+        { userId: 42 }, // the author — must NOT be notified
+        { userId: 7 },
+        { userId: 8 },
+      ]);
+
+      await service.create(42, dto);
+
+      expect(notifications.create).toHaveBeenCalledTimes(2);
+      expect(notifications.create).toHaveBeenCalledWith(
+        expect.objectContaining({ userId: 7, contextId: 1 }),
+      );
+      expect(notifications.create).toHaveBeenCalledWith(
+        expect.objectContaining({ userId: 8, contextId: 1 }),
+      );
+    });
+
+    it('should not let a notification failure break message creation', async () => {
+      const message = { idForumMessage: 1, content: 'Hello World' };
+      messageRepo.create.mockReturnValue(message);
+      messageRepo.save.mockResolvedValue(message);
+      followRepo.find.mockRejectedValue(new Error('db down'));
+
+      await expect(service.create(42, dto)).resolves.toEqual(message);
+    });
+  });
+
+  // ─── findAll() ─────────────────────────────────────────────────
+
+  describe('findAll()', () => {
+    it('should return all messages with relations', async () => {
+      messageRepo.find.mockResolvedValue([{ idForumMessage: 1 }]);
+      const result = await service.findAll();
+      expect(messageRepo.find).toHaveBeenCalledWith({
+        relations: ['user', 'topic'],
+        order: { sentAt: 'DESC' },
+      });
+      expect(result).toEqual([{ idForumMessage: 1 }]);
     });
   });
 
@@ -121,14 +198,18 @@ describe('ForumMessageService', () => {
 
   describe('update()', () => {
     it('should update message content with filtering', async () => {
-      const existing = { idForumMessage: 1, content: 'old' };
+      const existing = {
+        idForumMessage: 1,
+        content: 'old',
+        user: { idUser: 1 },
+      };
       messageRepo.findOne.mockResolvedValue(existing);
       messageRepo.save.mockResolvedValue({
         ...existing,
         content: 'new content',
       });
 
-      await service.update(1, { content: 'new content' });
+      await service.update(1, 1, { content: 'new content' });
 
       expect(contentFilter.sanitize).toHaveBeenCalledWith('new content');
       expect(contentFilter.validate).toHaveBeenCalled();
@@ -136,38 +217,103 @@ describe('ForumMessageService', () => {
     });
 
     it('should throw BadRequestException if updated content is rejected', async () => {
-      const existing = { idForumMessage: 1, content: 'old' };
+      const existing = {
+        idForumMessage: 1,
+        content: 'old',
+        user: { idUser: 1 },
+      };
       messageRepo.findOne.mockResolvedValue(existing);
       contentFilter.validate.mockResolvedValue({ ok: false, reason: 'spam' });
 
       await expect(
-        service.update(1, { content: 'spam content' }),
+        service.update(1, 1, { content: 'spam content' }),
       ).rejects.toThrow(BadRequestException);
     });
 
     it('should throw NotFoundException if message not found', async () => {
       messageRepo.findOne.mockResolvedValue(null);
 
-      await expect(service.update(999, { content: 'test' })).rejects.toThrow(
+      await expect(service.update(999, 1, { content: 'test' })).rejects.toThrow(
         NotFoundException,
       );
+    });
+
+    it('should throw ForbiddenException when the message is not the caller’s', async () => {
+      messageRepo.findOne.mockResolvedValue({
+        idForumMessage: 1,
+        content: 'old',
+        user: { idUser: 2 },
+      });
+
+      await expect(
+        service.update(1, 99, { content: 'new content' }),
+      ).rejects.toThrow(ForbiddenException);
+    });
+
+    it('should reject content flagged by moderation on update', async () => {
+      messageRepo.findOne.mockResolvedValue({
+        idForumMessage: 1,
+        content: 'old',
+        user: { idUser: 1 },
+      });
+      moderation.moderate.mockResolvedValue({
+        action: 'blocked',
+        reason: 'forbidden word',
+      });
+
+      await expect(
+        service.update(1, 1, { content: 'new content' }),
+      ).rejects.toThrow(BadRequestException);
+      expect(messageRepo.save).not.toHaveBeenCalled();
+    });
+
+    it('should update non-content fields without touching the filter', async () => {
+      const existing = {
+        idForumMessage: 1,
+        content: 'old',
+        user: { idUser: 1 },
+      };
+      messageRepo.findOne.mockResolvedValue(existing);
+      messageRepo.save.mockImplementation(async (m: any) => m);
+
+      await service.update(1, 1, {} as any);
+
+      expect(contentFilter.validate).not.toHaveBeenCalled();
+      expect(messageRepo.save).toHaveBeenCalled();
     });
   });
 
   // ─── remove() ──────────────────────────────────────────────────
 
   describe('remove()', () => {
-    it('should delete a message', async () => {
+    it('should delete a message (owner)', async () => {
+      const message = {
+        idForumMessage: 1,
+        content: 'x',
+        user: { idUser: 1 },
+      };
+      messageRepo.findOne.mockResolvedValue(message);
       messageRepo.delete.mockResolvedValue({ affected: 1 });
 
-      await expect(service.remove(1)).resolves.toBeUndefined();
+      await expect(service.remove(1, 1)).resolves.toBeUndefined();
       expect(messageRepo.delete).toHaveBeenCalledWith(1);
     });
 
-    it('should throw NotFoundException if nothing deleted', async () => {
-      messageRepo.delete.mockResolvedValue({ affected: 0 });
+    it('should throw ForbiddenException if not the owner', async () => {
+      const message = {
+        idForumMessage: 1,
+        content: 'x',
+        user: { idUser: 2 },
+      };
+      messageRepo.findOne.mockResolvedValue(message);
 
-      await expect(service.remove(999)).rejects.toThrow(NotFoundException);
+      await expect(service.remove(1, 99)).rejects.toThrow(ForbiddenException);
+    });
+
+    it('should throw NotFoundException if message not found', async () => {
+      messageRepo.findOne.mockResolvedValue(null);
+
+      await expect(service.remove(999, 1)).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -196,7 +342,6 @@ describe('ForumMessageService', () => {
 
   describe('createReport()', () => {
     const dto = {
-      reporterId: 1,
       messageId: 10,
       reason: 'spam' as any,
       details: 'This is spam',
@@ -208,7 +353,7 @@ describe('ForumMessageService', () => {
       reportRepo.create.mockReturnValue(report);
       reportRepo.save.mockResolvedValue(report);
 
-      const result = await service.createReport(dto);
+      const result = await service.createReport(1, dto);
       expect(result.idReport).toBe(1);
       expect(reportRepo.save).toHaveBeenCalled();
     });
@@ -216,9 +361,47 @@ describe('ForumMessageService', () => {
     it('should throw BadRequestException on duplicate report', async () => {
       reportRepo.findOne.mockResolvedValue({ idReport: 99 }); // existing
 
-      await expect(service.createReport(dto)).rejects.toThrow(
+      await expect(service.createReport(1, dto)).rejects.toThrow(
         BadRequestException,
       );
+    });
+
+    it('should create a report for a topic (no messageId)', async () => {
+      reportRepo.findOne.mockResolvedValue(null);
+      const topicDto = { topicId: 5, reason: 'spam' as any, details: 'x' };
+      const report = { idReport: 2, ...topicDto };
+      reportRepo.create.mockReturnValue(report);
+      reportRepo.save.mockResolvedValue(report);
+
+      const result = await service.createReport(1, topicDto);
+
+      expect(reportRepo.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          topic: { idForumTopic: 5 },
+          message: undefined,
+        }),
+      );
+      expect(result.idReport).toBe(2);
+    });
+  });
+
+  describe('findAllReports()', () => {
+    it('should filter by status when provided', async () => {
+      reportRepo.find.mockResolvedValue([{ idReport: 1 }]);
+      const result = await service.findAllReports('pending');
+      expect(reportRepo.find).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { status: 'pending' } }),
+      );
+      expect(result).toEqual([{ idReport: 1 }]);
+    });
+
+    it('should list all reports when no status is given', async () => {
+      reportRepo.find.mockResolvedValue([{ idReport: 1 }, { idReport: 2 }]);
+      const result = await service.findAllReports();
+      expect(reportRepo.find).toHaveBeenCalledWith(
+        expect.objectContaining({ where: {} }),
+      );
+      expect(result).toHaveLength(2);
     });
   });
 
