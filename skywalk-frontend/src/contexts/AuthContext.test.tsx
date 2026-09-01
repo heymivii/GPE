@@ -38,13 +38,18 @@ function TestConsumer() {
       <span data-testid="loading">{String(ctx.isLoading)}</span>
       <span data-testid="authenticated">{String(ctx.isAuthenticated)}</span>
       <span data-testid="user">{ctx.user ? ctx.user.email : 'null'}</span>
-      <button onClick={() => ctx.login({ email: 'a@b.com', password: '123' })}>
+      <button onClick={() => ctx.login({ email: 'a@b.com', password: '123' }).catch(() => {})}>
         login
       </button>
-      <button onClick={() => ctx.register({ email: 'a@b.com', password: '123', firstName: 'A', lastName: 'B' })}>
+      <button
+        onClick={() =>
+          ctx.register({ email: 'a@b.com', password: '123', firstName: 'A', lastName: 'B' }).catch(() => {})
+        }
+      >
         register
       </button>
       <button onClick={() => ctx.logout()}>logout</button>
+      <button onClick={() => ctx.refreshUser().catch(() => {})}>refreshUser</button>
     </div>
   );
 }
@@ -213,6 +218,114 @@ describe('AuthContext', () => {
     expect(localStorage.getItem('access_token')).toBeNull();
     expect(localStorage.getItem('refresh_token')).toBeNull();
     expect(localStorage.getItem('skywalk-onboarding-completed')).toBeNull();
+  });
+
+  it('login() rethrows and logs when the API call fails', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    mockedAuth.login.mockRejectedValue(new Error('bad credentials'));
+
+    render(
+      <AuthProvider>
+        <TestConsumer />
+      </AuthProvider>,
+    );
+    await waitFor(() => expect(screen.getByTestId('loading').textContent).toBe('false'));
+
+    const user = userEvent.setup();
+    await user.click(screen.getByText('login'));
+
+    await waitFor(() => expect(errorSpy).toHaveBeenCalled());
+    expect(screen.getByTestId('authenticated').textContent).toBe('false');
+    errorSpy.mockRestore();
+  });
+
+  it('register() rethrows and logs when the API call fails', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    mockedAuth.register.mockRejectedValue(new Error('email taken'));
+
+    render(
+      <AuthProvider>
+        <TestConsumer />
+      </AuthProvider>,
+    );
+    await waitFor(() => expect(screen.getByTestId('loading').textContent).toBe('false'));
+
+    const user = userEvent.setup();
+    await user.click(screen.getByText('register'));
+
+    await waitFor(() => expect(errorSpy).toHaveBeenCalled());
+    expect(screen.getByTestId('authenticated').textContent).toBe('false');
+    errorSpy.mockRestore();
+  });
+
+  it('refreshUser() updates the user on success', async () => {
+    render(
+      <AuthProvider>
+        <TestConsumer />
+      </AuthProvider>,
+    );
+    await waitFor(() => expect(screen.getByTestId('loading').textContent).toBe('false'));
+
+    mockedAuth.getProfile.mockResolvedValue(fakeUser);
+    const user = userEvent.setup();
+    await user.click(screen.getByText('refreshUser'));
+
+    await waitFor(() => expect(screen.getByTestId('authenticated').textContent).toBe('true'));
+  });
+
+  it('refreshUser() rethrows and logs when the API call fails', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    render(
+      <AuthProvider>
+        <TestConsumer />
+      </AuthProvider>,
+    );
+    await waitFor(() => expect(screen.getByTestId('loading').textContent).toBe('false'));
+
+    mockedAuth.getProfile.mockRejectedValue(new Error('network'));
+    const user = userEvent.setup();
+    await user.click(screen.getByText('refreshUser'));
+
+    await waitFor(() => expect(errorSpy).toHaveBeenCalled());
+    errorSpy.mockRestore();
+  });
+
+  it('clears tokens when the refresh succeeds but the follow-up profile fetch still fails', async () => {
+    localStorage.setItem('access_token', 'expired-token');
+    localStorage.setItem('refresh_token', 'valid-refresh');
+    mockedAuth.getProfile.mockRejectedValue(new Error('401 again'));
+    mockedAuth.refresh.mockResolvedValue({
+      access_token: 'new-token',
+      refresh_token: 'new-refresh',
+      user: fakeUser,
+    });
+
+    render(
+      <AuthProvider>
+        <TestConsumer />
+      </AuthProvider>,
+    );
+
+    await waitFor(() => expect(screen.getByTestId('loading').textContent).toBe('false'));
+    expect(localStorage.getItem('access_token')).toBeNull();
+    expect(localStorage.getItem('refresh_token')).toBeNull();
+    // The refresh call itself did store the new refresh_token before the retry failed.
+    expect(mockedAuth.refresh).toHaveBeenCalledWith({ refreshToken: 'valid-refresh' });
+  });
+
+  it('does not call the refresh API when there is no stored refresh token', async () => {
+    localStorage.setItem('access_token', 'expired-token');
+    mockedAuth.getProfile.mockRejectedValue(new Error('401'));
+
+    render(
+      <AuthProvider>
+        <TestConsumer />
+      </AuthProvider>,
+    );
+
+    await waitFor(() => expect(screen.getByTestId('loading').textContent).toBe('false'));
+    expect(mockedAuth.refresh).not.toHaveBeenCalled();
+    expect(localStorage.getItem('access_token')).toBeNull();
   });
 
   it('logout() should clear user even if API call fails', async () => {

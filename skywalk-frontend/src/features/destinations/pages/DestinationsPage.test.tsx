@@ -1,0 +1,106 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { DestinationsPage } from './DestinationsPage';
+
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (k: string) => k,
+    i18n: { language: 'fr' },
+  }),
+}));
+
+vi.mock('../../../api/destinations', () => ({
+  destinationsApi: { getAll: vi.fn() },
+}));
+
+import { destinationsApi } from '../../../api/destinations';
+const mockedGetAll = vi.mocked(destinationsApi.getAll);
+
+function renderPage() {
+  const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  return render(
+    <QueryClientProvider client={qc}>
+      <MemoryRouter>
+        <DestinationsPage />
+      </MemoryRouter>
+    </QueryClientProvider>,
+  );
+}
+
+const dest = (overrides: any = {}) => ({
+  idCountry: 1,
+  countryName: 'France',
+  isoCode: 'FR',
+  stats: { memberCount: 10, jobOffersCount: 5, forumTopicsCount: 0, resourcesCount: 0 },
+  ...overrides,
+});
+
+describe('DestinationsPage', () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  it('shows a loading state', () => {
+    mockedGetAll.mockReturnValue(new Promise(() => {}));
+    const { container } = renderPage();
+    expect(container.querySelector('.animate-spin')).toBeInTheDocument();
+  });
+
+  it('shows an error state with a retry button', async () => {
+    mockedGetAll.mockRejectedValue(new Error('network'));
+    renderPage();
+    expect(await screen.findByText('destinationsPage.error')).toBeInTheDocument();
+    expect(screen.getByText('destinationsPage.retry')).toBeInTheDocument();
+  });
+
+  it('shows the empty state when there are no results', async () => {
+    mockedGetAll.mockResolvedValue([]);
+    renderPage();
+    expect(await screen.findByText('destinations.noResults.title')).toBeInTheDocument();
+  });
+
+  it('renders a card per destination', async () => {
+    mockedGetAll.mockResolvedValue([dest({ idCountry: 1, countryName: 'France' }), dest({ idCountry: 2, countryName: 'Allemagne', isoCode: 'DE' })]);
+    renderPage();
+    expect(await screen.findByRole('heading', { level: 3, name: 'France' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 3, name: 'Allemagne' })).toBeInTheDocument();
+  });
+
+  it('filters destinations by search term', async () => {
+    mockedGetAll.mockResolvedValue([dest({ idCountry: 1, countryName: 'France' }), dest({ idCountry: 2, countryName: 'Allemagne', isoCode: 'DE' })]);
+    renderPage();
+    await screen.findByRole('heading', { level: 3, name: 'France' });
+
+    fireEvent.change(screen.getByPlaceholderText('destinations.searchPlaceholder'), {
+      target: { value: 'fra' },
+    });
+    expect(screen.getByRole('heading', { level: 3, name: 'France' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { level: 3, name: 'Allemagne' })).not.toBeInTheDocument();
+  });
+
+  it('sorts destinations by job offers when selected', async () => {
+    mockedGetAll.mockResolvedValue([
+      dest({ idCountry: 1, countryName: 'France', stats: { memberCount: 1, jobOffersCount: 5, forumTopicsCount: 0, resourcesCount: 0 } }),
+      dest({ idCountry: 2, countryName: 'Allemagne', isoCode: 'DE', stats: { memberCount: 1, jobOffersCount: 50, forumTopicsCount: 0, resourcesCount: 0 } }),
+    ]);
+    renderPage();
+    await screen.findByRole('heading', { level: 3, name: 'France' });
+
+    fireEvent.change(screen.getByRole('combobox'), { target: { value: 'jobs' } });
+    const names = screen.getAllByRole('heading', { level: 3 }).map((h) => h.textContent);
+    expect(names[0]).toBe('Allemagne'); // higher jobOffersCount sorts first
+  });
+
+  it('reloads the page when retry is clicked', async () => {
+    mockedGetAll.mockRejectedValue(new Error('network'));
+    const reloadSpy = vi.fn();
+    Object.defineProperty(window, 'location', {
+      value: { reload: reloadSpy },
+      writable: true,
+      configurable: true,
+    });
+    renderPage();
+    fireEvent.click(await screen.findByText('destinationsPage.retry'));
+    expect(reloadSpy).toHaveBeenCalled();
+  });
+});

@@ -49,6 +49,13 @@ describe('forumMessagesApi', () => {
     expect(result.content).toBe('Edited');
   });
 
+  it('findByTopic() should GET /forum-message with a topicId query param', async () => {
+    get.mockResolvedValue({ data: [{ message_id: 1 }] });
+    const result = await forumMessagesApi.findByTopic(9);
+    expect(get).toHaveBeenCalledWith('/forum-message?topicId=9');
+    expect(result).toHaveLength(1);
+  });
+
   it('remove() should DELETE /forum-message/:id', async () => {
     del.mockResolvedValue({});
     await forumMessagesApi.remove(3);
@@ -98,5 +105,61 @@ describe('forumMessagesApi', () => {
       moderatorNote: undefined,
     });
     expect(result.status).toBe('resolved');
+  });
+
+  describe('field mapping', () => {
+    it('maps a message with a nested user (fullName present) and nested topic', async () => {
+      get.mockResolvedValue({
+        data: {
+          idForumMessage: 3,
+          sentAt: '2026-01-01',
+          user: { idUser: 7, fullName: 'Jean Dupont', email: 'j@d.com', role: 'admin' },
+          topic: { idForumTopic: 1, createdAt: '2026-01-01', isPinned: true },
+        },
+      });
+      const result = await forumMessagesApi.findOne(3);
+      expect(result.message_id).toBe(3);
+      expect(result.sent_at).toBe('2026-01-01');
+      expect(result.user).toEqual({
+        idUser: 7,
+        fullName: 'Jean Dupont',
+        email: 'j@d.com',
+        roles: 'admin',
+      });
+      expect(result.topic?.topic_id).toBe(1);
+      expect(result.topic?.is_pinned).toBe(true);
+    });
+
+    it('falls back to "Anonymous" for a user with no name info', async () => {
+      get.mockResolvedValue({ data: { idForumMessage: 3, user: { id: 7 } } });
+      const result = await forumMessagesApi.findOne(3);
+      expect(result.user?.fullName).toBe('Anonymous');
+    });
+
+    it('maps a report with nested reporter, moderator, message and topic', async () => {
+      post.mockResolvedValue({
+        data: {
+          idReport: 1,
+          reporter: { id: 1, firstName: 'Ann', lastName: 'A' },
+          moderator: { idUser: 2, fullName: 'Mod' },
+          message: { idForumMessage: 5, content: 'x' },
+          topic: { idForumTopic: 9 },
+        },
+      });
+      const result = await forumMessagesApi.report({} as any);
+      expect(result.reporter).toEqual({ idUser: 1, fullName: 'Ann A' });
+      expect(result.moderator).toEqual({ idUser: 2, fullName: 'Mod' });
+      expect(result.message?.message_id).toBe(5);
+      expect(result.topic?.topic_id).toBe(9);
+    });
+
+    it('leaves reporter/moderator/message/topic undefined when absent from the report', async () => {
+      post.mockResolvedValue({ data: { idReport: 1 } });
+      const result = await forumMessagesApi.report({} as any);
+      expect(result.reporter).toBeUndefined();
+      expect(result.moderator).toBeUndefined();
+      expect(result.message).toBeUndefined();
+      expect(result.topic).toBeUndefined();
+    });
   });
 });

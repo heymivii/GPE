@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
-import { ratingKeys, useMyTopicRatings, useRateMessage } from './useRatings';
+import { ratingKeys, useMyTopicRatings, useRateMessage, useUnrateMessage } from './useRatings';
 
 vi.mock('../api/ratings', () => ({
   ratingsApi: {
@@ -52,5 +52,15 @@ describe('useRateMessage', () => {
     result.current.mutate({ messageId: 6, stars: 5 });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(mocked.rate).toHaveBeenCalledWith(6, 5);
+  });
+});
+
+describe('useUnrateMessage', () => {
+  it('removes a rating via the API', async () => {
+    mocked.unrate.mockResolvedValue(undefined);
+    const { result } = renderHook(() => useUnrateMessage(3), { wrapper: wrapper() });
+    result.current.mutate(6);
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(mocked.unrate).toHaveBeenCalledWith(6);
   });
 });
