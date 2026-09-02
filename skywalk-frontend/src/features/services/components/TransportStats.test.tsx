@@ -65,7 +65,8 @@ describe('TransportStats', () => {
     render(<TransportStats countryName="france" />);
     expect(screen.getAllByText('Paris').length).toBeGreaterThan(0);
     expect(screen.getByText('services.stats.transport.gasolinePrice')).toBeInTheDocument();
-    expect(screen.getByText('services.stats.transport.publicTransport')).toBeInTheDocument();
+    // Le libellé apparaît désormais deux fois (tuile de stats + titre de section).
+    expect(screen.getAllByText('services.stats.transport.publicTransport').length).toBeGreaterThan(0);
   });
 
   it('shows the currency-conversion badge when the local currency differs from the display currency', () => {

@@ -62,7 +62,7 @@ describe('CountdownWidget', () => {
 
   it('shows a departed message once the departure date has passed', () => {
     renderWidget({ departureDate: '2025-12-01T00:00:00Z' });
-    expect(screen.getByText('🎉 Vous êtes parti·e !')).toBeInTheDocument();
+    expect(screen.getByText('Vous êtes parti·e !')).toBeInTheDocument();
   });
 
   it('lists upcoming deadlines for steps still due before departure, nearest first', () => {

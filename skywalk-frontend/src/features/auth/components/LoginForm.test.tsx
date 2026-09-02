@@ -60,7 +60,7 @@ describe('LoginForm', () => {
     await user.click(screen.getByRole('button', { name: 'auth.login.submit' }));
 
     await waitFor(() =>
-      expect(mockLogin).toHaveBeenCalledWith({ email: 'a@b.com', password: 'secret' }),
+      expect(mockLogin).toHaveBeenCalledWith({ email: 'a@b.com', password: 'secret', rememberMe: false }),
     );
   });
 

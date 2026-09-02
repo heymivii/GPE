@@ -33,7 +33,8 @@ import {
   useCreateProject,
   useUpdateProject,
   useDeleteProject,
-  useUnlockProject,
+  // PRICING DÉSACTIVÉ : useUnlockProject commenté dans le hook, import avec.
+  // useUnlockProject,
   useCompleteProject,
   useCancelProject,
   useReactivateProject,
@@ -198,6 +199,7 @@ describe('useDeleteProject', () => {
   });
 });
 
+/* ===== PRICING DÉSACTIVÉ — hook useUnlockProject commenté, tests avec =====
 describe('useUnlockProject', () => {
   beforeEach(() => vi.clearAllMocks());
 
@@ -225,6 +227,7 @@ describe('useUnlockProject', () => {
     expect(toast.error).toHaveBeenCalledWith('Le déblocage a échoué');
   });
 });
+===== FIN PRICING DÉSACTIVÉ ===== */
 
 describe('useCompleteProject / useCancelProject / useReactivateProject', () => {
   beforeEach(() => vi.clearAllMocks());

@@ -115,10 +115,9 @@ describe('Widget', () => {
         content
       </Widget>,
     );
+    // La taille 'small' n'existe plus : le menu ne propose que medium et large.
     fireEvent.click(screen.getByRole('button'));
-    fireEvent.click(screen.getByText('sizeSmall'));
-    expect(onResize).toHaveBeenCalledWith('small');
-    fireEvent.click(screen.getByRole('button'));
+    expect(screen.queryByText('sizeSmall')).not.toBeInTheDocument();
     fireEvent.click(screen.getByText('sizeMedium'));
     expect(onResize).toHaveBeenCalledWith('medium');
     fireEvent.click(screen.getByRole('button'));

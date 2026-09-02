@@ -202,7 +202,7 @@ describe('DestinationsService', () => {
       expect(result.costOfLiving.averageHousing).toBeNull();
     });
 
-    it('skips the Adzuna call and returns 0 job offers for unmapped countries', async () => {
+    it('skips the Adzuna call and returns null (hors couverture Adzuna) for unmapped countries', async () => {
       countryRepo.findOne.mockResolvedValue({
         idCountry: 9,
         countryName: 'Atlantide',
@@ -212,16 +212,16 @@ describe('DestinationsService', () => {
       const result = await service.findOneCountryBySlug('zz');
 
       expect(adzunaService.searchJobs).not.toHaveBeenCalled();
-      expect(result.stats.jobOffersCount).toBe(0);
+      expect(result.stats.jobOffersCount).toBeNull();
     });
 
-    it('falls back to 0 job offers when Adzuna call fails', async () => {
+    it('falls back to null when Adzuna call fails', async () => {
       countryRepo.findOne.mockResolvedValue(baseCountry);
       adzunaService.searchJobs.mockRejectedValue(new Error('adzuna down'));
 
       const result = await service.findOneCountryBySlug('fr');
 
-      expect(result.stats.jobOffersCount).toBe(0);
+      expect(result.stats.jobOffersCount).toBeNull();
     });
   });
 
@@ -256,7 +256,7 @@ describe('DestinationsService', () => {
       });
     });
 
-    it('skips the Adzuna call and defaults to 0 job offers for unmapped countries', async () => {
+    it('skips the Adzuna call and defaults to null (hors couverture Adzuna) for unmapped countries', async () => {
       countryRepo.createQueryBuilder.mockReturnValue(
         makeQueryBuilder(
           [{ idCountry: 9, countryName: 'Atlantide', isoCode: 'ZZ' }],
@@ -276,10 +276,10 @@ describe('DestinationsService', () => {
       const result = await service.findAllCountries();
 
       expect(adzunaService.searchJobs).not.toHaveBeenCalled();
-      expect(result[0].stats.jobOffersCount).toBe(0);
+      expect(result[0].stats.jobOffersCount).toBeNull();
     });
 
-    it('falls back to 0 job offers when the Adzuna call fails', async () => {
+    it('falls back to null when the Adzuna call fails', async () => {
       countryRepo.createQueryBuilder.mockReturnValue(
         makeQueryBuilder(
           [{ idCountry: 1, countryName: 'France', isoCode: 'FR' }],
@@ -299,7 +299,7 @@ describe('DestinationsService', () => {
 
       const result = await service.findAllCountries();
 
-      expect(result[0].stats.jobOffersCount).toBe(0);
+      expect(result[0].stats.jobOffersCount).toBeNull();
     });
 
     it('defaults counts to 0 for countries absent from the aggregated maps', async () => {

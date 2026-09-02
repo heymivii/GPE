@@ -15,7 +15,8 @@ function renderPricing() {
   );
 }
 
-describe('Pricing', () => {
+// PRICING DÉSACTIVÉ : composant entièrement commenté — tests skippés avec lui.
+describe.skip('Pricing', () => {
   it('renders the three pricing tiers', () => {
     renderPricing();
     expect(screen.getByText('landing.pricing.discovery.name')).toBeInTheDocument();

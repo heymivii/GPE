@@ -77,6 +77,7 @@ describe('useProjectRecommendations', () => {
       actionPlan: [],
       countryCode: null,
       durationCategory: 'short',
+      freeMovement: false,
     });
   });
 

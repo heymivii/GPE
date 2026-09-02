@@ -5,6 +5,7 @@ import SummaryStep from './SummaryStep';
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
+    i18n: { language: 'fr' },
     t: (key: string, opts?: any) => {
       if (opts?.age != null) return `${opts.age} yo`;
       if (opts?.budget != null) return `Budget: ${opts.budget}`;
@@ -23,9 +24,19 @@ vi.mock('../../../data/supportedCountries', () => ({
   SUPPORTED_COUNTRIES: [{ code: 'DE', slug: 'allemagne' }],
 }));
 
-vi.mock('../../../data/freeMovement', () => ({
-  NATIONALITY_OPTIONS: [{ value: 'FR', label: 'Française' }],
-}));
+vi.mock('../../../data/freeMovement', () => {
+  const NATIONALITY_OPTIONS = [{ value: 'FR', label: 'Française', labelEn: 'French' }];
+  return {
+    NATIONALITY_OPTIONS,
+    // Même contrat que l'implémentation réelle : label localisé si mappé, code brut sinon.
+    nationalityLabel: (value?: string | null, lang?: string) => {
+      if (!value) return '';
+      const option = NATIONALITY_OPTIONS.find((n) => n.value === value);
+      if (!option) return value;
+      return lang?.startsWith('en') ? option.labelEn : option.label;
+    },
+  };
+});
 
 vi.mock('../../../api/destinations', () => ({
   destinationsApi: { getBySlug: vi.fn() },

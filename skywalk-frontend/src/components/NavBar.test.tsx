@@ -114,7 +114,8 @@ describe('NavBar', () => {
   });
 
   it('opens the global search modal via the search button', () => {
-    setup();
+    // La recherche globale est réservée aux connectés (retour de recette).
+    setup({ isAuthenticated: true, user: { firstName: 'A' } });
     renderNav();
     fireEvent.click(screen.getByText('globalSearch.trigger'));
     expect(screen.getByTestId('global-search-modal')).toBeInTheDocument();

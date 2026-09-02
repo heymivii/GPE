@@ -5,6 +5,7 @@ import VisaChecker from './VisaChecker';
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
+    i18n: { language: 'fr' },
     t: (key: string, opts?: any) => (opts && typeof opts === 'object' ? `${key}:${JSON.stringify(opts)}` : key),
   }),
 }));
