@@ -177,6 +177,75 @@ describe('ForumTopicService', () => {
         BadRequestException,
       );
     });
+
+    it('should reject a topic when moderation flags any word in title+content', async () => {
+      const module: TestingModule = await Test.createTestingModule({
+        providers: [
+          ForumTopicService,
+          { provide: getRepositoryToken(ForumTopic), useValue: topicRepo },
+          { provide: getRepositoryToken(ForumTopicFollow), useValue: followRepo },
+          { provide: getRepositoryToken(ForumMessage), useValue: messageRepo },
+          { provide: ContentFilterService, useValue: contentFilter },
+          {
+            provide: ForumModerationService,
+            useValue: {
+              moderate: jest
+                .fn()
+                .mockResolvedValue({ action: 'blocked', reason: 'forbidden word' }),
+            },
+          },
+        ],
+      }).compile();
+      const moderatedService = module.get<ForumTopicService>(ForumTopicService);
+
+      await expect(moderatedService.create(1, dto as any)).rejects.toThrow(
+        BadRequestException,
+      );
+      expect(topicRepo.save).not.toHaveBeenCalled();
+    });
+  });
+
+  // ─── findAll() ─────────────────────────────────────────────────
+
+  describe('findAll()', () => {
+    it('loads topics with messagesCount via the query builder', async () => {
+      const qb = {
+        leftJoinAndSelect: jest.fn().mockReturnThis(),
+        loadRelationCountAndMap: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        getMany: jest.fn().mockResolvedValue([{ idForumTopic: 1 }]),
+      };
+      topicRepo.createQueryBuilder.mockReturnValue(qb);
+
+      const res = await service.findAll();
+      expect(qb.loadRelationCountAndMap).toHaveBeenCalledWith(
+        'topic.messagesCount',
+        'topic.messages',
+      );
+      expect(res).toEqual([{ idForumTopic: 1 }]);
+    });
+  });
+
+  // ─── getFollowerIds() ──────────────────────────────────────────
+
+  describe('getFollowerIds()', () => {
+    it('returns follower user ids, excluding the given user', async () => {
+      followRepo.find.mockResolvedValue([
+        { userId: 1 },
+        { userId: 2 },
+        { userId: 3 },
+      ]);
+
+      const res = await service.getFollowerIds(10, 2);
+      expect(followRepo.find).toHaveBeenCalledWith({ where: { topicId: 10 } });
+      expect(res).toEqual([1, 3]);
+    });
+
+    it('returns all follower ids when no exceptUserId is given', async () => {
+      followRepo.find.mockResolvedValue([{ userId: 1 }, { userId: 2 }]);
+      const res = await service.getFollowerIds(10);
+      expect(res).toEqual([1, 2]);
+    });
   });
 
   // ─── findOne() ─────────────────────────────────────────────────
@@ -242,6 +311,159 @@ describe('ForumTopicService', () => {
       await expect(
         service.update(1, 1, { title: 'bad title' } as any),
       ).rejects.toThrow(BadRequestException);
+    });
+
+    it('should reject updating someone else’s topic', async () => {
+      const topic = { idForumTopic: 1, title: 'Old', messages: [], user: { idUser: 2 } };
+      topicRepo.findOne.mockResolvedValue(topic);
+
+      await expect(
+        service.update(1, 99, { title: 'New' } as any),
+      ).rejects.toThrow(ForbiddenException);
+      expect(topicRepo.save).not.toHaveBeenCalled();
+    });
+
+    it('should reject a title update flagged by moderation', async () => {
+      const module: TestingModule = await Test.createTestingModule({
+        providers: [
+          ForumTopicService,
+          { provide: getRepositoryToken(ForumTopic), useValue: topicRepo },
+          { provide: getRepositoryToken(ForumTopicFollow), useValue: followRepo },
+          { provide: getRepositoryToken(ForumMessage), useValue: messageRepo },
+          { provide: ContentFilterService, useValue: contentFilter },
+          {
+            provide: ForumModerationService,
+            useValue: {
+              moderate: jest
+                .fn()
+                .mockResolvedValue({ action: 'blocked', reason: 'forbidden word' }),
+            },
+          },
+        ],
+      }).compile();
+      const moderatedService = module.get<ForumTopicService>(ForumTopicService);
+      topicRepo.findOne.mockResolvedValue({
+        idForumTopic: 1,
+        title: 'Old',
+        messages: [],
+        user: { idUser: 1 },
+      });
+
+      await expect(
+        moderatedService.update(1, 1, { title: 'New' } as any),
+      ).rejects.toThrow(BadRequestException);
+      expect(topicRepo.save).not.toHaveBeenCalled();
+    });
+
+    it('should update just the category, without touching the title', async () => {
+      const topic = {
+        idForumTopic: 1,
+        title: 'Old',
+        category: 'question',
+        messages: [],
+        user: { idUser: 1 },
+      };
+      topicRepo.findOne.mockResolvedValue(topic);
+      topicRepo.save.mockResolvedValue({ ...topic, category: 'advice' });
+
+      const res = await service.update(1, 1, { category: 'advice' } as any);
+      expect(contentFilter.validate).not.toHaveBeenCalled();
+      expect(res.category).toBe('advice');
+    });
+
+    it('should reject a content update flagged by the content filter', async () => {
+      const topic = { idForumTopic: 1, messages: [], user: { idUser: 1 } };
+      topicRepo.findOne.mockResolvedValue(topic);
+      topicRepo.save.mockResolvedValue(topic);
+      contentFilter.validate.mockResolvedValueOnce({
+        ok: false,
+        reason: 'profanity',
+      });
+
+      await expect(
+        service.update(1, 1, { content: 'bad content' } as any),
+      ).rejects.toThrow(BadRequestException);
+    });
+
+    it('should reject a content update flagged by moderation', async () => {
+      const module: TestingModule = await Test.createTestingModule({
+        providers: [
+          ForumTopicService,
+          { provide: getRepositoryToken(ForumTopic), useValue: topicRepo },
+          { provide: getRepositoryToken(ForumTopicFollow), useValue: followRepo },
+          { provide: getRepositoryToken(ForumMessage), useValue: messageRepo },
+          { provide: ContentFilterService, useValue: contentFilter },
+          {
+            provide: ForumModerationService,
+            useValue: {
+              moderate: jest
+                .fn()
+                .mockResolvedValue({ action: 'blocked', reason: 'forbidden word' }),
+            },
+          },
+        ],
+      }).compile();
+      const moderatedService = module.get<ForumTopicService>(ForumTopicService);
+      const topic = { idForumTopic: 1, messages: [], user: { idUser: 1 } };
+      topicRepo.findOne.mockResolvedValue(topic);
+      topicRepo.save.mockResolvedValue(topic);
+
+      await expect(
+        moderatedService.update(1, 1, { content: 'new content' } as any),
+      ).rejects.toThrow(BadRequestException);
+    });
+
+    it('should update the existing first message when content is provided', async () => {
+      const topic = { idForumTopic: 1, messages: [], user: { idUser: 1 } };
+      topicRepo.findOne.mockResolvedValue(topic);
+      topicRepo.save.mockResolvedValue(topic);
+      const firstMessage = { idForumMessage: 5, content: 'Old content' };
+      messageRepo.findOne.mockResolvedValue(firstMessage);
+      messageRepo.save.mockResolvedValue({ ...firstMessage, content: 'New content' });
+
+      await service.update(1, 1, { content: 'New content' } as any);
+
+      expect(messageRepo.save).toHaveBeenCalledWith(
+        expect.objectContaining({ content: 'New content' }),
+      );
+      expect(messageRepo.create).not.toHaveBeenCalled();
+    });
+
+    it('should create a first message when content is provided but none exists yet', async () => {
+      const topic = { idForumTopic: 1, messages: [], user: { idUser: 1 } };
+      topicRepo.findOne.mockResolvedValue(topic);
+      topicRepo.save.mockResolvedValue(topic);
+      messageRepo.findOne.mockResolvedValue(null);
+      messageRepo.create.mockReturnValue({ content: 'New content' });
+      messageRepo.save.mockResolvedValue({ content: 'New content' });
+
+      await service.update(1, 1, { content: 'New content' } as any);
+
+      expect(messageRepo.create).toHaveBeenCalled();
+      expect(messageRepo.save).toHaveBeenCalled();
+    });
+
+    it('should remove the first message when content is updated to blank', async () => {
+      const topic = { idForumTopic: 1, messages: [], user: { idUser: 1 } };
+      topicRepo.findOne.mockResolvedValue(topic);
+      topicRepo.save.mockResolvedValue(topic);
+      const firstMessage = { idForumMessage: 5, content: 'Old content' };
+      messageRepo.findOne.mockResolvedValue(firstMessage);
+
+      await service.update(1, 1, { content: '   ' } as any);
+
+      expect(messageRepo.remove).toHaveBeenCalledWith(firstMessage);
+    });
+
+    it('should do nothing on the message when content is blank and none exists', async () => {
+      const topic = { idForumTopic: 1, messages: [], user: { idUser: 1 } };
+      topicRepo.findOne.mockResolvedValue(topic);
+      topicRepo.save.mockResolvedValue(topic);
+      messageRepo.findOne.mockResolvedValue(null);
+
+      await service.update(1, 1, { content: '   ' } as any);
+
+      expect(messageRepo.remove).not.toHaveBeenCalled();
     });
   });
 

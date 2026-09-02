@@ -10,6 +10,8 @@ export interface AppNotification {
   // Contexte cliquable optionnel — ex. 'project' + idProject → /projects/:id/checklist
   contextType?: string | null;
   contextId?: number | null;
+  // Libellé facultatif associé au contexte — ex. le prénom pour un contexte 'user'.
+  contextLabel?: string | null;
 }
 
 export const notificationsApi = {

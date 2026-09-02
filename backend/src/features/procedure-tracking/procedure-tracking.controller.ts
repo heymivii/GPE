@@ -56,6 +56,19 @@ export class ProcedureTrackingController {
     );
   }
 
+  @Get('buddies')
+  getBuddies(
+    @Request() req,
+    @Query('procedureId') procedureId: string,
+    @Query('countryId') countryId: string,
+  ) {
+    return this.procedureTrackingService.getBuddies(
+      parseInt(procedureId, 10),
+      parseInt(countryId, 10),
+      req.user.userId,
+    );
+  }
+
   @Get(':id')
   findOne(@Request() req, @Param('id') id: string) {
     return this.procedureTrackingService.findOne(+id, req.user.userId);

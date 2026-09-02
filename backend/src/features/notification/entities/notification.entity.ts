@@ -32,6 +32,10 @@ export class Notification {
   @Column({ name: 'context_id', type: 'int', nullable: true })
   contextId: number | null;
 
+  /** Libellé facultatif associé au contexte — ex. le prénom pour un contexte 'user'. */
+  @Column({ name: 'context_label', type: 'varchar', length: 120, nullable: true })
+  contextLabel: string | null;
+
   @CreateDateColumn({ name: 'sent_at' })
   sentAt: Date;
 

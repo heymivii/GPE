@@ -8,6 +8,7 @@ import { useProject } from '../hooks/useProjectMutations';
 // import { useUnlockProject } from '../hooks/useProjectMutations';
 import { useChecklistProgress, getStepDeadline, filterStepsForProject } from '../../dashboard/hooks/useChecklistProgress';
 import { getLinksForStep } from '../../../data/checklist-links';
+import BuddyList from '../components/BuddyList';
 import { useGovLink } from '../../../api/useGovLink';
 import OfficialLinkCard from '../../../components/OfficialLinkCard';
 import TrustBadge from '../../../components/TrustBadge';
@@ -102,6 +103,7 @@ function StepLinks({ category, countryCode }: { category: string; countryCode?: 
 interface ChecklistItemData {
   id: string;
   trackingId: number;
+  adminProcedureId: number;
   title: string;
   completed: boolean;
   completedAt: string | null;
@@ -121,6 +123,7 @@ function ChecklistItemRow({
   isExpanded,
   departureDate,
   countryCode,
+  destinationCountryId,
   onToggleExpand,
   onToggleItem,
   onToggleSubstep,
@@ -129,6 +132,7 @@ function ChecklistItemRow({
   isExpanded: boolean;
   departureDate?: string | Date | null;
   countryCode?: string;
+  destinationCountryId: number;
   onToggleExpand: (id: string) => void;
   onToggleItem: (id: string) => void;
   onToggleSubstep: (itemId: string, substepId: string, e: React.MouseEvent) => void;
@@ -209,6 +213,14 @@ function ChecklistItemRow({
                 summary={item.keyFacts}
               />
             </div>
+          )}
+
+          {!item.completed && (
+            <BuddyList
+              procedureId={item.adminProcedureId}
+              procedureTitle={item.title}
+              countryId={destinationCountryId}
+            />
           )}
         </div>
 
@@ -300,6 +312,7 @@ export default function ChecklistPage() {
       return {
         id: trackingId.toString(),
         trackingId,
+        adminProcedureId: t.admin_procedure?.idAdminProcedure ?? 0,
         title: t.admin_procedure?.procedureType || '',
         completed: t.status === 'completed',
         status: t.status,
@@ -821,6 +834,7 @@ export default function ChecklistPage() {
                       isExpanded={expandedIds.has(item.id)}
                       departureDate={departureDate}
                       countryCode={countryCode}
+                      destinationCountryId={project?.idDestinationCountry ?? 0}
                       onToggleExpand={toggleExpand}
                       onToggleItem={toggleItem}
                       onToggleSubstep={toggleSubstep}
@@ -845,6 +859,7 @@ export default function ChecklistPage() {
                       isExpanded={expandedIds.has(item.id)}
                       departureDate={departureDate}
                       countryCode={countryCode}
+                      destinationCountryId={project?.idDestinationCountry ?? 0}
                       onToggleExpand={toggleExpand}
                       onToggleItem={toggleItem}
                       onToggleSubstep={toggleSubstep}

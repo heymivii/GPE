@@ -197,6 +197,15 @@ describe('AuthService', () => {
         UnauthorizedException,
       );
     });
+
+    it('should throw UnauthorizedException when the user no longer exists', async () => {
+      jwtService.verify.mockReturnValue({ sub: 999, type: 'refresh' });
+      userRepo.findOne.mockResolvedValue(null);
+
+      await expect(service.refreshToken('valid-refresh')).rejects.toThrow(
+        UnauthorizedException,
+      );
+    });
   });
 
   // ─── forgotPassword() ─────────────────────────────────────────
@@ -253,6 +262,15 @@ describe('AuthService', () => {
 
       await expect(
         service.resetPassword('expired', 'NewPass1'),
+      ).rejects.toThrow(UnauthorizedException);
+    });
+
+    it('should throw UnauthorizedException (wrapped) when the user no longer exists', async () => {
+      jwtService.verify.mockReturnValue({ sub: 999, type: 'reset' });
+      userRepo.findOne.mockResolvedValue(null);
+
+      await expect(
+        service.resetPassword('reset-token', 'NewPass1'),
       ).rejects.toThrow(UnauthorizedException);
     });
   });

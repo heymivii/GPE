@@ -22,6 +22,21 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 const MAX_SIZE = 10 * 1024 * 1024; // 10 Mo
 const ALLOWED_MIME = ['application/pdf', 'image/jpeg', 'image/png'];
 
+// Premier filtre (type déclaré) ; le contrôle réel (magic bytes) est dans le service.
+// Extrait en fonction nommée pour être testable directement (les options de
+// FileInterceptor ne sont pas atteignables depuis un test qui n'appelle que le contrôleur).
+export function documentFileFilter(
+  _req: unknown,
+  file: { mimetype: string },
+  cb: (error: Error | null, acceptFile: boolean) => void,
+): void {
+  if (!ALLOWED_MIME.includes(file.mimetype)) {
+    cb(new BadRequestException('Type non autorisé (PDF, JPEG, PNG)'), false);
+    return;
+  }
+  cb(null, true);
+}
+
 @ApiTags('Documents')
 @Controller('documents')
 @UseGuards(JwtAuthGuard)
@@ -32,16 +47,7 @@ export class DocumentController {
   @UseInterceptors(
     FileInterceptor('file', {
       limits: { fileSize: MAX_SIZE, files: 1 },
-      fileFilter: (_req, file, cb) => {
-        // Premier filtre (type déclaré) ; le contrôle réel (magic bytes) est dans le service.
-        if (!ALLOWED_MIME.includes(file.mimetype)) {
-          return cb(
-            new BadRequestException('Type non autorisé (PDF, JPEG, PNG)'),
-            false,
-          );
-        }
-        cb(null, true);
-      },
+      fileFilter: documentFileFilter,
     }),
   )
   create(

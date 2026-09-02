@@ -12,6 +12,7 @@ const mockService = () => ({
   findOne: jest.fn(),
   update: jest.fn(),
   remove: jest.fn(),
+  getAvailableCountries: jest.fn(),
 });
 
 describe('CountryController', () => {
@@ -58,6 +59,17 @@ describe('CountryController', () => {
       const result = await controller.findAll('active');
       expect(result).toHaveLength(1);
       expect(service.findAll).toHaveBeenCalledWith('active');
+    });
+  });
+
+  describe('getAvailable()', () => {
+    it('should delegate to service.getAvailableCountries()', async () => {
+      service.getAvailableCountries.mockResolvedValue([
+        { code: 'FR', name: 'France' },
+      ]);
+      const result = await controller.getAvailable();
+      expect(service.getAvailableCountries).toHaveBeenCalled();
+      expect(result).toEqual([{ code: 'FR', name: 'France' }]);
     });
   });
 

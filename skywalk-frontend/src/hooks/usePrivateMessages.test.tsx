@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
-import { pmKeys, useConversations, useSendMessage } from './usePrivateMessages';
+import { pmKeys, useConversations, useThread, useUnreadMessages, useSendMessage } from './usePrivateMessages';
 
 vi.mock('../api/private-messages', () => ({
   privateMessagesApi: {
@@ -40,6 +40,45 @@ describe('useConversations', () => {
     const { result } = renderHook(() => useConversations(true), { wrapper: wrapper() });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(result.current.data).toHaveLength(1);
+  });
+});
+
+describe('useThread', () => {
+  it('fetches the thread when enabled and userId is valid', async () => {
+    mocked.thread.mockResolvedValue([{ id: 1, content: 'hi' } as any]);
+    const { result } = renderHook(() => useThread(2, true), { wrapper: wrapper() });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(mocked.thread).toHaveBeenCalledWith(2);
+  });
+
+  it('does not fetch when userId is 0', () => {
+    mocked.thread.mockClear();
+    const { result } = renderHook(() => useThread(0, true), { wrapper: wrapper() });
+    expect(result.current.fetchStatus).toBe('idle');
+    expect(mocked.thread).not.toHaveBeenCalled();
+  });
+
+  it('does not fetch when disabled', () => {
+    mocked.thread.mockClear();
+    const { result } = renderHook(() => useThread(2, false), { wrapper: wrapper() });
+    expect(result.current.fetchStatus).toBe('idle');
+    expect(mocked.thread).not.toHaveBeenCalled();
+  });
+});
+
+describe('useUnreadMessages', () => {
+  it('fetches the unread count when enabled', async () => {
+    mocked.unreadCount.mockResolvedValue({ count: 3 } as any);
+    const { result } = renderHook(() => useUnreadMessages(true), { wrapper: wrapper() });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.data).toEqual({ count: 3 });
+  });
+
+  it('does not fetch when disabled', () => {
+    mocked.unreadCount.mockClear();
+    const { result } = renderHook(() => useUnreadMessages(false), { wrapper: wrapper() });
+    expect(result.current.fetchStatus).toBe('idle');
+    expect(mocked.unreadCount).not.toHaveBeenCalled();
   });
 });
 

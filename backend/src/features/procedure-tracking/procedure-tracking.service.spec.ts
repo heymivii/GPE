@@ -71,6 +71,146 @@ describe('ProcedureTrackingService', () => {
     expect(service).toBeDefined();
   });
 
+  describe('create()', () => {
+    it('should build the tracking with nested relations and save it', async () => {
+      const dto = {
+        status: 'in_progress',
+        startDate: '2026-01-01',
+        endDate: null,
+        adminProcedureId: 3,
+        expatProjectId: 10,
+      } as any;
+      trackingRepo.create.mockReturnValue({ ...dto });
+      trackingRepo.save.mockResolvedValue({ idProcedureTracking: 1, ...dto });
+
+      const result = await service.create(1, dto);
+
+      expect(trackingRepo.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          status: 'in_progress',
+          user: { idUser: 1 },
+          admin_procedure: { idAdminProcedure: 3 },
+          project: { idProject: 10 },
+        }),
+      );
+      expect(result.idProcedureTracking).toBe(1);
+    });
+
+    it('should default status to not_started when omitted', async () => {
+      const dto = { adminProcedureId: 3, expatProjectId: 10 } as any;
+      trackingRepo.create.mockReturnValue({ ...dto });
+      trackingRepo.save.mockResolvedValue({ idProcedureTracking: 1 });
+
+      await service.create(1, dto);
+
+      expect(trackingRepo.create).toHaveBeenCalledWith(
+        expect.objectContaining({ status: 'not_started' }),
+      );
+    });
+  });
+
+  describe('findOne()', () => {
+    it('should return the tracking when it belongs to the user', async () => {
+      trackingRepo.findOne.mockResolvedValue({
+        idProcedureTracking: 1,
+        user: { idUser: 1 },
+      });
+      const result = await service.findOne(1, 1);
+      expect(result.idProcedureTracking).toBe(1);
+    });
+
+    it('should throw NotFoundException when the tracking does not exist', async () => {
+      trackingRepo.findOne.mockResolvedValue(null);
+      await expect(service.findOne(999, 1)).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+
+    it('should throw ForbiddenException when the tracking belongs to another user', async () => {
+      trackingRepo.findOne.mockResolvedValue({
+        idProcedureTracking: 1,
+        user: { idUser: 2 },
+      });
+      await expect(service.findOne(1, 1)).rejects.toThrow(
+        'Accès refusé à ce suivi de procédure',
+      );
+    });
+  });
+
+  describe('remove()', () => {
+    it('should find then remove the tracking', async () => {
+      const tracking = { idProcedureTracking: 1, user: { idUser: 1 } };
+      trackingRepo.findOne.mockResolvedValue(tracking);
+      trackingRepo.remove.mockResolvedValue(tracking);
+
+      await service.remove(1, 1);
+
+      expect(trackingRepo.remove).toHaveBeenCalledWith(tracking);
+    });
+  });
+
+  describe('update() – end_date auto-fill', () => {
+    it('should set end_date to today when marked completed and none is set yet', async () => {
+      trackingRepo.findOne.mockResolvedValue({
+        idProcedureTracking: 1,
+        status: 'in_progress',
+        end_date: null,
+        user: { idUser: 1 },
+      });
+      trackingRepo.save.mockImplementation(async (t: any) => t);
+
+      const result = await service.update(1, 1, { status: 'completed' } as any);
+
+      expect(result.end_date).toBe(new Date().toISOString().split('T')[0]);
+    });
+
+    it('should not overwrite an existing end_date when re-marked completed', async () => {
+      trackingRepo.findOne.mockResolvedValue({
+        idProcedureTracking: 1,
+        status: 'in_progress',
+        end_date: '2026-01-01',
+        user: { idUser: 1 },
+      });
+      trackingRepo.save.mockImplementation(async (t: any) => t);
+
+      const result = await service.update(1, 1, { status: 'completed' } as any);
+
+      expect(result.end_date).toBe('2026-01-01');
+    });
+
+    it('should clear end_date when reset to not_started', async () => {
+      trackingRepo.findOne.mockResolvedValue({
+        idProcedureTracking: 1,
+        status: 'completed',
+        end_date: '2026-01-01',
+        user: { idUser: 1 },
+      });
+      trackingRepo.save.mockImplementation(async (t: any) => t);
+
+      const result = await service.update(1, 1, {
+        status: 'not_started',
+      } as any);
+
+      expect(result.end_date).toBeNull();
+    });
+
+    it('should clear end_date when set back to in_progress', async () => {
+      trackingRepo.findOne.mockResolvedValue({
+        idProcedureTracking: 1,
+        status: 'completed',
+        end_date: '2026-01-01',
+        user: { idUser: 1 },
+      });
+      trackingRepo.save.mockImplementation(async (t: any) => t);
+
+      const result = await service.update(1, 1, {
+        status: 'in_progress',
+      } as any);
+
+      expect(result.end_date).toBeNull();
+    });
+  });
+
   describe('findAllByUser – objective filter', () => {
     const userId = 1;
     const projectId = 10;
@@ -161,6 +301,41 @@ describe('ProcedureTrackingService', () => {
       await expect(service.findAllByUser(userId, 999)).rejects.toThrow(
         NotFoundException,
       );
+    });
+
+    it('does not re-seed a procedure that already has a tracking row', async () => {
+      const apVisa = makeAP(1, 'visa', []);
+      setupProject('work');
+      adminProcedureRepo.find.mockResolvedValue([apVisa]);
+      // existingTrackings already contains this procedure → the .some() branch matches
+      trackingRepo.find.mockResolvedValueOnce([
+        { admin_procedure: { idAdminProcedure: 1 } },
+      ]);
+      trackingRepo.find.mockResolvedValueOnce([
+        {
+          idProcedureTracking: 1,
+          admin_procedure: apVisa,
+          status: 'not_started',
+        },
+      ]);
+
+      await service.findAllByUser(userId, projectId);
+
+      expect(trackingRepo.save).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('findAllByUser – without a projectId', () => {
+    it('returns all trackings for the user directly', async () => {
+      trackingRepo.find.mockResolvedValue([{ idProcedureTracking: 1 }]);
+
+      const result = await service.findAllByUser(1);
+
+      expect(trackingRepo.find).toHaveBeenCalledWith({
+        where: { user: { idUser: 1 } },
+        relations: ['admin_procedure', 'project'],
+      });
+      expect(result).toEqual([{ idProcedureTracking: 1 }]);
     });
   });
 
@@ -313,6 +488,107 @@ describe('ProcedureTrackingService', () => {
 
       // save should NOT have been called — archived procedure not seeded
       expect(trackingRepo.save).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('getBuddies()', () => {
+    const makeTracking = (overrides: any = {}) => ({
+      idProcedureTracking: 1,
+      status: 'completed',
+      end_date: '2026-08-01',
+      user: {
+        idUser: 2,
+        firstName: 'Jane',
+        buddyOptIn: true,
+        originCountry: { countryName: 'Germany' },
+      },
+      ...overrides,
+    });
+
+    it('queries completed trackings for the given procedure/country, newest first, capped at 4', async () => {
+      trackingRepo.find.mockResolvedValue([]);
+
+      await service.getBuddies(5, 10, 99);
+
+      expect(trackingRepo.find).toHaveBeenCalledWith({
+        where: {
+          admin_procedure: { idAdminProcedure: 5 },
+          status: 'completed',
+          project: { destinationCountryId: 10 },
+        },
+        relations: ['user', 'user.originCountry', 'project'],
+        order: { end_date: 'DESC' },
+        take: 4,
+      });
+    });
+
+    it('excludes the current user from their own buddy list', async () => {
+      trackingRepo.find.mockResolvedValue([
+        makeTracking({ user: { idUser: 99, firstName: 'Me', buddyOptIn: true, originCountry: null } }),
+      ]);
+
+      const result = await service.getBuddies(5, 10, 99);
+
+      expect(result).toEqual([]);
+    });
+
+    it('excludes trackings with no completion date', async () => {
+      trackingRepo.find.mockResolvedValue([makeTracking({ end_date: null })]);
+
+      const result = await service.getBuddies(5, 10, 1);
+
+      expect(result).toEqual([]);
+    });
+
+    it('excludes users who opted out of the buddy system', async () => {
+      trackingRepo.find.mockResolvedValue([
+        makeTracking({ user: { idUser: 2, firstName: 'Jane', buddyOptIn: false, originCountry: null } }),
+      ]);
+
+      const result = await service.getBuddies(5, 10, 99);
+
+      expect(result).toEqual([]);
+    });
+
+    it('maps eligible trackings to buddy summaries, capped at 3 results', async () => {
+      const trackings = [1, 2, 3, 4].map((n) =>
+        makeTracking({
+          idProcedureTracking: n,
+          end_date: `2026-08-0${n}`,
+          user: {
+            idUser: n + 1,
+            firstName: `User${n}`,
+            buddyOptIn: true,
+            originCountry: { countryName: 'Spain' },
+          },
+        }),
+      );
+      trackingRepo.find.mockResolvedValue(trackings);
+
+      const result = await service.getBuddies(5, 10, 99);
+
+      expect(result).toHaveLength(3);
+      expect(result[0]).toEqual({
+        idUser: 2,
+        firstname: 'User1',
+        originCountry: 'Spain',
+        completedAt: '2026-08-01',
+      });
+    });
+
+    it('falls back to a generic name and empty origin when missing', async () => {
+      trackingRepo.find.mockResolvedValue([
+        makeTracking({ user: { idUser: 2, firstName: undefined, buddyOptIn: true, originCountry: null } }),
+      ]);
+
+      const result = await service.getBuddies(5, 10, 99);
+
+      expect(result[0]).toEqual({
+        idUser: 2,
+        firstname: "Quelqu'un",
+        originCountry: '',
+        completedAt: '2026-08-01',
+      });
     });
   });
 });

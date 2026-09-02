@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, afterEach } from 'vitest';
 import {
     resolveCountry,
     codeFromSlug,
@@ -9,6 +9,8 @@ import {
     SLUG_TO_ADZUNA_CODE,
     flagEmoji,
     slugify,
+    hydrateCountries,
+    getRegistry,
 } from './countryMappings';
 
 describe('flagEmoji', () => {
@@ -206,5 +208,34 @@ describe('SLUG_TO_ADZUNA_CODE', () => {
         for (const [slug, code] of Object.entries(original)) {
             expect(SLUG_TO_ADZUNA_CODE[slug]).toBe(code);
         }
+    });
+});
+
+describe('hydrateCountries / getRegistry', () => {
+    const originalRegistry = getRegistry();
+
+    afterEach(() => {
+        hydrateCountries([...originalRegistry]);
+    });
+
+    it('getRegistry returns the seeded registry by default', () => {
+        expect(getRegistry().length).toBeGreaterThan(0);
+        expect(resolveCountry('fr')).toBeDefined();
+    });
+
+    it('hydrateCountries replaces the registry, affecting subsequent lookups', () => {
+        hydrateCountries([
+            {
+                code: 'zz',
+                slug: 'zedland',
+                name: 'Zedland',
+                apiCountryName: 'Zedland',
+            } as any,
+        ]);
+
+        expect(getRegistry()).toHaveLength(1);
+        expect(resolveCountry('zedland')?.code).toBe('zz');
+        // The old seed data is gone until restored.
+        expect(resolveCountry('fr')).toBeUndefined();
     });
 });

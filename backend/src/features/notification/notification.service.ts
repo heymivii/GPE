@@ -24,6 +24,7 @@ export class NotificationService {
       message: createDto.message,
       contextType: createDto.contextType ?? null,
       contextId: createDto.contextId ?? null,
+      contextLabel: createDto.contextLabel ?? null,
       user: { idUser: createDto.userId } as any,
     });
     return await this.notificationRepository.save(notification);

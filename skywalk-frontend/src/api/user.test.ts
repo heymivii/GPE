@@ -37,4 +37,28 @@ describe('userApi', () => {
     await userApi.deleteAccount();
     expect(del).toHaveBeenCalledWith('/users/me');
   });
+
+  it('getUsersAdmin() should GET /users/admin/all with pagination params', async () => {
+    get.mockResolvedValue({ data: { data: [{ idUser: 1 }], total: 1 } });
+    const result = await userApi.getUsersAdmin(2, 50);
+    expect(get).toHaveBeenCalledWith('/users/admin/all', {
+      params: { page: 2, limit: 50 },
+    });
+    expect(result.total).toBe(1);
+  });
+
+  it('getUsersAdmin() should default page/limit when omitted', async () => {
+    get.mockResolvedValue({ data: { data: [], total: 0 } });
+    await userApi.getUsersAdmin();
+    expect(get).toHaveBeenCalledWith('/users/admin/all', {
+      params: { page: 1, limit: 100 },
+    });
+  });
+
+  it('updateUserRole() should PATCH /users/admin/:id/role', async () => {
+    patch.mockResolvedValue({ data: { idUser: 5, roles: 'admin' } });
+    const result = await userApi.updateUserRole(5, 'admin');
+    expect(patch).toHaveBeenCalledWith('/users/admin/5/role', { role: 'admin' });
+    expect(result.roles).toBe('admin');
+  });
 });

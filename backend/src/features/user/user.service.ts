@@ -45,7 +45,6 @@ export class UserService {
     return await this.userRepository.save(user);
   }
 
-
   async findAll(paginationDto: PaginationDto): Promise<PaginatedResponseDto<User>> {
     const { page = 1, limit = 10 } = paginationDto;
     const skip = (page - 1) * limit;
@@ -97,6 +96,19 @@ export class UserService {
     return await this.userRepository.save(user);
   }
 
+  async updatePrivacy(
+    id: number,
+    buddyOptIn: boolean,
+    buddyContactOptIn: boolean,
+  ): Promise<{ buddyOptIn: boolean; buddyContactOptIn: boolean }> {
+    const user = await this.findOne(id);
+    user.buddyOptIn = buddyOptIn;
+    // Si l'affichage est désactivé, le contact est forcément désactivé aussi
+    user.buddyContactOptIn = buddyOptIn ? buddyContactOptIn : false;
+    await this.userRepository.save(user);
+    return { buddyOptIn: user.buddyOptIn, buddyContactOptIn: user.buddyContactOptIn };
+  }
+
   async remove(id: number): Promise<void> {
     const user = await this.findOne(id);
     await this.userRepository.remove(user);
@@ -108,7 +120,6 @@ export class UserService {
     return await this.userRepository.save(user);
   }
 
-  // How many users currently hold any of the given roles (e.g. admin-level roles).
   async countByRoles(roles: string[]): Promise<number> {
     return this.userRepository.count({ where: { roles: In(roles) } });
   }

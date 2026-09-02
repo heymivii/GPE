@@ -196,6 +196,38 @@ describe('UserService', () => {
     });
   });
 
+  // ─── updateRole() / countByRoles() / getStats() ────────────────
+
+  describe('updateRole()', () => {
+    it('should update the role and save', async () => {
+      const user = { idUser: 1, roles: 'user' };
+      repo.findOne.mockResolvedValue(user);
+      repo.save.mockImplementation(async (u) => u);
+
+      const result = await service.updateRole(1, 'admin');
+      expect(result.roles).toBe('admin');
+    });
+  });
+
+  describe('countByRoles()', () => {
+    it('should count users matching any of the given roles', async () => {
+      repo.count.mockResolvedValue(3);
+      const result = await service.countByRoles(['admin', 'moderator']);
+      expect(repo.count).toHaveBeenCalledWith({
+        where: { roles: expect.anything() },
+      });
+      expect(result).toBe(3);
+    });
+  });
+
+  describe('getStats()', () => {
+    it('should return the total user count', async () => {
+      repo.count.mockResolvedValue(42);
+      const result = await service.getStats();
+      expect(result).toEqual({ totalUsers: 42 });
+    });
+  });
+
   // ─── F1 : experts vérifiés ─────────────────────────────────────
 
   describe('verifyExpert()', () => {

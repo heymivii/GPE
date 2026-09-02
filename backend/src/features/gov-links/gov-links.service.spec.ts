@@ -503,3 +503,366 @@ describe('GovLinksService.generate — hint-driven (Prompt B)', () => {
     expect(res.url).toBe('https://france-visas.gouv.fr/x');
   });
 });
+
+// ── isSupported / listSupportedCountries / reviewLink / retry / normalize ──────────────
+describe('GovLinksService — supported countries, review, retry, normalize', () => {
+  const svcNoCountries = () => {
+    const repo = makeRepo();
+    const search = { search: jest.fn() };
+    const verifier = { verify: jest.fn() };
+    const ranker = { pickBest: jest.fn(), summarize: jest.fn() };
+    return new GovLinksService(
+      repo as never,
+      search as never,
+      verifier as never,
+      ranker as never,
+    );
+  };
+
+  describe('isSupported()', () => {
+    it('falls back to the static registry when no countries repo is injected', async () => {
+      const svc = svcNoCountries();
+      expect(await svc.isSupported('fr')).toBe(true);
+      expect(await svc.isSupported('zz')).toBe(false);
+    });
+
+    it('uses the DB row (govLinkEnabled + active) when a countries repo is injected', async () => {
+      const repo = makeRepo();
+      const search = { search: jest.fn() };
+      const verifier = { verify: jest.fn() };
+      const ranker = { pickBest: jest.fn(), summarize: jest.fn() };
+      const countries = {
+        findOne: jest.fn(async () => ({
+          govLinkEnabled: true,
+          status: 'active',
+        })),
+      };
+      const svc = new GovLinksService(
+        repo as never,
+        search as never,
+        verifier as never,
+        ranker as never,
+        undefined,
+        countries as never,
+      );
+      expect(await svc.isSupported('fr')).toBe(true);
+      expect(countries.findOne).toHaveBeenCalledWith({
+        where: { isoCode: 'FR' },
+      });
+    });
+
+    it('falls back to the static registry when the country row is missing', async () => {
+      const repo = makeRepo();
+      const search = { search: jest.fn() };
+      const verifier = { verify: jest.fn() };
+      const ranker = { pickBest: jest.fn(), summarize: jest.fn() };
+      const countries = { findOne: jest.fn(async () => null) };
+      const svc = new GovLinksService(
+        repo as never,
+        search as never,
+        verifier as never,
+        ranker as never,
+        undefined,
+        countries as never,
+      );
+      expect(await svc.isSupported('fr')).toBe(true);
+    });
+  });
+
+  describe('listSupportedCountries()', () => {
+    it('falls back to the static registry when no countries repo is injected', async () => {
+      const svc = svcNoCountries();
+      const res = await svc.listSupportedCountries();
+      expect(res.length).toBeGreaterThan(0);
+      expect(res[0]).toHaveProperty('code');
+      expect(res[0]).toHaveProperty('name');
+      expect(res[0]).toHaveProperty('flag');
+    });
+
+    it('maps DB rows to code/name/flag, dropping rows without an isoCode', async () => {
+      const repo = makeRepo();
+      const search = { search: jest.fn() };
+      const verifier = { verify: jest.fn() };
+      const ranker = { pickBest: jest.fn(), summarize: jest.fn() };
+      const countries = {
+        find: jest.fn(async () => [
+          { isoCode: 'FR', countryName: 'France' },
+          { isoCode: null, countryName: 'Nowhere' },
+        ]),
+      };
+      const svc = new GovLinksService(
+        repo as never,
+        search as never,
+        verifier as never,
+        ranker as never,
+        undefined,
+        countries as never,
+      );
+      const res = await svc.listSupportedCountries();
+      expect(res).toEqual([
+        { code: 'FR', name: 'France', flag: expect.any(String) },
+      ]);
+    });
+
+    it('falls back to the static registry when the DB has no enabled countries', async () => {
+      const repo = makeRepo();
+      const search = { search: jest.fn() };
+      const verifier = { verify: jest.fn() };
+      const ranker = { pickBest: jest.fn(), summarize: jest.fn() };
+      const countries = { find: jest.fn(async () => []) };
+      const svc = new GovLinksService(
+        repo as never,
+        search as never,
+        verifier as never,
+        ranker as never,
+        undefined,
+        countries as never,
+      );
+      const res = await svc.listSupportedCountries();
+      expect(res.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe('reviewLink()', () => {
+    it('throws NotFoundException when the link does not exist', async () => {
+      const repo = makeRepo();
+      repo.findOne.mockResolvedValue(null);
+      const svc = new GovLinksService(
+        repo as never,
+        { search: jest.fn() } as never,
+        { verify: jest.fn() } as never,
+        { pickBest: jest.fn(), summarize: jest.fn() } as never,
+      );
+      await expect(svc.reviewLink(1, true)).rejects.toThrow(
+        'Lien 1 introuvable',
+      );
+    });
+
+    it('throws BadRequestException when the link is not pending_review', async () => {
+      const repo = makeRepo();
+      repo.findOne.mockResolvedValue({ id: 1, status: 'active' });
+      const svc = new GovLinksService(
+        repo as never,
+        { search: jest.fn() } as never,
+        { verify: jest.fn() } as never,
+        { pickBest: jest.fn(), summarize: jest.fn() } as never,
+      );
+      await expect(svc.reviewLink(1, true)).rejects.toThrow(
+        /n'est pas en attente/,
+      );
+    });
+
+    it('approve → status becomes active', async () => {
+      const repo = makeRepo();
+      repo.findOne.mockResolvedValue({ id: 1, status: 'pending_review' });
+      const svc = new GovLinksService(
+        repo as never,
+        { search: jest.fn() } as never,
+        { verify: jest.fn() } as never,
+        { pickBest: jest.fn(), summarize: jest.fn() } as never,
+      );
+      const res = await svc.reviewLink(1, true);
+      expect(res.status).toBe('active');
+      expect(repo.save).toHaveBeenCalledWith(
+        expect.objectContaining({ status: 'active' }),
+      );
+    });
+
+    it('reject → status becomes needs_review', async () => {
+      const repo = makeRepo();
+      repo.findOne.mockResolvedValue({ id: 1, status: 'pending_review' });
+      const svc = new GovLinksService(
+        repo as never,
+        { search: jest.fn() } as never,
+        { verify: jest.fn() } as never,
+        { pickBest: jest.fn(), summarize: jest.fn() } as never,
+      );
+      const res = await svc.reviewLink(1, false);
+      expect(res.status).toBe('needs_review');
+    });
+  });
+
+  describe('searchWithRetry() (exercised via generate)', () => {
+    it('retries once on a transient failure and succeeds', async () => {
+      jest.useFakeTimers();
+      const repo = makeRepo();
+      const search = {
+        search: jest
+          .fn()
+          .mockRejectedValueOnce(new Error('timeout'))
+          .mockResolvedValueOnce([
+            candidate('https://france-visas.gouv.fr/x'),
+          ]),
+      };
+      const verifier = {
+        verify: jest.fn(async () => ({
+          live: true,
+          finalUrl: 'https://france-visas.gouv.fr/x',
+          matched: true,
+          text: 't',
+        })),
+      };
+      const ranker = {
+        pickBest: jest.fn(async () => ({
+          index: 0,
+          label: 'L',
+          confidence: 0.9,
+        })),
+        summarize: jest.fn(async () => ({ facts: [], actions: [] })),
+      };
+      const svc = new GovLinksService(
+        repo as never,
+        search as never,
+        verifier as never,
+        ranker as never,
+      );
+      const resultPromise = svc.generate('FR', 'visa');
+      await jest.runAllTimersAsync();
+      const res = await resultPromise;
+      expect(search.search).toHaveBeenCalledTimes(2);
+      expect(res.status).toBe('pending_review');
+      jest.useRealTimers();
+    });
+
+    it('returns [] (needs_review) after failing twice', async () => {
+      jest.useFakeTimers();
+      const repo = makeRepo();
+      const search = {
+        search: jest
+          .fn()
+          .mockRejectedValueOnce(new Error('timeout 1'))
+          .mockRejectedValueOnce(new Error('timeout 2')),
+      };
+      const verifier = { verify: jest.fn() };
+      const ranker = { pickBest: jest.fn(), summarize: jest.fn() };
+      const svc = new GovLinksService(
+        repo as never,
+        search as never,
+        verifier as never,
+        ranker as never,
+      );
+      const resultPromise = svc.generate('FR', 'visa');
+      await jest.runAllTimersAsync();
+      const res = await resultPromise;
+      expect(search.search).toHaveBeenCalledTimes(2);
+      expect(res.status).toBe('needs_review');
+      expect(verifier.verify).not.toHaveBeenCalled();
+      jest.useRealTimers();
+    });
+  });
+
+  describe('countryConfig() (exercised via generate, with a countries repo)', () => {
+    it('uses the DB row officialDomains/countryName when present', async () => {
+      const repo = makeRepo();
+      const search = {
+        search: jest.fn(async () => [candidate('https://custom.gouv.test/x')]),
+      };
+      const verifier = {
+        verify: jest.fn(async () => ({
+          live: true,
+          finalUrl: 'https://custom.gouv.test/x',
+          matched: true,
+          text: 't',
+        })),
+      };
+      const ranker = {
+        pickBest: jest.fn(async () => ({
+          index: 0,
+          label: 'L',
+          confidence: 0.9,
+        })),
+        summarize: jest.fn(async (_text, ctx) => {
+          expect(ctx.country).toBe('Testland');
+          return { facts: [], actions: [] };
+        }),
+      };
+      const countries = {
+        findOne: jest.fn(async () => ({
+          countryName: 'Testland',
+          officialDomains: ['custom.gouv.test'],
+        })),
+      };
+      const svc = new GovLinksService(
+        repo as never,
+        search as never,
+        verifier as never,
+        ranker as never,
+        undefined,
+        countries as never,
+      );
+      const res = await svc.generate('FR', 'visa');
+      expect(res.status).toBe('pending_review');
+      expect(ranker.summarize).toHaveBeenCalled();
+    });
+  });
+
+  describe('persist() — do-not-unpublish guard', () => {
+    it('keeps an already-active link active on a machine pending_review re-run for the same URL', async () => {
+      const repo = makeRepo();
+      const url = 'https://france-visas.gouv.fr/x';
+      repo.findOne.mockResolvedValue({
+        id: 7,
+        status: 'active',
+        url,
+        countryCode: 'FR',
+        category: 'visa',
+      });
+      const search = { search: jest.fn(async () => [candidate(url)]) };
+      const verifier = {
+        verify: jest.fn(async () => ({
+          live: true,
+          finalUrl: url,
+          matched: true,
+          text: 't',
+        })),
+      };
+      const ranker = {
+        pickBest: jest.fn(async () => ({
+          index: 0,
+          label: 'L',
+          confidence: 0.9,
+        })),
+        summarize: jest.fn(async () => ({ facts: [], actions: [] })),
+      };
+      const svc = new GovLinksService(
+        repo as never,
+        search as never,
+        verifier as never,
+        ranker as never,
+      );
+      const res = await svc.generate('FR', 'visa');
+      expect(res.status).toBe('pending_review'); // returned verdict is still the machine one
+      expect(repo.save.mock.calls[0][0].status).toBe('active'); // but the stored row stays published
+    });
+  });
+
+  describe('normalizeUrl() (exercised via dedupeByUrl in generate)', () => {
+    it('treats an unparsable URL as its own trimmed/lowercased key instead of throwing', async () => {
+      const repo = makeRepo();
+      const search = {
+        search: jest.fn(async () => [
+          candidate('not a valid url'),
+          candidate('NOT A VALID URL'),
+        ]),
+      };
+      const verifier = {
+        verify: jest.fn(async () => ({
+          live: false,
+          finalUrl: '',
+          matched: false,
+        })),
+      };
+      const ranker = { pickBest: jest.fn(), summarize: jest.fn() };
+      const svc = new GovLinksService(
+        repo as never,
+        search as never,
+        verifier as never,
+        ranker as never,
+      );
+      // Both candidates are non-official, so verify is never called; this only exercises
+      // dedupeByUrl/normalizeUrl's catch branch without throwing.
+      const res = await svc.generate('US', 'visa');
+      expect(res.status).toBe('needs_review');
+    });
+  });
+});

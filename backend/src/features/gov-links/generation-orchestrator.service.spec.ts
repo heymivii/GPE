@@ -113,6 +113,62 @@ describe('GenerationOrchestratorService.verify (via processCategory)', () => {
   });
 });
 
+// ── processCategory: catch branch (generate() throws) ────────────────────────────────
+describe('GenerationOrchestratorService.processCategory — error handling', () => {
+  it('generate() throwing → result=failed with the error message, still writes the run row', async () => {
+    const mocks = makeService();
+    mocks.govLinks.generate.mockRejectedValueOnce(new Error('search engine down'));
+    const svc = buildOrchestrator(mocks);
+
+    const item = await svc.processCategory(1, 'FR', 'visa');
+
+    expect(item.result).toBe('failed');
+    expect(item.message).toBe('search engine down');
+    expect(mocks.runs.query).toHaveBeenCalled();
+  });
+});
+
+// ── runForCountry: the background sequential loop ─────────────────────────────────────
+describe('GenerationOrchestratorService.runForCountry', () => {
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => jest.useRealTimers());
+
+  it('processes every category, publishes via the generator, then closes the run as done', async () => {
+    const mocks = makeService(makeGen());
+    const svc = buildOrchestrator(mocks);
+
+    const runPromise = svc.runForCountry(1, 'fr');
+    await jest.runAllTimersAsync();
+    await runPromise;
+
+    expect(mocks.govLinks.generate.mock.calls.length).toBeGreaterThan(1);
+    // Every call is uppercased and iterates through the canonical categories.
+    expect(mocks.govLinks.generate).toHaveBeenCalledWith('FR', expect.any(String));
+    expect(mocks.generator.generateFromGovLinks).toHaveBeenCalledWith('FR');
+    expect(mocks.runs.update).toHaveBeenCalledWith(
+      { id: 1 },
+      { status: 'done', finishedAt: expect.any(Date) },
+    );
+  });
+
+  it('closes the run as failed when the publication step throws', async () => {
+    const mocks = makeService(makeGen());
+    mocks.generator.generateFromGovLinks.mockRejectedValueOnce(
+      new Error('publish failed'),
+    );
+    const svc = buildOrchestrator(mocks);
+
+    const runPromise = svc.runForCountry(1, 'fr');
+    await jest.runAllTimersAsync();
+    await runPromise;
+
+    expect(mocks.runs.update).toHaveBeenCalledWith(
+      { id: 1 },
+      { status: 'failed', finishedAt: expect.any(Date) },
+    );
+  });
+});
+
 // ── processCategory: status is set FROM verdict ──────────────────────────────────────
 describe('GenerationOrchestratorService.processCategory — gov_link status update', () => {
   it('verified → orchestrator does NOT override the status (generate/persist owns it: pending_review for new, active preserved on re-run)', async () => {

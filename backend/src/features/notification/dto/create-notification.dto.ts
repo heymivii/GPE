@@ -36,4 +36,9 @@ export class CreateNotificationDto {
   @IsOptional()
   @IsNumber()
   contextId?: number;
+
+  /** Libellé facultatif associé au contexte — ex. le prénom pour un contexte 'user'. */
+  @IsOptional()
+  @IsString()
+  contextLabel?: string;
 }

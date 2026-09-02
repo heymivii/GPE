@@ -70,4 +70,21 @@ describe('authApi', () => {
     expect(mockedPost).toHaveBeenCalledWith('/auth/refresh', { refreshToken: 'old-refresh' });
     expect(result.access_token).toBe('new-tok');
   });
+
+  it('forgotPassword() should POST to /auth/forgot-password', async () => {
+    mockedPost.mockResolvedValue({ data: { message: 'sent' } });
+    const result = await authApi.forgotPassword({ email: 'a@b.com' });
+    expect(mockedPost).toHaveBeenCalledWith('/auth/forgot-password', { email: 'a@b.com' });
+    expect(result.message).toBe('sent');
+  });
+
+  it('resetPassword() should POST to /auth/reset-password', async () => {
+    mockedPost.mockResolvedValue({ data: { message: 'reset' } });
+    const result = await authApi.resetPassword({ token: 'tok', newPassword: 'NewPass1' });
+    expect(mockedPost).toHaveBeenCalledWith('/auth/reset-password', {
+      token: 'tok',
+      newPassword: 'NewPass1',
+    });
+    expect(result.message).toBe('reset');
+  });
 });

@@ -37,6 +37,8 @@ import { VisaRequirementModule } from './features/project/visa/visa-requirement.
 import { TravelTypeModule } from './features/project/travel-type/travel-type.module';
 
 import { AdminStatsModule } from './features/admin-stats/admin-stats.module';
+import { BuddyContactModule } from './features/buddy-contact/buddy-contact.module';
+import { BuddyMessagesModule } from './features/buddy-messages/buddy-messages.module';
 import { AdminLogModule } from './features/admin-log/admin-log.module';
 import { GovLinksModule } from './features/gov-links/gov-links.module';
 import { SearchHintModule } from './features/search-hint/search-hint.module';
@@ -93,6 +95,8 @@ import { ExpertApplicationModule } from './features/expert-application/expert-ap
     TravelTypeModule,
     AdminStatsModule,
     AdminLogModule,
+    BuddyContactModule,
+    BuddyMessagesModule,
     GovLinksModule,
     SearchHintModule,
   ],

@@ -4,7 +4,7 @@ Stack de prod :
 - **Backend** → Heroku (Node, `backend/Procfile`)
 - **Frontend** → Vercel (`skywalk-frontend/`, `vercel.json` présent)
 - **Base de données** → Heroku Postgres (add-on)
-- **Source** → GitHub `CoulibalyT/skywalk` (Heroku auto-deploy depuis GitHub)
+- **Source** → GitHub `heymivii/GPE` (déploiement piloté par `.github/workflows/ci.yml`, déclenché sur push vers `develop`)
 
 > ⚠️ Aucun secret n'est versionné : `.env`, `backend/storage/` sont dans `.gitignore`. **Ne jamais committer de `.env`.**
 
@@ -105,9 +105,11 @@ heroku config:get DATABASE_URL -a <TON_APP>
 
 ---
 
-## 4. Déploiement backend (auto-deploy GitHub → Heroku)
+## 4. Déploiement backend (GitHub Actions → Heroku)
 
-1. **Connecter le repo** : Heroku dashboard → ton app → **Deploy** → *Deployment method* = **GitHub** → connecter `CoulibalyT/skywalk`.
+Le déploiement n'utilise **pas** l'auto-deploy natif de Heroku (qui déploierait sur chaque push, même si les tests échouent) : c'est le job `deploy-backend` de `.github/workflows/ci.yml` qui pousse vers Heroku, uniquement après que `backend-test` et `backend-build` soient passés, sur push vers `develop`.
+
+1. **Créer l'app Heroku** si elle n'existe pas déjà (`heroku create <TON_APP>`).
 2. **Monorepo** : le backend est dans `backend/`. Configure l'app pour ce sous-dossier via le buildpack monorepo :
    ```bash
    heroku buildpacks:add -i 1 https://github.com/lstoll/heroku-buildpack-monorepo -a <TON_APP>
@@ -115,7 +117,14 @@ heroku config:get DATABASE_URL -a <TON_APP>
    heroku config:set APP_BASE=backend -a <TON_APP>
    ```
    (Si ton app Heroku existante marche déjà, elle est déjà configurée ainsi — ne touche à rien.)
-3. **Activer l'auto-deploy** sur la branche `develop` (ou clique *Deploy Branch* manuellement).
+3. **Secrets GitHub Actions** à ajouter (repo `heymivii/GPE` → Settings → Secrets and variables → Actions) :
+   | Secret | Valeur |
+   |---|---|
+   | `HEROKU_API_KEY` | `heroku auth:token` |
+   | `HEROKU_APP_NAME` | le nom de ton app Heroku |
+   | `HEROKU_EMAIL` | l'email du compte Heroku propriétaire de la clé API |
+
+   Ne pas activer l'auto-deploy GitHub natif de Heroku en parallèle — les deux mécanismes se marcheraient dessus.
 4. Vérifie : `heroku logs --tail -a <TON_APP>` → tu dois voir la release (migrations) puis `Nest application successfully started`.
 
 Test rapide :
@@ -127,14 +136,27 @@ curl https://<TON_APP>.herokuapp.com/api/health   # ou une route publique
 
 ## 5. Frontend — Vercel
 
-1. Vercel → **New Project** → importer `CoulibalyT/skywalk`.
+Comme pour le backend, c'est le job `deploy-frontend` de `.github/workflows/ci.yml` qui déploie (après `frontend-test` + `frontend-build`, sur push vers `develop`) — pas l'intégration Git native de Vercel.
+
+1. Vercel → **New Project** → importer `heymivii/GPE`, puis **annule** l'auto-deploy Git proposé par défaut (Settings → Git → Ignored Build Step, ou déconnecte l'intégration) pour laisser la main à GitHub Actions.
 2. **Root Directory** = `skywalk-frontend`. Framework détecté = **Vite**.
-3. **Env var** :
+3. **Env var** (Vercel dashboard, projet → Settings → Environment Variables) :
    | Clé | Valeur |
    |-----|--------|
    | `VITE_API_URL` | `https://<TON_APP>.herokuapp.com/api` |
    | `VITE_OPENWEATHER_API_KEY` | *(optionnel — widget météo)* |
-4. Deploy. Récupère l'URL Vercel → mets-la dans **`FRONTEND_URL`** côté Heroku (§3) pour le CORS.
+4. **Récupère les identifiants pour GitHub Actions** :
+   ```bash
+   cd skywalk-frontend && npx vercel link   # crée .vercel/project.json localement
+   cat .vercel/project.json                 # → orgId, projectId
+   ```
+5. **Secrets GitHub Actions** à ajouter (repo `heymivii/GPE`) :
+   | Secret | Valeur |
+   |---|---|
+   | `VERCEL_TOKEN` | Vercel → Account Settings → Tokens |
+   | `VERCEL_ORG_ID` | `orgId` de `.vercel/project.json` |
+   | `VERCEL_PROJECT_ID` | `projectId` de `.vercel/project.json` |
+6. Une fois déployé, récupère l'URL Vercel → mets-la dans **`FRONTEND_URL`** côté Heroku (§3) pour le CORS.
 
 > CORS backend (`main.ts`) autorise déjà `FRONTEND_URL` **et** tout `*.vercel.app` → les preview deploys Vercel marchent d'office.
 
@@ -188,7 +210,9 @@ psql "$(heroku config:get DATABASE_URL -a <TON_APP>)" < skywalk_ref.sql
 - [ ] Heroku Postgres provisionné, `DB_*` + `DB_SSL=true` posés
 - [ ] `NPM_CONFIG_PRODUCTION=false` (migrations)
 - [ ] `JWT_SECRET`, `DOCUMENT_ENCRYPTION_KEY` générés (`openssl rand -hex 32`)
-- [ ] Repo `CoulibalyT/skywalk` connecté à Heroku, `APP_BASE=backend`
+- [ ] `APP_BASE=backend` + buildpack monorepo posés sur l'app Heroku
+- [ ] Secrets GitHub Actions posés : `HEROKU_API_KEY`, `HEROKU_APP_NAME`, `HEROKU_EMAIL`, `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`
+- [ ] Auto-deploy Git natif désactivé côté Heroku **et** Vercel (déploiement piloté par `.github/workflows/ci.yml` uniquement)
 - [ ] Déploiement OK (`heroku logs` : migrations + Nest started)
 - [ ] Vercel : `VITE_API_URL` = URL Heroku `/api`
 - [ ] `FRONTEND_URL` (Heroku) = URL Vercel → CORS OK

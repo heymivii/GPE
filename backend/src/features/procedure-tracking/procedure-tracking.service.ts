@@ -146,9 +146,8 @@ export class ProcedureTrackingService {
       tracking.completedFacts = updateDto.completedFacts;
     }
 
-    // ✅ Remplir automatiquement end_date quand l'étape est complétée
     if (updateDto.status === 'completed' && !tracking.end_date) {
-      tracking.end_date = new Date().toISOString().split('T')[0]; // format YYYY-MM-DD
+      tracking.end_date = new Date().toISOString().split('T')[0];
     }
 
     // ✅ Vider end_date si l'étape est décochée
@@ -165,5 +164,37 @@ export class ProcedureTrackingService {
   async remove(id: number, userId: number): Promise<void> {
     const tracking = await this.findOne(id, userId);
     await this.trackingRepository.remove(tracking);
+  }
+
+  async getBuddies(
+    procedureId: number,
+    countryId: number,
+    currentUserId: number,
+  ): Promise<{ idUser: number; firstname: string; originCountry: string; completedAt: string }[]> {
+    const trackings = await this.trackingRepository.find({
+      where: {
+        admin_procedure: { idAdminProcedure: procedureId },
+        status: 'completed',
+        project: { destinationCountryId: countryId },
+      },
+      relations: ['user', 'user.originCountry', 'project'],
+      order: { end_date: 'DESC' },
+      take: 4,
+    });
+
+    return trackings
+      .filter((t) => {
+        if (t.user?.idUser === currentUserId) return false;
+        if (!t.end_date) return false;
+        if (t.user?.buddyOptIn === false) return false;
+        return true;
+      })
+      .slice(0, 3)
+      .map((t) => ({
+        idUser: t.user?.idUser,
+        firstname: t.user?.firstName ?? 'Quelqu\'un',
+        originCountry: t.user?.originCountry?.countryName ?? '',
+        completedAt: t.end_date!,
+      }));
   }
 }

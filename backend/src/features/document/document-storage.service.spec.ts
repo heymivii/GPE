@@ -41,4 +41,17 @@ describe('DocumentStorageService (chiffrement au repos)', () => {
   it('delete est idempotent (pas d’erreur si absent)', async () => {
     await expect(svc.delete(svc.newStorageKey())).resolves.toBeUndefined();
   });
+
+  it('utilise DOCUMENT_ENCRYPTION_KEY quand une clé hex valide (64 car.) est configurée', async () => {
+    const envKeySvc = new DocumentStorageService({
+      get: () => 'a'.repeat(64),
+    } as any);
+    const key = envKeySvc.newStorageKey();
+    const data = Buffer.from('secret avec clé env');
+    await envKeySvc.write(key, data);
+
+    const out = await envKeySvc.read(key);
+    expect(out.equals(data)).toBe(true);
+    await envKeySvc.delete(key);
+  });
 });

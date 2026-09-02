@@ -1,32 +1,69 @@
-import { describe, it, expect } from 'vitest';
-import { personalizeFilter } from './personalize';
+import { describe, it, expect, vi } from 'vitest';
+
+vi.mock('../../../data/freeMovement', () => ({
+  isVisaExempt: (nat?: string | null, dest?: string | null) =>
+    nat === 'FR' && dest === 'DE',
+}));
+
+import { personalizeFilter, sortByPriorities } from './personalize';
 
 const steps = [
-  { category: 'visa' },
-  { category: 'demarches' },
-  { category: 'sante' },
-  { category: 'education' },
+  { category: 'visa', id: 1 },
+  { category: 'education', id: 2 },
+  { category: 'logement', id: 3 },
+  { category: 'emploi', id: 4 },
 ];
-const categories = (r: Array<{ category: string }>) => r.map((s) => s.category);
 
-describe('personalizeFilter — libre circulation', () => {
-  it('suisse → France : masque visa ET titre de séjour (cas du projet #10)', () => {
-    const r = personalizeFilter(steps, { nationality: 'CH', destinationIso: 'FR' });
-    expect(categories(r)).toEqual(['sante', 'education']);
+describe('personalizeFilter', () => {
+  it('hides the visa category for a visa-exempt profile (free movement)', () => {
+    const result = personalizeFilter(steps, { nationality: 'FR', destinationIso: 'DE' });
+    expect(result.map((s) => s.category)).not.toContain('visa');
   });
 
-  it('français → Suisse : masque le visa mais GARDE le titre de séjour (permis B/L, annonce à la commune)', () => {
-    const r = personalizeFilter(steps, { nationality: 'FR', destinationIso: 'CH' });
-    expect(categories(r)).toEqual(['demarches', 'sante', 'education']);
+  it('hides the education category when the user has no children', () => {
+    const result = personalizeFilter(steps, { hasChildren: false });
+    expect(result.map((s) => s.category)).not.toContain('education');
   });
 
-  it('américain → France : ne masque rien (pas de libre circulation)', () => {
-    const r = personalizeFilter(steps, { nationality: 'US', destinationIso: 'FR' });
-    expect(categories(r)).toEqual(['visa', 'demarches', 'sante', 'education']);
+  it('hides nothing when hasChildren is true or unknown', () => {
+    expect(personalizeFilter(steps, { hasChildren: true })).toEqual(steps);
+    expect(personalizeFilter(steps, {})).toEqual(steps);
   });
 
-  it('sans enfants : masque education, sans toucher au reste', () => {
-    const r = personalizeFilter(steps, { nationality: 'US', destinationIso: 'FR', hasChildren: false });
-    expect(categories(r)).toEqual(['visa', 'demarches', 'sante']);
+  it('applies both rules together and preserves the original order', () => {
+    const result = personalizeFilter(steps, {
+      nationality: 'FR',
+      destinationIso: 'DE',
+      hasChildren: false,
+    });
+    expect(result.map((s) => s.category)).toEqual(['logement', 'emploi']);
+  });
+
+  it('returns the same array reference when nothing is hidden', () => {
+    const result = personalizeFilter(steps, {});
+    expect(result).toBe(steps);
+  });
+});
+
+describe('sortByPriorities', () => {
+  it('floats matching priority categories to the top, keeping relative order (stable sort)', () => {
+    const result = sortByPriorities(steps, 'housing,employment');
+    expect(result.map((s) => s.category)).toEqual(['logement', 'emploi', 'visa', 'education']);
+  });
+
+  it('ignores unknown priority ids', () => {
+    const result = sortByPriorities(steps, 'unknown_priority');
+    expect(result).toEqual(steps);
+  });
+
+  it('returns the input unchanged when priorities is empty or null', () => {
+    expect(sortByPriorities(steps, '')).toEqual(steps);
+    expect(sortByPriorities(steps, null)).toEqual(steps);
+    expect(sortByPriorities(steps, undefined)).toEqual(steps);
+  });
+
+  it('trims whitespace around each priority id', () => {
+    const result = sortByPriorities(steps, ' housing , employment ');
+    expect(result.map((s) => s.category)).toEqual(['logement', 'emploi', 'visa', 'education']);
   });
 });
