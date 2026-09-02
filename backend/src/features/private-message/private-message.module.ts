@@ -7,10 +7,18 @@ import { PrivateMessageController } from './private-message.controller';
 import { ContentFilterService } from '../forum-message/content-filter.service';
 import { ForumModerationModule } from '../forum-moderation/forum-moderation.module';
 import { BuddyContactRequest } from '../buddy-contact/entities/buddy-contact-request.entity';
+import { ProcedureTracking } from '../procedure-tracking/entities/procedure-tracking.entity';
+import { ExpatriationProject } from '../expatriation-project/entities/expatriation-project.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([PrivateMessage, User, BuddyContactRequest]),
+    TypeOrmModule.forFeature([
+      PrivateMessage,
+      User,
+      BuddyContactRequest,
+      ProcedureTracking,
+      ExpatriationProject,
+    ]),
     // Même liste de mots interdits que le forum : la modération suit le contenu,
     // pas le canal.
     ForumModerationModule,

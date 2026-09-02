@@ -5,12 +5,14 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { IsNull, Repository } from 'typeorm';
+import { In, IsNull, Repository } from 'typeorm';
 import { PrivateMessage } from './entities/private-message.entity';
 import { User } from '../user/entities/user.entity';
 import { ContentFilterService } from '../forum-message/content-filter.service';
 import { ForumModerationService } from '../forum-moderation/forum-moderation.service';
 import { BuddyContactRequest } from '../buddy-contact/entities/buddy-contact-request.entity';
+import { ProcedureTracking } from '../procedure-tracking/entities/procedure-tracking.entity';
+import { ExpatriationProject } from '../expatriation-project/entities/expatriation-project.entity';
 
 @Injectable()
 export class PrivateMessageService {
@@ -21,6 +23,10 @@ export class PrivateMessageService {
     private readonly userRepo: Repository<User>,
     @InjectRepository(BuddyContactRequest)
     private readonly buddyRequestRepo: Repository<BuddyContactRequest>,
+    @InjectRepository(ProcedureTracking)
+    private readonly trackingRepo: Repository<ProcedureTracking>,
+    @InjectRepository(ExpatriationProject)
+    private readonly projectRepo: Repository<ExpatriationProject>,
     private readonly contentFilter: ContentFilterService,
     private readonly moderation: ForumModerationService,
   ) {}
@@ -105,15 +111,47 @@ export class PrivateMessageService {
         })
       : [];
     const buddyTopicsByOther = new Map<number, string[]>();
-    for (const r of acceptedBuddyRequests) {
-      const otherId =
-        r.sender?.idUser === userId ? r.recipient?.idUser : r.sender?.idUser;
-      if (otherId == null || !byOther.has(otherId)) continue;
-      const label = r.procedure?.procedureType;
-      if (!label) continue;
+    const addTopic = (otherId: number | undefined | null, label?: string | null) => {
+      if (otherId == null || !byOther.has(otherId) || !label) return;
       const topics = buddyTopicsByOther.get(otherId) ?? [];
       if (!topics.includes(label)) topics.push(label);
       buddyTopicsByOther.set(otherId, topics);
+    };
+
+    // 1) Les étapes des demandes acceptées (sujet d'origine de la relation).
+    const buddyIds = new Set<number>();
+    for (const r of acceptedBuddyRequests) {
+      const otherId =
+        r.sender?.idUser === userId ? r.recipient?.idUser : r.sender?.idUser;
+      if (otherId != null) buddyIds.add(otherId);
+      addTopic(otherId, r.procedure?.procedureType);
+    }
+
+    // 2) TOUTES les étapes que chaque buddy a complétées pour mes destinations :
+    //    c'est l'étendue réelle de l'entraide possible, pas seulement l'étape
+    //    qui a déclenché la demande (surtout qu'une seule demande suffit
+    //    désormais — la relation est par personne).
+    if (buddyIds.size > 0) {
+      const myProjects = await this.projectRepo.find({
+        where: { userId },
+        select: ['idProject', 'destinationCountryId'],
+      });
+      const myDestinations = [
+        ...new Set(myProjects.map((p) => p.destinationCountryId).filter(Boolean)),
+      ];
+      if (myDestinations.length > 0) {
+        const completions = await this.trackingRepo.find({
+          where: {
+            status: 'completed',
+            user: { idUser: In([...buddyIds]) },
+            project: { destinationCountryId: In(myDestinations) },
+          },
+          relations: ['user', 'admin_procedure', 'project'],
+        });
+        for (const c of completions) {
+          addTopic(c.user?.idUser, c.admin_procedure?.procedureType);
+        }
+      }
     }
 
     return [...byOther.values()].map((e) => ({

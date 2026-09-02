@@ -11,6 +11,8 @@ import { User } from '../user/entities/user.entity';
 import { ContentFilterService } from '../forum-message/content-filter.service';
 import { ForumModerationService } from '../forum-moderation/forum-moderation.service';
 import { BuddyContactRequest } from '../buddy-contact/entities/buddy-contact-request.entity';
+import { ProcedureTracking } from '../procedure-tracking/entities/procedure-tracking.entity';
+import { ExpatriationProject } from '../expatriation-project/entities/expatriation-project.entity';
 
 const mockRepo = () => ({
   create: jest.fn((v) => v),
@@ -37,6 +39,8 @@ describe('PrivateMessageService', () => {
   let repo: ReturnType<typeof mockRepo>;
   let userRepo: ReturnType<typeof mockUserRepo>;
   let buddyRequestRepo: { find: jest.Mock };
+  let trackingRepo: { find: jest.Mock };
+  let projectRepo: { find: jest.Mock };
   let contentFilter: ReturnType<typeof mockContentFilter>;
   let moderation: ReturnType<typeof mockModeration>;
 
@@ -44,6 +48,8 @@ describe('PrivateMessageService', () => {
     repo = mockRepo();
     userRepo = mockUserRepo();
     buddyRequestRepo = { find: jest.fn().mockResolvedValue([]) };
+    trackingRepo = { find: jest.fn().mockResolvedValue([]) };
+    projectRepo = { find: jest.fn().mockResolvedValue([]) };
     contentFilter = mockContentFilter();
     moderation = mockModeration();
 
@@ -53,6 +59,8 @@ describe('PrivateMessageService', () => {
         { provide: getRepositoryToken(PrivateMessage), useValue: repo },
         { provide: getRepositoryToken(User), useValue: userRepo },
         { provide: getRepositoryToken(BuddyContactRequest), useValue: buddyRequestRepo },
+        { provide: getRepositoryToken(ProcedureTracking), useValue: trackingRepo },
+        { provide: getRepositoryToken(ExpatriationProject), useValue: projectRepo },
         { provide: ContentFilterService, useValue: contentFilter },
         { provide: ForumModerationService, useValue: moderation },
       ],
@@ -179,6 +187,25 @@ describe('PrivateMessageService', () => {
         },
       ]);
 
+      // Le buddy a complété d'autres étapes pour MA destination : elles font
+      // partie des sujets d'entraide, pas seulement l'étape de la demande.
+      projectRepo.find.mockResolvedValue([{ idProject: 7, destinationCountryId: 33 }]);
+      trackingRepo.find.mockResolvedValue([
+        {
+          status: 'completed',
+          user: { idUser: 3 },
+          admin_procedure: { procedureType: 'Transport & permis de conduire' },
+          project: { destinationCountryId: 33 },
+        },
+        {
+          // doublon avec la demande acceptée → dédupliqué
+          status: 'completed',
+          user: { idUser: 3 },
+          admin_procedure: { procedureType: 'Compte bancaire' },
+          project: { destinationCountryId: 33 },
+        },
+      ]);
+
       const res = await service.getConversations(1);
       const eve = res.find((c) => c.userId === 2)!;
       const marie = res.find((c) => c.userId === 3)!;
@@ -188,8 +215,13 @@ describe('PrivateMessageService', () => {
       expect(eve.buddyTopics).toEqual([]);
       // isExpert sans expertVerifiedAt = PAS un expert vérifié.
       expect(marie.isExpert).toBe(false);
-      // Sujets buddy dans les deux sens de la demande acceptée.
-      expect(marie.buddyTopics).toEqual(['Assurance maladie & santé', 'Compte bancaire']);
+      // Union : étapes des demandes acceptées (deux sens) + étapes complétées
+      // par le buddy pour ma destination, sans doublons.
+      expect(marie.buddyTopics).toEqual([
+        'Assurance maladie & santé',
+        'Compte bancaire',
+        'Transport & permis de conduire',
+      ]);
     });
   });
 
