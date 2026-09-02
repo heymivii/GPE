@@ -6,6 +6,11 @@ export interface Conversation {
   lastMessage: string;
   lastAt: string;
   unread: number;
+  /** Expert vérifié (isExpert + expertVerifiedAt côté serveur). */
+  isExpert?: boolean;
+  expertTitle?: string | null;
+  /** Étapes de la checklist reliant cet interlocuteur (mises en relation buddy acceptées). */
+  buddyTopics?: string[];
 }
 
 export interface ThreadMessage {

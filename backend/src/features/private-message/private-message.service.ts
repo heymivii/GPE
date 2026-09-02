@@ -9,6 +9,8 @@ import { IsNull, Repository } from 'typeorm';
 import { PrivateMessage } from './entities/private-message.entity';
 import { User } from '../user/entities/user.entity';
 import { ContentFilterService } from '../forum-message/content-filter.service';
+import { ForumModerationService } from '../forum-moderation/forum-moderation.service';
+import { BuddyContactRequest } from '../buddy-contact/entities/buddy-contact-request.entity';
 
 @Injectable()
 export class PrivateMessageService {
@@ -17,7 +19,10 @@ export class PrivateMessageService {
     private readonly repo: Repository<PrivateMessage>,
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
+    @InjectRepository(BuddyContactRequest)
+    private readonly buddyRequestRepo: Repository<BuddyContactRequest>,
     private readonly contentFilter: ContentFilterService,
+    private readonly moderation: ForumModerationService,
   ) {}
 
   private displayName(u?: User | null): string {
@@ -44,6 +49,13 @@ export class PrivateMessageService {
     const check = await this.contentFilter.validate(sanitized);
     if (!check.ok) {
       throw new BadRequestException(`Message rejeté : ${check.reason}`);
+    }
+
+    // Même règle que le forum : tout mot de la liste admin bloque l'envoi
+    // (et enregistre un avertissement pour tracer l'auteur).
+    const mod = await this.moderation.moderate(senderId, sanitized);
+    if (mod.action !== 'ok') {
+      throw new BadRequestException(`Message rejeté : ${mod.reason}`);
     }
 
     const message = this.repo.create({
@@ -79,12 +91,40 @@ export class PrivateMessageService {
       if (m.recipientId === userId && !m.readAt) entry.unread++;
     }
 
+    // Enrichissement : qui est un expert vérifié, et quelles étapes de la
+    // checklist relient chaque interlocuteur à l'utilisateur (mises en
+    // relation buddy acceptées) — pour différencier/filtrer côté messagerie.
+    const otherIds = [...byOther.keys()];
+    const acceptedBuddyRequests = otherIds.length
+      ? await this.buddyRequestRepo.find({
+          where: [
+            { sender: { idUser: userId }, status: 'accepted' },
+            { recipient: { idUser: userId }, status: 'accepted' },
+          ],
+          relations: ['sender', 'recipient', 'procedure'],
+        })
+      : [];
+    const buddyTopicsByOther = new Map<number, string[]>();
+    for (const r of acceptedBuddyRequests) {
+      const otherId =
+        r.sender?.idUser === userId ? r.recipient?.idUser : r.sender?.idUser;
+      if (otherId == null || !byOther.has(otherId)) continue;
+      const label = r.procedure?.procedureType;
+      if (!label) continue;
+      const topics = buddyTopicsByOther.get(otherId) ?? [];
+      if (!topics.includes(label)) topics.push(label);
+      buddyTopicsByOther.set(otherId, topics);
+    }
+
     return [...byOther.values()].map((e) => ({
       userId: e.other.idUser,
       fullName: this.displayName(e.other),
       lastMessage: e.last.content,
       lastAt: e.last.sentAt,
       unread: e.unread,
+      isExpert: !!(e.other?.isExpert && e.other?.expertVerifiedAt),
+      expertTitle: e.other?.expertTitle ?? null,
+      buddyTopics: buddyTopicsByOther.get(e.other?.idUser ?? -1) ?? [],
     }));
   }
 
