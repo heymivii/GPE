@@ -26,7 +26,7 @@ export default function MessagesPage() {
   const [draft, setDraft] = useState('');
   // La messagerie mélange experts et buddies : on les distingue et on filtre.
   const [filter, setFilter] = useState<'all' | 'experts' | 'buddies'>('all');
-  const bottomRef = useRef<HTMLDivElement>(null);
+  const threadScrollRef = useRef<HTMLDivElement>(null);
 
   const { data: conversations = [], isLoading: convLoading } = useConversations();
   const { data: thread = [], isLoading: threadLoading } = useThread(
@@ -59,7 +59,11 @@ export default function MessagesPage() {
   }, [selectedId, thread.length]);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    // On scrolle UNIQUEMENT le conteneur du fil vers ses derniers messages.
+    // (scrollIntoView sur une ancre faisait aussi défiler toute la page vers
+    // le bas à chaque sélection de conversation.)
+    const el = threadScrollRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
   }, [thread.length, selectedId]);
 
   const fmtTime = (d: string) =>
@@ -253,7 +257,7 @@ export default function MessagesPage() {
                   </button>
                 </div>
 
-                <div className="flex-1 overflow-y-auto p-4 space-y-2 bg-gray-50/50 max-h-[50vh]">
+                <div ref={threadScrollRef} className="flex-1 overflow-y-auto p-4 space-y-2 bg-gray-50/50 max-h-[50vh]">
                   {threadLoading ? (
                     <div className="flex justify-center py-8 text-gray-400">
                       <Loader2 className="w-5 h-5 animate-spin" />
@@ -285,7 +289,6 @@ export default function MessagesPage() {
                       </div>
                     ))
                   )}
-                  <div ref={bottomRef} />
                 </div>
 
                 <div className="border-t border-gray-100 p-3 flex items-end gap-2">
