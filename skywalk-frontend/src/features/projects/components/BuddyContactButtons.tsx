@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import { MoreHorizontal, MessageCircle, Users } from 'lucide-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -30,7 +31,15 @@ export default function BuddyContactButtons({
   countryId,
 }: BuddyContactButtonsProps) {
   const [status, setStatus] = useState<'idle' | 'loading' | 'sent' | 'error'>('idle');
-  const [menuOpen, setMenuOpen] = useState(false);
+  // Position du menu à l'écran (null = fermé). Le menu est rendu en portal
+  // sur document.body : les cartes de la checklist ont leur propre contexte
+  // d'empilement et rognent tout dropdown absolu (menu coupé par la carte
+  // suivante) — un position:fixed hors hiérarchie y échappe.
+  const [menuPos, setMenuPos] = useState<{ top: number; right: number } | null>(null);
+  const menuOpen = menuPos !== null;
+  const setMenuOpen = (open: boolean) => {
+    if (!open) setMenuPos(null);
+  };
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
@@ -40,10 +49,20 @@ export default function BuddyContactButtons({
     enabled: !!user,
   });
 
-  // Ma demande vers CE buddy pour CETTE démarche (liste triée du plus récent
-  // au plus ancien côté backend) — seule la plus récente compte.
-  const existing = myRequests.find(
+  // La mise en relation est PAR PERSONNE, pas par démarche : dès qu'une
+  // demande est acceptée entre moi et ce buddy (dans un sens ou l'autre),
+  // la conversation existe pour toutes les étapes — inutile de redemander.
+  const acceptedWith = myRequests.find(
     (r) =>
+      r.status === 'accepted' &&
+      ((r.sender?.idUser === user?.idUser && r.recipient?.idUser === recipientId) ||
+        (r.sender?.idUser === recipientId && r.recipient?.idUser === user?.idUser)),
+  );
+
+  // En revanche une demande EN ATTENTE reste rattachée à sa démarche.
+  const pendingForThis = myRequests.find(
+    (r) =>
+      r.status === 'pending' &&
       r.sender?.idUser === user?.idUser &&
       r.recipient?.idUser === recipientId &&
       r.procedure?.idAdminProcedure === procedureId,
@@ -67,7 +86,7 @@ export default function BuddyContactButtons({
   const forumUrl = `/forum/new?title=${forumTitle}&content=${forumContent}&procedureId=${procedureId}&countryId=${countryId}`;
 
   // Demande acceptée → la mise en relation existe : accès direct, hors menu.
-  if (existing?.status === 'accepted') {
+  if (acceptedWith) {
     return (
       <Link
         to={`/messages?to=${recipientId}&name=${encodeURIComponent(recipientFirstname)}`}
@@ -80,7 +99,7 @@ export default function BuddyContactButtons({
     );
   }
 
-  if (existing?.status === 'pending' || status === 'sent' || status === 'loading') {
+  if (pendingForThis || status === 'sent' || status === 'loading') {
     return (
       <span className="text-[11px] text-blue-600">
         Demande envoyee - en attente de reponse
@@ -94,45 +113,56 @@ export default function BuddyContactButtons({
         aria-label={`Contacter ${recipientFirstname}`}
         onClick={(e) => {
           e.stopPropagation();
-          setMenuOpen((o) => !o);
+          if (menuOpen) {
+            setMenuPos(null);
+          } else {
+            const rect = e.currentTarget.getBoundingClientRect();
+            // Ancré sous le bouton, aligné sur son bord droit.
+            setMenuPos({ top: rect.bottom + 4, right: window.innerWidth - rect.right });
+          }
         }}
         className="p-1 rounded-md text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
       >
         <MoreHorizontal className="w-4 h-4" />
       </button>
 
-      {menuOpen && (
-        <>
-          {/* Ferme le menu au clic n'importe où ailleurs */}
-          <div
-            className="fixed inset-0 z-10"
-            onClick={(e) => {
-              e.stopPropagation();
-              setMenuOpen(false);
-            }}
-          />
-          <div className="absolute right-0 z-20 mt-1 w-44 rounded-lg border border-gray-200 bg-white shadow-lg py-1">
-            <button
-              onClick={(e) => handlePrivateMessage(e)}
-              className="w-full flex items-center gap-2 px-3 py-2 text-left text-xs text-gray-700 hover:bg-purple-50 hover:text-purple-700 transition-colors"
-            >
-              <MessageCircle className="w-3.5 h-3.5" />
-              Message prive
-            </button>
-            <Link
-              to={forumUrl}
+      {menuOpen &&
+        createPortal(
+          <>
+            {/* Ferme le menu au clic n'importe où ailleurs */}
+            <div
+              className="fixed inset-0 z-40"
               onClick={(e) => {
                 e.stopPropagation();
                 setMenuOpen(false);
               }}
-              className="w-full flex items-center gap-2 px-3 py-2 text-xs text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
+            />
+            <div
+              className="fixed z-50 w-44 rounded-lg border border-gray-200 bg-white shadow-lg py-1"
+              style={{ top: menuPos!.top, right: menuPos!.right }}
             >
-              <Users className="w-3.5 h-3.5" />
-              Via le forum
-            </Link>
-          </div>
-        </>
-      )}
+              <button
+                onClick={(e) => handlePrivateMessage(e)}
+                className="w-full flex items-center gap-2 px-3 py-2 text-left text-xs text-gray-700 hover:bg-purple-50 hover:text-purple-700 transition-colors"
+              >
+                <MessageCircle className="w-3.5 h-3.5" />
+                Message prive
+              </button>
+              <Link
+                to={forumUrl}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setMenuOpen(false);
+                }}
+                className="w-full flex items-center gap-2 px-3 py-2 text-xs text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
+              >
+                <Users className="w-3.5 h-3.5" />
+                Via le forum
+              </Link>
+            </div>
+          </>,
+          document.body,
+        )}
 
       {status === 'error' && (
         <p className="text-[11px] text-red-500 absolute right-0 mt-1 whitespace-nowrap">

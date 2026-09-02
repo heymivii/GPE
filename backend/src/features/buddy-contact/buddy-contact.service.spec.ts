@@ -75,6 +75,16 @@ describe('BuddyContactService', () => {
       expect(requestRepo.save).not.toHaveBeenCalled();
     });
 
+    // La mise en relation est par personne : une demande acceptée (peu importe
+    // la démarche, peu importe le sens) rend toute nouvelle demande inutile.
+    it('rejects a new request when an accepted relation already exists', async () => {
+      requestRepo.findOne.mockResolvedValue({ id: 9, status: 'accepted' });
+      await expect(service.sendRequest(1, 2, 99)).rejects.toThrow(
+        /deja en relation/,
+      );
+      expect(requestRepo.save).not.toHaveBeenCalled();
+    });
+
     it('creates the request, sets a 7-day expiry, and notifies the recipient with a clickable context', async () => {
       requestRepo.findOne.mockResolvedValue(null);
       procedureRepo.findOne.mockResolvedValue({

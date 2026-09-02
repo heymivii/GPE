@@ -535,9 +535,14 @@ export default function ChecklistPage() {
   // Toutes les étapes sont affichées : plus aucun verrou payant.
   const gatedSteps = displaySteps;
 
-  // Split into two phase groups for the list view — priority categories float to the top of each.
-  const beforeSteps = sortByPriorities(gatedSteps.filter((s) => s.phase === 'before'), project?.priorities);
-  const arrivalSteps = sortByPriorities(gatedSteps.filter((s) => s.phase !== 'before'), project?.priorities);
+  // Split into two phase groups. En vue LISTE, les catégories prioritaires
+  // remontent en tête de chaque section ; en vue TIMELINE on préserve l'ordre
+  // chronologique (par deadline) calculé dans timelineSteps — le re-tri par
+  // priorités l'écrasait et rendait les deux vues identiques.
+  const orderSection = (steps: typeof gatedSteps) =>
+    view === 'timeline' ? steps : sortByPriorities(steps, project?.priorities);
+  const beforeSteps = orderSection(gatedSteps.filter((s) => s.phase === 'before'));
+  const arrivalSteps = orderSection(gatedSteps.filter((s) => s.phase !== 'before'));
 
   if (isLoading) {
     return (

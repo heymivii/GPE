@@ -382,6 +382,47 @@ describe('ChecklistPage', () => {
     expect(stepsContainer().getByText('Visa')).toBeInTheDocument();
   });
 
+  // Régression : le re-tri par priorités écrasait l'ordre chronologique de la
+  // timeline — les deux vues devenaient identiques et le toggle semblait mort.
+  it('list view floats priority categories up, timeline view keeps chronological order', () => {
+    mockedUseProject.mockReturnValue({
+      data: { idProject: 1, isPaid: true, priorities: 'housing' },
+    } as any);
+    mockedUseProgress.mockReturnValue({
+      progress: [
+        tracking({ idProcedureTracking: 1 }), // Visa (catégorie hors priorités)
+        tracking({
+          idProcedureTracking: 2,
+          admin_procedure: {
+            procedureType: 'Logement step',
+            category: 'logement',
+            phase: 'before',
+            daysBeforeDeparture: 10,
+            actionItems: [],
+            keyFacts: [],
+          },
+        }),
+      ],
+      updateStep,
+      updateFacts,
+      isLoading: false,
+    } as any);
+    renderPage();
+
+    // Vue liste : la catégorie prioritaire (logement) remonte devant Visa.
+    let text = screen
+      .getAllByRole('heading', { level: 2 })
+      .find((h) => h.textContent?.includes('Avant le départ'))!.parentElement!.textContent!;
+    expect(text.indexOf('Logement step')).toBeLessThan(text.indexOf('Visa'));
+
+    // Vue timeline : ordre d'origine/chronologique préservé — Visa repasse devant.
+    fireEvent.click(screen.getByTitle('Vue timeline'));
+    text = screen
+      .getAllByRole('heading', { level: 2 })
+      .find((h) => h.textContent?.includes('Avant le départ'))!.parentElement!.textContent!;
+    expect(text.indexOf('Visa')).toBeLessThan(text.indexOf('Logement step'));
+  });
+
   /* ===== PRICING DÉSACTIVÉ — modale commentée, test avec =====
   it('closes the payment modal when clicking the backdrop', () => {
     mockedUseProject.mockReturnValue({ data: { idProject: 1, isPaid: false } } as any);

@@ -119,10 +119,36 @@ describe('BuddyContactButtons', () => {
     expect(await screen.findByLabelText('Contacter Jane')).toBeInTheDocument();
   });
 
-  it('ignores requests from other senders or other procedures', async () => {
+  // La mise en relation est PAR PERSONNE : acceptée sur une autre démarche,
+  // ou dans l'autre sens (Jane m'a sollicité et j'ai accepté), la conversation
+  // existe — toutes les lignes de Jane ouvrent la messagerie.
+  it('shows the conversation link when accepted for another procedure', async () => {
+    mockedGetMyRequests.mockResolvedValue([
+      { ...request('accepted'), procedure: { idAdminProcedure: 42, procedureType: 'Autre' } },
+    ]);
+    renderButtons();
+
+    expect(await screen.findByText('Ouvrir la conversation')).toBeInTheDocument();
+  });
+
+  it('shows the conversation link when Jane accepted in the other direction', async () => {
+    mockedGetMyRequests.mockResolvedValue([
+      {
+        ...request('accepted'),
+        sender: { idUser: 2, firstName: 'Jane' },
+        recipient: { idUser: 1, firstName: 'Moi' },
+      },
+    ]);
+    renderButtons();
+
+    expect(await screen.findByText('Ouvrir la conversation')).toBeInTheDocument();
+  });
+
+  it('ignores requests involving other people, and pending ones from other procedures', async () => {
     mockedGetMyRequests.mockResolvedValue([
       { ...request('pending'), sender: { idUser: 99, firstName: 'Autre' } },
-      { ...request('accepted'), procedure: { idAdminProcedure: 42, procedureType: 'Autre' } },
+      { ...request('pending'), procedure: { idAdminProcedure: 42, procedureType: 'Autre' } },
+      { ...request('accepted'), recipient: { idUser: 77, firstName: 'Quelquun' } },
     ]);
     renderButtons();
 
