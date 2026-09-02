@@ -109,7 +109,7 @@ export default function MessagesPage() {
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden grid grid-cols-1 sm:grid-cols-[280px_1fr] min-h-[60vh]">
           {/* Liste des conversations */}
           <aside
-            className={`border-r border-gray-100 ${selectedId ? 'hidden sm:block' : 'block'}`}
+            className={`border-r border-gray-100 min-w-0 ${selectedId ? 'hidden sm:block' : 'block'}`}
           >
             <div className="px-4 py-3 border-b border-gray-100">
               <p className="text-sm font-semibold text-gray-700 mb-2">
@@ -197,7 +197,9 @@ export default function MessagesPage() {
           </aside>
 
           {/* Fil de discussion */}
-          <section className={`flex flex-col ${selectedId ? 'flex' : 'hidden sm:flex'}`}>
+          {/* min-w-0 : sans lui, une ligne insécable (sujets buddy) fixe la largeur
+              minimale de la colonne 1fr et fait déborder la grille hors de la carte. */}
+          <section className={`flex-col min-w-0 ${selectedId ? 'flex' : 'hidden sm:flex'}`}>
             {!selectedId ? (
               <div className="flex-1 flex flex-col items-center justify-center text-center text-gray-400 gap-2 p-8">
                 <MessagesSquare className="w-10 h-10 text-gray-300" />
@@ -229,10 +231,16 @@ export default function MessagesPage() {
                     </p>
                     {(selectedConversation?.buddyTopics?.length ?? 0) > 0 && (
                       // Le fil est né d'une mise en relation buddy : rappeler sur
-                      // quelle(s) étape(s) de la checklist porte l'entraide.
-                      <p className="text-[11px] text-gray-400 truncate">
+                      // quelles étapes porte l'entraide — 3 max à l'écran, le
+                      // reste en « +N » (liste complète au survol).
+                      <p
+                        className="text-[11px] text-gray-400 truncate"
+                        title={selectedConversation!.buddyTopics!.join(' · ')}
+                      >
                         {t('messages.buddyAbout', { defaultValue: 'À propos de :' })}{' '}
-                        {selectedConversation!.buddyTopics!.join(' · ')}
+                        {selectedConversation!.buddyTopics!.slice(0, 3).join(' · ')}
+                        {selectedConversation!.buddyTopics!.length > 3 &&
+                          ` +${selectedConversation!.buddyTopics!.length - 3}`}
                       </p>
                     )}
                   </div>
