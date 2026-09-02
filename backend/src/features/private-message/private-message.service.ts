@@ -76,7 +76,7 @@ export class PrivateMessageService {
   async getConversations(userId: number) {
     const messages = await this.repo.find({
       where: [{ senderId: userId }, { recipientId: userId }],
-      relations: ['sender', 'recipient'],
+      relations: ['sender', 'sender.expertCountry', 'recipient', 'recipient.expertCountry'],
       order: { sentAt: 'DESC' },
     });
 
@@ -110,15 +110,28 @@ export class PrivateMessageService {
           relations: ['sender', 'recipient', 'procedure'],
         })
       : [];
-    const buddyTopicsByOther = new Map<number, string[]>();
-    const addTopic = (otherId: number | undefined | null, label?: string | null) => {
+    // Chaque sujet porte sa DESTINATION : un même buddy peut aider sur
+    // plusieurs pays si j'ai plusieurs projets.
+    const buddyTopicsByOther = new Map<number, { label: string; country: string | null }[]>();
+    const addTopic = (
+      otherId: number | undefined | null,
+      label?: string | null,
+      country?: string | null,
+    ) => {
       if (otherId == null || !byOther.has(otherId) || !label) return;
       const topics = buddyTopicsByOther.get(otherId) ?? [];
-      if (!topics.includes(label)) topics.push(label);
+      const existing = topics.find((t) => t.label === label);
+      if (existing) {
+        // Un doublon sans pays s'enrichit s'il en gagne un.
+        if (!existing.country && country) existing.country = country;
+      } else {
+        topics.push({ label, country: country ?? null });
+      }
       buddyTopicsByOther.set(otherId, topics);
     };
 
-    // 1) Les étapes des demandes acceptées (sujet d'origine de la relation).
+    // 1) Les étapes des demandes acceptées (sujet d'origine de la relation —
+    //    la demande ne porte pas de pays, les complétions ci-dessous le fournissent).
     const buddyIds = new Set<number>();
     for (const r of acceptedBuddyRequests) {
       const otherId =
@@ -146,10 +159,14 @@ export class PrivateMessageService {
             user: { idUser: In([...buddyIds]) },
             project: { destinationCountryId: In(myDestinations) },
           },
-          relations: ['user', 'admin_procedure', 'project'],
+          relations: ['user', 'admin_procedure', 'project', 'project.destinationCountry'],
         });
         for (const c of completions) {
-          addTopic(c.user?.idUser, c.admin_procedure?.procedureType);
+          addTopic(
+            c.user?.idUser,
+            c.admin_procedure?.procedureType,
+            c.project?.destinationCountry?.countryName ?? null,
+          );
         }
       }
     }
@@ -162,6 +179,7 @@ export class PrivateMessageService {
       unread: e.unread,
       isExpert: !!(e.other?.isExpert && e.other?.expertVerifiedAt),
       expertTitle: e.other?.expertTitle ?? null,
+      expertCountry: e.other?.expertCountry?.countryName ?? null,
       buddyTopics: buddyTopicsByOther.get(e.other?.idUser ?? -1) ?? [],
     }));
   }

@@ -162,7 +162,7 @@ describe('PrivateMessageService', () => {
         {
           senderId: 2, recipientId: 1, content: 'salut', sentAt: new Date('2026-02-02'),
           readAt: null,
-          sender: { idUser: 2, firstName: 'Eve', isExpert: true, expertVerifiedAt: new Date(), expertTitle: 'Avocate' },
+          sender: { idUser: 2, firstName: 'Eve', isExpert: true, expertVerifiedAt: new Date(), expertTitle: 'Avocate', expertCountry: { countryName: 'Canada' } },
           recipient: { idUser: 1 },
         },
         {
@@ -195,14 +195,14 @@ describe('PrivateMessageService', () => {
           status: 'completed',
           user: { idUser: 3 },
           admin_procedure: { procedureType: 'Transport & permis de conduire' },
-          project: { destinationCountryId: 33 },
+          project: { destinationCountryId: 33, destinationCountry: { countryName: 'Canada' } },
         },
         {
-          // doublon avec la demande acceptée → dédupliqué
+          // doublon avec la demande acceptée → dédupliqué, mais gagne son pays
           status: 'completed',
           user: { idUser: 3 },
           admin_procedure: { procedureType: 'Compte bancaire' },
-          project: { destinationCountryId: 33 },
+          project: { destinationCountryId: 33, destinationCountry: { countryName: 'Canada' } },
         },
       ]);
 
@@ -212,15 +212,17 @@ describe('PrivateMessageService', () => {
 
       expect(eve.isExpert).toBe(true);
       expect(eve.expertTitle).toBe('Avocate');
+      expect(eve.expertCountry).toBe('Canada');
       expect(eve.buddyTopics).toEqual([]);
       // isExpert sans expertVerifiedAt = PAS un expert vérifié.
       expect(marie.isExpert).toBe(false);
       // Union : étapes des demandes acceptées (deux sens) + étapes complétées
-      // par le buddy pour ma destination, sans doublons.
+      // par le buddy pour ma destination, sans doublons — chaque sujet porte
+      // sa destination quand elle est connue.
       expect(marie.buddyTopics).toEqual([
-        'Assurance maladie & santé',
-        'Compte bancaire',
-        'Transport & permis de conduire',
+        { label: 'Assurance maladie & santé', country: null },
+        { label: 'Compte bancaire', country: 'Canada' },
+        { label: 'Transport & permis de conduire', country: 'Canada' },
       ]);
     });
   });

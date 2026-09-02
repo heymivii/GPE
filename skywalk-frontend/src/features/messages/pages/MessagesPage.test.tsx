@@ -183,8 +183,15 @@ describe('MessagesPage', () => {
   describe('experts vs buddies', () => {
     const mixed = () => [
       conv({ userId: 1, fullName: 'Jean Dupont' }),
-      conv({ userId: 2, fullName: 'Eve Avocate', isExpert: true, expertTitle: 'Avocate' }),
-      conv({ userId: 3, fullName: 'Marie Buddy', buddyTopics: ['Assurance maladie & santé'] }),
+      conv({ userId: 2, fullName: 'Eve Avocate', isExpert: true, expertTitle: 'Avocate', expertCountry: 'Canada' }),
+      conv({
+        userId: 3,
+        fullName: 'Marie Buddy',
+        buddyTopics: [
+          { label: 'Assurance maladie & santé', country: 'Canada' },
+          { label: 'Compte bancaire', country: 'Canada' },
+        ],
+      }),
     ];
 
     it('shows an Expert badge and a Buddy badge in the conversation list', () => {
@@ -213,17 +220,34 @@ describe('MessagesPage', () => {
       expect(screen.getByText('Jean Dupont')).toBeInTheDocument();
     });
 
-    it('shows the buddy topics under the thread header', () => {
+    it('shows the buddy topics with their destination under the thread header', () => {
       conversationsState.data = mixed();
       renderPage(['/messages?to=3&name=Marie']);
-      expect(screen.getByText(/À propos de :/)).toBeInTheDocument();
+      // Un seul pays → il s'affiche en préfixe, une seule fois.
+      expect(screen.getByText(/À propos de : Canada —/)).toBeInTheDocument();
       expect(screen.getByText(/Assurance maladie & santé/)).toBeInTheDocument();
     });
 
-    it('shows the expert title next to the thread header name', () => {
+    it('suffixes each topic with its country when destinations differ', () => {
+      conversationsState.data = [
+        conv({
+          userId: 3,
+          fullName: 'Marie Buddy',
+          buddyTopics: [
+            { label: 'Visa', country: 'Canada' },
+            { label: 'Logement', country: 'Portugal' },
+          ],
+        }),
+      ];
+      renderPage(['/messages?to=3&name=Marie']);
+      expect(screen.getByText(/Visa \(Canada\)/)).toBeInTheDocument();
+      expect(screen.getByText(/Logement \(Portugal\)/)).toBeInTheDocument();
+    });
+
+    it('shows the expert title and country next to the thread header name', () => {
       conversationsState.data = mixed();
       renderPage(['/messages?to=2&name=Eve']);
-      expect(screen.getByText('Avocate')).toBeInTheDocument();
+      expect(screen.getByText(/Avocate · Canada/)).toBeInTheDocument();
     });
   });
 });

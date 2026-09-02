@@ -168,7 +168,9 @@ export default function MessagesPage() {
                             <span className="truncate">{c.fullName}</span>
                             {c.isExpert && (
                               <span
-                                title={c.expertTitle || 'Expert vérifié'}
+                                title={[c.expertTitle || 'Expert vérifié', c.expertCountry]
+                                  .filter(Boolean)
+                                  .join(' · ')}
                                 className="inline-flex items-center gap-0.5 text-[9px] font-bold uppercase px-1 py-0.5 rounded bg-blue-50 text-blue-600 flex-shrink-0"
                               >
                                 <BadgeCheck className="w-2.5 h-2.5" />
@@ -177,7 +179,9 @@ export default function MessagesPage() {
                             )}
                             {(c.buddyTopics?.length ?? 0) > 0 && (
                               <span
-                                title={c.buddyTopics!.join(' · ')}
+                                title={c.buddyTopics!
+                                  .map((tp) => (tp.country ? `${tp.label} (${tp.country})` : tp.label))
+                                  .join(' · ')}
                                 className="inline-flex items-center gap-0.5 text-[9px] font-bold uppercase px-1 py-0.5 rounded bg-purple-50 text-purple-600 flex-shrink-0"
                               >
                                 <Users className="w-2.5 h-2.5" />
@@ -230,22 +234,34 @@ export default function MessagesPage() {
                         <span className="inline-flex items-center gap-0.5 text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-blue-50 text-blue-600 flex-shrink-0">
                           <BadgeCheck className="w-3 h-3" />
                           {selectedConversation.expertTitle || 'Expert'}
+                          {selectedConversation.expertCountry && ` · ${selectedConversation.expertCountry}`}
                         </span>
                       )}
                     </p>
                     {(selectedConversation?.buddyTopics?.length ?? 0) > 0 && (
                       // Le fil est né d'une mise en relation buddy : rappeler sur
-                      // quelles étapes porte l'entraide — 3 max à l'écran, le
-                      // reste en « +N » (liste complète au survol).
-                      <p
-                        className="text-[11px] text-gray-400 truncate"
-                        title={selectedConversation!.buddyTopics!.join(' · ')}
-                      >
-                        {t('messages.buddyAbout', { defaultValue: 'À propos de :' })}{' '}
-                        {selectedConversation!.buddyTopics!.slice(0, 3).join(' · ')}
-                        {selectedConversation!.buddyTopics!.length > 3 &&
-                          ` +${selectedConversation!.buddyTopics!.length - 3}`}
-                      </p>
+                      // quelles étapes porte l'entraide et pour quelle DESTINATION
+                      // (un buddy peut aider sur plusieurs pays). 3 sujets max à
+                      // l'écran, le reste en « +N » — liste complète au survol.
+                      (() => {
+                        const topics = selectedConversation!.buddyTopics!;
+                        const countries = [
+                          ...new Set(topics.map((tp) => tp.country).filter(Boolean)),
+                        ] as string[];
+                        // Un seul pays → en préfixe ; plusieurs → suffixe par sujet.
+                        const fmt = (tp: { label: string; country: string | null }) =>
+                          countries.length > 1 && tp.country ? `${tp.label} (${tp.country})` : tp.label;
+                        const full = topics.map(fmt).join(' · ');
+                        const prefix =
+                          countries.length === 1 ? `${t('messages.buddyAbout', { defaultValue: 'À propos de :' })} ${countries[0]} — ` : `${t('messages.buddyAbout', { defaultValue: 'À propos de :' })} `;
+                        return (
+                          <p className="text-[11px] text-gray-400 truncate" title={prefix + full}>
+                            {prefix}
+                            {topics.slice(0, 3).map(fmt).join(' · ')}
+                            {topics.length > 3 && ` +${topics.length - 3}`}
+                          </p>
+                        );
+                      })()
                     )}
                   </div>
                   <button
