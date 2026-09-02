@@ -14,20 +14,20 @@ export class MailService {
 
   private async initializeTransporter() {
     if (process.env.NODE_ENV !== 'production') {
-      const testAccount = await nodemailer.createTestAccount();
+      // smtp4dev local : aucun compte, aucun réseau externe. L'ancien mode
+      // Ethereal créait un compte de test EN LIGNE au démarrage — quand le
+      // service était injoignable, tous les envois échouaient en dev.
+      const devHost = process.env.SMTP_DEV_HOST || 'localhost';
+      const devPort = parseInt(process.env.SMTP_DEV_PORT || '2525');
       this.transporter = nodemailer.createTransport({
-        host: 'smtp.ethereal.email',
-        port: 587,
+        host: devHost,
+        port: devPort,
         secure: false,
-        auth: {
-          user: testAccount.user,
-          pass: testAccount.pass,
-        },
       });
-      this.logger.log('📧 Using Ethereal Email for development');
-      this.logger.log(`📬 View emails at: https://ethereal.email/login`);
-      this.logger.log(`   User: ${testAccount.user}`);
-      this.logger.log(`   Pass: ${testAccount.pass}`);
+      this.logger.log(`📧 Dev mail → smtp4dev (${devHost}:${devPort})`);
+      this.logger.log(
+        `📬 Boîte de réception : ${process.env.SMTP_DEV_UI || 'http://localhost:8025'}`,
+      );
     } else {
       this.transporter = nodemailer.createTransport({
         host: process.env.SMTP_HOST || 'smtp.gmail.com',
@@ -54,12 +54,12 @@ export class MailService {
     };
 
     try {
-      const info = await this.transporter.sendMail(mailOptions);
+      await this.transporter.sendMail(mailOptions);
       this.logger.log(`✅ Password reset email sent to ${to}`);
 
       if (process.env.NODE_ENV !== 'production') {
         this.logger.log(
-          `📧 Preview email: ${nodemailer.getTestMessageUrl(info)}`,
+          `📧 Visible dans smtp4dev : ${process.env.SMTP_DEV_UI || 'http://localhost:8025'}`,
         );
       }
 
@@ -84,12 +84,12 @@ export class MailService {
     };
 
     try {
-      const info = await this.transporter.sendMail(mailOptions);
+      await this.transporter.sendMail(mailOptions);
       this.logger.log(`✅ Welcome email sent to ${to}`);
 
       if (process.env.NODE_ENV !== 'production') {
         this.logger.log(
-          `📧 Preview email: ${nodemailer.getTestMessageUrl(info)}`,
+          `📧 Visible dans smtp4dev : ${process.env.SMTP_DEV_UI || 'http://localhost:8025'}`,
         );
       }
 
