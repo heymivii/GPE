@@ -20,6 +20,11 @@ export interface User {
 export interface LoginDto {
   email: string;
   password: string;
+  /**
+   * « Se souvenir de moi ». false/absent : la session ne survit pas à la
+   * fermeture du navigateur (cookie de session + jetons en sessionStorage).
+   */
+  rememberMe?: boolean;
 }
 
 export interface RegisterDto {

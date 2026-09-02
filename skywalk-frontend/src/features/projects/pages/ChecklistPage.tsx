@@ -1,14 +1,19 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { CheckCircle, Circle, ChevronDown, ChevronRight, ExternalLink, ArrowLeft, ArrowRight, List, Calendar, Paperclip } from 'lucide-react';
-import DocumentsVault from '../../documents/DocumentsVault';
-import { useProject, useUnlockProject } from '../hooks/useProjectMutations';
+import { CheckCircle, Circle, ChevronDown, ChevronRight, ExternalLink, ArrowLeft, ArrowRight, List, Calendar, AlertCircle, AlertTriangle, Plane, Home, Lightbulb } from 'lucide-react';
+// DOCUMENTS DÉSACTIVÉS : Paperclip et DocumentsVault ne servaient qu'au panneau par étape.
+// import DocumentsVault from '../../documents/DocumentsVault';
+import { useProject } from '../hooks/useProjectMutations';
+// PRICING DÉSACTIVÉ : useUnlockProject servait la modale de paiement (mock).
+// import { useUnlockProject } from '../hooks/useProjectMutations';
 import { useChecklistProgress, getStepDeadline, filterStepsForProject } from '../../dashboard/hooks/useChecklistProgress';
 import { getLinksForStep } from '../../../data/checklist-links';
 import { useGovLink } from '../../../api/useGovLink';
 import OfficialLinkCard from '../../../components/OfficialLinkCard';
 import TrustBadge from '../../../components/TrustBadge';
 import VisaNotice from '../../../components/VisaNotice';
+import SubstepLinks from '../../../components/SubstepLinks';
+import { extractLinks, type ExtractedLink } from '../../../lib/formatters';
 import { personalizeFilter, sortByPriorities } from '../../dashboard/hooks/personalize';
 
 // ---- Types ----
@@ -31,18 +36,18 @@ function DeadlineBadge({ daysBeforeDeparture, departureDate, phase }: {
   const dateStr = deadline.date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
 
   if (deadline.isLate) return (
-    <span className="text-[11px] px-2 py-0.5 rounded-full bg-red-100 text-red-700 font-medium">
-      🔴 En retard — deadline : {dateStr}
+    <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-red-100 text-red-700 font-medium">
+      <AlertCircle className="w-3 h-3" /> En retard — deadline : {dateStr}
     </span>
   );
   if (deadline.isUrgent) return (
-    <span className="text-[11px] px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 font-medium">
-      🟠 {deadline.daysLeft}j restants — deadline : {dateStr}
+    <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 font-medium">
+      <AlertTriangle className="w-3 h-3" /> {deadline.daysLeft}j restants — deadline : {dateStr}
     </span>
   );
   return (
-    <span className="text-[11px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">
-      📅 deadline : {dateStr}
+    <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">
+      <Calendar className="w-3 h-3" /> deadline : {dateStr}
     </span>
   );
 }
@@ -101,7 +106,8 @@ interface ChecklistItemData {
   completed: boolean;
   completedAt: string | null;
   category: string;
-  substeps: { id: string; label: string; completed: boolean }[];
+  status: string;
+  substeps: { id: string; label: string; completed: boolean; links: ExtractedLink[] }[];
   completedFacts: number[];
   daysBeforeDeparture?: number;
   phase: Phase;
@@ -115,7 +121,6 @@ function ChecklistItemRow({
   isExpanded,
   departureDate,
   countryCode,
-  projectId,
   onToggleExpand,
   onToggleItem,
   onToggleSubstep,
@@ -124,14 +129,12 @@ function ChecklistItemRow({
   isExpanded: boolean;
   departureDate?: string | Date | null;
   countryCode?: string;
-  projectId: number;
   onToggleExpand: (id: string) => void;
   onToggleItem: (id: string) => void;
   onToggleSubstep: (itemId: string, substepId: string, e: React.MouseEvent) => void;
 }) {
   const substepsTotal = item.substeps.length;
   const substepsDone = item.substeps.filter((s) => s.completed).length;
-  const [docsOpen, setDocsOpen] = useState(false);
 
   return (
     <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
@@ -184,18 +187,11 @@ function ChecklistItemRow({
               </>
             )}
             {item.completed && item.completedAt && (
-              <span className="text-[11px] text-green-600 bg-green-50 px-2 py-0.5 rounded-full font-medium">
-                ✅ Complété le {new Date(item.completedAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
+              <span className="inline-flex items-center gap-1 text-[11px] text-green-600 bg-green-50 px-2 py-0.5 rounded-full font-medium">
+                <CheckCircle className="w-3 h-3" /> Complété le {new Date(item.completedAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
               </span>
             )}
           </div>
-
-          <button
-            onClick={(e) => { e.stopPropagation(); setDocsOpen((o) => !o); }}
-            className="mt-1.5 inline-flex items-center gap-1 text-[11px] font-medium text-gray-400 hover:text-[#5EA3C0] transition-colors"
-          >
-            <Paperclip className="w-3 h-3" /> Documents
-          </button>
 
           {!item.completed && substepsTotal === 0 && (
             <>
@@ -243,20 +239,17 @@ function ChecklistItemRow({
                 ? <CheckCircle className="w-3.5 h-3.5 text-gray-900 flex-shrink-0 mt-0.5" />
                 : <Circle className="w-3.5 h-3.5 text-gray-300 flex-shrink-0 mt-0.5" />
               }
-              <span className={`text-xs ${substep.completed ? 'text-gray-400 line-through' : 'text-gray-600'}`}>
-                {substep.label}
-              </span>
+              <div className="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-x-3 gap-y-1">
+                <span className={`text-xs ${substep.completed ? 'text-gray-400 line-through' : 'text-gray-600'}`}>
+                  {substep.label}
+                </span>
+                <SubstepLinks links={substep.links} />
+              </div>
             </div>
           ))}
         </div>
       )}
 
-      {/* Documents rattachés à cette étape */}
-      {docsOpen && (
-        <div className="border-t border-gray-100 bg-gray-50/50 px-4 py-3">
-          <DocumentsVault projectId={projectId} procedureTrackingId={item.trackingId} compact />
-        </div>
-      )}
     </div>
   );
 }
@@ -275,8 +268,10 @@ export default function ChecklistPage() {
   const [view, setView] = useState<ViewType>('list');
   const [search, setSearch] = useState('');
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+  /* ===== PRICING DÉSACTIVÉ — état de la modale de paiement =====
   const [showPaywall, setShowPaywall] = useState(false);
   const unlockProject = useUnlockProject();
+  ===== FIN PRICING DÉSACTIVÉ ===== */
 
   const countryCode = project?.destinationCountry?.isoCode;
   const departureDate = project?.expectedDepartureDate;
@@ -291,25 +286,31 @@ export default function ChecklistPage() {
       const actionItems = t.admin_procedure?.actionItems ?? [];
 
       // Checkable sub-steps = concrete ACTIONS to do; keyFacts stay as read-only "à savoir".
-      const substeps = actionItems.map((action, i) => ({
-        id: `${trackingId}-${i}`,
-        label: action,
-        completed: completedFacts.includes(i),
-      }));
+      const substeps = actionItems.map((action, i) => {
+        // Inline URLs / emails move out of the sentence and render as chips on the right.
+        const { text, links } = extractLinks(action);
+        return {
+          id: `${trackingId}-${i}`,
+          label: text,
+          links,
+          completed: completedFacts.includes(i),
+        };
+      });
 
       return {
         id: trackingId.toString(),
         trackingId,
         title: t.admin_procedure?.procedureType || '',
         completed: t.status === 'completed',
-        completedAt: t.end_date || null, // ✅ date de complétion
+        status: t.status,
+        completedAt: t.end_date || null, // date de complétion
         category: t.admin_procedure?.category || 'other',
         substeps,
         completedFacts,
         daysBeforeDeparture: t.admin_procedure?.daysBeforeDeparture,
         phase: (t.admin_procedure?.phase ?? 'on_arrival') as Phase,
         onlyFor: t.admin_procedure?.onlyFor ?? null,
-        // ✅ Gov-link enrichment
+        // Gov-link enrichment
         sourceUrl: t.admin_procedure?.sourceUrl,
         keyFacts,
       };
@@ -486,21 +487,40 @@ export default function ChecklistPage() {
       ? current.filter((f) => f !== factIndex)
       : [...current, factIndex];
 
+    // Cocher toutes les sous-étapes doit cocher l'étape : jusqu'ici seul
+    // completedFacts était écrit, et « 4/4 tâches » restait affiché non complété
+    // (retour de recette). On aligne le statut parent sur l'avancement réel.
+    const total = item.substeps.length;
+    const derivedStatus =
+      total > 0 && next.length === total
+        ? 'completed'
+        : next.length > 0
+          ? 'in_progress'
+          : 'not_started';
+
     try {
       await updateFacts({ trackingId: item.trackingId, completedFacts: next });
+      if (derivedStatus !== item.status) {
+        await updateStep({ trackingId: item.trackingId, status: derivedStatus });
+      }
     } catch (error) {
       console.error('Error updating fact:', error);
     }
-  }, [profileSteps, updateFacts]);
+  }, [profileSteps, updateFacts, updateStep]);
 
   const displaySteps = view === 'timeline' ? timelineSteps : filteredSteps;
 
-  // Paywall « par projet » : un projet non payé n'affiche qu'un aperçu (3 étapes) ;
-  // le reste est verrouillé derrière le déblocage (paiement mock).
+  /* ===== PRICING DÉSACTIVÉ — verrou « par projet » =====
+  // Un projet non payé n'affichait qu'un aperçu (3 étapes) ; le reste était
+  // verrouillé derrière le déblocage (paiement mock).
   const isLocked = project?.isPaid === false;
   const PREVIEW_COUNT = 3;
   const gatedSteps = isLocked ? displaySteps.slice(0, PREVIEW_COUNT) : displaySteps;
   const lockedCount = isLocked ? displaySteps.length - gatedSteps.length : 0;
+  ===== FIN PRICING DÉSACTIVÉ ===== */
+
+  // Toutes les étapes sont affichées : plus aucun verrou payant.
+  const gatedSteps = displaySteps;
 
   // Split into two phase groups for the list view — priority categories float to the top of each.
   const beforeSteps = sortByPriorities(gatedSteps.filter((s) => s.phase === 'before'), project?.priorities);
@@ -582,8 +602,9 @@ export default function ChecklistPage() {
               </div>
             </div>
           ) : (
-            <p className="mt-2 text-sm text-gray-500">
-              💡 Ajoutez une date de départ à votre projet pour activer le compte à rebours et les
+            <p className="mt-2 inline-flex items-start gap-1.5 text-sm text-gray-500">
+              <Lightbulb className="w-4 h-4 flex-shrink-0 mt-0.5 text-gray-400" />
+              Ajoutez une date de départ à votre projet pour activer le compte à rebours et les
               échéances.
             </p>
           )}
@@ -594,8 +615,8 @@ export default function ChecklistPage() {
             {beforeTotal > 0 && (
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-sm text-gray-600">
-                    ✈️ Avant le départ — {beforeDone} / {beforeTotal}
+                  <span className="inline-flex items-center gap-1.5 text-sm text-gray-600">
+                    <Plane className="w-4 h-4 text-gray-400" /> Avant le départ — {beforeDone} / {beforeTotal}
                   </span>
                   <span className="text-sm font-bold text-gray-900">{pct(beforeDone, beforeTotal)}%</span>
                 </div>
@@ -610,8 +631,8 @@ export default function ChecklistPage() {
             {arrivalTotal > 0 && (
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-sm text-gray-600">
-                    🏠 Sur place — {arrivalDone} / {arrivalTotal}
+                  <span className="inline-flex items-center gap-1.5 text-sm text-gray-600">
+                    <Home className="w-4 h-4 text-gray-400" /> Sur place — {arrivalDone} / {arrivalTotal}
                   </span>
                   <span className="text-sm font-bold text-gray-900">{pct(arrivalDone, arrivalTotal)}%</span>
                 </div>
@@ -634,11 +655,11 @@ export default function ChecklistPage() {
             sourceUrl={allSteps.find((s) => s.category === 'visa')?.sourceUrl}
           />
 
-          {/* ⚠️ Verdict de faisabilité — le départ est-il encore réaliste ? */}
+          {/* Verdict de faisabilité — le départ est-il encore réaliste ? */}
           {feasibility && (
             <div className="mt-4 rounded-xl border-2 border-red-200 bg-red-50 px-4 py-3">
               <p className="text-sm font-bold text-red-800 flex items-center gap-2">
-                ⚠️ Ce départ n'est peut-être plus tenable
+                <AlertTriangle className="w-4 h-4" /> Ce départ n'est peut-être plus tenable
               </p>
               <p className="text-sm text-red-700 mt-1 leading-relaxed">
                 {feasibility.count} démarche{feasibility.count > 1 ? 's' : ''} auraient dû démarrer{' '}
@@ -677,7 +698,7 @@ export default function ChecklistPage() {
                       </span>
                     ) : nextAction.phase === 'on_arrival' ? (
                       <span className="inline-flex items-center gap-1 text-[11px] font-medium text-blue-500">
-                        🏠 à faire à l'arrivée
+                        <Home className="w-3 h-3" /> à faire à l'arrivée
                       </span>
                     ) : null}
                     {nextAction.sourceUrl && <TrustBadge url={nextAction.sourceUrl} />}
@@ -701,18 +722,18 @@ export default function ChecklistPage() {
           {/* Résumé stats */}
           <div className="flex items-center gap-4 mt-4">
             {lateSteps > 0 && (
-              <span className="text-xs px-2.5 py-1 rounded-full bg-red-100 text-red-700 font-medium">
-                🔴 {lateSteps} en retard
+              <span className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-red-100 text-red-700 font-medium">
+                <AlertCircle className="w-3.5 h-3.5" /> {lateSteps} en retard
               </span>
             )}
             {urgentSteps > 0 && (
-              <span className="text-xs px-2.5 py-1 rounded-full bg-orange-100 text-orange-700 font-medium">
-                🟠 {urgentSteps} urgent{urgentSteps > 1 ? 's' : ''}
+              <span className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-orange-100 text-orange-700 font-medium">
+                <AlertTriangle className="w-3.5 h-3.5" /> {urgentSteps} urgent{urgentSteps > 1 ? 's' : ''}
               </span>
             )}
             {lateSteps === 0 && urgentSteps === 0 && completedSteps < totalSteps && (
-              <span className="text-xs px-2.5 py-1 rounded-full bg-green-100 text-green-700 font-medium">
-                ✅ Tout est dans les temps
+              <span className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-green-100 text-green-700 font-medium">
+                <CheckCircle className="w-3.5 h-3.5" /> Tout est dans les temps
               </span>
             )}
           </div>
@@ -725,21 +746,24 @@ export default function ChecklistPage() {
           {/* Filtres */}
           <div className="flex items-center gap-2 flex-wrap">
             {([
-              { key: 'all', label: 'Tout' },
-              { key: 'todo', label: 'À faire' },
-              { key: 'urgent', label: '🟠 Urgent' },
-              { key: 'late', label: '🔴 En retard' },
-              { key: 'completed', label: '✅ Complété' },
-            ] as const).map(({ key, label }) => (
+              { key: 'all', label: 'Tout', icon: null, tone: '' },
+              { key: 'todo', label: 'À faire', icon: null, tone: '' },
+              { key: 'urgent', label: 'Urgent', icon: AlertTriangle, tone: 'text-orange-500' },
+              { key: 'late', label: 'En retard', icon: AlertCircle, tone: 'text-red-500' },
+              { key: 'completed', label: 'Complété', icon: CheckCircle, tone: 'text-green-600' },
+            ] as const).map(({ key, label, icon: Icon, tone }) => (
               <button
                 key={key}
                 onClick={() => setFilter(key)}
-                className={`text-sm px-3 py-1.5 rounded-full border transition-colors ${
+                className={`inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-full border transition-colors ${
                   filter === key
                     ? 'bg-gray-900 text-white border-gray-900'
                     : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'
                 }`}
               >
+                {/* Sur la puce active (fond sombre) l'icône reprend la couleur du texte,
+                    sinon elle garde sa teinte de statut. */}
+                {Icon && <Icon className={`w-3.5 h-3.5 ${filter === key ? 'text-current' : tone}`} />}
                 {label}
               </button>
             ))}
@@ -786,7 +810,7 @@ export default function ChecklistPage() {
             {beforeSteps.length > 0 && (
               <div>
                 <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                  ✈️ Avant le départ
+                  <Plane className="w-3.5 h-3.5" /> Avant le départ
                   <span className="text-gray-400 font-normal normal-case tracking-normal">({beforeSteps.length})</span>
                 </h2>
                 <div className="space-y-2">
@@ -797,7 +821,6 @@ export default function ChecklistPage() {
                       isExpanded={expandedIds.has(item.id)}
                       departureDate={departureDate}
                       countryCode={countryCode}
-                      projectId={projectId}
                       onToggleExpand={toggleExpand}
                       onToggleItem={toggleItem}
                       onToggleSubstep={toggleSubstep}
@@ -811,7 +834,7 @@ export default function ChecklistPage() {
             {arrivalSteps.length > 0 && (
               <div>
                 <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                  🏠 À l'arrivée
+                  <Home className="w-3.5 h-3.5" /> À l'arrivée
                   <span className="text-gray-400 font-normal normal-case tracking-normal">({arrivalSteps.length})</span>
                 </h2>
                 <div className="space-y-2">
@@ -822,7 +845,6 @@ export default function ChecklistPage() {
                       isExpanded={expandedIds.has(item.id)}
                       departureDate={departureDate}
                       countryCode={countryCode}
-                      projectId={projectId}
                       onToggleExpand={toggleExpand}
                       onToggleItem={toggleItem}
                       onToggleSubstep={toggleSubstep}
@@ -834,7 +856,8 @@ export default function ChecklistPage() {
           </div>
         )}
 
-        {/* Paywall — le reste du plan est verrouillé tant que le projet n'est pas débloqué */}
+        {/* ===== PRICING DÉSACTIVÉ — CTA « Débloquez votre plan complet » =====
+        -- Paywall : le reste du plan est verrouillé tant que le projet n'est pas débloqué
         {isLocked && lockedCount > 0 && (
           <div className="mt-6 rounded-2xl border-2 border-dashed border-[#5EA3C0]/40 bg-[#5EA3C0]/5 p-6 text-center">
             <div className="text-3xl mb-2">🔒</div>
@@ -853,9 +876,11 @@ export default function ChecklistPage() {
             </button>
           </div>
         )}
+        ===== FIN PRICING DÉSACTIVÉ ===== */}
       </div>
 
-      {/* Modale de paiement (mock) */}
+      {/* ===== PRICING DÉSACTIVÉ — modale de paiement (mock) =====
+      -- Modale de paiement (mock)
       {showPaywall && (
         <div
           className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
@@ -920,6 +945,7 @@ export default function ChecklistPage() {
           </div>
         </div>
       )}
+      ===== FIN PRICING DÉSACTIVÉ ===== */}
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import type { ReactNode, ComponentType } from 'react'
-import { MoreHorizontal, Minimize2, Square, Maximize2 } from 'lucide-react'
+import { MoreHorizontal, Square, Maximize2 } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { WidgetSize } from '../hooks/useDashboardPreferences'
@@ -17,7 +17,7 @@ interface WidgetProps {
   onResize?: (size: WidgetSize) => void
   currentSize?: WidgetSize
   className?: string
-  size?: 'small' | 'medium' | 'large'
+  size?: WidgetSize
   isEditable?: boolean
 }
 
@@ -115,17 +115,6 @@ export default function Widget({
                       {t('dashboard.personalized.widgets.menu.resize')}
                     </p>
                     <div className="px-3 pb-2 flex gap-1.5">
-                      <button
-                        onClick={() => { onResize('small'); setShowMenu(false) }}
-                        className={`flex-1 flex flex-col items-center gap-1 px-2 py-2 rounded-lg text-xs font-medium transition-all ${
-                          currentSize === 'small'
-                            ? 'bg-blue-100 text-blue-700 ring-2 ring-blue-300'
-                            : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
-                        }`}
-                      >
-                        <Minimize2 className="w-3.5 h-3.5" />
-                        {t('dashboard.personalized.widgets.menu.sizeSmall')}
-                      </button>
                       <button
                         onClick={() => { onResize('medium'); setShowMenu(false) }}
                         className={`flex-1 flex flex-col items-center gap-1 px-2 py-2 rounded-lg text-xs font-medium transition-all ${

@@ -59,11 +59,13 @@ export class ExpatriationProjectController {
     return await this.projectService.update(+id, req.user.userId, updateDto);
   }
 
+  /* ===== PRICING DÉSACTIVÉ — déblocage payant d'un projet =====
   // Débloque le projet (paiement mock) → accès au plan complet.
   @Patch(':id/unlock')
   async unlock(@Request() req, @Param('id') id: string) {
     return await this.projectService.unlock(+id, req.user.userId);
   }
+  ===== FIN PRICING DÉSACTIVÉ ===== */
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)

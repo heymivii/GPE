@@ -9,10 +9,15 @@ import {
   ShieldCheck,
   X,
   Check,
+  Clock,
+  FileText,
+  ExternalLink,
 } from 'lucide-react';
 import { userApi } from '../../../api/user';
 import { countryApi } from '../../../api/country';
 import { useVerifyExpert, useRevokeExpert } from '../../../hooks/useExperts';
+import { expertApplicationsApi } from '../../../api/experts';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface AdminUser {
   idUser: number;
@@ -48,6 +53,31 @@ export default function AdminExperts() {
 
   const verifyMutation = useVerifyExpert();
   const revokeMutation = useRevokeExpert();
+
+  // ── File des candidatures déposées depuis /experts/apply ──────────────
+  const queryClient = useQueryClient();
+  const [rejectNote, setRejectNote] = useState<Record<number, string>>({});
+
+  const { data: applications = [], isLoading: loadingApplications } = useQuery({
+    queryKey: ['expert-applications', 'pending'],
+    queryFn: () => expertApplicationsApi.list('pending'),
+  });
+
+  const reviewMutation = useMutation({
+    mutationFn: ({ id, status, reviewNote }: { id: number; status: 'approved' | 'rejected'; reviewNote?: string }) =>
+      expertApplicationsApi.review(id, { status, reviewNote }),
+    onSuccess: (_data, variables) => {
+      toast.success(
+        variables.status === 'approved'
+          ? 'Candidature acceptée — le membre est maintenant expert vérifié'
+          : 'Candidature refusée',
+      );
+      queryClient.invalidateQueries({ queryKey: ['expert-applications', 'pending'] });
+      // L'approbation promeut le compte : la liste des membres doit suivre.
+      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+    },
+    onError: () => toast.error(t('common.error', { defaultValue: 'Une erreur est survenue' })),
+  });
 
   const users: AdminUser[] = usersData?.data ?? [];
   const filtered = useMemo(() => {
@@ -115,6 +145,100 @@ export default function AdminExperts() {
           </p>
         </div>
       </div>
+
+      {/* ── Candidatures en attente ─────────────────────────────────────
+          Les experts étaient promus à la main depuis la liste des membres.
+          Cette file traite les demandes déposées via /experts/apply. */}
+      <section className="mb-8">
+        <h2 className="flex items-center gap-2 font-bold text-gray-900 mb-3">
+          <Clock className="w-5 h-5 text-amber-500" />
+          Candidatures en attente
+          {applications.length > 0 && (
+            <span className="text-xs font-semibold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">
+              {applications.length}
+            </span>
+          )}
+        </h2>
+
+        {loadingApplications ? (
+          <div className="flex justify-center py-8 text-gray-400">
+            <Loader2 className="w-5 h-5 animate-spin" />
+          </div>
+        ) : applications.length === 0 ? (
+          <p className="text-sm text-gray-400 bg-white border border-gray-100 rounded-2xl p-6 text-center">
+            Aucune candidature en attente.
+          </p>
+        ) : (
+          <div className="space-y-3">
+            {applications.map((app) => (
+              <div key={app.idExpertApplication} className="bg-white rounded-2xl border border-gray-200 p-5">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="font-semibold text-gray-900">{app.expertTitle}</p>
+                    <p className="text-sm text-gray-500">
+                      {app.user?.fullName ?? `Membre #${app.userId}`}
+                      {app.user?.email ? ` · ${app.user.email}` : ''}
+                      {app.country?.countryName ? ` · ${app.country.countryName}` : ''}
+                    </p>
+                    <p className="text-xs text-gray-400 mt-0.5">
+                      Déposée le {new Date(app.createdAt).toLocaleDateString('fr-FR')}
+                    </p>
+                  </div>
+                  <a
+                    href={expertApplicationsApi.diplomaUrl(app.idExpertApplication)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-sm font-medium text-[#5EA3C0] hover:text-[#4891b0] border border-[#5EA3C0]/30 rounded-lg px-3 py-1.5"
+                  >
+                    <FileText className="w-4 h-4" />
+                    Justificatif
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                </div>
+
+                <p className="text-sm text-gray-600 mt-3 whitespace-pre-line leading-relaxed">
+                  {app.motivation}
+                </p>
+
+                <div className="mt-4 flex flex-col sm:flex-row gap-2">
+                  <input
+                    value={rejectNote[app.idExpertApplication] ?? ''}
+                    onChange={(e) =>
+                      setRejectNote((prev) => ({ ...prev, [app.idExpertApplication]: e.target.value }))
+                    }
+                    placeholder="Motif (transmis au candidat en cas de refus)"
+                    className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:border-[#5EA3C0] outline-none"
+                  />
+                  <button
+                    onClick={() =>
+                      reviewMutation.mutate({ id: app.idExpertApplication, status: 'approved' })
+                    }
+                    disabled={reviewMutation.isPending}
+                    className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-sm font-semibold"
+                  >
+                    <Check className="w-4 h-4" /> Accepter
+                  </button>
+                  <button
+                    onClick={() =>
+                      reviewMutation.mutate({
+                        id: app.idExpertApplication,
+                        status: 'rejected',
+                        reviewNote: rejectNote[app.idExpertApplication] || undefined,
+                      })
+                    }
+                    disabled={reviewMutation.isPending}
+                    className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 disabled:opacity-50 text-sm font-semibold"
+                  >
+                    <X className="w-4 h-4" /> Refuser
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      <h2 className="font-bold text-gray-900 mb-3">Tous les membres</h2>
 
       <div className="relative mb-4 max-w-md">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />

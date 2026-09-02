@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 
-export type WidgetSize = 'small' | 'medium' | 'large';
+// 'small' a été retiré : la grille du dashboard n'a que 2 colonnes, Petit et Moyen
+// rendaient donc exactement la même largeur (retour de recette).
+export type WidgetSize = 'medium' | 'large';
 
 interface DashboardPreferences {
   hiddenWidgets: string[];
@@ -15,7 +17,7 @@ const PREFS_VERSION = 2;
 const DEFAULT_WIDGET_SIZES: Record<string, WidgetSize> = {
   'checklist': 'large',
   'countdown': 'medium',
-  'required-documents': 'medium',
+  // DOCUMENTS DÉSACTIVÉS : 'required-documents' retiré du tableau de bord.
   'destination-forum': 'medium',
   'profile-summary': 'medium',
   'job-opportunities': 'medium',
@@ -86,7 +88,10 @@ export function useDashboardPreferences() {
   };
 
   const getWidgetSize = (widgetId: string): WidgetSize => {
-    return preferences.widgetSizes?.[widgetId] || DEFAULT_WIDGET_SIZES[widgetId] || 'medium';
+    const stored = preferences.widgetSizes?.[widgetId];
+    // Les préférences déjà enregistrées peuvent contenir l'ancien 'small'.
+    if (stored === 'medium' || stored === 'large') return stored;
+    return DEFAULT_WIDGET_SIZES[widgetId] || 'medium';
   };
 
   const setWidgetSize = (widgetId: string, size: WidgetSize) => {
@@ -101,7 +106,7 @@ export function useDashboardPreferences() {
 
   const cycleWidgetSize = (widgetId: string) => {
     const current = getWidgetSize(widgetId);
-    const next: WidgetSize = current === 'small' ? 'medium' : current === 'medium' ? 'large' : 'small';
+    const next: WidgetSize = current === 'medium' ? 'large' : 'medium';
     setWidgetSize(widgetId, next);
   };
 

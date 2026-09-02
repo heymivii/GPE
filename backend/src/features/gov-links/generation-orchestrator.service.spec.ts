@@ -1,13 +1,25 @@
 import { GenerationOrchestratorService } from './generation-orchestrator.service';
 
-/** Build a minimal GovLinkResult */
+/**
+ * Build a minimal GovLinkResult. Le contenu par défaut est volontairement RÉALISTE :
+ * les hooks qualité (linter métier, pertinence) rejettent à raison l'ancien placeholder
+ * (« Remplir le formulaire » = action générique sans objet, zéro vocabulaire visa).
+ */
 function makeGen(overrides: Record<string, unknown> = {}): any {
   return {
+    countryCode: 'FR',
+    category: 'visa',
     url: 'https://service-public.fr/visa',
     label: 'Visa France',
     confidence: 0.9,
-    summary: ['Étape 1', 'Étape 2'],
-    actions: ['Remplir le formulaire', 'Déposer le dossier'],
+    summary: [
+      'Le visa long séjour est délivré par le consulat de France.',
+      'La demande doit être déposée avant le départ.',
+    ],
+    actions: [
+      'Déposer la demande de visa long séjour auprès du consulat',
+      "Faire valider le VLS-TS en ligne dans les 3 mois suivant l'arrivée",
+    ],
     status: 'active',
     ...overrides,
   };

@@ -4,6 +4,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../../hooks/useAuth";
 import { countryApi } from "../../../api/country";
+import PasswordInput from "../../../components/PasswordInput";
 
 const calculatePasswordStrength = (password: string) => {
   let strength = 0;
@@ -189,15 +190,12 @@ export default function RegisterForm() {
       </div>
       
       <div>
-        <input
-          type="password"
-          className="mt-1 w-full px-4 py-4 rounded-lg placeholder-black text-black"
-          style={{ backgroundColor: "rgba(217, 217, 217, 0.4)" }}
+        <PasswordInput
           value={password}
           placeholder={t("auth.register.password")}
-          onChange={(e) => setPassword(e.target.value)}
-          required
+          onChange={setPassword}
           disabled={registerMutation.isPending}
+          autoComplete="new-password"
         />
         
         {password && (
@@ -225,15 +223,12 @@ export default function RegisterForm() {
       </div>
 
       <div>
-        <input
-          type="password"
-          className="mt-1 w-full px-4 py-4 rounded-lg placeholder-black text-black"
-          style={{ backgroundColor: "rgba(217, 217, 217, 0.4)" }}
+        <PasswordInput
           value={confirmPassword}
           placeholder={t("auth.register.confirmPassword")}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          required
+          onChange={setConfirmPassword}
           disabled={registerMutation.isPending}
+          autoComplete="new-password"
         />
       </div>
       

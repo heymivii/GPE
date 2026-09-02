@@ -1,5 +1,5 @@
 import Widget from './Widget';
-import { CheckCircle, Circle, ChevronDown, ChevronRight, ExternalLink, ArrowRight } from 'lucide-react';
+import { CheckCircle, Circle, ChevronDown, ChevronRight, ExternalLink, ArrowRight, AlertCircle, Calendar, Plane, Home } from 'lucide-react';
 import { useState, useMemo, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import type { CountryData } from '../../../hooks/useCountryData';
@@ -7,6 +7,8 @@ import { useChecklistProgress, getStepDeadline, filterStepsForProject } from '..
 import { personalizeFilter } from '../hooks/personalize';
 import TrustBadge from '../../../components/TrustBadge';
 import VisaNotice from '../../../components/VisaNotice';
+import SubstepLinks from '../../../components/SubstepLinks';
+import { extractLinks, type ExtractedLink } from '../../../lib/formatters';
 import { getLinksForStep } from '../../../data/checklist-links';
 import { useTranslation } from 'react-i18next';
 import { getLocale } from '../../../data/supportedCountries';
@@ -39,8 +41,8 @@ function DeadlineBadge({ daysBeforeDeparture, departureDate, phase }: {
   const dateStr = deadline.date.toLocaleDateString(getLocale(i18n.language), { day: 'numeric', month: 'short', year: 'numeric' });
 
   if (deadline.isLate) return (
-    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-red-100 text-red-700 font-medium whitespace-nowrap">
-      {t(`${CK}.deadlineLate`, { date: dateStr })}
+    <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full bg-red-100 text-red-700 font-medium whitespace-nowrap">
+      <AlertCircle className="w-2.5 h-2.5" /> {t(`${CK}.deadlineLate`, { date: dateStr })}
     </span>
   );
   if (deadline.isUrgent) return (
@@ -49,8 +51,8 @@ function DeadlineBadge({ daysBeforeDeparture, departureDate, phase }: {
     </span>
   );
   return (
-    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-500 whitespace-nowrap">
-      {t(`${CK}.deadlineNormal`, { date: dateStr })}
+    <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-500 whitespace-nowrap">
+      <Calendar className="w-2.5 h-2.5" /> {t(`${CK}.deadlineNormal`, { date: dateStr })}
     </span>
   );
 }
@@ -100,7 +102,7 @@ interface ChecklistItemCardProps {
     title: string;
     completed: boolean;
     category: string;
-    substeps: { id: string; label: string; completed: boolean; isOptional: boolean }[];
+    substeps: { id: string; label: string; completed: boolean; isOptional: boolean; links: ExtractedLink[] }[];
     completedFacts: number[];
     daysBeforeDeparture?: number;
     phase: 'before' | 'on_arrival';
@@ -215,16 +217,19 @@ function ChecklistItemCard({
                   <Circle className="w-3.5 h-3.5 text-gray-300" />
                 )}
               </span>
-              <span className={`text-xs leading-relaxed ${
-                substep.completed ? 'text-gray-400 line-through' : 'text-gray-600'
-              }`}>
-                {substep.label}
-                {substep.isOptional && (
-                  <span className="ml-1 text-gray-400 italic">
-                    ({t('dashboard.personalized.widgets.checklist.optional')})
-                  </span>
-                )}
-              </span>
+              <div className="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-x-3 gap-y-1">
+                <span className={`text-xs leading-relaxed ${
+                  substep.completed ? 'text-gray-400 line-through' : 'text-gray-600'
+                }`}>
+                  {substep.label}
+                  {substep.isOptional && (
+                    <span className="ml-1 text-gray-400 italic">
+                      ({t('dashboard.personalized.widgets.checklist.optional')})
+                    </span>
+                  )}
+                </span>
+                <SubstepLinks links={substep.links} />
+              </div>
             </div>
           ))}
         </div>
@@ -257,6 +262,7 @@ interface ChecklistSubstep {
   label: string;
   completed: boolean;
   isOptional: boolean;
+  links: ExtractedLink[];
 }
 
 interface ChecklistItem {
@@ -264,6 +270,7 @@ interface ChecklistItem {
   trackingId: number;
   title: string;
   completed: boolean;
+  status: string;
   category: string;
   substeps: ChecklistSubstep[];
   completedFacts: number[];
@@ -285,9 +292,11 @@ export default function ChecklistWidget({
   const { t } = useTranslation();
   const { progress, updateStep, updateFacts, isLoading } = useChecklistProgress(projectId);
 
-  // Projet non payé → on ne montre que l'aperçu (les étapes urgentes) ; le reste est
-  // verrouillé derrière le déblocage, comme sur la page checklist.
+  /* ===== PRICING DÉSACTIVÉ — verrou du widget =====
+  // Projet non payé → on ne montrait que l'aperçu (les étapes urgentes) ; le reste
+  // était verrouillé derrière le déblocage, comme sur la page checklist.
   const isLocked = project?.isPaid === false;
+  ===== FIN PRICING DÉSACTIVÉ ===== */
 
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const pendingRef = useRef<Set<string>>(new Set());
@@ -305,18 +314,24 @@ export default function ChecklistWidget({
       const actionItems = t.admin_procedure?.actionItems ?? [];
 
       // Checkable sub-steps = concrete ACTIONS to do (not descriptive facts).
-      const substeps: ChecklistSubstep[] = actionItems.map((action, i) => ({
-        id: `${trackingId}-${i}`,
-        label: action,
-        completed: completedFacts.includes(i),
-        isOptional: false,
-      }));
+      const substeps: ChecklistSubstep[] = actionItems.map((action, i) => {
+        // Inline URLs / emails move out of the sentence and render as chips on the right.
+        const { text, links } = extractLinks(action);
+        return {
+          id: `${trackingId}-${i}`,
+          label: text,
+          links,
+          completed: completedFacts.includes(i),
+          isOptional: false,
+        };
+      });
 
       return {
         id: trackingId.toString(),
         trackingId,
         title: t.admin_procedure?.procedureType || '',
         completed: t.status === 'completed',
+        status: t.status,
         category: t.admin_procedure?.category || 'other',
         substeps,
         completedFacts,
@@ -427,12 +442,25 @@ export default function ChecklistWidget({
       ? current.filter((f) => f !== factIndex)
       : [...current, factIndex];
 
+    // Même règle que sur la page checklist : cocher toutes les sous-étapes
+    // coche l'étape. Sans cela « 7/7 » restait affiché non complété.
+    const total = item.substeps.length;
+    const derivedStatus =
+      total > 0 && next.length === total
+        ? 'completed'
+        : next.length > 0
+          ? 'in_progress'
+          : 'not_started';
+
     try {
       await updateFacts({ trackingId: item.trackingId, completedFacts: next });
+      if (derivedStatus !== item.status) {
+        await updateStep({ trackingId: item.trackingId, status: derivedStatus });
+      }
     } catch (error) {
       console.error('Error updating fact:', error);
     }
-  }, [checklist, updateFacts]);
+  }, [checklist, updateFacts, updateStep]);
 
   // Progression par PHASE — on ne mélange plus « avant le départ » et « sur place » :
   // sinon on afficherait « 100% terminé » alors que la personne n'est même pas partie.
@@ -476,8 +504,8 @@ export default function ChecklistWidget({
           {phase.beforeTotal > 0 && (
             <div>
               <div className="flex items-center justify-between mb-1">
-                <span className="text-sm font-medium text-gray-700">
-                  {t(`${CK}.beforeDeparture`)}
+                <span className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-700">
+                  <Plane className="w-3.5 h-3.5 text-gray-400" /> {t(`${CK}.beforeDeparture`)}
                 </span>
                 <span className="text-sm font-semibold text-gray-900">
                   {phase.beforeDone}/{phase.beforeTotal}
@@ -494,8 +522,8 @@ export default function ChecklistWidget({
           {phase.arrivalTotal > 0 && (
             <div>
               <div className="flex items-center justify-between mb-1">
-                <span className="text-sm font-medium text-gray-700">
-                  {t(`${CK}.onArrival`)}
+                <span className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-700">
+                  <Home className="w-3.5 h-3.5 text-gray-400" /> {t(`${CK}.onArrival`)}
                 </span>
                 <span className="text-sm font-semibold text-gray-900">
                   {phase.arrivalDone}/{phase.arrivalTotal}
@@ -519,14 +547,14 @@ export default function ChecklistWidget({
           sourceUrl={allChecklist.find((s) => s.category === 'visa')?.sourceUrl}
         />
 
-        {/* ✅ Alerte date de départ manquante */}
+        {/* Alerte date de départ manquante */}
         {!departureDate && (
           <div className="text-xs text-orange-600 bg-orange-50 border border-orange-100 rounded-lg px-3 py-2">
             {t(`${CK}.missingDepartureDate`)}
           </div>
         )}
 
-        {/* ✅ Aperçu : 3 étapes urgentes */}
+        {/* Aperçu : 3 étapes urgentes */}
         {urgentSteps.length > 0 && (
           <div className="space-y-1.5">
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
@@ -553,14 +581,13 @@ export default function ChecklistWidget({
           </div>
         )}
 
-        {/* Liste complète — groupée par phase (verrouillée si projet non payé) */}
-        {!isLocked && (
+        {/* Liste complète — groupée par phase */}
         <div className="space-y-3 max-h-[24rem] overflow-y-auto pr-1">
-          {/* ✈️ Avant le départ */}
+          {/* Avant le départ */}
           {remainingBefore.length > 0 && (
             <div className="space-y-1.5">
-              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">
-                {t(`${CK}.beforeDeparture`)}
+              <p className="inline-flex items-center gap-1 text-[10px] font-semibold text-gray-400 uppercase tracking-wide">
+                <Plane className="w-3 h-3" /> {t(`${CK}.beforeDeparture`)}
               </p>
               {remainingBefore.map((item) => (
                 <ChecklistItemCard
@@ -578,11 +605,11 @@ export default function ChecklistWidget({
             </div>
           )}
 
-          {/* 🏠 À l'arrivée */}
+          {/* À l'arrivée */}
           {remainingArrival.length > 0 && (
             <div className="space-y-1.5">
-              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">
-                {t(`${CK}.onArrival`)}
+              <p className="inline-flex items-center gap-1 text-[10px] font-semibold text-gray-400 uppercase tracking-wide">
+                <Home className="w-3 h-3" /> {t(`${CK}.onArrival`)}
               </p>
               {remainingArrival.map((item) => (
                 <ChecklistItemCard
@@ -600,9 +627,9 @@ export default function ChecklistWidget({
             </div>
           )}
         </div>
-        )}
 
-        {/* 🔒 Verrou : plan complet réservé aux projets débloqués (payés) */}
+        {/* ===== PRICING DÉSACTIVÉ — CTA « Débloquez votre plan complet » =====
+        -- Verrou : plan complet réservé aux projets débloqués (payés)
         {isLocked && project?.idProject && (
           <Link
             to={`/projects/${project.idProject}/checklist`}
@@ -613,9 +640,10 @@ export default function ChecklistWidget({
             <span className="text-xs text-gray-500">Toutes les démarches + liens officiels vérifiés</span>
           </Link>
         )}
+        ===== FIN PRICING DÉSACTIVÉ ===== */}
 
-        {/* ✅ Lien vers la page dédiée */}
-        {!isLocked && project?.idProject && (
+        {/* Lien vers la page dédiée */}
+        {project?.idProject && (
           <Link
             to={`/projects/${project.idProject}/checklist`}
             className="flex items-center justify-center gap-1.5 w-full py-2 text-sm text-gray-500 hover:text-gray-900 border border-gray-100 hover:border-gray-300 rounded-lg transition-colors"

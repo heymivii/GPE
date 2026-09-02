@@ -1,4 +1,7 @@
+import axios from 'axios';
 import { LinkVerifier, extractText } from './link-verifier';
+
+jest.mock('axios');
 
 describe('LinkVerifier', () => {
   it('marks a 200 page with a matching keyword as verified', async () => {
@@ -78,5 +81,61 @@ describe('extractText', () => {
     const result = extractText(html);
     expect(result).toContain('title');
     expect(result).toContain('body text');
+  });
+});
+
+describe('repli r.jina.ai — sites gouvernementaux qui refusent les robots (france-visas)', () => {
+  const mockedAxios = axios as jest.Mocked<typeof axios>;
+  const deadProbe = async () => ({ ok: false, finalUrl: '', text: '' });
+  beforeEach(() => jest.clearAllMocks());
+
+  it('sauve un candidat 403 quand Jina rend le contenu de la page', async () => {
+    mockedAxios.get = jest.fn().mockResolvedValueOnce({
+      data:
+        'Title: Visa de long séjour\n\n' +
+        'Le visa de long séjour permet de séjourner en France plus de 90 jours. '.repeat(
+          12,
+        ),
+    });
+    const v = new LinkVerifier(deadProbe);
+    const r = await v.verify(
+      'https://france-visas.gouv.fr/visa-de-long-sejour',
+      ['visa'],
+    );
+    expect(r.live).toBe(true);
+    expect(r.matched).toBe(true);
+    expect(r.finalUrl).toBe('https://france-visas.gouv.fr/visa-de-long-sejour');
+    expect(mockedAxios.get).toHaveBeenCalledWith(
+      expect.stringContaining('r.jina.ai/https://france-visas.gouv.fr'),
+      expect.anything(),
+    );
+  });
+
+  it('reste mort si Jina ne rend presque rien (challenge relayé, coquille vide)', async () => {
+    mockedAxios.get = jest
+      .fn()
+      .mockResolvedValueOnce({ data: 'Title: page vide' });
+    const v = new LinkVerifier(deadProbe);
+    const r = await v.verify('https://x.gouv.fr/bloquee', ['visa']);
+    expect(r.live).toBe(false);
+  });
+
+  it('reste mort si Jina échoue aussi (réseau)', async () => {
+    mockedAxios.get = jest.fn().mockRejectedValueOnce(new Error('timeout'));
+    const v = new LinkVerifier(deadProbe);
+    const r = await v.verify('https://x.gouv.fr/bloquee', ['visa']);
+    expect(r.live).toBe(false);
+  });
+
+  it('ne sollicite PAS Jina quand le fetch direct réussit', async () => {
+    mockedAxios.get = jest.fn();
+    const v = new LinkVerifier(async () => ({
+      ok: true,
+      finalUrl: 'https://x.gouv.fr/ok',
+      text: 'Demande de visa en ligne sur le site officiel.',
+    }));
+    const r = await v.verify('https://x.gouv.fr/ok', ['visa']);
+    expect(r.live).toBe(true);
+    expect(mockedAxios.get).not.toHaveBeenCalled();
   });
 });

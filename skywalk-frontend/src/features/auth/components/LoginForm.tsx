@@ -5,10 +5,12 @@ import { useMutation } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../../hooks/useAuth";
 import { authApi } from "../../../api/auth";
+import PasswordInput from "../../../components/PasswordInput";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const { t } = useTranslation();
   
   const { login } = useAuth();
@@ -17,7 +19,7 @@ export default function LoginForm() {
   const redirect = searchParams.get("redirect") || "/dashboard";
 
   const loginMutation = useMutation({
-    mutationFn: async (data: { email: string; password: string }) => {
+    mutationFn: async (data: { email: string; password: string; rememberMe: boolean }) => {
       await login(data);
       // Fetch the full profile after login to get the roles field
       return await authApi.getProfile();
@@ -40,7 +42,7 @@ export default function LoginForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    loginMutation.mutate({ email, password });
+    loginMutation.mutate({ email, password, rememberMe });
   };
 
   return (
@@ -59,15 +61,12 @@ export default function LoginForm() {
       </div>
 
       <div>
-        <input
-          type="password"
-          className="mt-1 w-full px-4 py-4 rounded-lg placeholder-black text-black"
-          style={{ backgroundColor: "rgba(217, 217, 217, 0.4)" }}
+        <PasswordInput
           value={password}
           placeholder={t("auth.login.password")}
-          onChange={(e) => setPassword(e.target.value)}
-          required
+          onChange={setPassword}
           disabled={loginMutation.isPending}
+          autoComplete="current-password"
         />
       </div>
       
@@ -77,6 +76,9 @@ export default function LoginForm() {
             type="checkbox"
             className="w-4 h-4 cursor-pointer"
             id="remember-me"
+            checked={rememberMe}
+            onChange={(e) => setRememberMe(e.target.checked)}
+            disabled={loginMutation.isPending}
           />
           <span className="text-sm text-gray-700">{t("auth.login.rememberMe")}</span>
         </label>

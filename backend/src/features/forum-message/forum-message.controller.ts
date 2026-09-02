@@ -83,7 +83,7 @@ export class ForumMessageController {
 
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.forumMessageService.findOne(id);
+    return this.forumMessageService.findOnePublic(id);
   }
 
   @Patch(':id')

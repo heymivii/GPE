@@ -1,4 +1,8 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SearchHint } from './entities/search-hint.entity';
@@ -13,17 +17,25 @@ export class SearchHintService {
     private readonly repo: Repository<SearchHint>,
   ) {}
 
-  async list(filter: { countryCode?: string; category?: string } = {}): Promise<SearchHint[]> {
+  async list(
+    filter: { countryCode?: string; category?: string } = {},
+  ): Promise<SearchHint[]> {
     const where: Record<string, string> = {};
-    if (filter.countryCode) where.countryCode = filter.countryCode.toUpperCase();
+    if (filter.countryCode)
+      where.countryCode = filter.countryCode.toUpperCase();
     if (filter.category) where.category = filter.category;
-    return this.repo.find({ where, order: { countryCode: 'ASC', category: 'ASC' } });
+    return this.repo.find({
+      where,
+      order: { countryCode: 'ASC', category: 'ASC' },
+    });
   }
 
   async findOne(countryCode: string, category: string): Promise<SearchHint> {
     const hint = await this.findOneOrNull(countryCode, category);
     if (!hint) {
-      throw new NotFoundException(`Fiche de recherche ${countryCode}/${category} introuvable`);
+      throw new NotFoundException(
+        `Fiche de recherche ${countryCode}/${category} introuvable`,
+      );
     }
     return hint;
   }
@@ -32,7 +44,10 @@ export class SearchHintService {
    * Non-throwing read used by the gov-links engine: returns the fiche or null.
    * Generation must NEVER fail just because no address-book entry exists (fallback is mandatory).
    */
-  async findOneOrNull(countryCode: string, category: string): Promise<SearchHint | null> {
+  async findOneOrNull(
+    countryCode: string,
+    category: string,
+  ): Promise<SearchHint | null> {
     return this.repo.findOne({
       where: { countryCode: countryCode.toUpperCase(), category },
     });
@@ -40,9 +55,13 @@ export class SearchHintService {
 
   async create(dto: CreateSearchHintDto): Promise<SearchHint> {
     const countryCode = dto.countryCode.toUpperCase();
-    const existing = await this.repo.findOne({ where: { countryCode, category: dto.category } });
+    const existing = await this.repo.findOne({
+      where: { countryCode, category: dto.category },
+    });
     if (existing) {
-      throw new ConflictException(`Une fiche ${countryCode}/${dto.category} existe déjà`);
+      throw new ConflictException(
+        `Une fiche ${countryCode}/${dto.category} existe déjà`,
+      );
     }
     return this.repo.save(
       this.repo.create({
@@ -57,7 +76,11 @@ export class SearchHintService {
     );
   }
 
-  async update(countryCode: string, category: string, dto: UpdateSearchHintDto): Promise<SearchHint> {
+  async update(
+    countryCode: string,
+    category: string,
+    dto: UpdateSearchHintDto,
+  ): Promise<SearchHint> {
     const hint = await this.findOne(countryCode, category);
     Object.assign(hint, dto); // only the provided editable fields
     return this.repo.save(hint);
@@ -73,9 +96,15 @@ export class SearchHintService {
    * missing. NEVER overwrites an existing row → manual edits and pinnedUrl overrides are protected
    * even if re-seeded. Idempotent: a second call inserts nothing.
    */
-  async seedMissing(): Promise<{ inserted: number; skipped: number; total: number }> {
+  async seedMissing(): Promise<{
+    inserted: number;
+    skipped: number;
+    total: number;
+  }> {
     const existing = await this.repo.find();
-    const seen = new Set(existing.map((h) => `${h.countryCode}::${h.category}`));
+    const seen = new Set(
+      existing.map((h) => `${h.countryCode}::${h.category}`),
+    );
     const toInsert = SEARCH_HINTS_SEED.filter(
       (s) => !seen.has(`${s.countryCode.toUpperCase()}::${s.category}`),
     ).map((s) =>

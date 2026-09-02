@@ -17,7 +17,8 @@ export interface Country {
 
 export interface DestinationStats {
   memberCount: number;
-  jobOffersCount: number;
+  /** `null` = pays hors couverture Adzuna (à distinguer d'un vrai 0). */
+  jobOffersCount: number | null;
   forumTopicsCount: number;
   resourcesCount: number;
 }

@@ -23,14 +23,15 @@ export const DAYS_BEFORE_DEPARTURE_MAP: Record<string, number> = {
 export const STEP_ORDER_MAP: Record<string, number> = {
   visa: 1,
   demarches: 2,
-  'demarches-admin': 2,
-  logement: 3,
-  sante: 4,
-  emploi: 5,
-  banque: 6,
-  transport: 7,
-  business: 8,
-  culture: 9,
+  'demarches-admin': 3,
+  logement: 4,
+  sante: 5,
+  emploi: 6,
+  banque: 7,
+  transport: 8,
+  business: 9,
+  culture: 10,
+  education: 11,
 };
 
 /**
@@ -96,7 +97,8 @@ function defaultDaysBeforeDeparture(category: string): number {
 }
 
 function defaultStepOrder(category: string): number {
-  return STEP_ORDER_MAP[category] ?? 10;
+  // Catégorie inconnue → en fin de liste, jamais en collision avec une connue.
+  return STEP_ORDER_MAP[category] ?? 99;
 }
 
 function objectivesForCategory(category: string): string[] {

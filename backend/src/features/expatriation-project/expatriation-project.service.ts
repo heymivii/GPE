@@ -10,6 +10,7 @@ import {
   ExpatriationProject,
 } from './entities/expatriation-project.entity';
 import { ProcedureTracking } from '../procedure-tracking/entities/procedure-tracking.entity';
+import { User } from '../user/entities/user.entity';
 import { CreateExpatriationProjectDto } from './dto/create-expatriation-project.dto';
 import { UpdateExpatriationProjectDto } from './dto/update-expatriation-project.dto';
 
@@ -18,12 +19,44 @@ export class ExpatriationProjectService {
   constructor(
     @InjectRepository(ExpatriationProject)
     private readonly projectRepository: Repository<ExpatriationProject>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) {}
+
+  /**
+   * S'expatrier, c'est partir vers un AUTRE pays : destination == pays de départ
+   * est un projet impossible. Le pays de départ n'est pas porté par le projet —
+   * il vit sur le profil (`app_user.country_origin_id`) — donc on compare la
+   * destination à l'origine du propriétaire. Garde-fou serveur : le wizard filtre
+   * déjà les listes, mais l'API est appelable directement.
+   */
+  private async assertDestinationDiffersFromOrigin(
+    userId: number,
+    destinationCountryId?: number,
+  ): Promise<void> {
+    if (!destinationCountryId) return;
+
+    const user = await this.userRepository.findOne({
+      where: { idUser: userId },
+      select: ['idUser', 'countryOriginId'],
+    });
+
+    if (user?.countryOriginId === destinationCountryId) {
+      throw new BadRequestException(
+        'Le pays de destination doit être différent de votre pays de départ',
+      );
+    }
+  }
 
   async create(
     userId: number,
     createDto: CreateExpatriationProjectDto,
   ): Promise<ExpatriationProject> {
+    await this.assertDestinationDiffersFromOrigin(
+      userId,
+      createDto.destinationCountryId,
+    );
+
     const project = this.projectRepository.create({
       ...createDto,
       userId: userId,
@@ -68,6 +101,11 @@ export class ExpatriationProjectService {
   ): Promise<ExpatriationProject> {
     const project = await this.findOne(projectId, userId);
 
+    await this.assertDestinationDiffersFromOrigin(
+      userId,
+      updateDto.destinationCountryId,
+    );
+
     Object.assign(project, updateDto);
     return await this.projectRepository.save(project);
   }
@@ -90,11 +128,13 @@ export class ExpatriationProjectService {
   }
 
   /** Débloque le projet (paiement mock) → plan complet accessible. */
+  /* ===== PRICING DÉSACTIVÉ — déblocage payant d'un projet =====
   async unlock(projectId: number, userId: number): Promise<ExpatriationProject> {
     const project = await this.findOne(projectId, userId);
     project.isPaid = true;
     return await this.projectRepository.save(project);
   }
+  ===== FIN PRICING DÉSACTIVÉ ===== */
 
   async countByUser(userId: number): Promise<number> {
     return await this.projectRepository.count({

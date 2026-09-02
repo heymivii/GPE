@@ -7,7 +7,7 @@ import WizardNav from '../components/WizardNav'
 import { COUNTRIES } from '../data/constants'
 import { destinationsApi } from '../../../api/destinations'
 import { SUPPORTED_COUNTRIES } from '../../../data/supportedCountries'
-import { NATIONALITY_OPTIONS } from '../../../data/freeMovement'
+import { nationalityLabel } from '../../../data/freeMovement'
 
 interface AllStepsData {
   destination: {
@@ -45,10 +45,12 @@ interface SummaryStepProps {
   onEdit: (step: number) => void
   onComplete: () => void
   isSubmitting?: boolean
+  /** Édition d'un projet existant : on enregistre des modifications, on ne crée rien. */
+  isEditMode?: boolean
 }
 
-export default function SummaryStep({ data, onBack, onEdit, onComplete, isSubmitting = false }: SummaryStepProps) {
-  const { t } = useTranslation()
+export default function SummaryStep({ data, onBack, onEdit, onComplete, isSubmitting = false, isEditMode = false }: SummaryStepProps) {
+  const { t, i18n } = useTranslation()
 
   const handleComplete = async () => {
     await onComplete()
@@ -66,8 +68,12 @@ export default function SummaryStep({ data, onBack, onEdit, onComplete, isSubmit
     values.map(v => getTranslatedLabel(prefix, v)).join(', '), [getTranslatedLabel])
 
   const notSet = t('onboarding.summary.notSpecified')
-  const nationalityLabel = (code?: string) =>
-    code ? (NATIONALITY_OPTIONS.find(o => o.value === code)?.label ?? code) : notSet
+  // Nom distinct de l'import `nationalityLabel` : le même nom masquait l'import et
+  // la fonction s'appelait elle-même → « Maximum call stack size exceeded ».
+  const formatNationality = useCallback(
+    (code?: string) => (code ? nationalityLabel(code, i18n.language) : notSet),
+    [i18n.language, notSet]
+  )
 
   const selectedCountrySlug = useMemo(() => {
     return SUPPORTED_COUNTRIES.find(c => c.code === data.destination.toCountry)?.slug;
@@ -95,11 +101,11 @@ export default function SummaryStep({ data, onBack, onEdit, onComplete, isSubmit
     : data.destination.departureYear
   const destinationItems = useMemo(() => [
     { label: t('onboarding.summary.fromCountry'), value: getCountryLabel(data.destination.fromCountry) },
-    { label: t('onboarding.summary.nationality', { defaultValue: 'Nationalité' }), value: nationalityLabel(data.destination.nationality) },
+    { label: t('onboarding.summary.nationality', { defaultValue: 'Nationalité' }), value: formatNationality(data.destination.nationality) },
     { label: t('onboarding.summary.toCountry'), value: getCountryLabel(data.destination.toCountry) },
     { label: t('onboarding.summary.targetCity'), value: targetCityName },
     { label: t('onboarding.summary.departureDate', { defaultValue: 'Date de départ' }), value: departureDisplay }
-  ], [data.destination, t, getCountryLabel, targetCityName, departureDisplay, notSet])
+  ], [data.destination, t, getCountryLabel, targetCityName, departureDisplay, formatNationality])
 
   const profileItems = useMemo(() => [
     { label: t('onboarding.summary.age'), value: t('onboarding.summary.ageYears', { age: data.profile.age }) },
@@ -140,7 +146,7 @@ export default function SummaryStep({ data, onBack, onEdit, onComplete, isSubmit
           {t('onboarding.summary.title')}
         </h1>
         <p className="text-gray-600">
-          {t('onboarding.summary.subtitle')}
+          {t(isEditMode ? 'onboarding.summary.subtitleEdit' : 'onboarding.summary.subtitle')}
         </p>
       </div>
 
@@ -183,10 +189,10 @@ export default function SummaryStep({ data, onBack, onEdit, onComplete, isSubmit
           </div>
           <div className="ml-3">
             <h3 className="text-sm font-medium text-blue-800">
-              {t('onboarding.summary.readyTitle')}
+              {t(isEditMode ? 'onboarding.summary.readyTitleEdit' : 'onboarding.summary.readyTitle')}
             </h3>
             <p className="mt-1 text-sm text-blue-700">
-              {t('onboarding.summary.readyDesc')}
+              {t(isEditMode ? 'onboarding.summary.readyDescEdit' : 'onboarding.summary.readyDesc')}
             </p>
           </div>
         </div>
@@ -196,7 +202,11 @@ export default function SummaryStep({ data, onBack, onEdit, onComplete, isSubmit
         onBack={onBack}
         onNext={handleComplete}
         isNextDisabled={isSubmitting}
-        nextLabel={isSubmitting ? t('onboarding.summary.creatingLabel') : t('onboarding.summary.submitLabel')}
+        nextLabel={
+          isSubmitting
+            ? t(isEditMode ? 'onboarding.summary.savingLabel' : 'onboarding.summary.creatingLabel')
+            : t(isEditMode ? 'onboarding.summary.submitLabelEdit' : 'onboarding.summary.submitLabel')
+        }
         isLastStep={true}
       />
     </div>

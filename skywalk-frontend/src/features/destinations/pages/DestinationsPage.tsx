@@ -33,10 +33,11 @@ export function DestinationsPage() {
       const nameB = b.countryName || '';
       if (sortBy === 'name') return nameA.localeCompare(nameB);
 
-      const statsA = a.stats || { memberCount: 0, jobOffersCount: 0 };
-      const statsB = b.stats || { memberCount: 0, jobOffersCount: 0 };
+      const statsA = a.stats || { memberCount: 0, jobOffersCount: null };
+      const statsB = b.stats || { memberCount: 0, jobOffersCount: null };
 
-      if (sortBy === 'jobs') return statsB.jobOffersCount - statsA.jobOffersCount;
+      // Les pays hors couverture Adzuna (null) passent en fin de tri.
+      if (sortBy === 'jobs') return (statsB.jobOffersCount ?? -1) - (statsA.jobOffersCount ?? -1);
       return statsB.memberCount - statsA.memberCount;
     });
 

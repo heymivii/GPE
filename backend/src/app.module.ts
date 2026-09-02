@@ -44,6 +44,7 @@ import { ForumModerationModule } from './features/forum-moderation/forum-moderat
 import { UserReportModule } from './features/user-report/user-report.module';
 import { PrivateMessageModule } from './features/private-message/private-message.module';
 import { DocumentModule } from './features/document/document.module';
+import { ExpertApplicationModule } from './features/expert-application/expert-application.module';
 
 @Module({
   imports: [
@@ -80,6 +81,7 @@ import { DocumentModule } from './features/document/document.module';
     UserReportModule,
     PrivateMessageModule,
     DocumentModule,
+    ExpertApplicationModule,
     NotificationModule,
     ExperienceModule,
     ExpatriationProjectModule,

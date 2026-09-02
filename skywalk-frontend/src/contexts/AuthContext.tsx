@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { authApi } from '../api/auth';
+import tokenStorage from '../lib/tokenStorage';
 import type { User, LoginDto, RegisterDto, AuthResponse } from '../types/auth';
 
 interface AuthContextType {
@@ -26,7 +27,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     const initAuth = async () => {
       try {
-        const token = localStorage.getItem('access_token');
+        const token = tokenStorage.getAccessToken();
         if (!token) {
           setIsLoading(false);
           return;
@@ -54,16 +55,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
   const tryRefreshToken = async (): Promise<boolean> => {
-    const refreshToken = localStorage.getItem('refresh_token');
+    const refreshToken = tokenStorage.getRefreshToken();
     if (!refreshToken) return false;
     try {
       const response = await authApi.refresh({ refreshToken });
-      if (response.access_token) {
-        localStorage.setItem('access_token', response.access_token);
-      }
-      if (response.refresh_token) {
-        localStorage.setItem('refresh_token', response.refresh_token);
-      }
+      // Le magasin courant est conservé : rafraîchir ne rend pas la session
+      // persistante si l'utilisateur n'avait pas coché « se souvenir de moi ».
+      tokenStorage.updateTokens({
+        accessToken: response.access_token,
+        refreshToken: response.refresh_token,
+      });
       return true;
     } catch {
       return false;
@@ -71,19 +72,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const clearTokens = () => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
+    tokenStorage.clear();
   };
 
   const login = async (data: LoginDto): Promise<void> => {
     try {
       const response: AuthResponse = await authApi.login(data);
-      if (response.access_token) {
-        localStorage.setItem('access_token', response.access_token);
-      }
-      if (response.refresh_token) {
-        localStorage.setItem('refresh_token', response.refresh_token);
-      }
+      tokenStorage.setSession(
+        {
+          accessToken: response.access_token,
+          refreshToken: response.refresh_token,
+        },
+        data.rememberMe === true,
+      );
       setUser(response.user);
     } catch (error) {
       console.error('Erreur lors de la connexion:', error);
@@ -94,12 +95,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const register = async (data: RegisterDto): Promise<void> => {
     try {
       const response: AuthResponse = await authApi.register(data);
-      if (response.access_token) {
-        localStorage.setItem('access_token', response.access_token);
-      }
-      if (response.refresh_token) {
-        localStorage.setItem('refresh_token', response.refresh_token);
-      }
+      // Une inscription vaut consentement à rester connecté.
+      tokenStorage.setSession(
+        {
+          accessToken: response.access_token,
+          refreshToken: response.refresh_token,
+        },
+        true,
+      );
       setUser(response.user);
     } catch (error) {
       console.error("Erreur lors de l'inscription:", error);
@@ -113,8 +116,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } catch (error) {
       console.error('Erreur lors de la déconnexion:', error);
     } finally {
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('refresh_token');
+      tokenStorage.clear();
       localStorage.removeItem('skywalk-onboarding-completed');
       localStorage.removeItem('skywalk-onboarding-draft');
       localStorage.removeItem('skywalk-user-data');

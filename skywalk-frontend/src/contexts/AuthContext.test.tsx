@@ -41,6 +41,11 @@ function TestConsumer() {
       <button onClick={() => ctx.login({ email: 'a@b.com', password: '123' })}>
         login
       </button>
+      <button
+        onClick={() => ctx.login({ email: 'a@b.com', password: '123', rememberMe: true })}
+      >
+        login-remember
+      </button>
       <button onClick={() => ctx.register({ email: 'a@b.com', password: '123', firstName: 'A', lastName: 'B' })}>
         register
       </button>
@@ -52,11 +57,13 @@ function TestConsumer() {
 describe('AuthContext', () => {
   beforeEach(() => {
     localStorage.clear();
+    sessionStorage.clear();
     vi.clearAllMocks();
   });
 
   afterEach(() => {
     localStorage.clear();
+    sessionStorage.clear();
   });
 
   it('should start with isLoading=true then resolve to unauthenticated when no token', async () => {
@@ -134,7 +141,7 @@ describe('AuthContext', () => {
     expect(screen.getByTestId('authenticated').textContent).toBe('false');
   });
 
-  it('login() should store tokens and set user', async () => {
+  it('login() sans « se souvenir de moi » garde la session dans sessionStorage', async () => {
     mockedAuth.login.mockResolvedValue({
       access_token: 'token-123',
       refresh_token: 'refresh-123',
@@ -157,8 +164,71 @@ describe('AuthContext', () => {
     await waitFor(() => {
       expect(screen.getByTestId('authenticated').textContent).toBe('true');
     });
+    // Session d'onglet : elle ne doit pas survivre à la fermeture du navigateur.
+    expect(sessionStorage.getItem('access_token')).toBe('token-123');
+    expect(sessionStorage.getItem('refresh_token')).toBe('refresh-123');
+    expect(localStorage.getItem('access_token')).toBeNull();
+    expect(localStorage.getItem('refresh_token')).toBeNull();
+  });
+
+  it('login() avec « se souvenir de moi » persiste la session dans localStorage', async () => {
+    mockedAuth.login.mockResolvedValue({
+      access_token: 'token-123',
+      refresh_token: 'refresh-123',
+      user: fakeUser,
+    });
+
+    render(
+      <AuthProvider>
+        <TestConsumer />
+      </AuthProvider>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('loading').textContent).toBe('false');
+    });
+
+    const user = userEvent.setup();
+    await user.click(screen.getByText('login-remember'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('authenticated').textContent).toBe('true');
+    });
     expect(localStorage.getItem('access_token')).toBe('token-123');
     expect(localStorage.getItem('refresh_token')).toBe('refresh-123');
+    expect(sessionStorage.getItem('access_token')).toBeNull();
+  });
+
+  it('une connexion sans « se souvenir de moi » efface une session persistante antérieure', async () => {
+    // Sinon l'ancienne session survivrait à la fermeture du navigateur alors
+    // que l'utilisateur a explicitement décoché la case.
+    localStorage.setItem('access_token', 'ancien-token');
+    localStorage.setItem('refresh_token', 'ancien-refresh');
+    mockedAuth.getProfile.mockResolvedValue(fakeUser);
+    mockedAuth.login.mockResolvedValue({
+      access_token: 'token-123',
+      refresh_token: 'refresh-123',
+      user: fakeUser,
+    });
+
+    render(
+      <AuthProvider>
+        <TestConsumer />
+      </AuthProvider>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('loading').textContent).toBe('false');
+    });
+
+    const user = userEvent.setup();
+    await user.click(screen.getByText('login'));
+
+    await waitFor(() => {
+      expect(sessionStorage.getItem('access_token')).toBe('token-123');
+    });
+    expect(localStorage.getItem('access_token')).toBeNull();
+    expect(localStorage.getItem('refresh_token')).toBeNull();
   });
 
   it('register() should store tokens and set user', async () => {

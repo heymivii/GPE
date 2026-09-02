@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Plus, LayoutGrid, X, Check, User, CheckSquare, Wallet, Lightbulb, GripVertical } from 'lucide-react'
+import { Plus, LayoutGrid, X, Check, User, CheckSquare, Wallet, Lightbulb, GripVertical, Timer, MessagesSquare, CloudSun, Briefcase } from 'lucide-react'
 import { Link, useSearchParams } from 'react-router-dom'
 import {
   DndContext,
@@ -23,6 +23,7 @@ import { useCountryData } from '../../../hooks/useCountryData'
 import { useAuth } from '../../../hooks/useAuth'
 import { useActiveProject } from '../../../contexts/ActiveProjectContext'
 import { useDashboardPreferences } from '../hooks/useDashboardPreferences'
+import type { WidgetSize } from '../hooks/useDashboardPreferences'
 import ProfileSummaryWidget from '../widgets/ProfileSummaryWidget'
 import RecommendationsWidget from '../widgets/RecommendationsWidget'
 import ChecklistWidget from '../widgets/ChecklistWidget'
@@ -30,7 +31,8 @@ import BudgetTrackerWidget from '../widgets/BudgetTrackerWidget'
 import WeatherWidget from '../widgets/WeatherWidget'
 import JobOpportunitiesWidget from '../widgets/JobOpportunitiesWidget'
 import CountdownWidget from '../widgets/CountdownWidget'
-import RequiredDocumentsWidget from '../widgets/RequiredDocumentsWidget'
+// DOCUMENTS DÉSACTIVÉS : widget déjà filtré par REMOVED_WIDGETS, branche de rendu retirée.
+// import RequiredDocumentsWidget from '../widgets/RequiredDocumentsWidget'
 import DestinationForumWidget from '../widgets/DestinationForumWidget'
 import { useTranslation } from 'react-i18next'
 import { getLocale } from '../../../data/supportedCountries'
@@ -53,7 +55,6 @@ export default function PersonalizedDashboard() {
   const defaultLayout = [
     'checklist',
     'countdown',
-    'required-documents',
     'profile-summary',
     'job-opportunities',
     'destination-forum',
@@ -62,8 +63,9 @@ export default function PersonalizedDashboard() {
     'budget-tracker',
   ]
 
-  // Widgets supprimés (Local Time = filler ; Currency Converter fusionné dans Budget).
-  const REMOVED_WIDGETS = ['local-time', 'currency-converter']
+  // Widgets supprimés (Local Time = filler ; Currency Converter fusionné dans Budget ;
+  // Documents requis = liste statique sans valeur pour l'instant, retour de recette).
+  const REMOVED_WIDGETS = ['local-time', 'currency-converter', 'required-documents']
 
   // Fusionne l'ordre sauvegardé avec les defaults : les nouveaux widgets apparaissent
   // pour les utilisateurs existants, et les widgets retirés ne s'affichent plus.
@@ -129,15 +131,14 @@ export default function PersonalizedDashboard() {
   }, [selectedProjectId, activeProjectId, setActiveProjectId])
 
   const availableWidgets = [
-    { id: 'checklist', name: t('dashboard.personalized.widgets.available.checklist.name'), icon: '✅', description: t('dashboard.personalized.widgets.available.checklist.description') },
-    { id: 'countdown', name: t('dashboard.personalized.widgets.available.countdown.name', { defaultValue: 'Compte à rebours' }), icon: '⏳', description: t('dashboard.personalized.widgets.available.countdown.description', { defaultValue: 'Jours avant le départ + prochaines échéances' }) },
-    { id: 'required-documents', name: t('dashboard.personalized.widgets.available.requiredDocuments.name', { defaultValue: 'Documents requis' }), icon: '📄', description: t('dashboard.personalized.widgets.available.requiredDocuments.description', { defaultValue: 'Suivi de vos documents-clés (passeport, visa…)' }) },
-    { id: 'destination-forum', name: t('dashboard.personalized.widgets.available.destinationForum.name', { defaultValue: 'Forum de ta destination' }), icon: '💬', description: t('dashboard.personalized.widgets.available.destinationForum.description', { defaultValue: 'Derniers échanges pour votre pays' }) },
-    { id: 'profile-summary', name: t('dashboard.personalized.widgets.available.profileSummary.name'), icon: '👤', description: t('dashboard.personalized.widgets.available.profileSummary.description') },
-    { id: 'weather', name: t('dashboard.personalized.widgets.available.weather.name'), icon: '🌤️', description: t('dashboard.personalized.widgets.available.weather.description') },
-    { id: 'budget-tracker', name: t('dashboard.personalized.widgets.available.budgetTracker.name'), icon: '💰', description: t('dashboard.personalized.widgets.available.budgetTracker.description') },
-    { id: 'recommendations', name: t('dashboard.personalized.widgets.available.recommendations.name'), icon: '💡', description: t('dashboard.personalized.widgets.available.recommendations.description') },
-    { id: 'job-opportunities', name: t('dashboard.personalized.widgets.available.jobOpportunities.name'), icon: '💼', description: t('dashboard.personalized.widgets.available.jobOpportunities.description') },
+    { id: 'checklist', name: t('dashboard.personalized.widgets.available.checklist.name'), description: t('dashboard.personalized.widgets.available.checklist.description') },
+    { id: 'countdown', name: t('dashboard.personalized.widgets.available.countdown.name', { defaultValue: 'Compte à rebours' }), description: t('dashboard.personalized.widgets.available.countdown.description', { defaultValue: 'Jours avant le départ + prochaines échéances' }) },
+    { id: 'destination-forum', name: t('dashboard.personalized.widgets.available.destinationForum.name', { defaultValue: 'Forum de ta destination' }), description: t('dashboard.personalized.widgets.available.destinationForum.description', { defaultValue: 'Derniers échanges pour votre pays' }) },
+    { id: 'profile-summary', name: t('dashboard.personalized.widgets.available.profileSummary.name'), description: t('dashboard.personalized.widgets.available.profileSummary.description') },
+    { id: 'weather', name: t('dashboard.personalized.widgets.available.weather.name'), description: t('dashboard.personalized.widgets.available.weather.description') },
+    { id: 'budget-tracker', name: t('dashboard.personalized.widgets.available.budgetTracker.name'), description: t('dashboard.personalized.widgets.available.budgetTracker.description') },
+    { id: 'recommendations', name: t('dashboard.personalized.widgets.available.recommendations.name'), description: t('dashboard.personalized.widgets.available.recommendations.description') },
+    { id: 'job-opportunities', name: t('dashboard.personalized.widgets.available.jobOpportunities.name'), description: t('dashboard.personalized.widgets.available.jobOpportunities.description') },
   ]
 
   const activeProject = projects?.find(p => p.idProject === selectedProjectId)
@@ -147,12 +148,7 @@ export default function PersonalizedDashboard() {
 
   const getWidgetColSpan = (widgetId: string) => {
     const size = getWidgetSize(widgetId)
-    switch (size) {
-      case 'small': return 'lg:col-span-1'
-      case 'medium': return 'lg:col-span-1'
-      case 'large': return 'lg:col-span-2'
-      default: return 'lg:col-span-1'
-    }
+    return size === 'large' ? 'lg:col-span-2' : 'lg:col-span-1'
   }
 
   if (isLoading) {
@@ -286,7 +282,7 @@ export default function PersonalizedDashboard() {
   const renderWidget = (widgetId: string) => {
     const commonProps = {
       onHide: () => toggleWidgetVisibility(widgetId),
-      onResize: (size: 'small' | 'medium' | 'large') => setWidgetSize(widgetId, size),
+      onResize: (size: WidgetSize) => setWidgetSize(widgetId, size),
       currentSize: getWidgetSize(widgetId),
     }
 
@@ -318,6 +314,7 @@ export default function PersonalizedDashboard() {
           />
         )
 
+      /* ===== DOCUMENTS DÉSACTIVÉS — widget « Documents requis » =====
       case 'required-documents':
         return (
           <RequiredDocumentsWidget
@@ -326,6 +323,7 @@ export default function PersonalizedDashboard() {
             {...commonProps}
           />
         )
+      ===== FIN DOCUMENTS DÉSACTIVÉS ===== */
 
       case 'destination-forum':
         return (
@@ -648,6 +646,10 @@ export default function PersonalizedDashboard() {
                     'checklist': CheckSquare,
                     'budget-tracker': Wallet,
                     'recommendations': Lightbulb,
+                    'countdown': Timer,
+                    'destination-forum': MessagesSquare,
+                    'weather': CloudSun,
+                    'job-opportunities': Briefcase,
                   }[widget.id] || LayoutGrid
 
                   return (

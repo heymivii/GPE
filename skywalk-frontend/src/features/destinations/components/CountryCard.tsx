@@ -12,7 +12,7 @@ export function CountryCard({ country }: CountryCardProps) {
   const { t, i18n } = useTranslation();
   const stats = country.stats || {
     memberCount: 0,
-    jobOffersCount: 0,
+    jobOffersCount: null,
     forumTopicsCount: 0,
     resourcesCount: 0,
   };
@@ -74,10 +74,14 @@ export function CountryCard({ country }: CountryCardProps) {
             <Users className="w-4 h-4 mr-2 text-blue-500 flex-shrink-0" />
             <span className="text-sm"><span className="font-semibold">{fmtCompact(stats.memberCount)}</span> <span className="text-gray-400">{t('destinationsPage.card.projects')}</span></span>
           </div>
-          <div className="flex items-center text-gray-600">
-            <Briefcase className="w-4 h-4 mr-2 text-green-500 flex-shrink-0" />
-            <span className="text-sm"><span className="font-semibold">{fmtCompact(stats.jobOffersCount)}</span> <span className="text-gray-400">{t('destinationsPage.card.jobs')}</span></span>
-          </div>
+          {/* Pays hors couverture Adzuna : on masque le compteur plutôt que d'afficher
+              « 0 emplois », qui se lisait comme une absence d'offres (retour de recette). */}
+          {stats.jobOffersCount !== null && (
+            <div className="flex items-center text-gray-600">
+              <Briefcase className="w-4 h-4 mr-2 text-green-500 flex-shrink-0" />
+              <span className="text-sm"><span className="font-semibold">{fmtCompact(stats.jobOffersCount)}</span> <span className="text-gray-400">{t('destinationsPage.card.jobs')}</span></span>
+            </div>
+          )}
           <div className="flex items-center text-gray-600">
             <MessageSquare className="w-4 h-4 mr-2 text-purple-500 flex-shrink-0" />
             <span className="text-sm"><span className="font-semibold">{fmtCompact(stats.forumTopicsCount)}</span> <span className="text-gray-400">{t('destinationsPage.card.topics')}</span></span>

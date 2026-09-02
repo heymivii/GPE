@@ -15,6 +15,7 @@ import { ForumTopicFollow } from '../forum-topic/entities/forum-topic-follow.ent
 import { ContentFilterService } from './content-filter.service';
 import { ForumModerationService } from '../forum-moderation/forum-moderation.service';
 import { NotificationService } from '../notification/notification.service';
+import { maskModerated, maskModeratedList } from './moderation-mask';
 import { CreateNotificationDto } from '../notification/dto/create-notification.dto';
 
 @Injectable()
@@ -91,10 +92,19 @@ export class ForumMessageService {
   }
 
   async findAll(): Promise<ForumMessage[]> {
-    return await this.forumMessageRepository.find({
+    const messages = await this.forumMessageRepository.find({
       relations: ['user', 'topic'],
       order: { sentAt: 'DESC' },
     });
+    return maskModeratedList(messages);
+  }
+
+  /**
+   * Variante exposée par l'API. `findOne` reste non masquée : elle sert aux
+   * contrôles de droits internes (update/remove), qui ont besoin du contenu réel.
+   */
+  async findOnePublic(id: number): Promise<ForumMessage> {
+    return maskModerated(await this.findOne(id));
   }
 
   async findOne(id: number): Promise<ForumMessage> {
@@ -158,11 +168,12 @@ export class ForumMessageService {
   }
 
   async findByTopic(topicId: number): Promise<ForumMessage[]> {
-    return await this.forumMessageRepository.find({
+    const messages = await this.forumMessageRepository.find({
       where: { topic: { idForumTopic: topicId } as any },
       relations: ['user'],
       order: { sentAt: 'ASC' },
     });
+    return maskModeratedList(messages);
   }
 
   async createReport(

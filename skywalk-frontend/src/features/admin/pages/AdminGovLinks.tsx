@@ -3,7 +3,7 @@ import { govLinksApi, type GovLink, type GenerationRun } from '../../../api/govL
 import { countryApi } from '../../../api/country';
 import type { Country } from '../../../types/country';
 import { useState, useMemo, useEffect } from 'react';
-import { Loader2, RefreshCw, Link2, ExternalLink, CheckCircle2, XCircle, AlertTriangle, Clock, Settings2 } from 'lucide-react';
+import { AlertTriangle, Ban, CheckCircle2, Clock, ExternalLink, Link2, Loader2, RefreshCw, Settings2, XCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 /**
@@ -331,7 +331,7 @@ export default function AdminGovLinks() {
       {/* Search engine down → generation is hard-blocked backend-side, say it upfront */}
       {health !== undefined && !health.search.ok && (
         <p className="text-xs text-red-700 bg-red-50 border border-red-200 rounded-xl px-4 py-2.5">
-          ⛔ Moteur de recherche ({health.search.provider}) injoignable — toute génération est refusée tant qu'il n'est pas relancé (<code>docker start searxng</code>).
+          <Ban className="w-4 h-4 inline-block mr-1 -mt-0.5" /> Moteur de recherche ({health.search.provider}) injoignable — toute génération est refusée tant qu'il n'est pas relancé (<code>docker start searxng</code>).
         </p>
       )}
 
@@ -621,7 +621,7 @@ export default function AdminGovLinks() {
             onChange={(e) => setFilterCountry(e.target.value)}
             className="px-3.5 py-2 border border-gray-200 bg-white rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900 min-w-[200px]"
           >
-            <option value="all">🌍 Tous les pays</option>
+            <option value="all">Tous les pays</option>
             {countries.map((c) => (
               <option key={c.code} value={c.code}>
                 {c.flag} {c.name} ({c.code})

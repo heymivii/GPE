@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Search, Filter, Grid, List, ChevronDown } from 'lucide-react'
+import { Briefcase, ChevronDown, Filter, Grid, Home, List, Search, TrainFront } from 'lucide-react';
 import { useTranslation } from 'react-i18next'
 import SearchBar from '../components/SearchBar'
 import FilterSection from '../components/FilterSection'
@@ -213,21 +213,23 @@ export default function SearchPage() {
             <div className="flex flex-wrap gap-2">
               <span className="text-sm text-gray-600 font-medium">{t('searchPage.popularSearches')}</span>
               {[
-                { label: `🇫🇷 ${t('searchPage.france')}`, filters: { country: 'France' } },
-                { label: `🇬🇧 ${t('searchPage.unitedKingdom')}`, filters: { country: 'Royaume-Uni' } },
-                { label: `🇨🇭 ${t('searchPage.switzerland')}`, filters: { country: 'Suisse' } },
-                { label: `🇨🇦 ${t('searchPage.canada')}`, filters: { country: 'Canada' } },
-                { label: `💼 ${t('searchPage.jobs')}`, filters: { category: 'emploi' } },
-                { label: `🏠 ${t('searchPage.housing')}`, filters: { category: 'logement' } },
-                { label: `🚇 ${t('searchPage.transport')}`, filters: { category: 'transport' } },
+                // Les drapeaux restent : ils identifient un pays, ils ne décorent pas.
+                { label: `🇫🇷 ${t('searchPage.france')}`, icon: undefined, filters: { country: 'France' } },
+                { label: `🇬🇧 ${t('searchPage.unitedKingdom')}`, icon: undefined, filters: { country: 'Royaume-Uni' } },
+                { label: `🇨🇭 ${t('searchPage.switzerland')}`, icon: undefined, filters: { country: 'Suisse' } },
+                { label: `🇨🇦 ${t('searchPage.canada')}`, icon: undefined, filters: { country: 'Canada' } },
+                { label: t('searchPage.jobs'), icon: Briefcase, filters: { category: 'emploi' } },
+                { label: t('searchPage.housing'), icon: Home, filters: { category: 'logement' } },
+                { label: t('searchPage.transport'), icon: TrainFront, filters: { category: 'transport' } },
               ].map((item, index) => (
                 <button
                   key={index}
                   onClick={() => {
                     handleFilterChange(item.filters);
                   }}
-                  className="px-3 py-1.5 bg-white border border-gray-300 rounded-full text-sm hover:bg-gray-50 hover:border-[#5EA3C0] hover:text-[#5EA3C0] transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-300 rounded-full text-sm hover:bg-gray-50 hover:border-[#5EA3C0] hover:text-[#5EA3C0] transition-colors"
                 >
+                  {item.icon && <item.icon className="w-3.5 h-3.5" />}
                   {item.label}
                 </button>
               ))}

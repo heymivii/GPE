@@ -1,3 +1,16 @@
+/*
+ * ===== BLOC « APERÇU GRATUIT » DÉSACTIVÉ =====
+ *
+ * Le sélecteur « Où souhaitez-vous vous installer ? » de la landing, retiré
+ * suite au retour de recette. Conservé entier pour pouvoir le remettre :
+ * décommenter ce fichier, puis réintroduire <DestinationPreview /> dans
+ * features/landing/pages/LandingPage.tsx.
+ *
+ * Deux commentaires internes ont été convertis (un docblock et un commentaire
+ * JSX) : leur délimiteur fermant aurait refermé ce commentaire-ci.
+ */
+
+/*
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
@@ -9,7 +22,6 @@ import { useSupportedCountries } from '../../../hooks/useSupportedCountries';
  * Hero-adjacent mini-simulator: pick a destination → get a REAL snapshot (Numbeo quality-of-life
  * indices, never fabricated) + a reassuring promise, then route into the personalised onboarding.
  * Value BEFORE the sign-up effort — the hook, honestly grounded.
- */
 export default function DestinationPreview() {
   const navigate = useNavigate();
   const { countries, nonSelectableCodes } = useSupportedCountries();
@@ -67,7 +79,7 @@ export default function DestinationPreview() {
           </div>
         </div>
 
-        {/* Result area */}
+        -- Result area
         {code && (
           <div className="mt-6 border-t border-gray-100 pt-6 animate-in fade-in duration-300">
             {isFetching ? (
@@ -121,3 +133,4 @@ export default function DestinationPreview() {
     </section>
   );
 }
+*/

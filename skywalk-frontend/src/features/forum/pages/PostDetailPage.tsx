@@ -20,8 +20,10 @@ import {
   ShieldAlert,
   CheckCircle2,
   Bell,
-  BellOff
+  BellOff,
+  MapPin
 } from 'lucide-react';
+import { categoryIcon } from '../categoryIcons';
 import {
   useForumTopic,
   useCreateForumMessage,
@@ -51,9 +53,6 @@ const categoryColors: Record<string, string> = {
   discussion: 'bg-purple-50 text-purple-700',
   announcement: 'bg-red-50 text-red-700',
   other: 'bg-gray-50 text-gray-700',
-};
-const categoryIcons: Record<string, string> = {
-  question: '❓', testimony: '📝', advice: '💡', discussion: '�', announcement: '📢', other: '📌',
 };
 
 export default function PostDetailPage() {
@@ -362,7 +361,7 @@ export default function PostDetailPage() {
 
   const cat = topic.category || 'other';
   const catColor = categoryColors[cat] || 'bg-gray-100';
-  const catIcon = categoryIcons[cat] || '📌';
+  const CatIcon = categoryIcon(cat);
   const catName = t(`forum.categories.${cat}.name`);
   const messages = topic.messages || [];
 
@@ -409,15 +408,15 @@ export default function PostDetailPage() {
 
         <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
           <div className="flex items-start gap-4 mb-4">
-            <div className="text-4xl">{catIcon}</div>
+            <CatIcon className="w-9 h-9 text-[#5EA3C0] flex-shrink-0" />
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
                 <span className={`px-3 py-1 rounded-full text-sm font-medium ${catColor}`}>
                   {catName}
                 </span>
                 {topic.is_pinned && (
-                  <span className="px-2 py-0.5 bg-amber-100 text-amber-700 text-xs font-medium rounded-full">
-                    {t('forum.postDetail.moderation.pinned')}
+                  <span className="px-2 py-0.5 bg-amber-100 text-amber-700 text-xs font-medium rounded-full inline-flex items-center gap-1">
+                    <Pin className="w-3 h-3" /> {t('forum.postDetail.moderation.pinned')}
                   </span>
                 )}
                 {topic.is_locked && (
@@ -440,7 +439,7 @@ export default function PostDetailPage() {
                 </span>
                 {topic.country?.countryName && (
                   <span className="flex items-center gap-1">
-                    📍 {topic.country.countryName}
+                    <MapPin className="w-3.5 h-3.5" /> {topic.country.countryName}
                   </span>
                 )}
               </div>
@@ -720,7 +719,9 @@ export default function PostDetailPage() {
           isTopicLocked ? (
             <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
               <Lock className="w-8 h-8 text-red-400 mx-auto mb-2" />
-              <p className="text-red-700 font-medium">{t('forum.postDetail.moderation.locked')}</p>
+              <p className="inline-flex items-center gap-1.5 text-red-700 font-medium">
+                <Lock className="w-4 h-4" /> {t('forum.postDetail.moderation.locked')}
+              </p>
             </div>
           ) : (
           <div className="bg-white rounded-lg border border-gray-200 p-6 relative">

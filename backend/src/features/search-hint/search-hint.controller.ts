@@ -30,7 +30,10 @@ export class SearchHintController {
   ) {}
 
   @Get()
-  list(@Query('country') country?: string, @Query('category') category?: string) {
+  list(
+    @Query('country') country?: string,
+    @Query('category') category?: string,
+  ) {
     return this.service.list({ countryCode: country, category });
   }
 
@@ -85,7 +88,11 @@ export class SearchHintController {
   }
 
   @Delete(':cc/:cat')
-  async remove(@Param('cc') cc: string, @Param('cat') cat: string, @Request() req) {
+  async remove(
+    @Param('cc') cc: string,
+    @Param('cat') cat: string,
+    @Request() req,
+  ) {
     await this.service.remove(cc, cat);
     await this.adminLog.log(
       req.user.userId,

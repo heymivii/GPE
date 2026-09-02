@@ -26,12 +26,13 @@ describe('extractText', () => {
 });
 
 describe('LocalPageReader', () => {
-  it('returns clean text, stripping script contents', async () => {
+  it('returns clean CASE-PRESERVED text, stripping script contents', async () => {
     const reader = new LocalPageReader();
     const html =
       '<html><script>visa</script><body>Bonjour le monde</body></html>';
     const result = await reader.read('x', html);
-    expect(result).toContain('bonjour le monde');
+    // La casse est préservée : c'est elle qui porte « CERFA », « CPAM »… pour le LLM.
+    expect(result).toContain('Bonjour le monde');
     expect(result).not.toContain('visa');
   });
 });
@@ -41,7 +42,7 @@ describe('JinaPageReader', () => {
     jest.clearAllMocks();
   });
 
-  it('returns lowercased clean text from Jina when request succeeds', async () => {
+  it('returns clean CASE-PRESERVED text from Jina when request succeeds', async () => {
     mockedAxios.get = jest
       .fn()
       .mockResolvedValueOnce({ data: '# Clean Title\nVisa application page' });
@@ -50,8 +51,8 @@ describe('JinaPageReader', () => {
       'https://example.gov/visa',
       '<html>raw</html>',
     );
-    expect(result).toContain('visa application page');
-    expect(result).toBe(result.toLowerCase());
+    expect(result).toContain('Visa application page');
+    expect(result).toContain('Clean Title');
   });
 
   it('falls back to extractText(rawHtml) when axios.get rejects', async () => {
@@ -61,7 +62,7 @@ describe('JinaPageReader', () => {
     const reader = new JinaPageReader('https://r.jina.ai');
     const html = '<html><body>Fallback content</body></html>';
     const result = await reader.read('https://example.gov/visa', html);
-    expect(result).toContain('fallback content');
+    expect(result).toContain('Fallback content');
   });
 
   it('falls back to extractText(rawHtml) when Jina returns empty string', async () => {
@@ -69,6 +70,6 @@ describe('JinaPageReader', () => {
     const reader = new JinaPageReader('https://r.jina.ai');
     const html = '<html><body>Local fallback</body></html>';
     const result = await reader.read('https://example.gov', html);
-    expect(result).toContain('local fallback');
+    expect(result).toContain('Local fallback');
   });
 });

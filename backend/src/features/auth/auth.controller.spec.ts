@@ -87,6 +87,43 @@ describe('AuthController', () => {
       );
       expect(result.message).toBe('Connexion réussie');
     });
+
+    it('sans rememberMe : cookie de SESSION (aucun maxAge)', async () => {
+      service.login.mockResolvedValue({
+        message: 'Connexion réussie',
+        user: { idUser: 1 },
+        access_token: 'tok',
+        refresh_token: 'ref',
+      });
+
+      await controller.login(
+        { email: 'a@b.com', password: 'Pass1234' } as any,
+        res as any,
+      );
+
+      // Un maxAge ferait survivre la session à la fermeture du navigateur,
+      // ce que l'utilisateur a refusé en laissant la case décochée.
+      const options = (res.cookie as jest.Mock).mock.calls[0][2];
+      expect(options.maxAge).toBeUndefined();
+      expect(options.expires).toBeUndefined();
+    });
+
+    it('avec rememberMe : cookie persistant 24 h', async () => {
+      service.login.mockResolvedValue({
+        message: 'Connexion réussie',
+        user: { idUser: 1 },
+        access_token: 'tok',
+        refresh_token: 'ref',
+      });
+
+      await controller.login(
+        { email: 'a@b.com', password: 'Pass1234', rememberMe: true } as any,
+        res as any,
+      );
+
+      const options = (res.cookie as jest.Mock).mock.calls[0][2];
+      expect(options.maxAge).toBe(24 * 60 * 60 * 1000);
+    });
   });
 
   // ─── getProfile ────────────────────────────────────────────────

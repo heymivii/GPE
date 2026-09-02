@@ -21,16 +21,15 @@ import { PageHeader } from '../../../components/PageHeader'
 import { PageSearch } from '../../../components/PageSearch'
 import { useTranslation } from 'react-i18next'
 import { getCurrentLocale } from '../../../data/supportedCountries'
+import { CATEGORY_COLORS, categoryIcon, type CategoryIcon } from '../categoryIcons'
 
 
-const categoryConfig: Record<string, { icon: string; color: string }> = {
-  question: { icon: '❓', color: 'bg-blue-50 border-blue-200' },
-  testimony: { icon: '📝', color: 'bg-green-50 border-green-200' },
-  advice: { icon: '💡', color: 'bg-yellow-50 border-yellow-200' },
-  discussion: { icon: '💬', color: 'bg-purple-50 border-purple-200' },
-  announcement: { icon: '📢', color: 'bg-red-50 border-red-200' },
-  other: { icon: '📌', color: 'bg-gray-50 border-gray-200' }
-}
+const categoryConfig: Record<string, { icon: CategoryIcon; color: string }> = Object.fromEntries(
+  Object.entries(CATEGORY_COLORS).map(([key, color]) => [
+    key,
+    { icon: categoryIcon(key), color },
+  ]),
+)
 
 export default function ForumPage() {
   const { t } = useTranslation()
@@ -301,7 +300,7 @@ export default function ForumPage() {
                         : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                     }`}
                   >
-                    <div className="text-2xl">{category.icon}</div>
+                    <category.icon className="w-6 h-6 text-[#5EA3C0] flex-shrink-0" />
                     <div className="flex-1 min-w-0">
                       <div className="font-semibold text-gray-900 text-sm truncate">
                         {category.name}
@@ -403,7 +402,10 @@ export default function ForumPage() {
                         className="block p-6 hover:bg-gray-50 transition-colors"
                       >
                         <div className="flex items-start gap-4">
-                          <div className="text-3xl">{categoryInfo?.icon || '📌'}</div>
+                          {(() => {
+                            const CatIcon = categoryInfo?.icon ?? categoryIcon(topic.category);
+                            return <CatIcon className="w-7 h-7 text-[#5EA3C0] flex-shrink-0 mt-0.5" />;
+                          })()}
                           
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-2">

@@ -482,10 +482,9 @@
         "gasoline1L": "Gasoline (1 liter)",
         "newCar": "New car (VW Golf)",
         "monthlyComparison": "Monthly comparison",
-        "publicTransportEmoji": "🚇 Public transport",
-        "carEmoji": "🚗 Car (fuel only)",
         "publicCheaper": "Public transport is ~{{pct}}% cheaper than driving (fuel only).",
-        "carCheaper": "Driving (fuel only) is ~{{pct}}% cheaper than public transport."
+        "carCheaper": "Driving (fuel only) is ~{{pct}}% cheaper than public transport.",
+        "car": "Car (fuel only)"
       },
       "health": {
         "title": "Health — {{city}}",
@@ -591,8 +590,8 @@
       "young": "18-30 years (good health)",
       "adult": "30-60 years (average health)",
       "senior": "60+ years",
-      "swissWarning": "⚠️ Switzerland: LAMal health insurance is MANDATORY. Premiums among the highest in Europe.",
-      "usaWarning": "⚠️ USA: No universal coverage. Uninsured care is extremely expensive.",
+      "swissWarning": "Switzerland: LAMal health insurance is MANDATORY. Premiums among the highest in Europe.",
+      "usaWarning": "USA: No universal coverage. Uninsured care is extremely expensive.",
       "budgetEstimateNote": "Budget estimated without pre-existing conditions — {{city}}."
     },
     "transportTools": {
@@ -611,7 +610,7 @@
       "temporaryValidity": "Temporary validity",
       "temporaryValidityValue": "12 months",
       "internationalLicense": "International license",
-      "accepted": "✓ Accepted",
+      "accepted": "Accepted",
       "todoNote": "Complete with real exchange rules per country in transport-data.ts",
       "vehiclePurchase": "Vehicle purchase",
       "purchaseDocuments": "Documents required for purchase",
@@ -842,7 +841,7 @@
     "visaChecker": {
       "eyebrow": "Instant visa check",
       "title": "Do I need a visa?",
-      "iAm": "I'm a citizen of…",
+      "iAm": "I am…",
       "goingTo": "I'm moving to…",
       "exemptTitle": "Free movement — no visa",
       "exemptText": "As a {{nationality}} citizen, you can settle in {{country}} with no visa or residence permit.",
@@ -1073,33 +1072,27 @@
     "categories": {
       "question": {
         "name": "Question",
-        "description": "Ask your questions to the community",
-        "icon": "❓"
+        "description": "Ask your questions to the community"
       },
       "testimony": {
         "name": "Testimony",
-        "description": "Share your expatriation experience",
-        "icon": "📝"
+        "description": "Share your expatriation experience"
       },
       "advice": {
         "name": "Advice",
-        "description": "Give or receive practical advice",
-        "icon": "💡"
+        "description": "Give or receive practical advice"
       },
       "discussion": {
         "name": "Discussion",
-        "description": "General discussions about expatriation",
-        "icon": "💬"
+        "description": "General discussions about expatriation"
       },
       "announcement": {
         "name": "Announcement",
-        "description": "Important announcements and information",
-        "icon": "📢"
+        "description": "Important announcements and information"
       },
       "other": {
         "name": "Other",
-        "description": "Other miscellaneous topics",
-        "icon": "📌"
+        "description": "Other miscellaneous topics"
       }
     },
     "stats": {
@@ -1220,8 +1213,8 @@
         "unpinTopic": "Unpin topic",
         "deleteTopic": "Delete topic (moderator)",
         "deleteMessage": "Delete (moderator)",
-        "locked": "🔒 This topic is locked. No new replies are allowed.",
-        "pinned": "📌 Pinned",
+        "locked": "This topic is locked. No new replies are allowed.",
+        "pinned": "Pinned",
         "confirmDeleteTopic": "Are you sure you want to delete this topic and all its messages?",
         "confirmDeleteMessage": "Are you sure you want to delete this message as a moderator?",
         "topicDeleted": "Topic deleted",
@@ -1433,7 +1426,7 @@
         "description": "Complete your onboarding to access your personalized dashboard",
         "cta": "Complete my profile"
       },
-      "greeting": "Hello ! 👋",
+      "greeting": "Hello!",
       "projectTo": "Your expatriation project to {{country}}",
       "defaultUser": "User",
       "defaultDestination": "Destination",
@@ -1555,15 +1548,15 @@
           "hide": "Hide",
           "show": "{{count}} substeps",
           "optional": "optional",
-          "deadlineLate": "🔴 Overdue — {{date}}",
+          "deadlineLate": "Overdue — {{date}}",
           "deadlineUrgent": "🟠 {{days}}d — {{date}}",
-          "deadlineNormal": "📅 {{date}}",
+          "deadlineNormal": "{{date}}",
           "seeService": "See the service",
           "onSite": "on-site",
           "missingDepartureDate": "Add your departure date to see each step's deadline.",
           "priorityToDo": "Priority tasks",
-          "beforeDeparture": "✈️ Before departure",
-          "onArrival": "🏠 On arrival",
+          "beforeDeparture": "Before departure",
+          "onArrival": "On arrival",
           "seeFullChecklist": "See full checklist",
           "categories": {
             "visa": "Visa",
@@ -1584,7 +1577,7 @@
             "oneBedroom": "1 bedroom apt ({{price}} {{currency}})",
             "threeBedroom": "3 bedroom apt ({{price}} {{currency}})"
           },
-          "covered": "Covered ✅",
+          "covered": "Covered",
           "coverage": "{{percentage}}%",
           "advice": {
             "excellent": "Excellent! Your budget is comfortable for a large apartment.",
@@ -1688,7 +1681,7 @@
           "addDate": "Add a date",
           "jMinus": "D-{{days}}",
           "until": "until departure · {{date}}",
-          "departed": "🎉 You've left!",
+          "departed": "You've left!",
           "nextDeadlines": "Next deadlines",
           "late": "Overdue",
           "seeChecklist": "View my checklist",
@@ -1798,8 +1791,8 @@
   "searchPage": {
     "notSpecified": "Not specified",
     "title": "Advanced Search",
-    "description": "Find jobs, housing and services tailored to your expatriation project.",
-    "placeholder": "Search jobs, housing, transport...",
+    "description": "Find job offers tailored to your expatriation project.",
+    "placeholder": "Search for a job...",
     "filters": "Filters",
     "searchResults": "Search Results",
     "popularDestinations": "Popular Destinations & Services",
@@ -1917,7 +1910,7 @@
     "editTitle": "Edit my project",
     "profilePrefilled": "Your profile information has been pre-filled!",
     "invalidDestination": "Invalid destination country",
-    "countryChangeWarning": "⚠️ Warning: You are changing your destination country.\n\nYour current checklist will be reset because procedures are specific to each country.\n\nDo you want to continue?",
+    "countryChangeWarning": "Warning: You are changing your destination country.\n\nYour current checklist will be reset because procedures are specific to each country.\n\nDo you want to continue?",
     "modificationCancelled": "Modification cancelled",
     "checklistReset": "Your checklist has been reset for the new country",
     "projectUpdated": "Project updated successfully!",
@@ -1936,7 +1929,8 @@
       "departureYear": "Expected departure year",
       "fromCountryPlaceholder": "Select your departure country",
       "toCountryPlaceholder": "Select your destination country",
-      "cannotChangeCountry": "The country cannot be changed once the project is created.",
+      "cannotChangeCountry": "The destination country cannot be changed once the project is created.",
+      "fromCountryProfileHelper": "Taken from your profile — editable, and it must differ from the destination country.",
       "errors": {
         "fromCountryRequired": "Departure country is required",
         "toCountryRequired": "Destination country is required",
@@ -2035,7 +2029,12 @@
       "readyTitle": "Ready to start your adventure?",
       "readyDesc": "By validating your profile, you'll access personalized recommendations and can start planning your expatriation with our tools.",
       "creatingLabel": "Creating project...",
-      "submitLabel": "Validate and create my project"
+      "submitLabel": "Validate and create my project",
+      "submitLabelEdit": "Save changes",
+      "savingLabel": "Saving...",
+      "subtitleEdit": "Review your information before saving your changes",
+      "readyTitleEdit": "Your changes are ready",
+      "readyDescEdit": "Saving will update your project and its personalized recommendations."
     },
     "authGate": {
       "title": "Save your project to continue",
@@ -2397,6 +2396,10 @@
     "title": "Personalized Recommendations",
     "subtitle": "Based on your project analysis",
     "recommendedVisa": "Recommended Visa",
+    "freeMovement": {
+      "title": "No visa required",
+      "description": "Your nationality benefits from free movement: you can settle and work in {{country}} without a visa or residence permit."
+    },
     "seeDetails": "See details",
     "alsoConsider": "Also consider:",
     "servicesTitle": "Recommended Services",
@@ -3265,7 +3268,7 @@
     }
   },
   "visa": {
-    "title": "🛂 Visa & Immigration",
+    "title": "Visa & Immigration",
     "description": "Complete guides on visas, residence permits and immigration procedures for each country.",
     "selectCountry": "Destination:",
     "visaTypes": "Visa Types",
@@ -3456,18 +3459,18 @@
       "checkFlightPlan": "Flight ticket or travel itinerary"
     },
     "tipsList": {
-      "tipStartEarly": "✅ Start the process 6 months before your move",
-      "tipApostille": "✅ Get all documents apostilled",
-      "tipLearnFrench": "✅ Learn basic French (it helps!)",
-      "tipJoinExpats": "✅ Join expat groups for support",
-      "tipDontQuit": "❌ Don't quit your job before visa is approved",
-      "tipStartEarlyUS": "✅ Start the process 12 months ahead",
-      "tipH1BLawyer": "✅ Hire an immigration lawyer",
-      "tipPremiumProcessing": "✅ Consider premium processing ($2,805)",
-      "tipLearnLanguageCH": "✅ Learn the local language (FR/DE/IT depending on canton)",
-      "tipCHInsuranceDeadline": "✅ Get health insurance immediately upon arrival",
-      "tipLearnJapanese": "✅ Learn basic Japanese (hiragana/katakana)",
-      "tipHankoSeal": "✅ Get your hanko (personal seal) made upon arrival"
+      "tipStartEarly": "Start the process 6 months before your move",
+      "tipApostille": "Get all documents apostilled",
+      "tipLearnFrench": "Learn basic French (it helps!)",
+      "tipJoinExpats": "Join expat groups for support",
+      "tipDontQuit": "Don't quit your job before visa is approved",
+      "tipStartEarlyUS": "Start the process 12 months ahead",
+      "tipH1BLawyer": "Hire an immigration lawyer",
+      "tipPremiumProcessing": "Consider premium processing ($2,805)",
+      "tipLearnLanguageCH": "Learn the local language (FR/DE/IT depending on canton)",
+      "tipCHInsuranceDeadline": "Get health insurance immediately upon arrival",
+      "tipLearnJapanese": "Learn basic Japanese (hiragana/katakana)",
+      "tipHankoSeal": "Get your hanko (personal seal) made upon arrival"
     },
     "general": {
       "heroTitle": "General Guide — Visa & Immigration",

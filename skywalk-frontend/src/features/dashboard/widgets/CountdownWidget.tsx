@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { CalendarClock, ArrowRight, AlertTriangle, Plane } from 'lucide-react';
+import { CalendarClock, ArrowRight, AlertTriangle, Plane, CheckCircle2 } from 'lucide-react';
 import Widget from './Widget';
 import type { WidgetSize } from '../hooks/useDashboardPreferences';
 import { useChecklistProgress, getStepDeadline, filterStepsForProject } from '../hooks/useChecklistProgress';
@@ -151,7 +151,7 @@ export default function CountdownWidget({
             ) : (
               <p className="text-lg font-semibold text-emerald-600">
                 {t('dashboard.personalized.widgets.countdown.departed', {
-                  defaultValue: '🎉 Vous êtes parti·e !',
+                  defaultValue: 'Vous êtes parti·e !',
                 })}
               </p>
             )}
@@ -194,8 +194,8 @@ export default function CountdownWidget({
 
           {upcoming.length === 0 && beforeIncomplete === 0 && (
             <div className="mt-3 pt-3 border-t border-gray-50 text-center">
-              <p className="text-xs font-medium text-emerald-600 leading-snug">
-                ✅{' '}
+              <p className="inline-flex items-start gap-1.5 text-xs font-medium text-emerald-600 leading-snug">
+                <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0 mt-px" />{' '}
                 {arrivalIncomplete > 0
                   ? t('dashboard.personalized.widgets.countdown.prepDone', {
                       defaultValue:

@@ -9,11 +9,11 @@ import LandingToolsSection from '../components/LandingToolsSection';
 import MiddleCtaBanner from '../components/MiddleCtaBanner';
 import NewsletterCTA from '../components/NewsletterCTA';
 import HowItWorks from '../components/HowItWorks';
-import DestinationPreview from '../components/DestinationPreview';
+// APERÇU GRATUIT DÉSACTIVÉ — voir components/DestinationPreview.tsx
+// import DestinationPreview from '../components/DestinationPreview';
 import Testimonials from '../components/Testimonials';
 import FAQ from '../components/FAQ';
 import OfficialSources from '../components/OfficialSources';
-import Pricing from '../components/Pricing';
 import { useAuth } from '../../../hooks/useAuth';
 
 export default function LandingPage() {
@@ -105,7 +105,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <DestinationPreview />
+      {/* APERÇU GRATUIT DÉSACTIVÉ — <DestinationPreview /> */}
 
       <HowItWorks />
 
@@ -177,7 +177,6 @@ export default function LandingPage() {
 
       <Testimonials />
 
-      <Pricing />
 
       <NewsletterCTA />
 

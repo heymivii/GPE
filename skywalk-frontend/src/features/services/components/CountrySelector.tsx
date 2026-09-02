@@ -49,7 +49,7 @@ export default function CountrySelector({
           <span className="text-sm font-semibold text-gray-900">
             {selectedCountryData
               ? `${selectedCountryData.flag} ${t(selectedCountryData.i18nKey)}`
-              : `🌍 ${t('services.countrySelector.general')}`}
+              : t('services.countrySelector.general')}
           </span>
         </div>
         <ChevronDown
@@ -75,7 +75,7 @@ export default function CountrySelector({
                     }`}
                 >
                   <div className="flex items-center space-x-2.5">
-                    <span className="text-lg">🌍</span>
+                    <Globe className="w-5 h-5 text-gray-400" />
                     <span className="font-medium">{t('services.countrySelector.generalInfo')}</span>
                   </div>
                   {!selectedCountry && (

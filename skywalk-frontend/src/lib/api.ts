@@ -1,4 +1,5 @@
 import axios from 'axios';
+import tokenStorage from './tokenStorage';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
@@ -13,7 +14,7 @@ const apiClient = axios.create({
 
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('access_token');
+    const token = tokenStorage.getAccessToken();
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -47,10 +48,10 @@ apiClient.interceptors.response.use(
       originalRequest.url?.includes('/auth/refresh');
 
     if (error.response?.status === 401 && !originalRequest._retry && !isAuthEndpoint) {
-      const refreshToken = localStorage.getItem('refresh_token');
+      const refreshToken = tokenStorage.getRefreshToken();
 
       if (!refreshToken) {
-        localStorage.removeItem('access_token');
+        tokenStorage.clear();
         if (!window.location.pathname.startsWith('/auth')) {
           window.location.href = '/auth/login';
         }
@@ -77,10 +78,12 @@ apiClient.interceptors.response.use(
         );
 
         const newAccessToken = data.access_token;
-        localStorage.setItem('access_token', newAccessToken);
-        if (data.refresh_token) {
-          localStorage.setItem('refresh_token', data.refresh_token);
-        }
+        // updateTokens conserve le magasin courant : un refresh ne doit pas
+        // promouvoir une session d'onglet en session persistante.
+        tokenStorage.updateTokens({
+          accessToken: newAccessToken,
+          refreshToken: data.refresh_token,
+        });
 
         isRefreshing = false;
         onTokenRefreshed(newAccessToken);
@@ -90,8 +93,7 @@ apiClient.interceptors.response.use(
       } catch {
         isRefreshing = false;
         refreshSubscribers = [];
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
+        tokenStorage.clear();
         if (!window.location.pathname.startsWith('/auth')) {
           window.location.href = '/auth/login';
         }

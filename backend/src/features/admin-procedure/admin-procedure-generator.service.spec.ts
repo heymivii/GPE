@@ -410,7 +410,7 @@ describe('AdminProcedureGeneratorService', () => {
     });
 
     it('STEP_ORDER_MAP has culture=9', () => {
-      expect(STEP_ORDER_MAP.culture).toBe(9);
+      expect(STEP_ORDER_MAP.culture).toBe(10);
     });
 
     it('CATEGORY_OBJECTIVES_MAP has culture=[] (applies to all expats)', () => {
@@ -462,7 +462,7 @@ describe('AdminProcedureGeneratorService', () => {
     });
 
     it('STEP_ORDER_MAP has business=8', () => {
-      expect(STEP_ORDER_MAP.business).toBe(8);
+      expect(STEP_ORDER_MAP.business).toBe(9);
     });
 
     it('CATEGORY_OBJECTIVES_MAP has business=[] (applies to all expats)', () => {

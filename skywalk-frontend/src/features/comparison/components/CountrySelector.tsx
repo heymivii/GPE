@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { Search, X, ChevronDown, Plus } from 'lucide-react'
+import { ChevronDown, Globe, Plus, Search, X } from 'lucide-react';
 import type { EnrichedCountry } from '../hooks/useCountriesWithData'
 import { useTranslation } from 'react-i18next'
 import { SUPPORTED_COUNTRIES } from '../../../data/supportedCountries'
@@ -97,7 +97,7 @@ export default function CountrySelector({
                   <img src={country.flagUrl} alt={country.countryName} className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-lg bg-gray-100">
-                    {country.flagEmoji || '🌍'}
+                    {country.flagEmoji || <Globe className="w-4 h-4 text-gray-400" />}
                   </div>
                 )}
               </div>
@@ -244,7 +244,7 @@ export default function CountrySelector({
                             <img src={country.flagUrl} alt={country.countryName} className="w-full h-full object-cover" />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center text-base bg-gray-100">
-                              {country.flagEmoji || '🌍'}
+                              {country.flagEmoji || <Globe className="w-4 h-4 text-gray-400" />}
                             </div>
                           )}
                           {country.isCity && (

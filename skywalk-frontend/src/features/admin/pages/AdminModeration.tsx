@@ -407,7 +407,7 @@ export default function AdminModeration() {
               <Loader2 className="w-6 h-6 animate-spin" />
             </div>
           ) : flaggedUsers.length === 0 ? (
-            <p className="text-sm text-gray-400 py-10 text-center">Aucun utilisateur signalé. 🎉</p>
+            <p className="text-sm text-gray-400 py-10 text-center">Aucun utilisateur signalé.</p>
           ) : (
             <div className="divide-y divide-gray-100">
               {flaggedUsers.map((u) => {
@@ -469,7 +469,7 @@ export default function AdminModeration() {
               <Loader2 className="w-6 h-6 animate-spin" />
             </div>
           ) : userReports.length === 0 ? (
-            <p className="text-sm text-gray-400 py-10 text-center">Aucun signalement en attente. 🎉</p>
+            <p className="text-sm text-gray-400 py-10 text-center">Aucun signalement en attente.</p>
           ) : (
             <div className="space-y-2">
               {userReports.map((r) => (
