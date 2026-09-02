@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Loader2, Globe, ShieldAlert, CheckCircle2, X } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useCreateForumTopic } from '../../../hooks/useForum';
@@ -28,12 +28,17 @@ export default function NewPostPage() {
     staleTime: 10 * 60 * 1000,
   });
 
-  const [formData, setFormData] = useState({
-    title: '',
-    content: '', 
+  // Pré-remplissage via query params — utilisé par le buddy system de la
+  // checklist (« Via le forum » arrive avec title, content et countryId).
+  const [searchParams] = useSearchParams();
+  const [formData, setFormData] = useState(() => ({
+    title: searchParams.get('title') ?? '',
+    content: searchParams.get('content') ?? '',
     category: TopicCategoryValues.QUESTION as TopicCategory,
-    countryId: undefined as number | undefined
-  });
+    countryId: searchParams.get('countryId')
+      ? Number(searchParams.get('countryId'))
+      : (undefined as number | undefined),
+  }));
 
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
   const [feedbackType, setFeedbackType] = useState<'error' | 'success'>('error');

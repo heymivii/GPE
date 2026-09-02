@@ -55,6 +55,7 @@ describe('BuddyContactButtons', () => {
     mockedSendRequest.mockResolvedValue({} as any);
     renderButtons();
 
+    fireEvent.click(screen.getByLabelText('Contacter Jane'));
     fireEvent.click(screen.getByText('Message prive'));
 
     expect(mockedSendRequest).toHaveBeenCalledWith(2, 5);
@@ -67,16 +68,19 @@ describe('BuddyContactButtons', () => {
     mockedSendRequest.mockRejectedValue(new Error('network down'));
     renderButtons();
 
+    fireEvent.click(screen.getByLabelText('Contacter Jane'));
     fireEvent.click(screen.getByText('Message prive'));
 
     await waitFor(() =>
       expect(screen.getByText('Erreur - reessaie plus tard')).toBeInTheDocument(),
     );
-    expect(screen.getByText('Message prive')).toBeInTheDocument();
+    // le menu « ⋯ » reste disponible pour réessayer
+    expect(screen.getByLabelText('Contacter Jane')).toBeInTheDocument();
   });
 
   it('builds a prefilled "Via le forum" link scoped to the procedure and country', () => {
     renderButtons();
+    fireEvent.click(screen.getByLabelText('Contacter Jane'));
     const link = screen.getByText('Via le forum').closest('a')!;
     const href = link.getAttribute('href')!;
     expect(href).toContain('/forum/new?');
@@ -95,7 +99,7 @@ describe('BuddyContactButtons', () => {
     await waitFor(() =>
       expect(screen.getByText('Demande envoyee - en attente de reponse')).toBeInTheDocument(),
     );
-    expect(screen.queryByText('Message prive')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Contacter Jane')).not.toBeInTheDocument();
   });
 
   it('replaces the contact buttons with an open-conversation link once accepted', async () => {
@@ -104,7 +108,7 @@ describe('BuddyContactButtons', () => {
 
     const link = await screen.findByText('Ouvrir la conversation');
     expect(link.closest('a')).toHaveAttribute('href', '/messages?to=2&name=Jane');
-    expect(screen.queryByText('Message prive')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Contacter Jane')).not.toBeInTheDocument();
     expect(screen.queryByText('Via le forum')).not.toBeInTheDocument();
   });
 
@@ -112,7 +116,7 @@ describe('BuddyContactButtons', () => {
     mockedGetMyRequests.mockResolvedValue([request('declined')]);
     renderButtons();
 
-    expect(await screen.findByText('Message prive')).toBeInTheDocument();
+    expect(await screen.findByLabelText('Contacter Jane')).toBeInTheDocument();
   });
 
   it('ignores requests from other senders or other procedures', async () => {
@@ -122,6 +126,14 @@ describe('BuddyContactButtons', () => {
     ]);
     renderButtons();
 
-    expect(await screen.findByText('Message prive')).toBeInTheDocument();
+    expect(await screen.findByLabelText('Contacter Jane')).toBeInTheDocument();
+  });
+
+  it('closes the menu when clicking outside', () => {
+    renderButtons();
+    fireEvent.click(screen.getByLabelText('Contacter Jane'));
+    expect(screen.getByText('Message prive')).toBeInTheDocument();
+    fireEvent.click(document.querySelector('.fixed.inset-0')!);
+    expect(screen.queryByText('Message prive')).not.toBeInTheDocument();
   });
 });
