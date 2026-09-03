@@ -319,7 +319,7 @@ export default function AdminGovLinks() {
               className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold ${
                 health === undefined ? 'bg-gray-100 text-gray-500' : health.search.ok ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
               }`}
-              title={health?.search.ok ? `Recherche (${health?.search.provider}) connectée` : `Recherche (${health?.search.provider ?? 'searxng'}) injoignable — démarrez SearXNG, la génération est bloquée`}
+              title={health?.search.ok ? `Recherche (${health?.search.provider}) connectée` : `Recherche (${health?.search.provider ?? '?'}) injoignable — la génération est bloquée`}
             >
               <span className={`w-1.5 h-1.5 rounded-full ${health === undefined ? 'bg-gray-400' : health.search.ok ? 'bg-green-500' : 'bg-red-500'}`} />
               Recherche
@@ -331,7 +331,8 @@ export default function AdminGovLinks() {
       {/* Search engine down → generation is hard-blocked backend-side, say it upfront */}
       {health !== undefined && !health.search.ok && (
         <p className="text-xs text-red-700 bg-red-50 border border-red-200 rounded-xl px-4 py-2.5">
-          <Ban className="w-4 h-4 inline-block mr-1 -mt-0.5" /> Moteur de recherche ({health.search.provider}) injoignable — toute génération est refusée tant qu'il n'est pas relancé (<code>docker start searxng</code>).
+          <Ban className="w-4 h-4 inline-block mr-1 -mt-0.5" /> Moteur de recherche ({health.search.provider}) injoignable — toute génération est refusée tant qu'il n'est pas rétabli
+          {health.search.provider === 'searxng' ? <> (<code>docker start searxng</code>)</> : <> (vérifiez la clé API et la variable <code>SEARCH_PROVIDER</code>)</>}.
         </p>
       )}
 
