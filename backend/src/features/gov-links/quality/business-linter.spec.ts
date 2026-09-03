@@ -7,6 +7,7 @@ import {
   contentlessActions,
   navigationLikeActions,
   dominantForeignCategory,
+  dossierLikeActions,
 } from './business-linter';
 import { normalizeForMatch } from './grounding';
 
@@ -159,7 +160,7 @@ describe('niche familiale — cas réel : N11165 publié pour « demarches-admin
     expect(flags.some((f) => f.includes('regroupement familial'))).toBe(true);
   });
 
-  it("tolère une mention isolée dans une liste par ailleurs générale", () => {
+  it('tolère une mention isolée dans une liste par ailleurs générale', () => {
     const { flags } = lintExtraction({
       category: 'demarches',
       actions: [
@@ -183,12 +184,10 @@ describe('dossierLikeActions — alinéas de constitution de dossier', () => {
   ];
 
   it('détecte les alinéas « joindre X / chez notaire / au dossier »', () => {
-    const { dossierLikeActions } = require('./business-linter');
     expect(dossierLikeActions(dossierActions)).toHaveLength(4);
   });
 
   it('ne signale pas les vraies actions de préparation génériques', () => {
-    const { dossierLikeActions } = require('./business-linter');
     expect(
       dossierLikeActions([
         "Valider le VLS-TS en ligne dans les 3 mois suivant l'arrivée.",
@@ -199,17 +198,17 @@ describe('dossierLikeActions — alinéas de constitution de dossier', () => {
   });
 
   it('lintExtraction lève le drapeau quand les alinéas dominent', () => {
-    const { lintExtraction } = require('./business-linter');
     const verdict = lintExtraction({
       category: 'business',
       facts: [],
       actions: dossierActions,
     });
-    expect(verdict.flags.some((f: string) => f.includes('alinéas de dossier'))).toBe(true);
+    expect(
+      verdict.flags.some((f: string) => f.includes('alinéas de dossier')),
+    ).toBe(true);
   });
 
-  it("lintExtraction reste muet quand les alinéas sont minoritaires", () => {
-    const { lintExtraction } = require('./business-linter');
+  it('lintExtraction reste muet quand les alinéas sont minoritaires', () => {
     const verdict = lintExtraction({
       category: 'business',
       facts: [],
@@ -219,6 +218,8 @@ describe('dossierLikeActions — alinéas de constitution de dossier', () => {
         "Joindre une copie de la pièce d'identité de l'entrepreneur.",
       ],
     });
-    expect(verdict.flags.some((f: string) => f.includes('alinéas de dossier'))).toBe(false);
+    expect(
+      verdict.flags.some((f: string) => f.includes('alinéas de dossier')),
+    ).toBe(false);
   });
 });
