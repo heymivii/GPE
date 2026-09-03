@@ -3,11 +3,11 @@
     "curated": true,
     "source": "Numbeo",
     "sourceUrl": "https://www.numbeo.com/cost-of-living/in/Yokohama",
-    "capturedAt": "2026-06-16",
-    "sourceLastUpdate": "15 May 2026",
-    "sample": "83 contributions / 10 contributors (last 12 months)",
+    "capturedAt": "2026-09-03",
+    "sourceLastUpdate": "3 September 2026",
+    "sample": "192 contributions / 15 contributors (last 12 months)",
     "notes": [
-      "summary.monthlyBudget = one-bedroom city-centre rent + 127956.3 (Numbeo single-person monthly estimate excl. rent).",
+      "summary.monthlyBudget = one-bedroom city-centre rent + 128828.2 (Numbeo single-person monthly estimate excl. rent).",
       "categories.utilities.mobileMinute holds the Numbeo monthly mobile plan (per-minute item discontinued upstream).",
       "currency.exchangeRates intentionally empty — FX is a separate concern."
     ],
@@ -21,15 +21,15 @@
   "currency": {
     "code": "JPY",
     "exchangeRates": {},
-    "lastUpdated": "15 May 2026"
+    "lastUpdated": "3 September 2026"
   },
   "categories": {
     "housing": {
       "rent": {
         "oneBedroom": {
           "cityCenter": {
-            "min": 225000,
-            "avg": 225000,
+            "min": 120000,
+            "avg": 185000,
             "max": 225000,
             "currency": "JPY"
           },
@@ -42,14 +42,14 @@
         },
         "threeBedroom": {
           "cityCenter": {
-            "min": 160000,
-            "avg": 340333.33,
+            "min": 200000,
+            "avg": 358666.67,
             "max": 551000,
             "currency": "JPY"
           },
           "outsideCenter": {
             "min": 120000,
-            "avg": 130250,
+            "avg": 134200,
             "max": 220000,
             "currency": "JPY"
           }
@@ -58,14 +58,14 @@
       "buy": {
         "pricePerSqm": {
           "cityCenter": {
-            "min": 800000,
-            "avg": 1000000,
+            "min": 650000,
+            "avg": 962500,
             "max": 1200000,
             "currency": "JPY"
           },
           "outsideCenter": {
-            "min": 714000,
-            "avg": 714000,
+            "min": 450000,
+            "avg": 605600,
             "max": 714000,
             "currency": "JPY"
           }
@@ -76,91 +76,91 @@
       "markets": {
         "milk1L": {
           "min": 195,
-          "avg": 214.17,
-          "max": 250,
+          "avg": 224.29,
+          "max": 260,
           "currency": "JPY"
         },
         "bread500g": {
-          "min": 150,
-          "avg": 262.28,
+          "min": 200,
+          "avg": 268.56,
           "max": 500,
           "currency": "JPY"
         },
         "eggs12": {
           "min": 240,
-          "avg": 318,
+          "avg": 322,
           "max": 360,
           "currency": "JPY"
         },
         "chicken1kg": {
           "min": 600,
-          "avg": 910,
-          "max": 1433,
+          "avg": 958.33,
+          "max": 1400,
           "currency": "JPY"
         },
         "beef1kg": {
           "min": 1280,
-          "avg": 2225,
+          "avg": 2280,
           "max": 3000,
           "currency": "JPY"
         },
         "cheese1kg": {
-          "min": 800,
-          "avg": 1454.37,
-          "max": 3000,
+          "min": 881.85,
+          "avg": 1865,
+          "max": 4000,
           "currency": "JPY"
         },
         "rice1kg": {
           "min": 400,
-          "avg": 650,
+          "avg": 575,
           "max": 1000,
           "currency": "JPY"
         },
         "potato1kg": {
           "min": 300,
-          "avg": 476.67,
-          "max": 600,
+          "avg": 407.5,
+          "max": 450,
           "currency": "JPY"
         },
         "tomato1kg": {
-          "min": 450,
-          "avg": 870,
+          "min": 400,
+          "avg": 662.5,
           "max": 1100,
           "currency": "JPY"
         },
         "onion1kg": {
           "min": 350,
-          "avg": 616.67,
-          "max": 1000,
+          "avg": 412.5,
+          "max": 450,
           "currency": "JPY"
         },
         "apple1kg": {
           "min": 450,
-          "avg": 866.67,
+          "avg": 900,
           "max": 1500,
           "currency": "JPY"
         },
         "banana1kg": {
           "min": 300,
-          "avg": 450,
+          "avg": 437.5,
           "max": 600,
           "currency": "JPY"
         },
         "orange1kg": {
           "min": 400,
-          "avg": 580,
-          "max": 900,
+          "avg": 455,
+          "max": 600,
           "currency": "JPY"
         },
         "lettuce": {
-          "min": 120,
-          "avg": 235,
+          "min": 140,
+          "avg": 200,
           "max": 350,
           "currency": "JPY"
         },
         "water15L": {
           "min": 80,
-          "avg": 127.5,
+          "avg": 124,
           "max": 150,
           "currency": "JPY"
         },
@@ -171,20 +171,20 @@
           "currency": "JPY"
         },
         "domesticBeer": {
-          "min": 200,
-          "avg": 258.88,
-          "max": 530.3,
+          "min": 239.39,
+          "avg": 280.63,
+          "max": 378.79,
           "currency": "JPY"
         },
         "importedBeer": {
-          "min": 250,
-          "avg": 362.5,
+          "min": 280,
+          "avg": 325,
           "max": 500,
           "currency": "JPY"
         },
         "cigarettes": {
-          "min": 600,
-          "avg": 620,
+          "min": 580,
+          "avg": 600,
           "max": 620,
           "currency": "JPY"
         }
@@ -199,42 +199,42 @@
           "currency": "JPY"
         },
         "monthlyPass": {
-          "min": 7800,
-          "avg": 8000,
-          "max": 9900,
+          "min": 8000,
+          "avg": 8950,
+          "max": 10000,
           "currency": "JPY"
         }
       },
       "taxi": {
         "start": {
-          "min": 400,
+          "min": 450,
           "avg": 500,
           "max": 540,
           "currency": "JPY"
         },
         "per1km": {
           "min": 250,
-          "avg": 405,
+          "avg": 400,
           "max": 500,
           "currency": "JPY"
         },
         "waitingHour": {
           "min": 3200,
-          "avg": 3200,
+          "avg": 3250,
           "max": 3300,
           "currency": "JPY"
         }
       },
       "personal": {
         "gasoline1L": {
-          "min": 169.5,
-          "avg": 173.84,
+          "min": 165,
+          "avg": 172.19,
           "max": 175.7,
           "currency": "JPY"
         },
         "newCar": {
           "min": 3342000,
-          "avg": 3434000,
+          "avg": 3388000,
           "max": 3434000,
           "currency": "JPY"
         }
@@ -243,20 +243,20 @@
     "utilities": {
       "basic85m2": {
         "min": 16000,
-        "avg": 20652.53,
-        "max": 30000,
+        "avg": 20877.1,
+        "max": 25000,
         "currency": "JPY"
       },
       "internet": {
-        "min": 4000,
-        "avg": 4900,
-        "max": 7000,
+        "min": 4500,
+        "avg": 5083.33,
+        "max": 6000,
         "currency": "JPY"
       },
       "mobileMinute": {
-        "min": 2800,
-        "avg": 3700,
-        "max": 7000,
+        "min": 3000,
+        "avg": 3833.33,
+        "max": 5000,
         "currency": "JPY"
       }
     },
@@ -264,13 +264,13 @@
       "inexpensiveMeal": {
         "min": 650,
         "avg": 1000,
-        "max": 1500,
+        "max": 2500,
         "currency": "JPY"
       },
       "midRangeMeal2People": {
         "min": 3600,
-        "avg": 6000,
-        "max": 15000,
+        "avg": 6500,
+        "max": 16000,
         "currency": "JPY"
       },
       "mcMeal": {
@@ -281,24 +281,24 @@
       },
       "cappuccino": {
         "min": 200,
-        "avg": 516.67,
+        "avg": 542.86,
         "max": 800,
         "currency": "JPY"
       },
       "cocaCola": {
         "min": 150,
-        "avg": 166.67,
+        "avg": 170,
         "max": 200,
         "currency": "JPY"
       },
       "domesticBeer": {
-        "min": 280,
+        "min": 300,
         "avg": 400,
-        "max": 800,
+        "max": 500,
         "currency": "JPY"
       },
       "importedBeer": {
-        "min": 300,
+        "min": 400,
         "avg": 500,
         "max": 700,
         "currency": "JPY"
@@ -306,40 +306,40 @@
     },
     "clothing": {
       "jeans": {
-        "min": 4000,
-        "avg": 7000,
+        "min": 4500,
+        "avg": 9875,
         "max": 14000,
         "currency": "JPY"
       },
       "summerDress": {
         "min": 1500,
-        "avg": 4250,
-        "max": 5000,
+        "avg": 5125,
+        "max": 8000,
         "currency": "JPY"
       },
       "runningShoes": {
-        "min": 4500,
-        "avg": 8660,
+        "min": 5000,
+        "avg": 9716.67,
         "max": 12000,
         "currency": "JPY"
       },
       "leatherShoes": {
         "min": 8000,
-        "avg": 16000,
-        "max": 50000,
+        "avg": 16200,
+        "max": 20000,
         "currency": "JPY"
       }
     },
     "childcare": {
       "preschool": {
-        "min": 28000,
-        "avg": 82611.11,
+        "min": 49000,
+        "avg": 99944.44,
         "max": 170833.33,
         "currency": "JPY"
       },
       "primarySchool": {
         "min": 2000000,
-        "avg": 2436666.67,
+        "avg": 2327500,
         "max": 3285000,
         "currency": "JPY"
       }
@@ -347,43 +347,43 @@
     "sports": {
       "cinema": {
         "min": 1800,
-        "avg": 1975,
-        "max": 2500,
+        "avg": 2000,
+        "max": 3000,
         "currency": "JPY"
       },
       "gym": {
         "min": 6000,
-        "avg": 8040,
+        "avg": 8033.33,
         "max": 10000,
         "currency": "JPY"
       },
       "tennis": {
         "min": 1000,
-        "avg": 2000,
+        "avg": 1833.33,
         "max": 3000,
         "currency": "JPY"
       }
     },
     "salary": {
       "averageMonthly": {
-        "min": 434259.24,
-        "avg": 434259.24,
-        "max": 434259.24,
+        "min": 430074.68,
+        "avg": 430074.68,
+        "max": 430074.68,
         "currency": "JPY"
       },
       "mortgageRate": {
-        "min": 2,
-        "avg": 2.11,
-        "max": 2.45
+        "min": 1.6,
+        "avg": 2.12,
+        "max": 3.65
       }
     }
   },
   "summary": {
     "monthlyBudget": {
-      "min": 352956.3,
-      "avg": 352956.3,
-      "max": 352956.3
+      "min": 248828.2,
+      "avg": 313828.2,
+      "max": 353828.2
     },
-    "averageSalary": 434259.24
+    "averageSalary": 430074.68
   }
 }

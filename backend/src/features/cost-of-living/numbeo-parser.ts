@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { fetchNumbeoPage } from '../../services/numbeo-fetch.util';
 import {
   CleanedCostOfLivingData,
   PriceRange,
@@ -36,16 +36,8 @@ export interface CityRef {
   slug: string; // Numbeo URL slug, e.g. "Paris", "New-York"
 }
 
-const UA =
-  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36';
-
 export async function fetchNumbeoHtml(slug: string): Promise<string> {
-  const url = `https://www.numbeo.com/cost-of-living/in/${slug}`;
-  const { data } = await axios.get<string>(url, {
-    timeout: 25000,
-    headers: { 'User-Agent': UA, 'Accept-Language': 'en-US,en;q=0.9' },
-  });
-  return data;
+  return fetchNumbeoPage(`https://www.numbeo.com/cost-of-living/in/${slug}`);
 }
 
 // Numbeo formats numbers US-style on the .com site (comma thousands, dot decimal),

@@ -3,11 +3,11 @@
     "curated": true,
     "source": "Numbeo",
     "sourceUrl": "https://www.numbeo.com/cost-of-living/in/New-York",
-    "capturedAt": "2026-06-16",
-    "sourceLastUpdate": "12 June 2026",
-    "sample": "1294 contributions / 234 contributors (last 12 months)",
+    "capturedAt": "2026-09-03",
+    "sourceLastUpdate": "3 September 2026",
+    "sample": "1176 contributions / 204 contributors (last 12 months)",
     "notes": [
-      "summary.monthlyBudget = one-bedroom city-centre rent + 1685.4 (Numbeo single-person monthly estimate excl. rent).",
+      "summary.monthlyBudget = one-bedroom city-centre rent + 1665.9 (Numbeo single-person monthly estimate excl. rent).",
       "categories.utilities.mobileMinute holds the Numbeo monthly mobile plan (per-minute item discontinued upstream).",
       "currency.exchangeRates intentionally empty — FX is a separate concern."
     ],
@@ -21,36 +21,36 @@
   "currency": {
     "code": "USD",
     "exchangeRates": {},
-    "lastUpdated": "12 June 2026"
+    "lastUpdated": "3 September 2026"
   },
   "categories": {
     "housing": {
       "rent": {
         "oneBedroom": {
           "cityCenter": {
-            "min": 3000,
-            "avg": 4284.9,
+            "min": 3500,
+            "avg": 4415.32,
             "max": 5999,
             "currency": "USD"
           },
           "outsideCenter": {
-            "min": 2000,
-            "avg": 2779.76,
-            "max": 3800,
+            "min": 2300,
+            "avg": 3105.56,
+            "max": 5000,
             "currency": "USD"
           }
         },
         "threeBedroom": {
           "cityCenter": {
             "min": 7000,
-            "avg": 9033.93,
-            "max": 12000,
+            "avg": 9710.94,
+            "max": 15000,
             "currency": "USD"
           },
           "outsideCenter": {
-            "min": 3500,
-            "avg": 5035.38,
-            "max": 6500,
+            "min": 3760,
+            "avg": 5597.33,
+            "max": 7750,
             "currency": "USD"
           }
         }
@@ -58,15 +58,15 @@
       "buy": {
         "pricePerSqm": {
           "cityCenter": {
-            "min": 15392.39,
-            "avg": 17937.67,
-            "max": 21226.43,
+            "min": 16145.87,
+            "avg": 18759.46,
+            "max": 21527.82,
             "currency": "USD"
           },
           "outsideCenter": {
-            "min": 5640,
-            "avg": 6291.64,
-            "max": 7534.74,
+            "min": 6103.14,
+            "avg": 6523.13,
+            "max": 8611.13,
             "currency": "USD"
           }
         }
@@ -75,86 +75,86 @@
     "food": {
       "markets": {
         "milk1L": {
-          "min": 1.05,
-          "avg": 1.41,
-          "max": 2.3,
+          "min": 1,
+          "avg": 1.36,
+          "max": 2.11,
           "currency": "USD"
         },
         "bread500g": {
           "min": 3.3,
-          "avg": 4.61,
+          "avg": 4.67,
           "max": 6.61,
           "currency": "USD"
         },
         "eggs12": {
           "min": 3.99,
-          "avg": 6.11,
-          "max": 9,
+          "avg": 5.73,
+          "max": 9.5,
           "currency": "USD"
         },
         "chicken1kg": {
           "min": 8.8,
-          "avg": 14.96,
+          "avg": 15.11,
           "max": 33.07,
           "currency": "USD"
         },
         "beef1kg": {
           "min": 11.02,
-          "avg": 18.61,
+          "avg": 17.77,
           "max": 30.86,
           "currency": "USD"
         },
         "cheese1kg": {
           "min": 8.82,
-          "avg": 16.89,
-          "max": 26.46,
+          "avg": 16.99,
+          "max": 22.05,
           "currency": "USD"
         },
         "rice1kg": {
-          "min": 2.38,
-          "avg": 7.03,
+          "min": 2.84,
+          "avg": 6.97,
           "max": 20,
           "currency": "USD"
         },
         "potato1kg": {
           "min": 2.18,
-          "avg": 3.41,
+          "avg": 3.47,
           "max": 8.82,
           "currency": "USD"
         },
         "tomato1kg": {
           "min": 3.28,
-          "avg": 6.57,
+          "avg": 6.25,
           "max": 8.82,
           "currency": "USD"
         },
         "onion1kg": {
           "min": 2.2,
-          "avg": 3.95,
+          "avg": 4.17,
           "max": 6.61,
           "currency": "USD"
         },
         "apple1kg": {
-          "min": 2.2,
-          "avg": 6.87,
+          "min": 4.39,
+          "avg": 6.11,
           "max": 11.02,
           "currency": "USD"
         },
         "banana1kg": {
-          "min": 1.3,
-          "avg": 2.25,
-          "max": 4.59,
+          "min": 1.41,
+          "avg": 2.2,
+          "max": 4.41,
           "currency": "USD"
         },
         "orange1kg": {
           "min": 2.2,
-          "avg": 5.8,
+          "avg": 5.77,
           "max": 11.02,
           "currency": "USD"
         },
         "lettuce": {
-          "min": 1.49,
-          "avg": 2.79,
+          "min": 1,
+          "avg": 2.72,
           "max": 4,
           "currency": "USD"
         },
@@ -165,14 +165,14 @@
           "currency": "USD"
         },
         "wine": {
-          "min": 15,
+          "min": 13.99,
           "avg": 20,
           "max": 35,
           "currency": "USD"
         },
         "domesticBeer": {
           "min": 2.1,
-          "avg": 3.46,
+          "avg": 3.21,
           "max": 4.29,
           "currency": "USD"
         },
@@ -183,9 +183,9 @@
           "currency": "USD"
         },
         "cigarettes": {
-          "min": 17,
+          "min": 14.55,
           "avg": 19,
-          "max": 21,
+          "max": 20,
           "currency": "USD"
         }
       }
@@ -199,7 +199,7 @@
           "currency": "USD"
         },
         "monthlyPass": {
-          "min": 130,
+          "min": 132,
           "avg": 140,
           "max": 156.52,
           "currency": "USD"
@@ -209,12 +209,12 @@
         "start": {
           "min": 3,
           "avg": 3,
-          "max": 6,
+          "max": 5.5,
           "currency": "USD"
         },
         "per1km": {
           "min": 2.17,
-          "avg": 2.17,
+          "avg": 2.18,
           "max": 3.73,
           "currency": "USD"
         },
@@ -228,8 +228,8 @@
       "personal": {
         "gasoline1L": {
           "min": 0.82,
-          "avg": 1.05,
-          "max": 1.18,
+          "avg": 1.09,
+          "max": 1.21,
           "currency": "USD"
         },
         "newCar": {
@@ -242,21 +242,21 @@
     },
     "utilities": {
       "basic85m2": {
-        "min": 115,
-        "avg": 229.24,
-        "max": 400,
+        "min": 130,
+        "avg": 219.7,
+        "max": 392.31,
         "currency": "USD"
       },
       "internet": {
-        "min": 50,
-        "avg": 75.35,
+        "min": 55,
+        "avg": 76,
         "max": 100,
         "currency": "USD"
       },
       "mobileMinute": {
         "min": 30,
-        "avg": 67.62,
-        "max": 125,
+        "avg": 72.23,
+        "max": 122,
         "currency": "USD"
       }
     },
@@ -264,37 +264,37 @@
       "inexpensiveMeal": {
         "min": 15,
         "avg": 25,
-        "max": 45,
+        "max": 50,
         "currency": "USD"
       },
       "midRangeMeal2People": {
-        "min": 80,
-        "avg": 150,
+        "min": 82,
+        "avg": 140,
         "max": 200,
         "currency": "USD"
       },
       "mcMeal": {
         "min": 12,
-        "avg": 13,
+        "avg": 13.5,
         "max": 15,
         "currency": "USD"
       },
       "cappuccino": {
         "min": 4,
-        "avg": 5.89,
-        "max": 8,
+        "avg": 6.42,
+        "max": 12,
         "currency": "USD"
       },
       "cocaCola": {
-        "min": 2.5,
-        "avg": 3.44,
-        "max": 5,
+        "min": 2.87,
+        "avg": 3.92,
+        "max": 6,
         "currency": "USD"
       },
       "domesticBeer": {
-        "min": 6,
+        "min": 7,
         "avg": 8,
-        "max": 11,
+        "max": 12,
         "currency": "USD"
       },
       "importedBeer": {
@@ -307,25 +307,25 @@
     "clothing": {
       "jeans": {
         "min": 55,
-        "avg": 69.38,
-        "max": 98,
+        "avg": 71.77,
+        "max": 100,
         "currency": "USD"
       },
       "summerDress": {
         "min": 30,
-        "avg": 51.55,
+        "avg": 53.22,
         "max": 75,
         "currency": "USD"
       },
       "runningShoes": {
         "min": 80,
-        "avg": 117.65,
-        "max": 200,
+        "avg": 115.42,
+        "max": 150,
         "currency": "USD"
       },
       "leatherShoes": {
         "min": 80,
-        "avg": 132.18,
+        "avg": 124.89,
         "max": 200,
         "currency": "USD"
       }
@@ -339,7 +339,7 @@
       },
       "primarySchool": {
         "min": 49000,
-        "avg": 60549.33,
+        "avg": 60588.57,
         "max": 72000,
         "currency": "USD"
       }
@@ -347,43 +347,43 @@
     "sports": {
       "cinema": {
         "min": 17,
-        "avg": 22.5,
+        "avg": 23.5,
         "max": 25,
         "currency": "USD"
       },
       "gym": {
         "min": 50,
-        "avg": 130.25,
-        "max": 350,
+        "avg": 125.87,
+        "max": 249.99,
         "currency": "USD"
       },
       "tennis": {
-        "min": 55.44,
-        "avg": 55.44,
+        "min": 35,
+        "avg": 62.38,
         "max": 90,
         "currency": "USD"
       }
     },
     "salary": {
       "averageMonthly": {
-        "min": 5423.65,
-        "avg": 5423.65,
-        "max": 5423.65,
+        "min": 5238.39,
+        "avg": 5238.39,
+        "max": 5238.39,
         "currency": "USD"
       },
       "mortgageRate": {
         "min": 6,
-        "avg": 6.33,
+        "avg": 6.49,
         "max": 7.3
       }
     }
   },
   "summary": {
     "monthlyBudget": {
-      "min": 4685.4,
-      "avg": 5970.3,
-      "max": 7684.4
+      "min": 5165.9,
+      "avg": 6081.22,
+      "max": 7664.9
     },
-    "averageSalary": 5423.65
+    "averageSalary": 5238.39
   }
 }

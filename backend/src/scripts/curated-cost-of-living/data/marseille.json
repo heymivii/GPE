@@ -3,11 +3,11 @@
     "curated": true,
     "source": "Numbeo",
     "sourceUrl": "https://www.numbeo.com/cost-of-living/in/Marseille",
-    "capturedAt": "2026-06-16",
-    "sourceLastUpdate": "26 May 2026",
-    "sample": "264 contributions / 24 contributors (last 12 months)",
+    "capturedAt": "2026-09-03",
+    "sourceLastUpdate": "31 August 2026",
+    "sample": "274 contributions / 27 contributors (last 12 months)",
     "notes": [
-      "summary.monthlyBudget = one-bedroom city-centre rent + 1006.2 (Numbeo single-person monthly estimate excl. rent).",
+      "summary.monthlyBudget = one-bedroom city-centre rent + 993.1 (Numbeo single-person monthly estimate excl. rent).",
       "categories.utilities.mobileMinute holds the Numbeo monthly mobile plan (per-minute item discontinued upstream).",
       "currency.exchangeRates intentionally empty — FX is a separate concern."
     ],
@@ -21,7 +21,7 @@
   "currency": {
     "code": "EUR",
     "exchangeRates": {},
-    "lastUpdated": "26 May 2026"
+    "lastUpdated": "31 August 2026"
   },
   "categories": {
     "housing": {
@@ -29,7 +29,7 @@
         "oneBedroom": {
           "cityCenter": {
             "min": 614,
-            "avg": 804.4,
+            "avg": 804.89,
             "max": 1000,
             "currency": "EUR"
           },
@@ -59,13 +59,13 @@
         "pricePerSqm": {
           "cityCenter": {
             "min": 3740,
-            "avg": 4614.5,
+            "avg": 4546.22,
             "max": 5610,
             "currency": "EUR"
           },
           "outsideCenter": {
             "min": 2631,
-            "avg": 3228.5,
+            "avg": 3195.86,
             "max": 4500,
             "currency": "EUR"
           }
@@ -105,8 +105,8 @@
           "currency": "EUR"
         },
         "cheese1kg": {
-          "min": 14,
-          "avg": 23.67,
+          "min": 10,
+          "avg": 22.4,
           "max": 35,
           "currency": "EUR"
         },
@@ -166,7 +166,7 @@
         },
         "wine": {
           "min": 6,
-          "avg": 9,
+          "avg": 8,
           "max": 12,
           "currency": "EUR"
         },
@@ -228,7 +228,7 @@
       "personal": {
         "gasoline1L": {
           "min": 1.7,
-          "avg": 1.83,
+          "avg": 1.88,
           "max": 2,
           "currency": "EUR"
         },
@@ -263,18 +263,18 @@
     "restaurants": {
       "inexpensiveMeal": {
         "min": 12,
-        "avg": 17,
-        "max": 33.52,
+        "avg": 16,
+        "max": 25,
         "currency": "EUR"
       },
       "midRangeMeal2People": {
-        "min": 60,
-        "avg": 68.52,
-        "max": 70,
+        "min": 40,
+        "avg": 65,
+        "max": 80,
         "currency": "EUR"
       },
       "mcMeal": {
-        "min": 10.06,
+        "min": 10,
         "avg": 12,
         "max": 15,
         "currency": "EUR"
@@ -325,15 +325,15 @@
       },
       "leatherShoes": {
         "min": 80,
-        "avg": 130,
+        "avg": 112.5,
         "max": 200,
         "currency": "EUR"
       }
     },
     "childcare": {
       "preschool": {
-        "min": 500,
-        "avg": 705,
+        "min": 620,
+        "avg": 773.33,
         "max": 900,
         "currency": "EUR"
       },
@@ -347,7 +347,7 @@
     "sports": {
       "cinema": {
         "min": 12,
-        "avg": 12.5,
+        "avg": 13,
         "max": 15,
         "currency": "EUR"
       },
@@ -366,9 +366,9 @@
     },
     "salary": {
       "averageMonthly": {
-        "min": 2134.33,
-        "avg": 2134.33,
-        "max": 2134.33,
+        "min": 2174.96,
+        "avg": 2174.96,
+        "max": 2174.96,
         "currency": "EUR"
       },
       "mortgageRate": {
@@ -380,10 +380,10 @@
   },
   "summary": {
     "monthlyBudget": {
-      "min": 1620.2,
-      "avg": 1810.6,
-      "max": 2006.2
+      "min": 1607.1,
+      "avg": 1797.99,
+      "max": 1993.1
     },
-    "averageSalary": 2134.33
+    "averageSalary": 2174.96
   }
 }

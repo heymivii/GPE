@@ -3,11 +3,11 @@
     "curated": true,
     "source": "Numbeo",
     "sourceUrl": "https://www.numbeo.com/cost-of-living/in/Geneva",
-    "capturedAt": "2026-06-16",
-    "sourceLastUpdate": "4 June 2026",
-    "sample": "786 contributions / 75 contributors (last 12 months)",
+    "capturedAt": "2026-09-03",
+    "sourceLastUpdate": "27 August 2026",
+    "sample": "767 contributions / 75 contributors (last 12 months)",
     "notes": [
-      "summary.monthlyBudget = one-bedroom city-centre rent + 1382.1 (Numbeo single-person monthly estimate excl. rent).",
+      "summary.monthlyBudget = one-bedroom city-centre rent + 1379.5 (Numbeo single-person monthly estimate excl. rent).",
       "categories.utilities.mobileMinute holds the Numbeo monthly mobile plan (per-minute item discontinued upstream).",
       "currency.exchangeRates intentionally empty — FX is a separate concern."
     ],
@@ -21,7 +21,7 @@
   "currency": {
     "code": "CHF",
     "exchangeRates": {},
-    "lastUpdated": "4 June 2026"
+    "lastUpdated": "27 August 2026"
   },
   "categories": {
     "housing": {
@@ -29,28 +29,28 @@
         "oneBedroom": {
           "cityCenter": {
             "min": 1900,
-            "avg": 2270,
+            "avg": 2312.5,
             "max": 2650,
             "currency": "CHF"
           },
           "outsideCenter": {
             "min": 1600,
-            "avg": 1751.82,
-            "max": 2000,
+            "avg": 1752,
+            "max": 1900,
             "currency": "CHF"
           }
         },
         "threeBedroom": {
           "cityCenter": {
             "min": 3500,
-            "avg": 4016,
+            "avg": 3869.09,
             "max": 5000,
             "currency": "CHF"
           },
           "outsideCenter": {
             "min": 2720,
-            "avg": 2971.11,
-            "max": 3400,
+            "avg": 3014,
+            "max": 3500,
             "currency": "CHF"
           }
         }
@@ -76,20 +76,20 @@
       "markets": {
         "milk1L": {
           "min": 1.2,
-          "avg": 1.88,
+          "avg": 1.91,
           "max": 2,
           "currency": "CHF"
         },
         "bread500g": {
-          "min": 1.2,
-          "avg": 2.47,
+          "min": 1.5,
+          "avg": 2.84,
           "max": 4,
           "currency": "CHF"
         },
         "eggs12": {
           "min": 4.8,
-          "avg": 6.13,
-          "max": 7.6,
+          "avg": 6.55,
+          "max": 8.28,
           "currency": "CHF"
         },
         "chicken1kg": {
@@ -100,19 +100,19 @@
         },
         "beef1kg": {
           "min": 29.5,
-          "avg": 36.34,
+          "avg": 35.1,
           "max": 78,
           "currency": "CHF"
         },
         "cheese1kg": {
           "min": 18.5,
-          "avg": 20.41,
-          "max": 22,
+          "avg": 20.6,
+          "max": 40,
           "currency": "CHF"
         },
         "rice1kg": {
-          "min": 2,
-          "avg": 2.7,
+          "min": 2.6,
+          "avg": 2.71,
           "max": 3.5,
           "currency": "CHF"
         },
@@ -130,7 +130,7 @@
         },
         "onion1kg": {
           "min": 1.5,
-          "avg": 1.71,
+          "avg": 1.74,
           "max": 3,
           "currency": "CHF"
         },
@@ -142,8 +142,8 @@
         },
         "banana1kg": {
           "min": 1.2,
-          "avg": 1.45,
-          "max": 2.95,
+          "avg": 1.39,
+          "max": 3,
           "currency": "CHF"
         },
         "orange1kg": {
@@ -165,15 +165,15 @@
           "currency": "CHF"
         },
         "wine": {
-          "min": 8,
+          "min": 8.5,
           "avg": 10,
           "max": 15,
           "currency": "CHF"
         },
         "domesticBeer": {
-          "min": 1.91,
-          "avg": 2.6,
-          "max": 4,
+          "min": 1.57,
+          "avg": 2.7,
+          "max": 5,
           "currency": "CHF"
         },
         "importedBeer": {
@@ -195,13 +195,13 @@
         "oneWayTicket": {
           "min": 3,
           "avg": 3,
-          "max": 3.2,
+          "max": 3.5,
           "currency": "CHF"
         },
         "monthlyPass": {
-          "min": 45,
-          "avg": 70,
-          "max": 75,
+          "min": 60,
+          "avg": 75,
+          "max": 80,
           "currency": "CHF"
         }
       },
@@ -228,13 +228,13 @@
       "personal": {
         "gasoline1L": {
           "min": 1.71,
-          "avg": 1.83,
-          "max": 1.98,
+          "avg": 1.89,
+          "max": 1.9,
           "currency": "CHF"
         },
         "newCar": {
           "min": 28900,
-          "avg": 35500,
+          "avg": 32200,
           "max": 35500,
           "currency": "CHF"
         }
@@ -248,27 +248,27 @@
         "currency": "CHF"
       },
       "internet": {
-        "min": 35,
-        "avg": 45.92,
+        "min": 40,
+        "avg": 46.91,
         "max": 60,
         "currency": "CHF"
       },
       "mobileMinute": {
-        "min": 20,
-        "avg": 32.83,
+        "min": 18,
+        "avg": 31.25,
         "max": 60,
         "currency": "CHF"
       }
     },
     "restaurants": {
       "inexpensiveMeal": {
-        "min": 20,
-        "avg": 26.5,
+        "min": 18,
+        "avg": 25,
         "max": 35,
         "currency": "CHF"
       },
       "midRangeMeal2People": {
-        "min": 80,
+        "min": 70,
         "avg": 110,
         "max": 200,
         "currency": "CHF"
@@ -276,18 +276,18 @@
       "mcMeal": {
         "min": 15,
         "avg": 15,
-        "max": 17.5,
+        "max": 17.9,
         "currency": "CHF"
       },
       "cappuccino": {
-        "min": 4,
-        "avg": 5.19,
+        "min": 4.5,
+        "avg": 5.25,
         "max": 6,
         "currency": "CHF"
       },
       "cocaCola": {
         "min": 2,
-        "avg": 4.39,
+        "avg": 4.14,
         "max": 5,
         "currency": "CHF"
       },
@@ -307,13 +307,13 @@
     "clothing": {
       "jeans": {
         "min": 80,
-        "avg": 113.21,
+        "avg": 112.36,
         "max": 139,
         "currency": "CHF"
       },
       "summerDress": {
         "min": 40,
-        "avg": 70.45,
+        "avg": 66.1,
         "max": 99,
         "currency": "CHF"
       },
@@ -325,7 +325,7 @@
       },
       "leatherShoes": {
         "min": 80,
-        "avg": 170.54,
+        "avg": 154.42,
         "max": 200,
         "currency": "CHF"
       }
@@ -333,13 +333,13 @@
     "childcare": {
       "preschool": {
         "min": 1583.33,
-        "avg": 2170.77,
-        "max": 3200,
+        "avg": 1982,
+        "max": 3000,
         "currency": "CHF"
       },
       "primarySchool": {
         "min": 23700,
-        "avg": 29660.67,
+        "avg": 29302.15,
         "max": 35800,
         "currency": "CHF"
       }
@@ -353,7 +353,7 @@
       },
       "gym": {
         "min": 49,
-        "avg": 63.78,
+        "avg": 62.4,
         "max": 80,
         "currency": "CHF"
       },
@@ -366,9 +366,9 @@
     },
     "salary": {
       "averageMonthly": {
-        "min": 5914.4,
-        "avg": 5914.4,
-        "max": 5914.4,
+        "min": 5957.98,
+        "avg": 5957.98,
+        "max": 5957.98,
         "currency": "CHF"
       },
       "mortgageRate": {
@@ -380,10 +380,10 @@
   },
   "summary": {
     "monthlyBudget": {
-      "min": 3282.1,
-      "avg": 3652.1,
-      "max": 4032.1
+      "min": 3279.5,
+      "avg": 3692,
+      "max": 4029.5
     },
-    "averageSalary": 5914.4
+    "averageSalary": 5957.98
   }
 }
