@@ -199,9 +199,23 @@ export default function AdminGovLinks() {
     },
   });
 
+  // Ce qui demande une action passe en tête : à valider, puis à vérifier,
+  // puis le publié, puis les liens morts — et pays/catégorie stables ensuite.
+  const STATUS_PRIORITY: Record<string, number> = {
+    pending_review: 0,
+    needs_review: 1,
+    active: 2,
+    dead: 3,
+  };
   const filteredLinks = useMemo(() => {
-    if (filterCountry === 'all') return links;
-    return links.filter((l) => l.countryCode === filterCountry);
+    const base = filterCountry === 'all' ? links : links.filter((l) => l.countryCode === filterCountry);
+    return [...base].sort(
+      (a, b) =>
+        (STATUS_PRIORITY[a.status] ?? 9) - (STATUS_PRIORITY[b.status] ?? 9) ||
+        a.countryCode.localeCompare(b.countryCode) ||
+        a.category.localeCompare(b.category),
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [links, filterCountry]);
 
   const handleGenerate = () => {
