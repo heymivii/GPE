@@ -110,6 +110,48 @@ describe('SearchHintService', () => {
         pinnedUrl: null,
       });
     });
+
+    it('prefixe https:// sur une pinnedUrl collée sans schéma', async () => {
+      repo.findOne.mockResolvedValue(null);
+      repo.create.mockImplementation((h: any) => h);
+      repo.save.mockImplementation((h: any) => Promise.resolve(h));
+      const result = await service.create({
+        countryCode: 'fr',
+        category: 'visa',
+        keywords: 'visa',
+        pinnedUrl: 'france-visas.gouv.fr/',
+      } as any);
+      expect(result.pinnedUrl).toBe('https://france-visas.gouv.fr/');
+    });
+
+    it('laisse intacte une pinnedUrl déjà schématisée et vide → null', async () => {
+      repo.findOne.mockResolvedValue(null);
+      repo.create.mockImplementation((h: any) => h);
+      repo.save.mockImplementation((h: any) => Promise.resolve(h));
+      const withScheme = await service.create({
+        countryCode: 'fr',
+        category: 'visa',
+        keywords: 'visa',
+        pinnedUrl: 'http://example.gouv.fr',
+      } as any);
+      expect(withScheme.pinnedUrl).toBe('http://example.gouv.fr');
+      const empty = await service.create({
+        countryCode: 'fr',
+        category: 'sante',
+        keywords: 'x',
+        pinnedUrl: '   ',
+      } as any);
+      expect(empty.pinnedUrl).toBeNull();
+    });
+  });
+
+  describe('update — normalisation pinnedUrl', () => {
+    it('prefixe https:// aussi à la mise à jour', async () => {
+      repo.findOne.mockResolvedValue({ countryCode: 'FR', category: 'visa', pinnedUrl: null });
+      repo.save.mockImplementation((h: any) => Promise.resolve(h));
+      const result = await service.update('FR', 'visa', { pinnedUrl: 'france-visas.gouv.fr' } as any);
+      expect(result.pinnedUrl).toBe('https://france-visas.gouv.fr');
+    });
   });
 
   describe('update', () => {
