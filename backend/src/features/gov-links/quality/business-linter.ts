@@ -172,6 +172,34 @@ export function navigationLikeActions(actions: string[]): string[] {
   });
 }
 
+
+/** Seuil : au-delà, l'extraction est un mode d'emploi de dossier, pas un guide. */
+export const MAX_DOSSIER_RATIO = 0.4;
+
+/**
+ * Alinéas de constitution de dossier : « joindre X », « fournir Y », « faire
+ * établir Z chez le notaire »… Vrais sur UNE démarche précise, pas au niveau
+ * d'un guide de préparation générique — la checklist doit dire « préparer le
+ * dossier (pièces...) », pas recopier les annexes d'un formulaire.
+ * (Retour de recette : l'étape business listait 6 pièces à joindre.)
+ */
+const DOSSIER_PATTERNS: RegExp[] = [
+  /^joindre\b/,
+  /^fournir\b/,
+  /^annexer\b/,
+  /\bau dossier\b/,
+  /\bdeclaration sur l honneur\b/,
+  /\bchez (un |le )?notaire\b/,
+  /\bpiece[s]? justificative[s]?\b.*\bjoindre\b/,
+];
+
+export function dossierLikeActions(actions: string[]): string[] {
+  return (actions ?? []).filter((a) => {
+    const n = normalizeAction(a);
+    return DOSSIER_PATTERNS.some((re) => re.test(n));
+  });
+}
+
 /** Nombre de termes d'une catégorie présents dans un texte normalisé. */
 function vocabularyHits(text: string, category: string): number {
   const vocab = CATEGORY_VOCABULARY[category] ?? [];
@@ -235,7 +263,16 @@ export function lintExtraction(input: LintInput): LintVerdict {
       );
     }
 
-    // 3. Navigation — le menu du site a été pris pour une liste de tâches.
+    // 3. Alinéas de dossier — un mode d'emploi de formulaire recopié tel quel
+    //    n'est pas un guide de préparation générique.
+    const dossier = dossierLikeActions(actions);
+    if (dossier.length / actions.length > MAX_DOSSIER_RATIO) {
+      flags.push(
+        `${dossier.length}/${actions.length} actions sont des alinéas de dossier (à généraliser en une étape de préparation)`,
+      );
+    }
+
+    // 4. Navigation — le menu du site a été pris pour une liste de tâches.
     const nav = navigationLikeActions(actions);
     if (nav.length / actions.length > MAX_NAVIGATION_RATIO) {
       flags.push(

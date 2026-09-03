@@ -145,6 +145,14 @@ describe('buildSummarizePrompt — le contrat qualité passé au modèle', () =>
     expect(prompt).toMatch(/adresse email.+administration locale/);
   });
 
+  it("exige des actions génériques : guide de préparation, pas alinéas de dossier", () => {
+    expect(prompt).toContain('GÉNÉRALITÉ');
+    expect(prompt).toContain('TOUTE personne concernée');
+    // La consigne de fusion : les pièces à joindre deviennent UNE action de préparation.
+    expect(prompt).toContain('Préparer le dossier');
+    expect(prompt).toMatch(/joindre X/);
+  });
+
   it('exclut explicitement menus et étapes de formulaire génériques', () => {
     expect(prompt).toContain('entrée de menu');
     expect(prompt).toContain('Renseigner les informations demandées');

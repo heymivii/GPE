@@ -70,6 +70,7 @@ RÈGLES ABSOLUES — à respecter sans exception :
 4. PORTÉE NATIONALE : ignore tout ce qui n'est valable que pour une ville, un département, un canton ou une préfecture en particulier. Ne recopie JAMAIS une adresse email, un numéro de téléphone ou une adresse postale d'une administration locale.
 5. LECTEUR : la personne ARRIVE dans le pays. Ignore les passages destinés aux ressortissants qui partent à l'étranger, aux entreprises ou aux professionnels (sauf si le thème est « business »).
 6. Réponds en FRANÇAIS, même si le texte source est dans une autre langue.
+7. GÉNÉRALITÉ : la checklist est un guide de PRÉPARATION, pas le mode d'emploi d'un formulaire. Chaque action doit valoir pour TOUTE personne concernée par « ${context.category} », quel que soit son établissement, son organisme ou son cas particulier. Ne recopie pas les alinéas de constitution d'un dossier (« joindre X », « fournir Y », « faire établir Z chez le notaire ») : fusionne-les en UNE action de préparation qui liste les pièces (« Préparer le dossier : pièce d'identité, justificatif de domicile… »). Une action nationale, datée et outillée reste parfaite ; un alinéa de formulaire ne l'est pas.
 
 CE QUE N'EST PAS UNE ACTION — à exclure systématiquement :
 - une entrée de menu ou un lien de navigation (« Trouver sa formation », « Préparer son arrivée ») ;
