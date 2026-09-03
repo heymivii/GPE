@@ -191,8 +191,10 @@ jobs:
       # akhileshns/heroku-deploy ne l'installe pas : sans elle, son check
       # apps:info échoue en silence (« heroku: not found ») puis il retombe
       # sur un `heroku create` qui échoue aussi.
+      # Version épinglée depuis npm (paquet officiel Heroku) plutôt que
+      # `curl … | sh` : pas d'exécution de script distant non versionné en CI.
       - name: Install Heroku CLI
-        run: curl https://cli-assets.heroku.com/install.sh | sh
+        run: npm install --global heroku@11.1.1
 
       # Heroku's own git integration doesn't apply here since the app is
       # only a subdirectory of this monorepo (see heroku-buildpack-monorepo
