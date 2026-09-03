@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { CountryCard } from '../components/CountryCard';
@@ -7,6 +7,9 @@ import { PageHeader } from '../../../components/PageHeader';
 import { PageSearch } from '../../../components/PageSearch';
 import type { CountryDestination } from '../types';
 import { destinationsApi } from '../../../api/destinations';
+
+// Lazy : le topojson monde (~110 Ko) ne doit pas alourdir le bundle initial.
+const WorldMap = lazy(() => import('../components/WorldMap'));
 
 export function DestinationsPage() {
   const { t } = useTranslation();
@@ -47,6 +50,15 @@ export function DestinationsPage() {
         title={t('destinations.title')}
         description={t('destinations.subtitle')}
       />
+
+      {/* Carte monde interactive — les destinations couvertes en un coup d'œil */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+        <Suspense
+          fallback={<div className="rounded-3xl border border-gray-100 bg-gray-50 animate-pulse aspect-[2/1]" />}
+        >
+          <WorldMap />
+        </Suspense>
+      </div>
 
       <PageSearch>
         <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">

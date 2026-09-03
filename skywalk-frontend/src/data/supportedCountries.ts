@@ -4,16 +4,20 @@ export interface SupportedCountry {
     slug: string;
     flag: string;
     iso3: string;
+    /** Code ISO 3166-1 numérique — identifiant des features du topojson world-atlas.
+     *  Optionnel : les pays dérivés dynamiquement de la BDD ne l'ont pas et ne sont
+     *  simplement pas illuminés sur la carte monde. */
+    isoNumeric?: string;
     i18nKey: string;
     apiCity: string;
     apiCountryName: string;
 }
 
 export const SUPPORTED_COUNTRIES: SupportedCountry[] = [
-    { code: 'FR', iso3: 'FRA', name: 'France', slug: 'france', flag: '🇫🇷', i18nKey: 'countries.france', apiCity: 'Paris', apiCountryName: 'France' },
-    { code: 'US', iso3: 'USA', name: 'États-Unis', slug: 'etats-unis', flag: '🇺🇸', i18nKey: 'countries.unitedStates', apiCity: 'New York', apiCountryName: 'United States' },
-    { code: 'JP', iso3: 'JPN', name: 'Japon', slug: 'japon', flag: '🇯🇵', i18nKey: 'countries.japan', apiCity: 'Tokyo', apiCountryName: 'Japan' },
-    { code: 'CH', iso3: 'CHE', name: 'Suisse', slug: 'suisse', flag: '🇨🇭', i18nKey: 'countries.switzerland', apiCity: 'Geneva', apiCountryName: 'Switzerland' },
+    { code: 'FR', iso3: 'FRA', isoNumeric: '250', name: 'France', slug: 'france', flag: '🇫🇷', i18nKey: 'countries.france', apiCity: 'Paris', apiCountryName: 'France' },
+    { code: 'US', iso3: 'USA', isoNumeric: '840', name: 'États-Unis', slug: 'etats-unis', flag: '🇺🇸', i18nKey: 'countries.unitedStates', apiCity: 'New York', apiCountryName: 'United States' },
+    { code: 'JP', iso3: 'JPN', isoNumeric: '392', name: 'Japon', slug: 'japon', flag: '🇯🇵', i18nKey: 'countries.japan', apiCity: 'Tokyo', apiCountryName: 'Japan' },
+    { code: 'CH', iso3: 'CHE', isoNumeric: '756', name: 'Suisse', slug: 'suisse', flag: '🇨🇭', i18nKey: 'countries.switzerland', apiCity: 'Geneva', apiCountryName: 'Switzerland' },
 ];
 
 export const CITIES_BY_COUNTRY: Record<string, string[]> = {
