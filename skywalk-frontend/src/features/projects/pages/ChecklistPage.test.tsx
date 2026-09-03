@@ -470,4 +470,36 @@ describe('ChecklistPage', () => {
     expect(screen.getByText('J-30')).toBeInTheDocument();
     vi.useRealTimers();
   });
+
+  it('invites the user to complete the missing profile fields for full personalization', () => {
+    mockedUseProject.mockReturnValue({
+      data: { idProject: 1, isPaid: true, mainObjective: 'study' },
+    } as any);
+    renderPage();
+
+    expect(screen.getByText(/Checklist partiellement personnalisée/)).toBeInTheDocument();
+    // objectif renseigné → seuls nationalité et situation familiale sont réclamés
+    expect(
+      screen.getByText(/ta nationalité et ta situation familiale/),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Compléter mon profil/ })).toHaveAttribute(
+      'href',
+      '/onboarding/1',
+    );
+  });
+
+  it('hides the profile-completion banner when the profile is fully filled', () => {
+    mockedUseProject.mockReturnValue({
+      data: {
+        idProject: 1,
+        isPaid: true,
+        mainObjective: 'study',
+        nationality: 'SN',
+        hasChildren: false,
+      },
+    } as any);
+    renderPage();
+
+    expect(screen.queryByText(/Checklist partiellement personnalisée/)).not.toBeInTheDocument();
+  });
 });

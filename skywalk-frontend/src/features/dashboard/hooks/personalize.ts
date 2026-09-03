@@ -6,7 +6,9 @@ import { isVisaExempt } from '../../../data/freeMovement';
  *   - EU/EEA/CH citizen → EU/CH destination: no visa step, and no residence-permit
  *     step either (free movement) — EXCEPT a CH destination, where EU/EEA citizens
  *     still must register with their commune and obtain a B/L permit;
- *   - no children: hide school/childcare (`education`);
+ *   - no children: hide school/childcare (`education`) — UNLESS the project's
+ *     objective is 'study': the `education` category then carries the user's own
+ *     higher-education steps (« Études »), never childcare;
  *   - priorities: matching categories float to the top.
  * status / stayDuration / travelType are intentionally NOT used to hide steps (no safe rule).
  */
@@ -16,6 +18,8 @@ export interface PersonalizationContext {
   hasChildren?: boolean | null;
   /** Project.priorities, a comma-separated string of priority ids. */
   priorities?: string | null;
+  /** Project objective ('work' | 'study' | …) — guards the education-hiding rule. */
+  objective?: string | null;
 }
 
 // Priority id (onboarding) → checklist category.
@@ -41,7 +45,9 @@ function hiddenCategories(ctx: PersonalizationContext): Set<string> {
       hidden.add('demarches');
     }
   }
-  if (ctx.hasChildren === false) {
+  // « Études » (projet study) partage la catégorie `education` avec la scolarité des
+  // enfants : ne jamais la masquer pour un étudiant, même sans enfants.
+  if (ctx.hasChildren === false && ctx.objective !== 'study') {
     hidden.add('education');
   }
   return hidden;

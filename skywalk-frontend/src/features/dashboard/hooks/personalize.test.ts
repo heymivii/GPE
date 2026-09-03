@@ -25,6 +25,11 @@ describe('personalizeFilter', () => {
     expect(result.map((s) => s.category)).not.toContain('education');
   });
 
+  it('keeps the education category for a study project even without children', () => {
+    const result = personalizeFilter(steps, { hasChildren: false, objective: 'study' });
+    expect(result.map((s) => s.category)).toContain('education');
+  });
+
   it('hides nothing when hasChildren is true or unknown', () => {
     expect(personalizeFilter(steps, { hasChildren: true })).toEqual(steps);
     expect(personalizeFilter(steps, {})).toEqual(steps);

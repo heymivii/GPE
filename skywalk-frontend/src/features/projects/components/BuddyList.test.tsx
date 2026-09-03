@@ -38,7 +38,7 @@ describe('BuddyList', () => {
     mockedUseBuddies.mockReturnValue({ data: [], isLoading: false, isError: false });
     render(<BuddyList procedureId={5} procedureTitle="Visa" countryId={10} />);
     expect(
-      screen.getByText(/Sois le premier a partager ton experience/),
+      screen.getByText(/Sois le premier à partager ton expérience/),
     ).toBeInTheDocument();
   });
 
@@ -54,7 +54,7 @@ describe('BuddyList', () => {
 
     render(<BuddyList procedureId={5} procedureTitle="Visa" countryId={10} />);
 
-    expect(screen.getByText('2 personnes ont fait cette etape')).toBeInTheDocument();
+    expect(screen.getByText('2 personnes ont fait cette étape')).toBeInTheDocument();
     expect(screen.getByText('Jane')).toBeInTheDocument();
     expect(screen.getByText('- Germany')).toBeInTheDocument();
     expect(screen.getByText("aujourd'hui")).toBeInTheDocument();
@@ -72,6 +72,6 @@ describe('BuddyList', () => {
 
     render(<BuddyList procedureId={5} procedureTitle="Visa" countryId={10} />);
 
-    expect(screen.getByText('1 personne a fait cette etape')).toBeInTheDocument();
+    expect(screen.getByText('1 personne a fait cette étape')).toBeInTheDocument();
   });
 });
