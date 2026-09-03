@@ -40,18 +40,20 @@ export default function TrustBadge({
     ? `${label} — ${host}. Lien officiel contrôlé et validé par l'équipe SkyWalk.`
     : `${label}. Contrôlé et validé par l'équipe SkyWalk.`;
 
+  // Pilule NEUTRE : le badge apparaît sur chaque étape — en vert plein il saturait
+  // la page. La confiance passe par l'icône bouclier (seule touche verte) + le host.
   const content = (
     <>
-      <ShieldCheck className="w-3.5 h-3.5 flex-shrink-0" />
-      <span className="font-semibold">Source officielle vérifiée</span>
+      <ShieldCheck className="w-3.5 h-3.5 flex-shrink-0 text-emerald-600" />
+      <span className="font-medium">Source officielle vérifiée</span>
       {host && (
-        <span className="text-emerald-600/80 truncate max-w-[140px]">· {host}</span>
+        <span className="text-gray-400 truncate max-w-[140px]">· {host}</span>
       )}
     </>
   );
 
   const base =
-    'inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] bg-emerald-50 text-emerald-700 border border-emerald-200';
+    'inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] bg-white text-gray-600 border border-gray-200';
 
   if (url) {
     return (
@@ -61,7 +63,7 @@ export default function TrustBadge({
         rel="noopener noreferrer"
         onClick={(e) => e.stopPropagation()}
         title={title}
-        className={`${base} hover:bg-emerald-100 transition-colors cursor-pointer ${className}`}
+        className={`${base} hover:border-gray-300 hover:bg-gray-50 transition-colors cursor-pointer ${className}`}
       >
         {content}
       </a>

@@ -90,7 +90,7 @@ export default function BuddyContactButtons({
     return (
       <Link
         to={`/messages?to=${recipientId}&name=${encodeURIComponent(recipientFirstname)}`}
-        className="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1 rounded-md bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 transition-colors"
+        className="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1 rounded-md bg-white text-[#5EA3C0] border border-gray-200 hover:border-[#5EA3C0]/50 hover:bg-[#5EA3C0]/5 transition-colors"
         onClick={(e) => e.stopPropagation()}
       >
         <MessageCircle className="w-3 h-3" />
@@ -101,8 +101,8 @@ export default function BuddyContactButtons({
 
   if (pendingForThis || status === 'sent' || status === 'loading') {
     return (
-      <span className="text-[11px] text-blue-600">
-        Demande envoyee - en attente de reponse
+      <span className="text-[11px] text-gray-500">
+        Demande envoyée — en attente de réponse
       </span>
     );
   }

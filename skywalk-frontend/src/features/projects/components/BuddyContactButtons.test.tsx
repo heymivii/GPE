@@ -60,7 +60,7 @@ describe('BuddyContactButtons', () => {
 
     expect(mockedSendRequest).toHaveBeenCalledWith(2, 5);
     await waitFor(() =>
-      expect(screen.getByText('Demande envoyee - en attente de reponse')).toBeInTheDocument(),
+      expect(screen.getByText('Demande envoyée — en attente de réponse')).toBeInTheDocument(),
     );
   });
 
@@ -97,7 +97,7 @@ describe('BuddyContactButtons', () => {
     renderButtons();
 
     await waitFor(() =>
-      expect(screen.getByText('Demande envoyee - en attente de reponse')).toBeInTheDocument(),
+      expect(screen.getByText('Demande envoyée — en attente de réponse')).toBeInTheDocument(),
     );
     expect(screen.queryByLabelText('Contacter Jane')).not.toBeInTheDocument();
   });
