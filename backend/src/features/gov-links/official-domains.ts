@@ -30,3 +30,21 @@ export function isOfficialDomain(
     return host === bare || host.endsWith(`.${bare}`);
   });
 }
+
+/**
+ * Priorité aux domaines de la fiche (carnet de recherche) : si au moins un
+ * candidat vérifié vit sur l'un des domaines ciblés par la fiche, on restreint
+ * le choix à ceux-là — la requête ouverte reste un filet de sécurité quand la
+ * fiche est vide ou ses domaines injoignables, plus un concurrent à égalité.
+ * (Cas vécu : fiche visa FR = france-visas.gouv.fr, mais le candidat mort au
+ * verify laissait gagner japon.campusfrance.org via la requête ouverte.)
+ */
+export function preferHintDomains<T extends { url: string }>(
+  candidates: T[],
+  hintDomains: string[] | null | undefined,
+): T[] {
+  const domains = (hintDomains ?? []).map((d) => d.trim()).filter(Boolean);
+  if (domains.length === 0) return candidates;
+  const preferred = candidates.filter((c) => isOfficialDomain(c.url, '', domains));
+  return preferred.length > 0 ? preferred : candidates;
+}

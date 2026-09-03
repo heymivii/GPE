@@ -866,3 +866,95 @@ describe('GovLinksService — supported countries, review, retry, normalize', ()
     });
   });
 });
+
+describe('GovLinksService.generate — priorité aux domaines de la fiche', () => {
+  const setup = (searchResults: any[], hintOverrides: any = {}) => {
+    const repo = makeRepo();
+    const search = { search: jest.fn(async () => searchResults) };
+    const verifier = {
+      verify: jest.fn(async (url: string) => ({
+        live: true,
+        finalUrl: url,
+        matched: true,
+        text: 'contenu officiel visa',
+      })),
+    };
+    const ranker = {
+      pickBest: jest.fn(async (_q: string, _c: { url: string }[]) => ({ index: 0, confidence: 0.9, label: 'L' })),
+      summarize: jest.fn(async () => ({ facts: [], actions: [] })),
+    };
+    const hints = makeHints({
+      pinnedUrl: null,
+      officialDomains: ['france-visas.gouv.fr'],
+      keywords: 'visa long séjour',
+      queryLang: 'fr',
+      excludeTerms: [],
+      ...hintOverrides,
+    });
+    const svc = new GovLinksService(
+      repo as never,
+      search as never,
+      verifier as never,
+      ranker as never,
+      hints as never,
+    );
+    return { svc, ranker };
+  };
+
+  it('restreint le ranker aux candidats des domaines de la fiche quand ils survivent au verify', async () => {
+    // Deux candidats officiels FR : un sur le domaine de la fiche, un hors fiche
+    // (campusfrance est dans l'allowlist PAYS — le cas vécu du visa japonais).
+    const { svc, ranker } = setup([
+      candidate('https://www.japon.campusfrance.org/fr/visa'),
+      candidate('https://france-visas.gouv.fr/demande'),
+    ]);
+    const res = await svc.generate('FR', 'visa');
+    expect(res.url).toBe('https://france-visas.gouv.fr/demande');
+    const shortlist = ranker.pickBest.mock.calls[0][1];
+    expect(shortlist).toHaveLength(1);
+    expect(shortlist[0].url).toBe('https://france-visas.gouv.fr/demande');
+  });
+
+  it('retombe sur tous les candidats vérifiés quand aucun domaine de la fiche ne survit', async () => {
+    const { svc, ranker } = setup([
+      candidate('https://www.japon.campusfrance.org/fr/visa'),
+    ]);
+    const res = await svc.generate('FR', 'visa');
+    expect(res.url).toBe('https://www.japon.campusfrance.org/fr/visa');
+    expect(ranker.pickBest.mock.calls[0][1]).toHaveLength(1);
+  });
+
+  it('tolère une pinnedUrl sans schéma (https:// préfixé au lieu d’un « Invalid URL »)', async () => {
+    const repo = makeRepo();
+    const search = { search: jest.fn() };
+    const verifier = {
+      verify: jest.fn(async (url: string) => ({
+        live: true,
+        finalUrl: url,
+        matched: true,
+        text: 'page',
+      })),
+    };
+    const ranker = {
+      pickBest: jest.fn(),
+      summarize: jest.fn(async () => ({ facts: [], actions: [] })),
+    };
+    const hints = makeHints({
+      pinnedUrl: 'france-visas.gouv.fr/',
+      officialDomains: [],
+      keywords: '',
+      queryLang: 'fr',
+      excludeTerms: [],
+    });
+    const svc = new GovLinksService(
+      repo as never,
+      search as never,
+      verifier as never,
+      ranker as never,
+      hints as never,
+    );
+    const res = await svc.generate('FR', 'visa');
+    expect(res.status).toBe('active');
+    expect(verifier.verify).toHaveBeenCalledWith('https://france-visas.gouv.fr/', []);
+  });
+});

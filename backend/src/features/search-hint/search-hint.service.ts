@@ -10,6 +10,15 @@ import { SEARCH_HINTS_SEED } from './search-hints.seed';
 import { CreateSearchHintDto } from './dto/create-search-hint.dto';
 import { UpdateSearchHintDto } from './dto/update-search-hint.dto';
 
+
+/** `france-visas.gouv.fr` collé sans schéma → on préfixe https:// plutôt que
+ *  de laisser le run de génération échouer en « Invalid URL ». */
+function normalizePinnedUrl(u: string | null | undefined): string | null {
+  const t = u?.trim();
+  if (!t) return null;
+  return /^https?:\/\//i.test(t) ? t : `https://${t}`;
+}
+
 @Injectable()
 export class SearchHintService {
   constructor(
@@ -71,7 +80,7 @@ export class SearchHintService {
         keywords: dto.keywords ?? '',
         queryLang: dto.queryLang ?? 'fr',
         excludeTerms: dto.excludeTerms ?? [],
-        pinnedUrl: dto.pinnedUrl ?? null,
+        pinnedUrl: normalizePinnedUrl(dto.pinnedUrl),
       }),
     );
   }
@@ -83,6 +92,7 @@ export class SearchHintService {
   ): Promise<SearchHint> {
     const hint = await this.findOne(countryCode, category);
     Object.assign(hint, dto); // only the provided editable fields
+    if ('pinnedUrl' in dto) hint.pinnedUrl = normalizePinnedUrl(dto.pinnedUrl);
     return this.repo.save(hint);
   }
 

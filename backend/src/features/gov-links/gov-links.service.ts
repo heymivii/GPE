@@ -9,7 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { GovLink } from './entities/gov-link.entity';
 import { buildQueries } from './query-builder';
-import { isOfficialDomain, officialSuffixes } from './official-domains';
+import { isOfficialDomain, officialSuffixes, preferHintDomains } from './official-domains';
 import { SearchProvider } from './search-provider';
 import { LinkVerifier } from './link-verifier';
 import { LlmRanker } from './llm-ranker';
@@ -169,7 +169,10 @@ export class GovLinksService {
 
     // (b) pinnedUrl short-circuit: explicit admin override. LIVE-verify the exact URL, bypass the
     // allowlist (the admin vouched for the domain), skip the ranker, summarize its real text.
-    const pinned = hint?.pinnedUrl?.trim();
+    // Schéma toléré absent : « france-visas.gouv.fr » collé tel quel dans le
+    // carnet donnait un « Invalid URL » cryptique au run.
+    const pinnedRaw = hint?.pinnedUrl?.trim();
+    const pinned = pinnedRaw && !/^https?:\/\//i.test(pinnedRaw) ? `https://${pinnedRaw}` : pinnedRaw;
     if (pinned) {
       return this.generatePinned(cc, category, country, pinned);
     }
@@ -228,13 +231,17 @@ export class GovLinksService {
         primaryQuery,
       );
     }
-    const picked = await this.ranker.pickBest(primaryQuery, verified);
+    // Les domaines de la fiche redeviennent prioritaires : s'ils comptent au
+    // moins un survivant vérifié, le ranker (et le fallback) choisissent parmi
+    // eux seulement.
+    const shortlist = preferHintDomains(verified, hint?.officialDomains);
+    const picked = await this.ranker.pickBest(primaryQuery, shortlist);
     // FIX 4: log the fallback and use named constant
     if (!picked) {
       this.logger.warn(
         `LLM ranker unavailable for ${cc}/${category}; using top verified official link as fallback.`,
       );
-      const top = verified[0];
+      const top = shortlist[0];
       const { facts, actions, offTopic } = await this.ranker.summarize(
         top.snippet ?? '',
         {
@@ -256,7 +263,7 @@ export class GovLinksService {
         { pageText: top.snippet ?? '', offTopic },
       );
     }
-    const chosen = verified[picked.index];
+    const chosen = shortlist[picked.index];
     // Grounded summary of the chosen official page's real content (anti-hallucination: from the page text only).
     const { facts, actions, offTopic } = await this.ranker.summarize(
       chosen.snippet ?? '',
