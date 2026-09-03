@@ -87,22 +87,15 @@ describe('SearchPage', () => {
     expect(mockSearch).toHaveBeenCalled();
   });
 
-  it('seeds filters from the onboarding data in localStorage', () => {
+  // Le concept de catégorie a été retiré (la recherche = emploi uniquement) :
+  // l'onboarding ne pré-remplit plus que la destination.
+  it('seeds only the destination from the onboarding data in localStorage', () => {
     localStorage.setItem(
       'skywalk-onboarding-data',
       JSON.stringify({ destination: { country: 'France', city: 'Paris' }, needs: { priorities: ['housing'] } }),
     );
     renderPage();
-    expect(mockUpdateFilters).toHaveBeenCalledWith({ country: 'France', city: 'Paris', category: 'logement' });
-  });
-
-  it('seeds the employment category when that priority is present', () => {
-    localStorage.setItem(
-      'skywalk-onboarding-data',
-      JSON.stringify({ destination: {}, needs: { priorities: ['employment'] } }),
-    );
-    renderPage();
-    expect(mockUpdateFilters).toHaveBeenCalledWith({ category: 'emploi' });
+    expect(mockUpdateFilters).toHaveBeenCalledWith({ country: 'France', city: 'Paris' });
   });
 
   it('shows the popular-destinations heading and quick filter chips with no active filters', () => {
@@ -173,7 +166,7 @@ describe('SearchPage', () => {
     expect(screen.getByText('searchPage.noResults')).toBeInTheDocument();
     fireEvent.click(screen.getByText('searchPage.resetFilters'));
     expect(mockUpdateFilters).toHaveBeenCalledWith(
-      expect.objectContaining({ query: '', category: '', country: '', city: '' }),
+      expect.objectContaining({ query: '', country: '', city: '' }),
     );
     expect(mockSearch).toHaveBeenCalledTimes(2); // initial mount + reset
   });

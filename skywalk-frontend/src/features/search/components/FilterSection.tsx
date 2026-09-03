@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from 'react'
-import { MapPin, Calendar, DollarSign, Tag, X, Briefcase } from 'lucide-react'
+import { MapPin, Calendar, DollarSign, X, Briefcase } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { SearchFilters } from '../types'
 import { useSupportedCountries } from '../../../hooks/useSupportedCountries'
@@ -7,24 +7,6 @@ import { useSupportedCountries } from '../../../hooks/useSupportedCountries'
 interface FilterSectionProps {
   filters: SearchFilters
   onFiltersChange: (filters: Partial<SearchFilters>) => void
-}
-
-const categoryIds = ['emploi', 'logement', 'transport', 'administration', 'sante'] as const
-
-const categoryAvailable: Record<string, boolean> = {
-  emploi: true,
-  logement: false,
-  transport: false,
-  administration: false,
-  sante: false,
-}
-
-const categoryColors: Record<string, string> = {
-  emploi: 'bg-blue-100 text-blue-800',
-  logement: 'bg-green-100 text-green-800',
-  transport: 'bg-purple-100 text-purple-800',
-  administration: 'bg-orange-100 text-orange-800',
-  sante: 'bg-red-100 text-red-800'
 }
 
 const contractTypeIds = ['permanent', 'contract', 'full_time', 'part_time'] as const
@@ -47,23 +29,10 @@ export default function FilterSection({ filters, onFiltersChange }: FilterSectio
     onFiltersChange({ city: value })
   }, [onFiltersChange])
 
-  const categories = categoryIds.map(id => ({
-    id,
-    name: t(`searchPage.filter.categories.${id}`),
-    color: categoryColors[id],
-    disabled: !categoryAvailable[id],
-  }))
-
   const contractTypes = contractTypeIds.map(id => ({
     id,
     name: t(`searchPage.filter.contracts.${id}`)
   }))
-
-  const handleCategoryToggle = (categoryId: string) => {
-    const currentCategory = filters.category
-    const newCategory = currentCategory === categoryId ? '' : categoryId
-    onFiltersChange({ category: newCategory })
-  }
 
   const handleCountryChange = (countryName: string) => {
     onFiltersChange({ country: countryName === filters.country ? '' : countryName })
@@ -83,7 +52,8 @@ export default function FilterSection({ filters, onFiltersChange }: FilterSectio
 
   const clearAllFilters = () => {
     onFiltersChange({
-      category: '',
+      // La recherche ne couvre plus que l'emploi : category reste fixée.
+      category: 'emploi',
       country: '',
       city: '',
       priceRange: [0, 10000],
@@ -94,7 +64,6 @@ export default function FilterSection({ filters, onFiltersChange }: FilterSectio
   }
 
   const activeFiltersCount = [
-    filters.category,
     filters.country,
     filters.city,
     filters.priceRange[0] > 0 || filters.priceRange[1] < 10000,
@@ -119,34 +88,6 @@ export default function FilterSection({ filters, onFiltersChange }: FilterSectio
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="space-y-3">
-          <div className="flex items-center gap-2">
-            <Tag className="w-4 h-4 text-gray-500" />
-            <label className="font-medium text-gray-700">{t('searchPage.filter.category')}</label>
-          </div>
-          <div className="space-y-2">
-            {categories.map((category) => (
-              <button
-                key={category.id}
-                onClick={() => !category.disabled && handleCategoryToggle(category.id)}
-                className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-all ${category.disabled
-                    ? 'bg-gray-50 text-gray-300 cursor-not-allowed'
-                    : filters.category === category.id
-                      ? category.color
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-              >
-                <span className="flex items-center justify-between">
-                  {category.name}
-                  {category.disabled && (
-                    <span className="text-[10px] text-gray-400 italic">{t('common.comingSoon')}</span>
-                  )}
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
-
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             <MapPin className="w-4 h-4 text-gray-500" />

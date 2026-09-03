@@ -45,33 +45,26 @@ describe('FilterSection', () => {
   });
 
   it('shows the active filter count and a "clear all" button once a filter is set', () => {
-    render(<FilterSection filters={makeFilters({ category: 'emploi' })} onFiltersChange={onFiltersChange} />);
+    render(<FilterSection filters={makeFilters({ country: 'France' })} onFiltersChange={onFiltersChange} />);
     expect(screen.getByText('(1)')).toBeInTheDocument();
     expect(screen.getByText('searchPage.filter.clearAll')).toBeInTheDocument();
   });
 
-  it('resets every filter when "clear all" is clicked', () => {
-    render(<FilterSection filters={makeFilters({ category: 'emploi' })} onFiltersChange={onFiltersChange} />);
+  // La recherche ne couvre plus que l'emploi : le filtre catégorie a été retiré
+  // et « tout effacer » garde category='emploi' (une catégorie vide vidait la liste).
+  it('resets every filter when "clear all" is clicked, keeping the job category', () => {
+    render(<FilterSection filters={makeFilters({ country: 'France' })} onFiltersChange={onFiltersChange} />);
     fireEvent.click(screen.getByText('searchPage.filter.clearAll'));
     expect(onFiltersChange).toHaveBeenCalledWith(
-      expect.objectContaining({ category: '', country: '', city: '', contractType: [] }),
+      expect.objectContaining({ category: 'emploi', country: '', city: '', contractType: [] }),
     );
   });
 
-  it('toggles a category filter on and off', () => {
-    const { rerender } = render(<FilterSection filters={makeFilters()} onFiltersChange={onFiltersChange} />);
-    fireEvent.click(screen.getByText('searchPage.filter.categories.emploi'));
-    expect(onFiltersChange).toHaveBeenCalledWith({ category: 'emploi' });
-
-    rerender(<FilterSection filters={makeFilters({ category: 'emploi' })} onFiltersChange={onFiltersChange} />);
-    fireEvent.click(screen.getByText('searchPage.filter.categories.emploi'));
-    expect(onFiltersChange).toHaveBeenLastCalledWith({ category: '' });
-  });
-
-  it('does not toggle a disabled (coming-soon) category', () => {
+  it('does not render the removed category filter', () => {
     render(<FilterSection filters={makeFilters()} onFiltersChange={onFiltersChange} />);
-    fireEvent.click(screen.getByText('searchPage.filter.categories.logement'));
-    expect(onFiltersChange).not.toHaveBeenCalled();
+    expect(screen.queryByText('searchPage.filter.category')).not.toBeInTheDocument();
+    expect(screen.queryByText('searchPage.filter.categories.emploi')).not.toBeInTheDocument();
+    expect(screen.queryByText('searchPage.filter.categories.logement')).not.toBeInTheDocument();
   });
 
   it('selects and deselects a country', () => {

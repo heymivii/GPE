@@ -69,14 +69,15 @@ describe('useSearch', () => {
     );
   });
 
-  it('auto-searches when a watched filter (e.g. query) changes, and skips the API for non-job categories', async () => {
+  // Le garde-fou « catégorie ≠ emploi → liste vidée » a été retiré avec le
+  // filtre catégorie : la recherche est 100% emploi, toucher un filtre ne doit
+  // plus faire disparaître les résultats.
+  it('auto-searches when a watched filter (e.g. query) changes', async () => {
     const { result } = renderHook(() => useSearch());
-    act(() => result.current.updateFilters({ category: 'immobilier' }));
+    act(() => result.current.updateFilters({ query: 'developer' }));
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
-    expect(mockedSearchJobs).not.toHaveBeenCalled();
-    expect(result.current.results).toEqual([]);
-    expect(result.current.hasMore).toBe(false);
+    expect(mockedSearchJobs).toHaveBeenCalled();
   });
 
   it('skips the API call when the resolved country is not Adzuna-supported', async () => {
