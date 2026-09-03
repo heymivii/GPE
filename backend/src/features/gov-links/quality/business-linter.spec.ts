@@ -171,3 +171,54 @@ describe('niche familiale — cas réel : N11165 publié pour « demarches-admin
     expect(flags.some((f) => f.includes('regroupement familial'))).toBe(false);
   });
 });
+
+describe('dossierLikeActions — alinéas de constitution de dossier', () => {
+  // Les actions réellement extraites sur FR/business (retour de recette) :
+  // un mode d'emploi d'immatriculation recopié, pas un guide de préparation.
+  const dossierActions = [
+    "Joindre un justificatif de domiciliation de l'entreprise (facture d'eau, d'électricité ou de gaz).",
+    "Joindre la déclaration sur l'honneur de non-condamnation, datée et signée par l'entrepreneur.",
+    "Joindre une copie de la pièce d'identité de l'entrepreneur.",
+    "Si l'on souhaite protéger des biens immobiliers, faire établir une déclaration d'insaisissabilité chez notaire et joindre la copie au dossier.",
+  ];
+
+  it('détecte les alinéas « joindre X / chez notaire / au dossier »', () => {
+    const { dossierLikeActions } = require('./business-linter');
+    expect(dossierLikeActions(dossierActions)).toHaveLength(4);
+  });
+
+  it('ne signale pas les vraies actions de préparation génériques', () => {
+    const { dossierLikeActions } = require('./business-linter');
+    expect(
+      dossierLikeActions([
+        "Valider le VLS-TS en ligne dans les 3 mois suivant l'arrivée.",
+        "Préparer le dossier d'immatriculation : pièce d'identité, justificatif de domiciliation, déclaration de non-condamnation.",
+        "Accéder au guichet des formalités des entreprises et lancer la demande d'immatriculation.",
+      ]),
+    ).toHaveLength(0);
+  });
+
+  it('lintExtraction lève le drapeau quand les alinéas dominent', () => {
+    const { lintExtraction } = require('./business-linter');
+    const verdict = lintExtraction({
+      category: 'business',
+      facts: [],
+      actions: dossierActions,
+    });
+    expect(verdict.flags.some((f: string) => f.includes('alinéas de dossier'))).toBe(true);
+  });
+
+  it("lintExtraction reste muet quand les alinéas sont minoritaires", () => {
+    const { lintExtraction } = require('./business-linter');
+    const verdict = lintExtraction({
+      category: 'business',
+      facts: [],
+      actions: [
+        "Accéder au guichet des formalités des entreprises et lancer la demande d'immatriculation au plus tôt 1 mois avant le début d'activité.",
+        "Préparer le dossier d'immatriculation : pièce d'identité, justificatif de domiciliation, déclaration de non-condamnation.",
+        "Joindre une copie de la pièce d'identité de l'entrepreneur.",
+      ],
+    });
+    expect(verdict.flags.some((f: string) => f.includes('alinéas de dossier'))).toBe(false);
+  });
+});
