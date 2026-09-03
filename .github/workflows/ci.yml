@@ -187,6 +187,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Les runners ubuntu-latest n'embarquent plus la CLI Heroku, et
+      # akhileshns/heroku-deploy ne l'installe pas : sans elle, son check
+      # apps:info échoue en silence (« heroku: not found ») puis il retombe
+      # sur un `heroku create` qui échoue aussi.
+      - name: Install Heroku CLI
+        run: curl https://cli-assets.heroku.com/install.sh | sh
+
       # Heroku's own git integration doesn't apply here since the app is
       # only a subdirectory of this monorepo (see heroku-buildpack-monorepo
       # + APP_BASE=backend in DEPLOIEMENT.md) — this pushes the whole repo
