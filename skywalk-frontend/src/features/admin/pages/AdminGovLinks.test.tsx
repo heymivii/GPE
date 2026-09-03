@@ -109,6 +109,18 @@ describe('AdminGovLinks', () => {
     expect(screen.getByText(/Aucun lien/)).toBeInTheDocument();
   });
 
+  it('sorts actionable links first (pending before active), regardless of country order', () => {
+    setup();
+    render(<AdminGovLinks />);
+    const rows = screen.getAllByRole('row').map((r) => r.textContent || '');
+    const iPending = rows.findIndex((t) => t.includes('visa'));      // FR pending_review
+    const iActive = rows.findIndex((t) => t.includes('logement'));   // CA active
+    expect(iPending).toBeGreaterThan(-1);
+    expect(iActive).toBeGreaterThan(-1);
+    // CA < FR alphabétiquement : sans le tri par statut, logement passerait devant.
+    expect(iPending).toBeLessThan(iActive);
+  });
+
   it('lists links with their status and truncated url', () => {
     setup();
     render(<AdminGovLinks />);
