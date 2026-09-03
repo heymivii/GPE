@@ -284,7 +284,7 @@ describe('AdminModeration', () => {
     renderPage();
     const user = userEvent.setup();
     await user.click(screen.getByRole('button', { name: /Signalements/ }));
-    expect(await screen.findByText('Aucun signalement en attente. 🎉')).toBeInTheDocument();
+    expect(await screen.findByText('Aucun signalement en attente.')).toBeInTheDocument();
   });
 
   it('resolves a report as "traité" and invalidates the reports cache', async () => {

@@ -343,7 +343,8 @@ describe('ChecklistWidget', () => {
     expect(screen.getByText('missingDepartureDate')).toBeInTheDocument();
   });
 
-  it('locks the full checklist and shows an unlock CTA when the project is unpaid', () => {
+  // PRICING DÉSACTIVÉ : plus de verrou — un projet non payé voit le lien complet.
+  it('shows the full-checklist link even when the project is unpaid (pricing désactivé)', () => {
     mockedUseProgress.mockReturnValue({
       progress: [tracking()],
       updateStep,
@@ -352,12 +353,8 @@ describe('ChecklistWidget', () => {
     } as any);
     renderWidget({ project: { idProject: 9, isPaid: false } as any });
 
-    expect(screen.getByText('Débloquez votre plan complet')).toBeInTheDocument();
-    expect(screen.getByText('Débloquez votre plan complet').closest('a')).toHaveAttribute(
-      'href',
-      '/projects/9/checklist',
-    );
-    expect(screen.queryByText('seeFullChecklist')).not.toBeInTheDocument();
+    expect(screen.queryByText('Débloquez votre plan complet')).not.toBeInTheDocument();
+    expect(screen.getByText('seeFullChecklist')).toBeInTheDocument();
   });
 
   it('shows the full-checklist link when the project is paid', () => {

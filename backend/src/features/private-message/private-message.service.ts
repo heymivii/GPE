@@ -5,10 +5,14 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { IsNull, Repository } from 'typeorm';
+import { In, IsNull, Repository } from 'typeorm';
 import { PrivateMessage } from './entities/private-message.entity';
 import { User } from '../user/entities/user.entity';
 import { ContentFilterService } from '../forum-message/content-filter.service';
+import { ForumModerationService } from '../forum-moderation/forum-moderation.service';
+import { BuddyContactRequest } from '../buddy-contact/entities/buddy-contact-request.entity';
+import { ProcedureTracking } from '../procedure-tracking/entities/procedure-tracking.entity';
+import { ExpatriationProject } from '../expatriation-project/entities/expatriation-project.entity';
 
 @Injectable()
 export class PrivateMessageService {
@@ -17,7 +21,14 @@ export class PrivateMessageService {
     private readonly repo: Repository<PrivateMessage>,
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
+    @InjectRepository(BuddyContactRequest)
+    private readonly buddyRequestRepo: Repository<BuddyContactRequest>,
+    @InjectRepository(ProcedureTracking)
+    private readonly trackingRepo: Repository<ProcedureTracking>,
+    @InjectRepository(ExpatriationProject)
+    private readonly projectRepo: Repository<ExpatriationProject>,
     private readonly contentFilter: ContentFilterService,
+    private readonly moderation: ForumModerationService,
   ) {}
 
   private displayName(u?: User | null): string {
@@ -46,6 +57,13 @@ export class PrivateMessageService {
       throw new BadRequestException(`Message rejeté : ${check.reason}`);
     }
 
+    // Même règle que le forum : tout mot de la liste admin bloque l'envoi
+    // (et enregistre un avertissement pour tracer l'auteur).
+    const mod = await this.moderation.moderate(senderId, sanitized);
+    if (mod.action !== 'ok') {
+      throw new BadRequestException(`Message rejeté : ${mod.reason}`);
+    }
+
     const message = this.repo.create({
       senderId,
       recipientId,
@@ -58,7 +76,7 @@ export class PrivateMessageService {
   async getConversations(userId: number) {
     const messages = await this.repo.find({
       where: [{ senderId: userId }, { recipientId: userId }],
-      relations: ['sender', 'recipient'],
+      relations: ['sender', 'sender.expertCountry', 'recipient', 'recipient.expertCountry'],
       order: { sentAt: 'DESC' },
     });
 
@@ -79,12 +97,90 @@ export class PrivateMessageService {
       if (m.recipientId === userId && !m.readAt) entry.unread++;
     }
 
+    // Enrichissement : qui est un expert vérifié, et quelles étapes de la
+    // checklist relient chaque interlocuteur à l'utilisateur (mises en
+    // relation buddy acceptées) — pour différencier/filtrer côté messagerie.
+    const otherIds = [...byOther.keys()];
+    const acceptedBuddyRequests = otherIds.length
+      ? await this.buddyRequestRepo.find({
+          where: [
+            { sender: { idUser: userId }, status: 'accepted' },
+            { recipient: { idUser: userId }, status: 'accepted' },
+          ],
+          relations: ['sender', 'recipient', 'procedure'],
+        })
+      : [];
+    // Chaque sujet porte sa DESTINATION : un même buddy peut aider sur
+    // plusieurs pays si j'ai plusieurs projets.
+    const buddyTopicsByOther = new Map<number, { label: string; country: string | null }[]>();
+    const addTopic = (
+      otherId: number | undefined | null,
+      label?: string | null,
+      country?: string | null,
+    ) => {
+      if (otherId == null || !byOther.has(otherId) || !label) return;
+      const topics = buddyTopicsByOther.get(otherId) ?? [];
+      const existing = topics.find((t) => t.label === label);
+      if (existing) {
+        // Un doublon sans pays s'enrichit s'il en gagne un.
+        if (!existing.country && country) existing.country = country;
+      } else {
+        topics.push({ label, country: country ?? null });
+      }
+      buddyTopicsByOther.set(otherId, topics);
+    };
+
+    // 1) Les étapes des demandes acceptées (sujet d'origine de la relation —
+    //    la demande ne porte pas de pays, les complétions ci-dessous le fournissent).
+    const buddyIds = new Set<number>();
+    for (const r of acceptedBuddyRequests) {
+      const otherId =
+        r.sender?.idUser === userId ? r.recipient?.idUser : r.sender?.idUser;
+      if (otherId != null) buddyIds.add(otherId);
+      addTopic(otherId, r.procedure?.procedureType);
+    }
+
+    // 2) TOUTES les étapes que chaque buddy a complétées pour mes destinations :
+    //    c'est l'étendue réelle de l'entraide possible, pas seulement l'étape
+    //    qui a déclenché la demande (surtout qu'une seule demande suffit
+    //    désormais — la relation est par personne).
+    if (buddyIds.size > 0) {
+      const myProjects = await this.projectRepo.find({
+        where: { userId },
+        select: ['idProject', 'destinationCountryId'],
+      });
+      const myDestinations = [
+        ...new Set(myProjects.map((p) => p.destinationCountryId).filter(Boolean)),
+      ];
+      if (myDestinations.length > 0) {
+        const completions = await this.trackingRepo.find({
+          where: {
+            status: 'completed',
+            user: { idUser: In([...buddyIds]) },
+            project: { destinationCountryId: In(myDestinations) },
+          },
+          relations: ['user', 'admin_procedure', 'project', 'project.destinationCountry'],
+        });
+        for (const c of completions) {
+          addTopic(
+            c.user?.idUser,
+            c.admin_procedure?.procedureType,
+            c.project?.destinationCountry?.countryName ?? null,
+          );
+        }
+      }
+    }
+
     return [...byOther.values()].map((e) => ({
       userId: e.other.idUser,
       fullName: this.displayName(e.other),
       lastMessage: e.last.content,
       lastAt: e.last.sentAt,
       unread: e.unread,
+      isExpert: !!(e.other?.isExpert && e.other?.expertVerifiedAt),
+      expertTitle: e.other?.expertTitle ?? null,
+      expertCountry: e.other?.expertCountry?.countryName ?? null,
+      buddyTopics: buddyTopicsByOther.get(e.other?.idUser ?? -1) ?? [],
     }));
   }
 

@@ -1,7 +1,4 @@
-import {
-  Briefcase, DollarSign, TrendingUp, Clock, Loader2, AlertCircle,
-  ExternalLink, Building2, Globe, FileText, Shield, MapPin, Search, ArrowRightLeft
-} from 'lucide-react';
+import { AlertCircle, ArrowRightLeft, Briefcase, Building2, Clock, DollarSign, ExternalLink, FileText, Globe, Loader2, MapPin, Search, Shield, TrendingUp, Wallet } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { searchJobs } from '../../../api/jobOffers';
@@ -249,7 +246,7 @@ export default function EmploiStats({ countryName, cityName }: EmploiStatsProps)
                 </p>
                 {job.salary && (
                   <p className="text-xs font-medium text-emerald-600 mb-2">
-                    💰 {formatNumber(Math.round(job.salary.min))} – {formatNumber(Math.round(job.salary.max))} {job.salary.currency}/an
+                    <Wallet className="w-3.5 h-3.5 inline-block mr-1 -mt-0.5" /> {formatNumber(Math.round(job.salary.min))} – {formatNumber(Math.round(job.salary.max))} {job.salary.currency}/an
                   </p>
                 )}
                 <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-50">

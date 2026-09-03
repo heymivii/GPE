@@ -90,7 +90,8 @@ describe('ChecklistPage', () => {
   });
 
   describe('paywall', () => {
-    it('previews only the first 3 steps and shows a locked-count banner when unpaid', () => {
+    // PRICING DÉSACTIVÉ : plus aucun gating — un projet non payé voit toutes ses étapes.
+    it('shows every step even when the project is unpaid (pricing désactivé)', () => {
       mockedUseProject.mockReturnValue({ data: { idProject: 1, isPaid: false } } as any);
       mockedUseProgress.mockReturnValue({
         progress: Array.from({ length: 5 }, (_, i) =>
@@ -104,9 +105,8 @@ describe('ChecklistPage', () => {
 
       const list = stepsContainer();
       expect(list.getByText('Step 0')).toBeInTheDocument();
-      expect(list.getByText('Step 2')).toBeInTheDocument();
-      expect(list.queryByText('Step 3')).not.toBeInTheDocument();
-      expect(screen.getByText('2 étapes verrouillées')).toBeInTheDocument();
+      expect(list.getByText('Step 4')).toBeInTheDocument();
+      expect(screen.queryByText(/verrouillée/)).not.toBeInTheDocument();
     });
 
     it('does not gate anything when the project is paid', () => {
@@ -125,6 +125,7 @@ describe('ChecklistPage', () => {
       expect(screen.queryByText(/verrouillée/)).not.toBeInTheDocument();
     });
 
+    /* ===== PRICING DÉSACTIVÉ — CTA et modale de paiement commentés, tests avec =====
     it('opens the payment modal from the unlock CTA', () => {
       mockedUseProject.mockReturnValue({ data: { idProject: 1, isPaid: false } } as any);
       mockedUseProgress.mockReturnValue({
@@ -171,6 +172,7 @@ describe('ChecklistPage', () => {
       expect(unlockMutate).toHaveBeenCalledWith(1, expect.objectContaining({ onSuccess: expect.any(Function) }));
       await waitFor(() => expect(screen.queryByText('Débloquer ce projet')).not.toBeInTheDocument());
     });
+    ===== FIN PRICING DÉSACTIVÉ ===== */
   });
 
   describe('filters', () => {
@@ -182,7 +184,7 @@ describe('ChecklistPage', () => {
     it('the "completed" filter shows only completed steps', () => {
       mockedUseProgress.mockReturnValue({ progress: steps, updateStep, updateFacts, isLoading: false } as any);
       renderPage();
-      fireEvent.click(screen.getByRole('button', { name: '✅ Complété' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Complété' }));
       const list = stepsContainer();
       expect(list.getByText('Done step')).toBeInTheDocument();
       expect(list.queryByText('Todo step')).not.toBeInTheDocument();
@@ -380,6 +382,48 @@ describe('ChecklistPage', () => {
     expect(stepsContainer().getByText('Visa')).toBeInTheDocument();
   });
 
+  // Régression : le re-tri par priorités écrasait l'ordre chronologique de la
+  // timeline — les deux vues devenaient identiques et le toggle semblait mort.
+  it('list view floats priority categories up, timeline view keeps chronological order', () => {
+    mockedUseProject.mockReturnValue({
+      data: { idProject: 1, isPaid: true, priorities: 'housing' },
+    } as any);
+    mockedUseProgress.mockReturnValue({
+      progress: [
+        tracking({ idProcedureTracking: 1 }), // Visa (catégorie hors priorités)
+        tracking({
+          idProcedureTracking: 2,
+          admin_procedure: {
+            procedureType: 'Logement step',
+            category: 'logement',
+            phase: 'before',
+            daysBeforeDeparture: 10,
+            actionItems: [],
+            keyFacts: [],
+          },
+        }),
+      ],
+      updateStep,
+      updateFacts,
+      isLoading: false,
+    } as any);
+    renderPage();
+
+    // Vue liste : la catégorie prioritaire (logement) remonte devant Visa.
+    let text = screen
+      .getAllByRole('heading', { level: 2 })
+      .find((h) => h.textContent?.includes('Avant le départ'))!.parentElement!.textContent!;
+    expect(text.indexOf('Logement step')).toBeLessThan(text.indexOf('Visa'));
+
+    // Vue timeline : ordre d'origine/chronologique préservé — Visa repasse devant.
+    fireEvent.click(screen.getByTitle('Vue timeline'));
+    text = screen
+      .getAllByRole('heading', { level: 2 })
+      .find((h) => h.textContent?.includes('Avant le départ'))!.parentElement!.textContent!;
+    expect(text.indexOf('Visa')).toBeLessThan(text.indexOf('Logement step'));
+  });
+
+  /* ===== PRICING DÉSACTIVÉ — modale commentée, test avec =====
   it('closes the payment modal when clicking the backdrop', () => {
     mockedUseProject.mockReturnValue({ data: { idProject: 1, isPaid: false } } as any);
     mockedUseProgress.mockReturnValue({
@@ -395,7 +439,9 @@ describe('ChecklistPage', () => {
     fireEvent.click(backdrop);
     expect(screen.queryByText('Débloquer ce projet')).not.toBeInTheDocument();
   });
+  ===== FIN PRICING DÉSACTIVÉ ===== */
 
+  /* ===== DOCUMENTS DÉSACTIVÉS — panneau par étape commenté, test avec =====
   it('toggles the attached-documents panel for a step', () => {
     mockedUseProgress.mockReturnValue({
       progress: [tracking({ idProcedureTracking: 1 })],
@@ -412,6 +458,7 @@ describe('ChecklistPage', () => {
     fireEvent.click(docsButton);
     expect(document.querySelector('.bg-gray-50\\/50.px-4.py-3')).not.toBeInTheDocument();
   });
+  ===== FIN DOCUMENTS DÉSACTIVÉS ===== */
 
   it('shows the J-X countdown for a project with a departure date', () => {
     vi.useFakeTimers();

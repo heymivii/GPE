@@ -11,6 +11,10 @@ import {
 import { GovLinksService, GovLinkResult } from './gov-links.service';
 import { CANONICAL_CATEGORIES } from './gov-links.types';
 import { AdminProcedureGeneratorService } from '../admin-procedure/admin-procedure-generator.service';
+import { checkSourceRelevance } from './quality/source-relevance';
+import { groundingRatio, ungroundedItems } from './quality/grounding';
+import { lintExtraction } from './quality/business-linter';
+import { officialSuffixes } from './official-domains';
 
 /**
  * A 'running' run whose HEARTBEAT (last completed category — falls back to startedAt) is older
@@ -203,43 +207,86 @@ export class GenerationOrchestratorService {
     };
   }
 
-  // ── Verification HOOKS — MINIMAL placeholders. To be filled by their dedicated prompts WITHOUT
-  //    touching this orchestrator (keep these signatures stable). ─────────────────────
-  /** TODO(prompt: source-relevance): is this the canonical "how-to" page for an INCOMING expat? */
+  // ── Verification HOOKS — implemented by the deterministic ./quality modules (no LLM,
+  //    no network, fully unit-tested). Signatures kept stable, as promised above. ──────
+  /**
+   * La page est-elle la bonne source pour un expatrié qui ARRIVE ?
+   * Trois axes (quality/source-relevance) : portée NATIONALE (pas de page préfectorale/
+   * cantonale — le cas réel « pref14/Calvados »), SENS (pas une page « Français de
+   * l'étranger »), PUBLIC (pas un portail entreprises hors catégorie business).
+   * S'y ajoute le verdict hors-sujet rendu par le modèle lui-même (prompt, règle 3).
+   */
   private relevanceGate(
-    _countryCode: string,
-    _category: string,
-    _gen: GovLinkResult,
+    countryCode: string,
+    category: string,
+    gen: GovLinkResult,
   ): {
     ok: boolean;
     direction: string | null;
     audience: string | null;
     reason: string | null;
   } {
-    return { ok: true, direction: null, audience: null, reason: null };
+    const verdict = checkSourceRelevance(
+      {
+        countryCode,
+        category,
+        url: gen.url,
+        label: gen.label,
+        facts: gen.summary ?? [],
+        actions: gen.actions ?? [],
+        pageText: gen.pageText ?? null,
+      },
+      officialSuffixes(countryCode),
+      // pinnedUrl : l'admin vouche la SOURCE — les contrôles d'URL s'inclinent,
+      // les contrôles de CONTENU (email local, sens de lecture) restent actifs.
+      { trustedSource: !!gen.pinned },
+    );
+    if (gen.offTopic) {
+      return {
+        ok: false,
+        direction: verdict.direction,
+        audience: verdict.audience,
+        reason: [verdict.reason, 'page jugée hors-sujet par le modèle']
+          .filter(Boolean)
+          .join(' · '),
+      };
+    }
+    return verdict;
   }
 
-  /** TODO(prompt: span-validation): ratio of facts/actions supported by the source page text.
-   *  Minimal: generate() doesn't expose the page text yet → neutral 1.0 (no false downgrades). */
-  private groundingCheck(_gen: GovLinkResult): { ratio: number } {
-    return { ratio: 1 };
+  /**
+   * Ancrage (quality/grounding) : part des faits/actions réellement présents dans le
+   * texte de la page source. Sans texte de page, le ratio est neutre (1) — un garde-fou
+   * muet ne dégrade jamais un lien correct.
+   */
+  private groundingCheck(gen: GovLinkResult): { ratio: number } {
+    const items = [...(gen.summary ?? []), ...(gen.actions ?? [])];
+    const ratio = groundingRatio(items, gen.pageText ?? null);
+    if (ratio < 1) {
+      const loose = ungroundedItems(items, gen.pageText ?? null);
+      this.logger.warn(
+        `Éléments non ancrés dans la source (${gen.countryCode}/${gen.category}) : ${loose
+          .slice(0, 3)
+          .join(' | ')}`,
+      );
+    }
+    return { ratio };
   }
 
-  /** TODO(prompt: business-linter): full domain rules. Minimal: the AME rule. */
+  /**
+   * Linter métier (quality/business-linter) : hors-sujet lexical, actions vides de
+   * contenu, libellés de menu pris pour des tâches, dispositifs inadaptés (AME).
+   * Chaque famille correspond à une erreur réellement observée en base.
+   */
   private businessLinter(
     category: string,
     gen: GovLinkResult,
   ): { flags: string[] } {
-    const flags: string[] = [];
-    const text = [...(gen.summary ?? []), ...(gen.actions ?? [])]
-      .join(' ')
-      .toLowerCase();
-    if (category === 'sante' && /\bame\b|aide médicale d['’]état/.test(text)) {
-      flags.push(
-        "mention de l'AME (réservée aux sans-papiers) — un expatrié avec visa relève de la PUMa",
-      );
-    }
-    return { flags };
+    return lintExtraction({
+      category,
+      facts: gen.summary ?? [],
+      actions: gen.actions ?? [],
+    });
   }
 
   // ── Run row helpers ─────────────────────────────────────────────────────────────────

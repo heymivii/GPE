@@ -108,6 +108,7 @@ export function useDeleteProject() {
   });
 }
 
+/* ===== PRICING DÉSACTIVÉ — déblocage payant d'un projet =====
 export function useUnlockProject() {
   const queryClient = useQueryClient();
 
@@ -121,6 +122,7 @@ export function useUnlockProject() {
     onError: () => toast.error('Le déblocage a échoué'),
   });
 }
+===== FIN PRICING DÉSACTIVÉ ===== */
 
 export function useCompleteProject() {
   const queryClient = useQueryClient();

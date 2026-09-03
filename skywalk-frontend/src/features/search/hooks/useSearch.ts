@@ -139,11 +139,11 @@ export default function useSearch() {
     }))
 
     try {
-      const { category, priceRange } = state.filters
+      const { priceRange } = state.filters
       const rawQuery = state.filters.query?.trim() || ''
       const { countryCode, city, keyword } = resolveSearchParams(state.filters)
 
-      if (category !== 'emploi' || !isAdzunaSupported(countryCode)) {
+      if (!isAdzunaSupported(countryCode)) {
         setState(prev => ({
           ...prev,
           results: [],
@@ -261,7 +261,7 @@ export default function useSearch() {
       return
     }
     search()
-  }, [state.filters.category, state.filters.country, state.filters.city, state.filters.query, state.filters.contractType, state.filters.sortBy, state.filters.sortOrder, search])
+  }, [state.filters.country, state.filters.city, state.filters.query, state.filters.contractType, state.filters.sortBy, state.filters.sortOrder, search])
 
   const saveFilters = useCallback((name: string) => {
     const savedFilters = JSON.parse(localStorage.getItem('skywalk-saved-filters') || '[]')

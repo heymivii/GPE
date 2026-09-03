@@ -5,6 +5,7 @@ import AuthLayout from '../layouts/AuthLayout';
 import LandingPage from '../features/landing/pages/LandingPage';
 import MainLayout from '../layouts/MainLayout';
 import PasswordForgotPage from '../features/auth/pages/PasswordForgotPage';
+import ResetPasswordPage from '../features/auth/pages/ResetPasswordPage';
 import FormPage from '../features/forms/pages/FormPage';
 import DashboardPage from '../features/dashboard/pages/dashboard';
 import PersonalizedDashboard from '../features/dashboard/pages/PersonalizedDashboard';
@@ -21,8 +22,9 @@ import { DestinationsPage } from '../features/destinations/pages/DestinationsPag
 import { DestinationDetailPage } from '../features/destinations/pages/DestinationDetailPage';
 import ProjectsPage from '../features/projects/pages/ProjectsPage';
 import ProjectDetailPage from '../features/projects/pages/ProjectDetailPage';
-import ChecklistPage from '../features/projects/pages/ChecklistPage'; // ✅ AJOUT
-import DocumentsPage from '../features/documents/DocumentsPage';
+import ChecklistPage from '../features/projects/pages/ChecklistPage';
+// DOCUMENTS DÉSACTIVÉS : la route /documents n'est plus exposée.
+// import DocumentsPage from '../features/documents/DocumentsPage';
 import SettingsPage from '../features/settings/pages/SettingsPage';
 import MessagesPage from '../features/messages/pages/MessagesPage';
 import CountryComparison from '../features/comparison/pages/CountryComparison';
@@ -45,6 +47,7 @@ import AdminSearchHints from '../features/admin/pages/AdminSearchHints';
 import AdminModeration from '../features/admin/pages/AdminModeration';
 import AdminExperts from '../features/admin/pages/AdminExperts';
 import ExpertsPage from '../features/experts/pages/ExpertsPage';
+import ExpertApplicationPage from '../features/experts/pages/ExpertApplicationPage';
 
 export const router = createBrowserRouter([
   {
@@ -64,6 +67,8 @@ export const router = createBrowserRouter([
           { path: 'login', element: <LoginPage /> },
           { path: 'register', element: <RegisterPage /> },
           { path: 'pwdForgot', element: <PasswordForgotPage /> },
+          // Cible du lien envoyé par email (mail.service: /auth/reset-password?token=…)
+          { path: 'reset-password', element: <ResetPasswordPage /> },
         ],
       },
     ],
@@ -118,6 +123,13 @@ export const router = createBrowserRouter([
         ],
       },
       {
+        path: '/experts/apply',
+        element: <MainLayout />,
+        children: [
+          { index: true, element: <ExpertApplicationPage /> },
+        ],
+      },
+      {
         path: '/dashboard',
         element: <MainLayout />,
         children: [
@@ -131,7 +143,7 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <ProjectsPage /> },
           { path: ':id', element: <ProjectDetailPage /> },
-          { path: ':id/checklist', element: <ChecklistPage /> }, // ✅ AJOUT
+          { path: ':id/checklist', element: <ChecklistPage /> },
         ],
       },
       {
@@ -141,6 +153,7 @@ export const router = createBrowserRouter([
           { index: true, element: <ProfilePage /> },
         ],
       },
+      /* ===== DOCUMENTS DÉSACTIVÉS — route du coffre de documents =====
       {
         path: '/documents',
         element: <MainLayout />,
@@ -148,6 +161,7 @@ export const router = createBrowserRouter([
           { index: true, element: <DocumentsPage /> },
         ],
       },
+      ===== FIN DOCUMENTS DÉSACTIVÉS ===== */
       {
         path: '/settings',
         element: <MainLayout />,

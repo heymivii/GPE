@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import type { ExpatriationProject } from '../../../types/expatriation-project';
 import type { Country } from '../../../types/country';
 import { getVisaDataForCountry } from '../../../data/visa-data';
+import { isVisaExempt } from '../../../data/freeMovement';
 
 
 export interface VisaRecommendation {
@@ -17,9 +18,23 @@ export interface VisaRecommendation {
   reason: string;
 }
 
+/** Clé d'icône, résolue en composant lucide à l'affichage (jamais un emoji). */
+export type RecommendationIcon =
+  | 'visa'
+  | 'work'
+  | 'education'
+  | 'housing'
+  | 'health'
+  | 'admin'
+  | 'community'
+  | 'transport'
+  | 'business'
+  | 'finance'
+  | 'language';
+
 export interface ServiceRecommendation {
   id: string;
-  icon: string;
+  icon: RecommendationIcon;
   priority: 'high' | 'medium' | 'low';
   reason: string;
   link: string;
@@ -27,7 +42,7 @@ export interface ServiceRecommendation {
 
 export interface ActionStep {
   id: string;
-  icon: string;
+  icon: RecommendationIcon;
   title: string;
   description: string;
   timeline: string;
@@ -41,6 +56,8 @@ export interface ProjectRecommendations {
   actionPlan: ActionStep[];
   countryCode: string | null;
   durationCategory: 'short' | 'medium' | 'long' | 'permanent';
+  /** Libre circulation (nationalité UE/EEE/CH → destination UE/CH) : aucun visa requis. */
+  freeMovement: boolean;
 }
 
 
@@ -62,17 +79,17 @@ const OBJECTIVE_TO_ALT_VISA: Record<string, string | null> = {
   other: null,
 };
 
-const PRIORITY_TO_SERVICE: Record<string, { id: string; icon: string; link: string }> = {
-  employment: { id: 'emploi', icon: '💼', link: '/services/emploi' },
-  housing: { id: 'logement', icon: '🏠', link: '/services/logement' },
-  health: { id: 'sante', icon: '🏥', link: '/services/sante' },
-  transport: { id: 'transport', icon: '🚗', link: '/services/transport' },
-  admin_help: { id: 'demarches', icon: '📋', link: '/services/demarches' },
-  social_integration: { id: 'culture', icon: '🤝', link: '/services/culture' },
-  education: { id: 'education', icon: '🎓', link: '/services/education' },
-  language: { id: 'education', icon: '🗣️', link: '/services/education' },
-  business: { id: 'business', icon: '🏢', link: '/services/business' },
-  finance: { id: 'banque', icon: '🏦', link: '/services' },
+const PRIORITY_TO_SERVICE: Record<string, { id: string; icon: RecommendationIcon; link: string }> = {
+  employment: { id: 'emploi', icon: 'work', link: '/services/emploi' },
+  housing: { id: 'logement', icon: 'housing', link: '/services/logement' },
+  health: { id: 'sante', icon: 'health', link: '/services/sante' },
+  transport: { id: 'transport', icon: 'transport', link: '/services/transport' },
+  admin_help: { id: 'demarches', icon: 'admin', link: '/services/demarches' },
+  social_integration: { id: 'culture', icon: 'community', link: '/services/culture' },
+  education: { id: 'education', icon: 'education', link: '/services/education' },
+  language: { id: 'education', icon: 'language', link: '/services/education' },
+  business: { id: 'business', icon: 'business', link: '/services/business' },
+  finance: { id: 'banque', icon: 'finance', link: '/services' },
 };
 
 function classifyDuration(months?: number): 'short' | 'medium' | 'long' | 'permanent' {
@@ -95,6 +112,7 @@ export function useProjectRecommendations(
       actionPlan: [],
       countryCode: null,
       durationCategory: 'short',
+      freeMovement: false,
     };
 
     if (!project || !country) return empty;
@@ -103,10 +121,15 @@ export function useProjectRecommendations(
     const durationCategory = classifyDuration(project.expectedDuration);
     const visaData = countryCode ? getVisaDataForCountry(countryCode) : undefined;
 
+    // Libre circulation : recommander un « visa de travail indispensable » à un
+    // ressortissant UE/EEE/CH vers l'UE est FAUX — ici, la meilleure recommandation
+    // est précisément « aucun visa requis ».
+    const freeMovement = isVisaExempt(project.nationality, countryCode);
+
     let visa: VisaRecommendation | null = null;
     let alternativeVisa: VisaRecommendation | null = null;
 
-    if (visaData && project.mainObjective) {
+    if (!freeMovement && visaData && project.mainObjective) {
       const targetVisaId = OBJECTIVE_TO_VISA[project.mainObjective] || 'short-stay';
 
       const effectiveVisaId =
@@ -204,10 +227,10 @@ export function useProjectRecommendations(
       }
     });
 
-    if (countryCode && !addedServiceIds.has('visa')) {
+    if (countryCode && !freeMovement && !addedServiceIds.has('visa')) {
       services.push({
         id: 'visa',
-        icon: '🛂',
+        icon: 'visa',
         priority: 'high',
         reason: 'projectRecommendations.serviceReason.visaAuto',
         link: `/visa?country=${countryCode}`,
@@ -217,7 +240,7 @@ export function useProjectRecommendations(
     if (project.mainObjective === 'work' && !addedServiceIds.has('emploi')) {
       services.push({
         id: 'emploi',
-        icon: '💼',
+        icon: 'work',
         priority: 'medium',
         reason: 'projectRecommendations.serviceReason.workAuto',
         link: '/services/emploi',
@@ -226,7 +249,7 @@ export function useProjectRecommendations(
     if (project.mainObjective === 'study' && !addedServiceIds.has('education')) {
       services.push({
         id: 'education',
-        icon: '🎓',
+        icon: 'education',
         priority: 'medium',
         reason: 'projectRecommendations.serviceReason.studyAuto',
         link: '/services/education',
@@ -235,10 +258,10 @@ export function useProjectRecommendations(
 
     const actionPlan: ActionStep[] = [];
 
-    if (countryCode) {
+    if (countryCode && !freeMovement) {
       actionPlan.push({
         id: 'visa-step',
-        icon: '🛂',
+        icon: 'visa',
         title: 'projectRecommendations.actionPlan.visa.title',
         description: 'projectRecommendations.actionPlan.visa.description',
         timeline: 'projectRecommendations.actionPlan.visa.timeline',
@@ -249,7 +272,7 @@ export function useProjectRecommendations(
     if (project.mainObjective === 'work') {
       actionPlan.push({
         id: 'job-step',
-        icon: '💼',
+        icon: 'work',
         title: 'projectRecommendations.actionPlan.job.title',
         description: 'projectRecommendations.actionPlan.job.description',
         timeline: 'projectRecommendations.actionPlan.job.timeline',
@@ -258,7 +281,7 @@ export function useProjectRecommendations(
     } else if (project.mainObjective === 'study') {
       actionPlan.push({
         id: 'study-step',
-        icon: '🎓',
+        icon: 'education',
         title: 'projectRecommendations.actionPlan.study.title',
         description: 'projectRecommendations.actionPlan.study.description',
         timeline: 'projectRecommendations.actionPlan.study.timeline',
@@ -269,7 +292,7 @@ export function useProjectRecommendations(
     if (project.housingBudget || priorities.includes('housing')) {
       actionPlan.push({
         id: 'housing-step',
-        icon: '🏠',
+        icon: 'housing',
         title: 'projectRecommendations.actionPlan.housing.title',
         description: 'projectRecommendations.actionPlan.housing.description',
         timeline: 'projectRecommendations.actionPlan.housing.timeline',
@@ -280,7 +303,7 @@ export function useProjectRecommendations(
     if (priorities.includes('health')) {
       actionPlan.push({
         id: 'health-step',
-        icon: '🏥',
+        icon: 'health',
         title: 'projectRecommendations.actionPlan.health.title',
         description: 'projectRecommendations.actionPlan.health.description',
         timeline: 'projectRecommendations.actionPlan.health.timeline',
@@ -291,7 +314,7 @@ export function useProjectRecommendations(
     if (priorities.includes('admin_help')) {
       actionPlan.push({
         id: 'admin-step',
-        icon: '📋',
+        icon: 'admin',
         title: 'projectRecommendations.actionPlan.admin.title',
         description: 'projectRecommendations.actionPlan.admin.description',
         timeline: 'projectRecommendations.actionPlan.admin.timeline',
@@ -302,7 +325,7 @@ export function useProjectRecommendations(
     if (priorities.includes('social_integration')) {
       actionPlan.push({
         id: 'integration-step',
-        icon: '🤝',
+        icon: 'community',
         title: 'projectRecommendations.actionPlan.integration.title',
         description: 'projectRecommendations.actionPlan.integration.description',
         timeline: 'projectRecommendations.actionPlan.integration.timeline',
@@ -313,7 +336,7 @@ export function useProjectRecommendations(
     if (priorities.includes('transport')) {
       actionPlan.push({
         id: 'transport-step',
-        icon: '🚗',
+        icon: 'transport',
         title: 'projectRecommendations.actionPlan.transport.title',
         description: 'projectRecommendations.actionPlan.transport.description',
         timeline: 'projectRecommendations.actionPlan.transport.timeline',
@@ -331,6 +354,7 @@ export function useProjectRecommendations(
       actionPlan,
       countryCode,
       durationCategory,
+      freeMovement,
     };
   }, [project, country]);
 }

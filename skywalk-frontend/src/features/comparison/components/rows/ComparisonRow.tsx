@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { SUPPORTED_COUNTRIES } from '../../../../data/supportedCountries'
 import type { EnrichedCountry } from '../../hooks/useCountriesWithData'
+import { Globe } from 'lucide-react';
 
 export function ComparisonRow({
     label,
@@ -32,7 +33,7 @@ export function ComparisonRow({
                         <div key={index} className="flex flex-col sm:block text-sm sm:text-base text-gray-700 px-4 py-3 sm:p-0 border-b border-gray-50 last:border-0 sm:border-0">
                             <div className="sm:hidden flex items-center gap-2 mb-1.5">
                                 <div className="w-5 h-5 rounded overflow-hidden flex-shrink-0 bg-gray-100 flex items-center justify-center text-xs">
-                                    {country?.flagUrl ? <img src={country.flagUrl} alt="" className="w-full h-full object-cover" /> : country?.flagEmoji || '🌍'}
+                                    {country?.flagUrl ? <img src={country.flagUrl} alt="" className="w-full h-full object-cover" /> : country?.flagEmoji || <Globe className="w-4 h-4 text-gray-400" />}
                                 </div>
                                 <span className="font-bold text-gray-900 text-sm">{country ? getCountryName(country) : ''}</span>
                             </div>

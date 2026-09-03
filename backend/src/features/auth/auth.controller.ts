@@ -58,11 +58,15 @@ export class AuthController {
   ) {
     const result = await this.authService.login(loginDto);
 
+    // « Se souvenir de moi » : sans la case, on pose un cookie de SESSION
+    // (aucun maxAge) — il disparaît à la fermeture du navigateur. Avec la case,
+    // le cookie survit 24 h. La case était jusqu'ici purement décorative :
+    // tout le monde recevait un cookie persistant.
     res.cookie('access_token', result.access_token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 24 * 60 * 60 * 1000,
+      ...(loginDto.rememberMe ? { maxAge: 24 * 60 * 60 * 1000 } : {}),
       path: '/',
     });
 

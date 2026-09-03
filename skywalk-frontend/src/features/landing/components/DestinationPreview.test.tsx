@@ -20,7 +20,8 @@ vi.mock('../../../hooks/useSupportedCountries', () => ({
 
 const mockedUseQuery = vi.mocked(useQuery);
 
-describe('DestinationPreview', () => {
+// APERÇU GRATUIT DÉSACTIVÉ : composant entièrement commenté — tests skippés avec lui.
+describe.skip('DestinationPreview', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });

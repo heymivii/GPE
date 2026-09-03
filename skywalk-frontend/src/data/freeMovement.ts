@@ -11,37 +11,63 @@ export const EU_EEA_CH = new Set<string>([
   'SE', 'IS', 'LI', 'NO', 'CH',
 ]);
 
-/** ISO2 → French label, for the onboarding nationality picker (EU/EEA/CH + common + fallback). */
-export const NATIONALITY_OPTIONS: { value: string; label: string }[] = [
-  { value: 'FR', label: 'France' },
-  { value: 'BE', label: 'Belgique' },
-  { value: 'CH', label: 'Suisse' },
-  { value: 'DE', label: 'Allemagne' },
-  { value: 'ES', label: 'Espagne' },
-  { value: 'IT', label: 'Italie' },
-  { value: 'PT', label: 'Portugal' },
-  { value: 'NL', label: 'Pays-Bas' },
-  { value: 'IE', label: 'Irlande' },
-  { value: 'PL', label: 'Pologne' },
-  { value: 'RO', label: 'Roumanie' },
-  { value: 'SE', label: 'Suède' },
-  { value: 'NO', label: 'Norvège' },
-  // Non-EU/EEA (need a visa for FR/CH long stays)
-  { value: 'GB', label: 'Royaume-Uni' },
-  { value: 'US', label: 'États-Unis' },
-  { value: 'CA', label: 'Canada' },
-  { value: 'MA', label: 'Maroc' },
-  { value: 'DZ', label: 'Algérie' },
-  { value: 'TN', label: 'Tunisie' },
-  { value: 'SN', label: 'Sénégal' },
-  { value: 'CI', label: "Côte d'Ivoire" },
-  { value: 'CM', label: 'Cameroun' },
-  { value: 'JP', label: 'Japon' },
-  { value: 'CN', label: 'Chine' },
-  { value: 'IN', label: 'Inde' },
-  { value: 'BR', label: 'Brésil' },
-  { value: 'OTHER', label: 'Autre (hors UE/EEE)' },
+export interface NationalityOption {
+  value: string;
+  /** Gentilé français en minuscules : « Je suis… français·e ». */
+  label: string;
+  /** Adjectif anglais : « I am… French », « As a French citizen ». */
+  labelEn: string;
+}
+
+/**
+ * Nationalités du sélecteur « Je suis… ».
+ *
+ * Ces libellés portaient des noms de PAYS (« Je suis… France »), ce qui n'est pas
+ * du français : le champ demande une nationalité, donc un gentilé. La même valeur
+ * alimente aussi la phrase de verdict (« Ressortissant·e français·e, vous… »),
+ * qui était tout aussi bancale.
+ */
+export const NATIONALITY_OPTIONS: NationalityOption[] = [
+  { value: 'FR', label: 'français·e', labelEn: 'French' },
+  { value: 'BE', label: 'belge', labelEn: 'Belgian' },
+  { value: 'CH', label: 'suisse', labelEn: 'Swiss' },
+  { value: 'DE', label: 'allemand·e', labelEn: 'German' },
+  { value: 'ES', label: 'espagnol·e', labelEn: 'Spanish' },
+  { value: 'IT', label: 'italien·ne', labelEn: 'Italian' },
+  { value: 'PT', label: 'portugais·e', labelEn: 'Portuguese' },
+  { value: 'NL', label: 'néerlandais·e', labelEn: 'Dutch' },
+  { value: 'IE', label: 'irlandais·e', labelEn: 'Irish' },
+  { value: 'PL', label: 'polonais·e', labelEn: 'Polish' },
+  { value: 'RO', label: 'roumain·e', labelEn: 'Romanian' },
+  { value: 'SE', label: 'suédois·e', labelEn: 'Swedish' },
+  { value: 'NO', label: 'norvégien·ne', labelEn: 'Norwegian' },
+  // Hors UE/EEE : un visa est requis pour un long séjour en France ou en Suisse.
+  { value: 'GB', label: 'britannique', labelEn: 'British' },
+  { value: 'US', label: 'américain·e', labelEn: 'American' },
+  { value: 'CA', label: 'canadien·ne', labelEn: 'Canadian' },
+  { value: 'MA', label: 'marocain·e', labelEn: 'Moroccan' },
+  { value: 'DZ', label: 'algérien·ne', labelEn: 'Algerian' },
+  { value: 'TN', label: 'tunisien·ne', labelEn: 'Tunisian' },
+  { value: 'SN', label: 'sénégalais·e', labelEn: 'Senegalese' },
+  { value: 'CI', label: 'ivoirien·ne', labelEn: 'Ivorian' },
+  { value: 'CM', label: 'camerounais·e', labelEn: 'Cameroonian' },
+  { value: 'JP', label: 'japonais·e', labelEn: 'Japanese' },
+  { value: 'CN', label: 'chinois·e', labelEn: 'Chinese' },
+  { value: 'IN', label: 'indien·ne', labelEn: 'Indian' },
+  { value: 'BR', label: 'brésilien·ne', labelEn: 'Brazilian' },
+  { value: 'OTHER', label: "d'un autre pays (hors UE/EEE)", labelEn: 'from another country (outside the EU/EEA)' },
 ];
+
+/** Libellé de nationalité dans la langue courante de l'interface. */
+export function nationalityLabel(
+  value: string | null | undefined,
+  lang: string | undefined,
+): string {
+  if (!value) return '';
+  const option = NATIONALITY_OPTIONS.find((n) => n.value === value);
+  if (!option) return value;
+  return lang?.startsWith('en') ? option.labelEn : option.label;
+}
 
 /**
  * True when a citizen of `nationality` needs NO visa / residence permit to settle in

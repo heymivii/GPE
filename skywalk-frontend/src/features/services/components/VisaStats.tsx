@@ -17,6 +17,7 @@ import { SUPPORTED_COUNTRIES, getCountryMapping } from '../../../data/supportedC
 import { useCurrency } from '../../../contexts/CurrencyContext';
 import { expatriationProjectApi } from '../../../api/expatriation-project';
 import countriesData from '../../../data/countries-data.json';
+import { isNegativeVisaTip } from '../../../data/visaTips';
 
 function parseAmount(raw: string): number | null {
   if (!raw || /gratuit|free/i.test(raw)) return null;
@@ -451,9 +452,8 @@ export default function VisaStats({ countryName }: VisaStatsProps) {
           </div>
           <div className="p-5 space-y-2.5">
             {visaData.tips.map((tip, i) => {
-              const tipText = t(`visa.tipsList.${tip}`);
-              const isNegative = tipText.startsWith('❌');
-              const cleanText = tipText.replace(/^[✅❌]\s*/, '');
+              const cleanText = t(`visa.tipsList.${tip}`);
+              const isNegative = isNegativeVisaTip(tip);
               return (
                 <div key={i} className={`flex items-start gap-2.5 p-2 rounded-lg ${isNegative ? 'bg-gray-50' : ''}`}>
                   {isNegative ? (

@@ -119,7 +119,7 @@ describe('AdminGovLinks', () => {
   it('filters links by country', () => {
     setup();
     render(<AdminGovLinks />);
-    fireEvent.change(screen.getByDisplayValue('🌍 Tous les pays'), { target: { value: 'CA' } });
+    fireEvent.change(screen.getByDisplayValue('Tous les pays'), { target: { value: 'CA' } });
     expect(screen.queryByText('À valider')).not.toBeInTheDocument();
     expect(screen.getByText('Publié')).toBeInTheDocument();
   });

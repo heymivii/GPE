@@ -7,24 +7,27 @@ import { useNavigate } from 'react-router-dom'
 import type { WidgetSize } from '../hooks/useDashboardPreferences'
 import type { ExpatriationProject } from '../../../types/expatriation-project'
 import { useProjectRecommendations } from '../../projects/hooks/useProjectRecommendations'
+import type { RecommendationIcon } from '../../projects/hooks/useProjectRecommendations'
 import type { ReactNode } from 'react'
 
-const ICON_MAP: Record<string, ReactNode> = {
-  '🛂': <Shield className="w-4 h-4" />,
-  '💼': <Briefcase className="w-4 h-4" />,
-  '🎓': <GraduationCap className="w-4 h-4" />,
-  '🏠': <Home className="w-4 h-4" />,
-  '🏥': <Heart className="w-4 h-4" />,
-  '📋': <FileText className="w-4 h-4" />,
-  '🤝': <Users className="w-4 h-4" />,
-  '🚗': <Train className="w-4 h-4" />,
-  '🏦': <Globe className="w-4 h-4" />,
-  '🏢': <Briefcase className="w-4 h-4" />,
-  '🗣️': <GraduationCap className="w-4 h-4" />,
+// La source (useProjectRecommendations) émet une clé d'icône, plus un emoji :
+// cette table n'a plus à traduire des pictogrammes, elle mappe des noms.
+const ICON_MAP: Record<RecommendationIcon, ReactNode> = {
+  visa: <Shield className="w-4 h-4" />,
+  work: <Briefcase className="w-4 h-4" />,
+  education: <GraduationCap className="w-4 h-4" />,
+  housing: <Home className="w-4 h-4" />,
+  health: <Heart className="w-4 h-4" />,
+  admin: <FileText className="w-4 h-4" />,
+  community: <Users className="w-4 h-4" />,
+  transport: <Train className="w-4 h-4" />,
+  finance: <Globe className="w-4 h-4" />,
+  business: <Briefcase className="w-4 h-4" />,
+  language: <GraduationCap className="w-4 h-4" />,
 }
 
-function resolveIcon(emoji: string): ReactNode {
-  return ICON_MAP[emoji] ?? <Zap className="w-4 h-4" />
+function resolveIcon(icon: RecommendationIcon): ReactNode {
+  return ICON_MAP[icon] ?? <Zap className="w-4 h-4" />
 }
 
 interface RecommendationsWidgetProps {
@@ -58,7 +61,7 @@ export default function RecommendationsWidget({
 
   const hasContent = !!(
     activeProject &&
-    (recommendations.visa || recommendations.services.length > 0 || recommendations.actionPlan.length > 0)
+    (recommendations.visa || recommendations.freeMovement || recommendations.services.length > 0 || recommendations.actionPlan.length > 0)
   )
 
   return (
@@ -80,6 +83,24 @@ export default function RecommendationsWidget({
           </div>
         ) : (
           <>
+            {recommendations.freeMovement && (
+              <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <Shield className="w-4 h-4 text-emerald-600" />
+                  <span className="font-bold text-emerald-800 text-sm">
+                    {t('projectRecommendations.freeMovement.title', { defaultValue: 'Aucun visa requis' })}
+                  </span>
+                </div>
+                <p className="text-emerald-700 text-xs leading-relaxed">
+                  {t('projectRecommendations.freeMovement.description', {
+                    country: country?.countryName,
+                    defaultValue:
+                      'Votre nationalité bénéficie de la libre circulation : vous pouvez vous installer et travailler en {{country}} sans visa ni titre de séjour.',
+                  })}
+                </p>
+              </div>
+            )}
+
             {recommendations.visa && (
               <div className="bg-gray-900 rounded-xl p-4 text-white">
                 <div className="flex items-center gap-2 mb-3">

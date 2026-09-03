@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import {
   Shield, ChevronRight, ExternalLink, CheckCircle2, Circle,
   AlertTriangle, Lightbulb, FileText, DollarSign, Globe,
-  ClipboardCheck, ArrowRight, Info, ChevronDown,
+  ClipboardCheck, ArrowRight, Info, ChevronDown, XCircle, Clock,
 } from 'lucide-react';
 import { PageHeader } from '../../../components/PageHeader';
 import { getVisaDataForCountry, getAvailableVisaCountries } from '../../../data/visa-data';
@@ -12,6 +12,7 @@ import type { VisaCountryData } from '../../../data/visa-data';
 import { useAuth } from '../../../hooks/useAuth';
 import { useDestination } from '../../../contexts/DestinationContext';
 import { slugFromCode, resolveCountry } from '../../../data/countryMappings';
+import { isNegativeVisaTip } from '../../../data/visaTips';
 
 const VISA_COLOR: Record<string, string> = {
   green: 'bg-emerald-100 text-emerald-700 border-emerald-200',
@@ -139,9 +140,9 @@ export default function VisaPage() {
                           {t(`visa.types.${visa.description}`)}
                         </p>
                         <div className="flex flex-wrap gap-4 text-xs text-gray-500">
-                          <span>⏱ {t('visa.duration')}: <strong className="text-gray-700">{t(`visa.durations.${visa.duration}`)}</strong></span>
-                          <span>💰 {t('visa.cost')}: <strong className="text-gray-700">{visa.cost}</strong></span>
-                          <span>📋 {t('visa.processing')}: <strong className="text-gray-700">{t(`visa.timelines.${visa.processing}`)}</strong></span>
+                          <span className="inline-flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {t('visa.duration')}: <strong className="text-gray-700">{t(`visa.durations.${visa.duration}`)}</strong></span>
+                          <span className="inline-flex items-center gap-1"><DollarSign className="w-3.5 h-3.5" /> {t('visa.cost')}: <strong className="text-gray-700">{visa.cost}</strong></span>
+                          <span className="inline-flex items-center gap-1"><ClipboardCheck className="w-3.5 h-3.5" /> {t('visa.processing')}: <strong className="text-gray-700">{t(`visa.timelines.${visa.processing}`)}</strong></span>
                         </div>
                       </div>
                       <a
@@ -381,9 +382,14 @@ export default function VisaPage() {
               <div className="p-5 space-y-2.5">
                 {visaData.tips.map((tip, i) => {
                   const tipText = t(`visa.tipsList.${tip}`);
-                  const isNegative = tipText.startsWith('❌');
+                  const isNegative = isNegativeVisaTip(tip);
                   return (
                     <div key={i} className={`flex items-start gap-2.5 p-2 rounded-lg ${isNegative ? 'bg-red-50' : ''}`}>
+                      {isNegative ? (
+                        <XCircle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
+                      ) : (
+                        <CheckCircle2 className="w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5" />
+                      )}
                       <span className="text-sm">{tipText}</span>
                     </div>
                   );

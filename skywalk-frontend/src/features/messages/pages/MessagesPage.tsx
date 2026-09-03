@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-hot-toast';
-import { Send, Loader2, MessagesSquare, Flag, ArrowLeft } from 'lucide-react';
+import { Send, Loader2, MessagesSquare, Flag, ArrowLeft, BadgeCheck, Users } from 'lucide-react';
 import { PageHeader } from '../../../components/PageHeader';
 import {
   useConversations,
@@ -24,7 +24,9 @@ export default function MessagesPage() {
     toParam ? Number(toParam) : null,
   );
   const [draft, setDraft] = useState('');
-  const bottomRef = useRef<HTMLDivElement>(null);
+  // La messagerie mélange experts et buddies : on les distingue et on filtre.
+  const [filter, setFilter] = useState<'all' | 'experts' | 'buddies'>('all');
+  const threadScrollRef = useRef<HTMLDivElement>(null);
 
   const { data: conversations = [], isLoading: convLoading } = useConversations();
   const { data: thread = [], isLoading: threadLoading } = useThread(
@@ -34,10 +36,18 @@ export default function MessagesPage() {
   const sendMutation = useSendMessage();
 
   // Nom de l'interlocuteur : conversation existante, sinon le ?name (venu de la fiche expert).
-  const selectedName = useMemo(() => {
-    const c = conversations.find((c) => c.userId === selectedId);
-    return c?.fullName || nameParam || t('messages.member', { defaultValue: 'Membre' });
-  }, [conversations, selectedId, nameParam, t]);
+  const selectedConversation = useMemo(
+    () => conversations.find((c) => c.userId === selectedId),
+    [conversations, selectedId],
+  );
+  const selectedName =
+    selectedConversation?.fullName || nameParam || t('messages.member', { defaultValue: 'Membre' });
+
+  const visibleConversations = useMemo(() => {
+    if (filter === 'experts') return conversations.filter((c) => c.isExpert);
+    if (filter === 'buddies') return conversations.filter((c) => (c.buddyTopics?.length ?? 0) > 0);
+    return conversations;
+  }, [conversations, filter]);
 
   // Ouvrir un fil marque les reçus comme lus côté serveur → on rafraîchit les compteurs.
   useEffect(() => {
@@ -49,7 +59,11 @@ export default function MessagesPage() {
   }, [selectedId, thread.length]);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    // On scrolle UNIQUEMENT le conteneur du fil vers ses derniers messages.
+    // (scrollIntoView sur une ancre faisait aussi défiler toute la page vers
+    // le bas à chaque sélection de conversation.)
+    const el = threadScrollRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
   }, [thread.length, selectedId]);
 
   const fmtTime = (d: string) =>
@@ -99,22 +113,45 @@ export default function MessagesPage() {
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden grid grid-cols-1 sm:grid-cols-[280px_1fr] min-h-[60vh]">
           {/* Liste des conversations */}
           <aside
-            className={`border-r border-gray-100 ${selectedId ? 'hidden sm:block' : 'block'}`}
+            className={`border-r border-gray-100 min-w-0 ${selectedId ? 'hidden sm:block' : 'block'}`}
           >
-            <div className="px-4 py-3 border-b border-gray-100 text-sm font-semibold text-gray-700">
-              {t('messages.conversations', { defaultValue: 'Conversations' })}
+            <div className="px-4 py-3 border-b border-gray-100">
+              <p className="text-sm font-semibold text-gray-700 mb-2">
+                {t('messages.conversations', { defaultValue: 'Conversations' })}
+              </p>
+              <div className="flex gap-1">
+                {(
+                  [
+                    ['all', t('messages.filterAll', { defaultValue: 'Tous' })],
+                    ['experts', t('messages.filterExperts', { defaultValue: 'Experts' })],
+                    ['buddies', t('messages.filterBuddies', { defaultValue: 'Buddies' })],
+                  ] as const
+                ).map(([id, label]) => (
+                  <button
+                    key={id}
+                    onClick={() => setFilter(id)}
+                    className={`text-[11px] font-semibold px-2 py-1 rounded-md transition-colors ${
+                      filter === id
+                        ? 'bg-[#5EA3C0]/10 text-[#4A8BA0]'
+                        : 'text-gray-500 hover:bg-gray-100'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
             </div>
             {convLoading ? (
               <div className="flex justify-center py-10 text-gray-400">
                 <Loader2 className="w-5 h-5 animate-spin" />
               </div>
-            ) : conversations.length === 0 ? (
+            ) : visibleConversations.length === 0 ? (
               <p className="px-4 py-8 text-sm text-gray-400 text-center">
                 {t('messages.empty', { defaultValue: 'Aucune conversation.' })}
               </p>
             ) : (
               <ul className="divide-y divide-gray-50">
-                {conversations.map((c) => (
+                {visibleConversations.map((c) => (
                   <li key={c.userId}>
                     <button
                       onClick={() => select(c.userId)}
@@ -127,7 +164,31 @@ export default function MessagesPage() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-2">
-                          <p className="text-sm font-medium text-gray-900 truncate">{c.fullName}</p>
+                          <p className="text-sm font-medium text-gray-900 truncate flex items-center gap-1">
+                            <span className="truncate">{c.fullName}</span>
+                            {c.isExpert && (
+                              <span
+                                title={[c.expertTitle || 'Expert vérifié', c.expertCountry]
+                                  .filter(Boolean)
+                                  .join(' · ')}
+                                className="inline-flex items-center gap-0.5 text-[9px] font-bold uppercase px-1 py-0.5 rounded bg-blue-50 text-blue-600 flex-shrink-0"
+                              >
+                                <BadgeCheck className="w-2.5 h-2.5" />
+                                Expert
+                              </span>
+                            )}
+                            {(c.buddyTopics?.length ?? 0) > 0 && (
+                              <span
+                                title={c.buddyTopics!
+                                  .map((tp) => (tp.country ? `${tp.label} (${tp.country})` : tp.label))
+                                  .join(' · ')}
+                                className="inline-flex items-center gap-0.5 text-[9px] font-bold uppercase px-1 py-0.5 rounded bg-purple-50 text-purple-600 flex-shrink-0"
+                              >
+                                <Users className="w-2.5 h-2.5" />
+                                Buddy
+                              </span>
+                            )}
+                          </p>
                           {c.unread > 0 && (
                             <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0">
                               {c.unread > 9 ? '9+' : c.unread}
@@ -144,7 +205,9 @@ export default function MessagesPage() {
           </aside>
 
           {/* Fil de discussion */}
-          <section className={`flex flex-col ${selectedId ? 'flex' : 'hidden sm:flex'}`}>
+          {/* min-w-0 : sans lui, une ligne insécable (sujets buddy) fixe la largeur
+              minimale de la colonne 1fr et fait déborder la grille hors de la carte. */}
+          <section className={`flex-col min-w-0 ${selectedId ? 'flex' : 'hidden sm:flex'}`}>
             {!selectedId ? (
               <div className="flex-1 flex flex-col items-center justify-center text-center text-gray-400 gap-2 p-8">
                 <MessagesSquare className="w-10 h-10 text-gray-300" />
@@ -164,7 +227,43 @@ export default function MessagesPage() {
                   >
                     <ArrowLeft className="w-4 h-4" />
                   </button>
-                  <p className="text-sm font-semibold text-gray-900 flex-1 truncate">{selectedName}</p>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-gray-900 truncate flex items-center gap-1.5">
+                      <span className="truncate">{selectedName}</span>
+                      {selectedConversation?.isExpert && (
+                        <span className="inline-flex items-center gap-0.5 text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-blue-50 text-blue-600 flex-shrink-0">
+                          <BadgeCheck className="w-3 h-3" />
+                          {selectedConversation.expertTitle || 'Expert'}
+                          {selectedConversation.expertCountry && ` · ${selectedConversation.expertCountry}`}
+                        </span>
+                      )}
+                    </p>
+                    {(selectedConversation?.buddyTopics?.length ?? 0) > 0 && (
+                      // Le fil est né d'une mise en relation buddy : rappeler sur
+                      // quelles étapes porte l'entraide et pour quelle DESTINATION
+                      // (un buddy peut aider sur plusieurs pays). 3 sujets max à
+                      // l'écran, le reste en « +N » — liste complète au survol.
+                      (() => {
+                        const topics = selectedConversation!.buddyTopics!;
+                        const countries = [
+                          ...new Set(topics.map((tp) => tp.country).filter(Boolean)),
+                        ] as string[];
+                        // Un seul pays → en préfixe ; plusieurs → suffixe par sujet.
+                        const fmt = (tp: { label: string; country: string | null }) =>
+                          countries.length > 1 && tp.country ? `${tp.label} (${tp.country})` : tp.label;
+                        const full = topics.map(fmt).join(' · ');
+                        const prefix =
+                          countries.length === 1 ? `${t('messages.buddyAbout', { defaultValue: 'À propos de :' })} ${countries[0]} — ` : `${t('messages.buddyAbout', { defaultValue: 'À propos de :' })} `;
+                        return (
+                          <p className="text-[11px] text-gray-400 truncate" title={prefix + full}>
+                            {prefix}
+                            {topics.slice(0, 3).map(fmt).join(' · ')}
+                            {topics.length > 3 && ` +${topics.length - 3}`}
+                          </p>
+                        );
+                      })()
+                    )}
+                  </div>
                   <button
                     onClick={reportMember}
                     className="p-1.5 text-gray-400 hover:text-orange-500 hover:bg-orange-50 rounded-lg"
@@ -174,7 +273,7 @@ export default function MessagesPage() {
                   </button>
                 </div>
 
-                <div className="flex-1 overflow-y-auto p-4 space-y-2 bg-gray-50/50 max-h-[50vh]">
+                <div ref={threadScrollRef} className="flex-1 overflow-y-auto p-4 space-y-2 bg-gray-50/50 max-h-[50vh]">
                   {threadLoading ? (
                     <div className="flex justify-center py-8 text-gray-400">
                       <Loader2 className="w-5 h-5 animate-spin" />
@@ -206,7 +305,6 @@ export default function MessagesPage() {
                       </div>
                     ))
                   )}
-                  <div ref={bottomRef} />
                 </div>
 
                 <div className="border-t border-gray-100 p-3 flex items-end gap-2">

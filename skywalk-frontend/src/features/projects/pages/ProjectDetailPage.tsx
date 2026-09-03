@@ -5,7 +5,8 @@ import { countryApi } from '../../../api/country';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getLocale } from '../../../data/supportedCountries';
-import DocumentsVault from '../../documents/DocumentsVault';
+// DOCUMENTS DÉSACTIVÉS : le coffre de documents n'est plus affiché sur le projet.
+// import DocumentsVault from '../../documents/DocumentsVault';
 import { 
   ArrowLeft, Calendar, MapPin, Clock, Wallet, 
   Briefcase, GraduationCap, Heart, Globe, User, Users,
@@ -336,8 +337,9 @@ export default function ProjectDetailPage() {
               </div>
             )}
 
-            {/* Coffre de documents (chiffré, rattaché au projet) */}
+            {/* ===== DOCUMENTS DÉSACTIVÉS — coffre chiffré rattaché au projet =====
             <DocumentsVault projectId={project.idProject} />
+            ===== FIN DOCUMENTS DÉSACTIVÉS ===== */}
 
           </div>
 
@@ -650,11 +652,11 @@ export default function ProjectDetailPage() {
           </div>
         </div>
       )}
-      {/* ✅ Modale modification date de départ */}
+      {/* Modale modification date de départ */}
       {showDateModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setShowDateModal(false)}>
           <div className="bg-white rounded-2xl p-6 w-full max-w-md" onClick={e => e.stopPropagation()}>
-            <h3 className="text-lg font-bold text-gray-900 mb-4">📅 Date de départ</h3>
+            <h3 className="text-lg font-bold text-gray-900 mb-4">Date de départ</h3>
             <p className="text-sm text-gray-500 mb-4">
               Précisez votre date de départ pour voir les deadlines sur chaque étape de votre checklist.
             </p>

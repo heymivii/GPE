@@ -135,7 +135,7 @@ export default function JobOpportunitiesWidget({
       >
         <div className="rounded-xl bg-emerald-50 border border-emerald-100 p-5 text-center space-y-3">
           <BadgeCheck className="w-9 h-9 text-emerald-600 mx-auto" />
-          <p className="font-semibold text-emerald-800">Offre d'emploi déjà décrochée 🎉</p>
+          <p className="font-semibold text-emerald-800">Offre d'emploi déjà décrochée</p>
           <p className="text-sm text-emerald-700/90">
             Pas besoin de chercher un job — priorité au <span className="font-semibold">visa de travail</span> et aux démarches d'installation.
           </p>

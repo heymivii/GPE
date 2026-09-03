@@ -112,12 +112,19 @@ export default function OnboardingFlow() {
       const destinationCountry = countries.find(c => c.idCountry === existingProject.idDestinationCountry);
       const destinationIsoCode = destinationCountry?.isoCode || '';
 
+      // Le pays de départ n'est PAS porté par le projet : il vit sur le profil
+      // (`user.countryOriginId`). Pas de repli « FR » en dur — il fabriquait des
+      // projets « France → France » que les selects verrouillés rendaient incorrigibles.
       const originCountry = countries.find(c => c.idCountry === user?.countryOriginId);
-      const originIsoCode = originCountry?.isoCode || 'FR';
+      const originIsoCode = originCountry?.isoCode || '';
+      // Donnée héritée incohérente (départ == destination) : on vide le départ pour
+      // forcer un choix explicite plutôt que d'afficher un projet impossible.
+      const safeOriginIsoCode =
+        originIsoCode && originIsoCode !== destinationIsoCode ? originIsoCode : '';
 
       const projectData = {
         destination: {
-          fromCountry: originIsoCode,
+          fromCountry: safeOriginIsoCode,
           toCountry: destinationIsoCode,
           targetCity: existingProject.idDestinationCity?.toString() || '',
           departureYear: existingProject.expectedDepartureDate
@@ -319,13 +326,12 @@ export default function OnboardingFlow() {
           const confirmed = window.confirm(t('onboarding.countryChangeWarning'));
 
           if (!confirmed) {
-            toast(t('onboarding.modificationCancelled'), { icon: 'ℹ️' });
+            toast(t('onboarding.modificationCancelled'));
             return;
           }
 
           projectData.checklistProgress = {};
           toast(t('onboarding.checklistReset'), {
-            icon: '⚠️',
             duration: 5000
           });
         }
@@ -389,7 +395,7 @@ export default function OnboardingFlow() {
           await refreshUser();
           return;
         } catch (e) {
-          console.error('❌ Refresh failed', e);
+          console.error('Refresh failed', e);
           setShowAuthGate(true);
           return;
         }
@@ -495,6 +501,7 @@ export default function OnboardingFlow() {
         return (
           <SummaryStep
             data={data as Required<typeof data>}
+            isEditMode={editMode}
             onBack={prevStep}
             onEdit={goToStep}
             onComplete={handleComplete}

@@ -15,6 +15,9 @@ vi.mock('react-hot-toast', () => ({
 
 vi.mock('@tanstack/react-query', () => ({
   useQuery: vi.fn(),
+  // La page utilise désormais useMutation/useQueryClient (revue des candidatures expert).
+  useMutation: () => ({ mutate: vi.fn(), isPending: false }),
+  useQueryClient: () => ({ invalidateQueries: vi.fn() }),
 }));
 
 vi.mock('../../../hooks/useExperts', () => ({

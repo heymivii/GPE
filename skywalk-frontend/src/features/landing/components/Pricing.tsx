@@ -1,3 +1,20 @@
+/*
+ * ===== SYSTÈME DE PRICING DÉSACTIVÉ =====
+ *
+ * Retiré de la landing suite au retour de recette : la plateforme n'affiche plus
+ * aucune notion de prix. Le composant est conservé entier pour pouvoir le
+ * remettre en place tel quel — il suffit de décommenter ce fichier et de
+ * réintroduire <Pricing /> dans features/landing/pages/LandingPage.tsx.
+ *
+ * Le paywall associé (checklist verrouillée + modale de paiement) est lui aussi
+ * commenté, dans features/projects/pages/ChecklistPage.tsx et
+ * features/dashboard/widgets/ChecklistWidget.tsx.
+ *
+ * Les clés de traduction landing.pricing.* restent dans locales/fr.json et
+ * locales/en.json (le format JSON n'autorise pas les commentaires).
+ */
+
+/*
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Check, Sparkles } from 'lucide-react';
@@ -84,3 +101,4 @@ export default function Pricing() {
     </section>
   );
 }
+*/

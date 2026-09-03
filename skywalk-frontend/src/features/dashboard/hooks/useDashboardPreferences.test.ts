@@ -85,20 +85,26 @@ describe('useDashboardPreferences', () => {
     expect(result.current.getWidgetSize('some-unknown-widget')).toBe('medium');
   });
 
+  // La taille 'small' a été retirée : seules 'medium' et 'large' existent, et
+  // un ancien 'small' stocké retombe sur la taille par défaut du widget.
   it('setWidgetSize overrides the default for a specific widget', () => {
     const { result } = renderHook(() => useDashboardPreferences());
-    act(() => result.current.setWidgetSize('checklist', 'small'));
-    expect(result.current.getWidgetSize('checklist')).toBe('small');
+    act(() => result.current.setWidgetSize('checklist', 'medium'));
+    expect(result.current.getWidgetSize('checklist')).toBe('medium');
   });
 
-  it('cycleWidgetSize rotates small -> medium -> large -> small', () => {
+  it('cycleWidgetSize toggles medium <-> large', () => {
     const { result } = renderHook(() => useDashboardPreferences());
-    act(() => result.current.setWidgetSize('weather', 'small'));
-    act(() => result.current.cycleWidgetSize('weather'));
-    expect(result.current.getWidgetSize('weather')).toBe('medium');
+    act(() => result.current.setWidgetSize('weather', 'medium'));
     act(() => result.current.cycleWidgetSize('weather'));
     expect(result.current.getWidgetSize('weather')).toBe('large');
     act(() => result.current.cycleWidgetSize('weather'));
-    expect(result.current.getWidgetSize('weather')).toBe('small');
+    expect(result.current.getWidgetSize('weather')).toBe('medium');
+  });
+
+  it('falls back to the widget default for a legacy stored "small"', () => {
+    const { result } = renderHook(() => useDashboardPreferences());
+    act(() => result.current.setWidgetSize('checklist', 'small' as any));
+    expect(result.current.getWidgetSize('checklist')).toBe('large');
   });
 });

@@ -270,7 +270,7 @@ export default function ComparisonTable({ countries, isAuthenticated = true, all
                     <img src={country.flagUrl} alt={country.countryName} className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full bg-gray-50 flex items-center justify-center text-sm">
-                      {country.flagEmoji || '🌍'}
+                      {country.flagEmoji || <Globe className="w-4 h-4 text-gray-400" />}
                     </div>
                   )}
                 </div>
@@ -300,7 +300,7 @@ export default function ComparisonTable({ countries, isAuthenticated = true, all
                         <img src={country.flagUrl} alt={country.countryName} className="w-full h-full object-cover" />
                       ) : (
                         <div className="w-full h-full bg-gray-50 flex items-center justify-center text-lg">
-                          {country.flagEmoji || '🌍'}
+                          {country.flagEmoji || <Globe className="w-4 h-4 text-gray-400" />}
                         </div>
                       )}
                     </div>

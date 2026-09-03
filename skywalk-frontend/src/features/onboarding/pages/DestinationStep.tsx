@@ -23,10 +23,10 @@ interface DestinationStepProps {
 }
 
 import { useSupportedCountries } from '../../../hooks/useSupportedCountries';
-import { NATIONALITY_OPTIONS } from '../../../data/freeMovement';
+import { NATIONALITY_OPTIONS, nationalityLabel } from '../../../data/freeMovement';
 
 export default function DestinationStep({ data, isEditMode, onNext, onBack }: DestinationStepProps) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { countries: supportedCountries, nonSelectableCodes, citiesByCode, isLoading: isLoadingCities } = useSupportedCountries();
 
   const [formData, setFormData] = useState<DestinationStepData>({
@@ -44,7 +44,26 @@ export default function DestinationStep({ data, isEditMode, onNext, onBack }: De
     value: c.code,
     label: t(c.i18nKey, { defaultValue: c.name })
   }));
-  const destinationOptions = countryOptions.filter(o => !nonSelectableCodes.has(o.value));
+
+  // Un projet d'expatriation va d'un pays vers un AUTRE : chaque liste retire le pays
+  // déjà retenu de l'autre côté, pour rendre le doublon impossible à la sélection.
+  // On garde toujours la valeur courante du champ, sinon le select afficherait du vide
+  // sur un projet hérité où départ == destination.
+  const withoutCountry = (
+    options: { value: string; label: string }[],
+    excluded: string,
+    current: string
+  ) => options.filter(o => o.value !== excluded || o.value === current);
+
+  const originOptions = withoutCountry(countryOptions, formData.toCountry, formData.fromCountry);
+  const destinationOptions = withoutCountry(
+    countryOptions.filter(o => !nonSelectableCodes.has(o.value)),
+    formData.fromCountry,
+    formData.toCountry
+  );
+
+  /** Départ == destination : état invalide, quel que soit le champ à l'origine du conflit. */
+  const isSameCountry = !!formData.fromCountry && formData.fromCountry === formData.toCountry;
 
   // Active cities (admin-managed `city` table) for the selected destination country.
   // value = idCity so it matches the project's idDestinationCity FK.
@@ -82,7 +101,7 @@ export default function DestinationStep({ data, isEditMode, onNext, onBack }: De
       newErrors.toCountry = t('onboarding.destination.errors.toCountryRequired')
     }
 
-    if (formData.fromCountry && formData.toCountry && formData.fromCountry === formData.toCountry) {
+    if (isSameCountry) {
       newErrors.toCountry = t('onboarding.destination.errors.sameCountry')
     }
 
@@ -117,16 +136,26 @@ export default function DestinationStep({ data, isEditMode, onNext, onBack }: De
 
     setFormData(newFormData)
 
-    if (field === 'toCountry' && value && newFormData.fromCountry && value === newFormData.fromCountry) {
-      setErrors(prev => ({ ...prev, toCountry: t('onboarding.destination.errors.sameCountry') }))
-    } else if (field === 'fromCountry' && value && newFormData.toCountry && value === newFormData.toCountry) {
-      setErrors(prev => ({ ...prev, toCountry: t('onboarding.destination.errors.sameCountry') }))
-    } else if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: undefined }))
-    }
+    // Le message « même pays » porte sur le COUPLE départ/destination : il doit
+    // apparaître et disparaître quel que soit celui des deux champs qu'on corrige.
+    setErrors(prev => {
+      const next = { ...prev, [field]: undefined }
+      if (field === 'fromCountry' || field === 'toCountry') {
+        next.toCountry =
+          newFormData.fromCountry && newFormData.fromCountry === newFormData.toCountry
+            ? t('onboarding.destination.errors.sameCountry')
+            : undefined
+      }
+      return next
+    })
   }
 
-  const isNextDisabled = !formData.fromCountry || !formData.toCountry || !formData.departureDate || !formData.nationality
+  const isNextDisabled =
+    !formData.fromCountry ||
+    !formData.toCountry ||
+    isSameCountry ||
+    !formData.departureDate ||
+    !formData.nationality
 
   return (
     <div className="space-y-6">
@@ -145,16 +174,17 @@ export default function DestinationStep({ data, isEditMode, onNext, onBack }: De
           required
           error={errors.fromCountry}
           id="fromCountry"
-          helper={isEditMode ? t('onboarding.destination.cannotChangeCountry') : undefined}
+          helper={isEditMode ? t('onboarding.destination.fromCountryProfileHelper') : undefined}
         >
+          {/* Reste modifiable en édition : le pays de départ appartient au profil, pas
+              au projet — le verrouiller empêchait de réparer un « France → France ». */}
           <Select
             id="fromCountry"
-            options={countryOptions}
+            options={originOptions}
             value={formData.fromCountry}
             onChange={handleFieldChange('fromCountry')}
             placeholder={t('onboarding.destination.fromCountryPlaceholder')}
-            aria-describedby={errors.fromCountry ? 'fromCountry-error' : undefined}
-            disabled={isEditMode}
+            aria-describedby={errors.fromCountry ? 'fromCountry-error' : 'fromCountry-helper'}
           />
         </FormField>
 
@@ -202,7 +232,10 @@ export default function DestinationStep({ data, isEditMode, onNext, onBack }: De
         >
           <Select
             id="nationality"
-            options={NATIONALITY_OPTIONS}
+            options={NATIONALITY_OPTIONS.map((n) => ({
+              value: n.value,
+              label: nationalityLabel(n.value, i18n.language),
+            }))}
             value={formData.nationality || ''}
             onChange={handleFieldChange('nationality')}
             placeholder={t('onboarding.destination.nationalityPlaceholder', { defaultValue: 'Choisir…' })}

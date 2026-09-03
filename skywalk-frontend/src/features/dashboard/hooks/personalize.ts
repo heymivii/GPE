@@ -3,7 +3,9 @@ import { isVisaExempt } from '../../../data/freeMovement';
 /**
  * Turns the collected profile into a REALLY personalised checklist — the point of asking those
  * questions. High-confidence rules only (never hide a step we're unsure about):
- *   - EU/EEA/CH citizen → EU/CH destination: no visa/residence step (free movement);
+ *   - EU/EEA/CH citizen → EU/CH destination: no visa step, and no residence-permit
+ *     step either (free movement) — EXCEPT a CH destination, where EU/EEA citizens
+ *     still must register with their commune and obtain a B/L permit;
  *   - no children: hide school/childcare (`education`);
  *   - priorities: matching categories float to the top.
  * status / stayDuration / travelType are intentionally NOT used to hide steps (no safe rule).
@@ -31,6 +33,13 @@ function hiddenCategories(ctx: PersonalizationContext): Set<string> {
   const hidden = new Set<string>();
   if (isVisaExempt(ctx.nationality, ctx.destinationIso)) {
     hidden.add('visa');
+    // Libre circulation : pas de titre de séjour non plus — les données officielles le
+    // confirment (« ils n'ont pas l'obligation de détenir un titre de séjour »).
+    // EXCEPTION Suisse : un citoyen UE/EEE qui s'y installe doit s'annoncer à sa
+    // commune et obtenir un permis (B/L) — l'étape reste donc affichée pour CH.
+    if (ctx.destinationIso?.toUpperCase() !== 'CH') {
+      hidden.add('demarches');
+    }
   }
   if (ctx.hasChildren === false) {
     hidden.add('education');

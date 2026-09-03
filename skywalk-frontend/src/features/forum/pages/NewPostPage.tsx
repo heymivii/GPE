@@ -1,28 +1,22 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Loader2, Globe, ShieldAlert, CheckCircle2, X } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useCreateForumTopic } from '../../../hooks/useForum';
 import { useAuth } from '../../../hooks/useAuth';
 import { TopicCategoryValues, type TopicCategory } from '../../../types/forum';
+import { categoryIcon } from '../categoryIcons';
 import { useTranslation } from 'react-i18next';
 import { destinationsApi } from '../../../api/destinations';
 
-const categoryIcons: Record<string, string> = {
-  [TopicCategoryValues.QUESTION]: '❓',
-  [TopicCategoryValues.TESTIMONY]: '📝',
-  [TopicCategoryValues.ADVICE]: '💡',
-  [TopicCategoryValues.DISCUSSION]: '💬',
-  [TopicCategoryValues.ANNOUNCEMENT]: '📢',
-  [TopicCategoryValues.OTHER]: '📌',
-};
+
 
 export default function NewPostPage() {
   const { t } = useTranslation();
   const categories = Object.values(TopicCategoryValues).map(id => ({
     id,
     name: t(`forum.categories.${id}.name`),
-    icon: categoryIcons[id] || '📌',
+    icon: categoryIcon(id),
   }));
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -34,12 +28,17 @@ export default function NewPostPage() {
     staleTime: 10 * 60 * 1000,
   });
 
-  const [formData, setFormData] = useState({
-    title: '',
-    content: '', 
+  // Pré-remplissage via query params — utilisé par le buddy system de la
+  // checklist (« Via le forum » arrive avec title, content et countryId).
+  const [searchParams] = useSearchParams();
+  const [formData, setFormData] = useState(() => ({
+    title: searchParams.get('title') ?? '',
+    content: searchParams.get('content') ?? '',
     category: TopicCategoryValues.QUESTION as TopicCategory,
-    countryId: undefined as number | undefined
-  });
+    countryId: searchParams.get('countryId')
+      ? Number(searchParams.get('countryId'))
+      : (undefined as number | undefined),
+  }));
 
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
   const [feedbackType, setFeedbackType] = useState<'error' | 'success'>('error');
@@ -234,7 +233,7 @@ export default function NewPostPage() {
                   }`}
                 >
                   <div className="flex items-center gap-2">
-                    <span className="text-lg">{category.icon}</span>
+                    <category.icon className="w-5 h-5 text-[#5EA3C0]" />
                     <span className="font-medium">{t(`forum.categories.${category.id}.name`)}</span>
                   </div>
                 </button>

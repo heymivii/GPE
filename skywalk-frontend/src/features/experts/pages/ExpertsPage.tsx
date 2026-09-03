@@ -2,18 +2,27 @@ import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { Search, MapPin, Loader2, UserCheck, Mail } from 'lucide-react';
+import { Search, MapPin, Loader2, UserCheck, Mail, ShieldCheck, ArrowRight, Clock } from 'lucide-react';
 import { PageHeader } from '../../../components/PageHeader';
 import ExpertBadge from '../../../components/ExpertBadge';
 import StarRating from '../../../components/StarRating';
 import { useExperts } from '../../../hooks/useExperts';
 import { useAuth } from '../../../hooks/useAuth';
 import { countryApi } from '../../../api/country';
+import { expertApplicationsApi } from '../../../api/experts';
 
 export default function ExpertsPage() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const currentUserId = user ? (user.idUser || user.id) : undefined;
+  const { data: myApplications = [] } = useQuery({
+    queryKey: ['expert-applications-mine'],
+    queryFn: expertApplicationsApi.mine,
+    // La route exige un compte : inutile de la solliciter en visiteur (401).
+    enabled: !!user,
+  });
+  const myPending = myApplications.find((a) => a.status === 'pending');
+
   const [countryId, setCountryId] = useState<number | undefined>(undefined);
   const [search, setSearch] = useState('');
   // Recherche « debounced » simple : on filtre côté serveur au submit / changement de pays,
@@ -47,6 +56,44 @@ export default function ExpertsPage() {
       />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+        {/* D'où viennent ces experts + porte d'entrée pour postuler.
+            La page listait des profils sans dire comment ils étaient vérifiés,
+            ni comment en devenir un (retour de recette). */}
+        <section className="rounded-2xl border border-gray-200 bg-white p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-5">
+          <div className="flex-1">
+            <h2 className="flex items-center gap-2 font-bold text-gray-900">
+              <ShieldCheck className="w-5 h-5 text-[#5EA3C0]" />
+              {t('experts.page.sourcingTitle', { defaultValue: "D'où viennent nos experts ?" })}
+            </h2>
+            <p className="text-sm text-gray-600 mt-1.5 leading-relaxed">
+              {t('experts.page.sourcingText', {
+                defaultValue:
+                  "Ce sont des professionnels qui ont postulé et transmis une pièce justificative (diplôme, inscription à un ordre, certification). Notre équipe contrôle chaque dossier avant d'accorder le badge — et peut le retirer.",
+              })}
+            </p>
+          </div>
+          <Link
+            to="/experts/apply"
+            className={`inline-flex items-center justify-center gap-2 flex-shrink-0 px-5 py-2.5 rounded-xl font-semibold text-sm transition-colors ${
+              myPending
+                ? 'bg-amber-100 text-amber-900 hover:bg-amber-200'
+                : 'bg-[#5EA3C0] hover:bg-[#4891b0] text-white'
+            }`}
+          >
+            {myPending ? (
+              <>
+                <Clock className="w-4 h-4" />
+                Candidature en attente
+              </>
+            ) : (
+              <>
+                {t('experts.page.applyCta', { defaultValue: 'Devenir expert' })}
+                <ArrowRight className="w-4 h-4" />
+              </>
+            )}
+          </Link>
+        </section>
+
         {/* Filtres */}
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">

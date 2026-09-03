@@ -179,4 +179,75 @@ describe('MessagesPage', () => {
     fireEvent.click(screen.getByLabelText('Retour'));
     expect(screen.getByText('Sélectionnez une conversation.')).toBeInTheDocument();
   });
+
+  describe('experts vs buddies', () => {
+    const mixed = () => [
+      conv({ userId: 1, fullName: 'Jean Dupont' }),
+      conv({ userId: 2, fullName: 'Eve Avocate', isExpert: true, expertTitle: 'Avocate', expertCountry: 'Canada' }),
+      conv({
+        userId: 3,
+        fullName: 'Marie Buddy',
+        buddyTopics: [
+          { label: 'Assurance maladie & santé', country: 'Canada' },
+          { label: 'Compte bancaire', country: 'Canada' },
+        ],
+      }),
+    ];
+
+    it('shows an Expert badge and a Buddy badge in the conversation list', () => {
+      conversationsState.data = mixed();
+      renderPage();
+      expect(screen.getByText('Expert')).toBeInTheDocument();
+      expect(screen.getByText('Buddy')).toBeInTheDocument();
+    });
+
+    it('filters the list to experts only', () => {
+      conversationsState.data = mixed();
+      renderPage();
+      fireEvent.click(screen.getByText('Experts'));
+      expect(screen.getByText('Eve Avocate')).toBeInTheDocument();
+      expect(screen.queryByText('Jean Dupont')).not.toBeInTheDocument();
+      expect(screen.queryByText('Marie Buddy')).not.toBeInTheDocument();
+    });
+
+    it('filters the list to buddies only, then back to all', () => {
+      conversationsState.data = mixed();
+      renderPage();
+      fireEvent.click(screen.getByText('Buddies'));
+      expect(screen.getByText('Marie Buddy')).toBeInTheDocument();
+      expect(screen.queryByText('Eve Avocate')).not.toBeInTheDocument();
+      fireEvent.click(screen.getByText('Tous'));
+      expect(screen.getByText('Jean Dupont')).toBeInTheDocument();
+    });
+
+    it('shows the buddy topics with their destination under the thread header', () => {
+      conversationsState.data = mixed();
+      renderPage(['/messages?to=3&name=Marie']);
+      // Un seul pays → il s'affiche en préfixe, une seule fois.
+      expect(screen.getByText(/À propos de : Canada —/)).toBeInTheDocument();
+      expect(screen.getByText(/Assurance maladie & santé/)).toBeInTheDocument();
+    });
+
+    it('suffixes each topic with its country when destinations differ', () => {
+      conversationsState.data = [
+        conv({
+          userId: 3,
+          fullName: 'Marie Buddy',
+          buddyTopics: [
+            { label: 'Visa', country: 'Canada' },
+            { label: 'Logement', country: 'Portugal' },
+          ],
+        }),
+      ];
+      renderPage(['/messages?to=3&name=Marie']);
+      expect(screen.getByText(/Visa \(Canada\)/)).toBeInTheDocument();
+      expect(screen.getByText(/Logement \(Portugal\)/)).toBeInTheDocument();
+    });
+
+    it('shows the expert title and country next to the thread header name', () => {
+      conversationsState.data = mixed();
+      renderPage(['/messages?to=2&name=Eve']);
+      expect(screen.getByText(/Avocate · Canada/)).toBeInTheDocument();
+    });
+  });
 });

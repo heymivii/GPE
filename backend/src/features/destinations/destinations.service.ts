@@ -10,48 +10,114 @@ import { Resource } from '../resource/entities/resource.entity';
 import { CostOfLivingService } from '../cost-of-living/cost-of-living.service';
 import { AdzunaService } from '../job-offer/adzuna.service';
 
-const COUNTRY_IMAGES: Record<string, string> = {
-  France:
-    'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=800&q=80',
-  Canada:
-    'https://images.unsplash.com/photo-1517935706615-2717063c2225?auto=format&fit=crop&w=800&q=80',
-  Suisse:
-    'https://images.unsplash.com/photo-1515488764276-beab7607c1e6?auto=format&fit=crop&w=800&q=80',
-  Allemagne:
-    'https://images.unsplash.com/photo-1467269204594-9661b134dd2b?auto=format&fit=crop&w=800&q=80',
-  Espagne:
-    'https://images.unsplash.com/photo-1543783207-ec64e4d95325?auto=format&fit=crop&w=800&q=80',
-  Italie:
-    'https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=800&q=80',
-  Portugal:
-    'https://images.unsplash.com/photo-1555881400-74d7acaacd8b?auto=format&fit=crop&w=800&q=80',
-  Belgique:
-    'https://images.unsplash.com/photo-1559113513-d5e09c78b9dd?auto=format&fit=crop&w=800&q=80',
-  'Pays-Bas':
-    'https://images.unsplash.com/photo-1534351590666-13e3e96b5571?auto=format&fit=crop&w=800&q=80',
-  Luxembourg:
-    'https://images.unsplash.com/photo-1587974928442-77dc3e0dba72?auto=format&fit=crop&w=800&q=80',
-  'Royaume-Uni':
-    'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=800&q=80',
-  Irlande:
-    'https://images.unsplash.com/photo-1590089415225-401ed6f9db8e?auto=format&fit=crop&w=800&q=80',
-  'États-Unis':
-    'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&w=800&q=80',
-  Australie:
-    'https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&w=800&q=80',
-  'Nouvelle-Zélande':
-    'https://images.unsplash.com/photo-1507699622108-4be3abd695ad?auto=format&fit=crop&w=800&q=80',
-  Japon:
-    'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=800&q=80',
-  Singapour:
-    'https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=800&q=80',
-  'Émirats arabes unis':
-    'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=800&q=80',
-  Mexique:
-    'https://images.unsplash.com/photo-1518638150340-f706e86654de?auto=format&fit=crop&w=800&q=80',
-  Brésil:
-    'https://images.unsplash.com/photo-1483729558449-99ef09a8c325?auto=format&fit=crop&w=800&q=80',
+// Photo de couverture par code ISO.
+//
+// Cette table était indexée par nom de pays en français. Les lignes de la base
+// portant un nom anglais (« Japan », « Switzerland », « United States ») ne
+// trouvaient donc aucune clé et recevaient toutes la même image par défaut, ce
+// qui donnait des cartes identiques côté Explorer (retour de recette).
+// Le code ISO, lui, ne dépend pas de la langue de saisie.
+const COUNTRY_IMAGES_BY_ISO: Record<string, string> = {
+  // France
+  FR: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=800&q=80',
+  // Canada
+  CA: 'https://images.unsplash.com/photo-1517935706615-2717063c2225?auto=format&fit=crop&w=800&q=80',
+  // Suisse
+  CH: 'https://images.unsplash.com/photo-1515488764276-beab7607c1e6?auto=format&fit=crop&w=800&q=80',
+  // Allemagne
+  DE: 'https://images.unsplash.com/photo-1467269204594-9661b134dd2b?auto=format&fit=crop&w=800&q=80',
+  // Espagne
+  ES: 'https://images.unsplash.com/photo-1543783207-ec64e4d95325?auto=format&fit=crop&w=800&q=80',
+  // Italie
+  IT: 'https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=800&q=80',
+  // Portugal
+  PT: 'https://images.unsplash.com/photo-1555881400-74d7acaacd8b?auto=format&fit=crop&w=800&q=80',
+  // Belgique
+  BE: 'https://images.unsplash.com/photo-1559113513-d5e09c78b9dd?auto=format&fit=crop&w=800&q=80',
+  // Pays-Bas
+  NL: 'https://images.unsplash.com/photo-1534351590666-13e3e96b5571?auto=format&fit=crop&w=800&q=80',
+  // Luxembourg
+  LU: 'https://images.unsplash.com/photo-1587974928442-77dc3e0dba72?auto=format&fit=crop&w=800&q=80',
+  // Royaume-Uni
+  GB: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=800&q=80',
+  // Irlande
+  IE: 'https://images.unsplash.com/photo-1590089415225-401ed6f9db8e?auto=format&fit=crop&w=800&q=80',
+  // États-Unis
+  US: 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&w=800&q=80',
+  // Australie
+  AU: 'https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&w=800&q=80',
+  // Nouvelle-Zélande
+  NZ: 'https://images.unsplash.com/photo-1507699622108-4be3abd695ad?auto=format&fit=crop&w=800&q=80',
+  // Japon
+  JP: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=800&q=80',
+  // Singapour
+  SG: 'https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=800&q=80',
+  // Émirats arabes unis
+  AE: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=800&q=80',
+  // Mexique
+  MX: 'https://images.unsplash.com/photo-1518638150340-f706e86654de?auto=format&fit=crop&w=800&q=80',
+  // Brésil
+  BR: 'https://images.unsplash.com/photo-1483729558449-99ef09a8c325?auto=format&fit=crop&w=800&q=80',
 };
+
+
+// Filet de sécurité pour les lignes dont iso_code est vide : on reconnaît le nom
+// dans les deux langues de saisie rencontrées en base.
+const COUNTRY_NAME_TO_ISO: Record<string, string> = {
+  france: 'FR',
+  canada: 'CA',
+  suisse: 'CH',
+  switzerland: 'CH',
+  allemagne: 'DE',
+  germany: 'DE',
+  espagne: 'ES',
+  spain: 'ES',
+  italie: 'IT',
+  italy: 'IT',
+  portugal: 'PT',
+  belgique: 'BE',
+  belgium: 'BE',
+  'pays-bas': 'NL',
+  netherlands: 'NL',
+  luxembourg: 'LU',
+  'royaume-uni': 'GB',
+  'united kingdom': 'GB',
+  irlande: 'IE',
+  ireland: 'IE',
+  'états-unis': 'US',
+  'etats-unis': 'US',
+  'united states': 'US',
+  australie: 'AU',
+  australia: 'AU',
+  'nouvelle-zélande': 'NZ',
+  'new zealand': 'NZ',
+  japon: 'JP',
+  japan: 'JP',
+  singapour: 'SG',
+  singapore: 'SG',
+  'émirats arabes unis': 'AE',
+  'united arab emirates': 'AE',
+  mexique: 'MX',
+  mexico: 'MX',
+  brésil: 'BR',
+  brazil: 'BR',
+};
+
+/**
+ * Photo de couverture d'un pays.
+ * Priorité au code ISO ; on retombe sur le nom pour les lignes dont l'ISO
+ * n'est pas renseigné en base.
+ */
+function countryImage(country: { isoCode?: string | null; countryName?: string | null }): string {
+  const byIso = country.isoCode
+    ? COUNTRY_IMAGES_BY_ISO[country.isoCode.toUpperCase()]
+    : undefined;
+  if (byIso) return byIso;
+  const iso = country.countryName
+    ? COUNTRY_NAME_TO_ISO[country.countryName.trim().toLowerCase()]
+    : undefined;
+  return (iso && COUNTRY_IMAGES_BY_ISO[iso]) || DEFAULT_IMAGE;
+}
 
 const DEFAULT_IMAGE =
   'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80';
@@ -166,27 +232,35 @@ export class DestinationsService {
 
     return countries.map((country) => ({
       ...country,
-      imageUrl: COUNTRY_IMAGES[country.countryName] || DEFAULT_IMAGE,
+      imageUrl: countryImage(country),
       stats: {
         memberCount: projectMap.get(country.idCountry) || 0,
-        jobOffersCount: adzunaJobCounts.get(country.idCountry) || 0,
+        jobOffersCount: adzunaJobCounts.get(country.idCountry) ?? null,
         forumTopicsCount: forumMap.get(country.idCountry) || 0,
         resourcesCount: resourceMap.get(country.idCountry) || 0,
       },
     }));
   }
 
+  /**
+   * Nombre d'offres Adzuna par pays.
+   *
+   * `null` signifie « pays hors couverture Adzuna » (le Japon, par exemple, n'a
+   * pas d'endpoint chez eux), à ne pas confondre avec un vrai 0. Sans cette
+   * distinction la carte affichait « 0 emplois » pour le Japon, ce qui laissait
+   * croire à une absence d'offres plutôt qu'à une absence de source.
+   */
   private async getAdzunaJobCountsForCountries(
     countries: Country[],
-  ): Promise<Map<number, number>> {
-    const jobCountMap = new Map<number, number>();
+  ): Promise<Map<number, number | null>> {
+    const jobCountMap = new Map<number, number | null>();
 
     const promises = countries.map(async (country) => {
       const adzunaCode = country.isoCode
         ? ISO_TO_ADZUNA[country.isoCode.toUpperCase()]
         : undefined;
       if (!adzunaCode) {
-        jobCountMap.set(country.idCountry, 0);
+        jobCountMap.set(country.idCountry, null);
         return;
       }
       try {
@@ -200,7 +274,8 @@ export class DestinationsService {
         this.logger.warn(
           `⚠️  Adzuna count failed for ${country.countryName} (${adzunaCode}): ${error instanceof Error ? error.message : error}`,
         );
-        jobCountMap.set(country.idCountry, 0);
+        // Un appel raté n'est pas une absence d'offres.
+        jobCountMap.set(country.idCountry, null);
       }
     });
 
@@ -283,9 +358,9 @@ export class DestinationsService {
         adzunaCode
           ? this.adzunaService
               .searchJobs({ country: adzunaCode, resultsPerPage: 1, page: 1 })
-              .then((r) => r.total)
-              .catch(() => 0)
-          : Promise.resolve(0),
+              .then((r): number | null => r.total)
+              .catch(() => null)
+          : Promise.resolve(null),
         this.resourceRepository.count({
           where: { country: { idCountry: country.idCountry } },
         }),
@@ -293,7 +368,7 @@ export class DestinationsService {
 
     return {
       ...country,
-      imageUrl: COUNTRY_IMAGES[country.countryName] || DEFAULT_IMAGE,
+      imageUrl: countryImage(country),
       cities: citiesWithCost,
       costOfLiving: {
         averageHousing: averageHousingCost,

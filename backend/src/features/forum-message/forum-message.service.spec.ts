@@ -457,4 +457,56 @@ describe('ForumMessageService', () => {
       expect(result).toHaveLength(2);
     });
   });
+
+  // ─── masquage des messages modérés ────────────────────────────
+
+  describe('masquage des messages modérés', () => {
+    const MASQUE = '[Message supprimé par la modération]';
+
+    it('remplace le contenu d\'un message modéré dans un fil', async () => {
+      messageRepo.find.mockResolvedValue([
+        { idForumMessage: 1, content: 'message normal', isModerated: false },
+        { idForumMessage: 2, content: 'insulte', isModerated: true },
+      ]);
+
+      const result = await service.findByTopic(1);
+
+      expect(result[0].content).toBe('message normal');
+      expect(result[1].content).toBe(MASQUE);
+    });
+
+    it('masque aussi via findAll()', async () => {
+      messageRepo.find.mockResolvedValue([
+        { idForumMessage: 3, content: 'insulte', isModerated: true },
+      ]);
+
+      const result = await service.findAll();
+
+      expect(result[0].content).toBe(MASQUE);
+    });
+
+    it('masque le message servi par findOnePublic()', async () => {
+      messageRepo.findOne.mockResolvedValue({
+        idForumMessage: 4,
+        content: 'insulte',
+        isModerated: true,
+      });
+
+      const result = await service.findOnePublic(4);
+
+      expect(result.content).toBe(MASQUE);
+    });
+
+    it('laisse findOne() intacte : les contrôles de droits ont besoin du contenu réel', async () => {
+      messageRepo.findOne.mockResolvedValue({
+        idForumMessage: 5,
+        content: 'insulte',
+        isModerated: true,
+      });
+
+      const result = await service.findOne(5);
+
+      expect(result.content).toBe('insulte');
+    });
+  });
 });

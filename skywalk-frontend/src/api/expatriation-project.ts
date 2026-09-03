@@ -154,13 +154,14 @@ export const expatriationProjectApi = {
     await apiClient.delete(`/expatriation-project/${projectId}`);
   },
 
-  // Débloque le projet (paiement mock) → plan complet.
+  /* ===== PRICING DÉSACTIVÉ — appel de déblocage (paiement mock) =====
   unlock: async (projectId: number): Promise<ExpatriationProject> => {
     const response = await apiClient.patch<any>(
       `/expatriation-project/${projectId}/unlock`,
     );
     return mapBackendToFrontendProject(response.data);
   },
+  ===== FIN PRICING DÉSACTIVÉ ===== */
 
   complete: async (
     projectId: number,

@@ -30,14 +30,27 @@ export class BuddyContactService {
       throw new BadRequestException('Vous ne pouvez pas vous contacter vous-meme.');
     }
 
+    // Bloque l'envoi si une demande est déjà en attente pour CETTE démarche,
+    // ou si une relation ACCEPTÉE existe déjà entre les deux personnes (dans
+    // un sens ou l'autre) : la mise en relation est par personne, pas par
+    // étape — une fois acceptée, la conversation passe par la messagerie.
     const existing = await this.requestRepository.findOne({
-      where: {
-        sender: { idUser: senderId },
-        recipient: { idUser: recipientId },
-        procedure: { idAdminProcedure: procedureId },
-        status: 'pending',
-      },
+      where: [
+        {
+          sender: { idUser: senderId },
+          recipient: { idUser: recipientId },
+          procedure: { idAdminProcedure: procedureId },
+          status: 'pending',
+        },
+        { sender: { idUser: senderId }, recipient: { idUser: recipientId }, status: 'accepted' },
+        { sender: { idUser: recipientId }, recipient: { idUser: senderId }, status: 'accepted' },
+      ],
     });
+    if (existing?.status === 'accepted') {
+      throw new BadRequestException(
+        'Vous etes deja en relation avec cette personne - ouvrez votre messagerie privee.',
+      );
+    }
     if (existing) {
       throw new BadRequestException('Une demande de contact est deja en attente pour cette etape.');
     }

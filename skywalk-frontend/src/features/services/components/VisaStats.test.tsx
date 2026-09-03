@@ -8,11 +8,16 @@ vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string, opts?: any) => {
       if (opts?.count != null) return `${key}:${opts.count}`;
-      if (key === 'visa.tipsList.tip.negative') return '❌ Avoid X';
-      if (key === 'visa.tipsList.tip.positive') return '✅ Do Y';
+      // Les traductions ne portent plus d'emoji : la polarité vit dans data/visaTips.
+      if (key === 'visa.tipsList.tip.negative') return 'Avoid X';
+      if (key === 'visa.tipsList.tip.positive') return 'Do Y';
       return key;
     },
   }),
+}));
+
+vi.mock('../../../data/visaTips', () => ({
+  isNegativeVisaTip: (tipKey: string) => tipKey === 'tip.negative',
 }));
 
 vi.mock('../../../data/visa-data', () => ({
@@ -159,7 +164,7 @@ describe('VisaStats', () => {
     expect(await screen.findByText('visa.goToProjectChecklist')).toBeInTheDocument();
   });
 
-  it('strips the emoji prefix from tips and distinguishes negative ones by icon', () => {
+  it('renders tips without emoji and distinguishes negative ones by icon', () => {
     renderVisaStats('france');
     expect(screen.getByText('Do Y')).toBeInTheDocument();
     expect(screen.getByText('Avoid X')).toBeInTheDocument();

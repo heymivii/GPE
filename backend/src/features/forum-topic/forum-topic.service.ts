@@ -13,6 +13,7 @@ import { ForumTopicFollow } from './entities/forum-topic-follow.entity';
 import { ForumMessage } from '../forum-message/entities/forum-message.entity';
 import { ContentFilterService } from '../forum-message/content-filter.service';
 import { ForumModerationService } from '../forum-moderation/forum-moderation.service';
+import { maskModeratedList } from '../forum-message/moderation-mask';
 
 @Injectable()
 export class ForumTopicService {
@@ -147,6 +148,9 @@ export class ForumTopicService {
         const dateB = new Date(b.sentAt).getTime();
         return dateA - dateB;
       });
+      // Ce chemin de lecture alimente la page d'un sujet : sans masquage ici,
+      // un message modéré s'affichait avec son contenu d'origine.
+      topic.messages = maskModeratedList(topic.messages);
     }
 
     return topic;

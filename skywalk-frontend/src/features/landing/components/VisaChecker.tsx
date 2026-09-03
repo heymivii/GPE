@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ShieldCheck, FileText, ArrowRight, BadgeCheck } from 'lucide-react';
-import { NATIONALITY_OPTIONS, isVisaExempt } from '../../../data/freeMovement';
+import { NATIONALITY_OPTIONS, nationalityLabel, isVisaExempt } from '../../../data/freeMovement';
 import { useSupportedCountries } from '../../../hooks/useSupportedCountries';
 
 /**
@@ -11,7 +11,7 @@ import { useSupportedCountries } from '../../../hooks/useSupportedCountries';
  * l'onboarding pré-rempli avec la destination.
  */
 export default function VisaChecker() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   // Destinations = pays ACTIFS de l'admin (source de vérité unique), hors non-sélectionnables.
   const { countries, nonSelectableCodes } = useSupportedCountries();
   const destinations = countries.filter((c) => !nonSelectableCodes.has(c.code));
@@ -23,7 +23,7 @@ export default function VisaChecker() {
   const exempt = isVisaExempt(nationality, destination);
   const destObj = destinations.find((d) => d.code === destination);
   const destName = destObj?.name || destination;
-  const natLabel = NATIONALITY_OPTIONS.find((n) => n.value === nationality)?.label || nationality;
+  const natLabel = nationalityLabel(nationality, i18n.language);
 
   return (
     <div className="bg-white rounded-3xl border border-gray-100 shadow-xl p-6 sm:p-8">
@@ -47,7 +47,7 @@ export default function VisaChecker() {
           >
             {NATIONALITY_OPTIONS.map((n) => (
               <option key={n.value} value={n.value}>
-                {n.label}
+                {nationalityLabel(n.value, i18n.language)}
               </option>
             ))}
           </select>

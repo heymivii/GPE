@@ -9,6 +9,10 @@ import { PrivateMessageService } from './private-message.service';
 import { PrivateMessage } from './entities/private-message.entity';
 import { User } from '../user/entities/user.entity';
 import { ContentFilterService } from '../forum-message/content-filter.service';
+import { ForumModerationService } from '../forum-moderation/forum-moderation.service';
+import { BuddyContactRequest } from '../buddy-contact/entities/buddy-contact-request.entity';
+import { ProcedureTracking } from '../procedure-tracking/entities/procedure-tracking.entity';
+import { ExpatriationProject } from '../expatriation-project/entities/expatriation-project.entity';
 
 const mockRepo = () => ({
   create: jest.fn((v) => v),
@@ -26,23 +30,39 @@ const mockContentFilter = () => ({
   validate: jest.fn(async () => ({ ok: true }) as { ok: boolean; reason?: string }),
 });
 
+const mockModeration = () => ({
+  moderate: jest.fn(async () => ({ action: 'ok' }) as { action: string; reason?: string }),
+});
+
 describe('PrivateMessageService', () => {
   let service: PrivateMessageService;
   let repo: ReturnType<typeof mockRepo>;
   let userRepo: ReturnType<typeof mockUserRepo>;
+  let buddyRequestRepo: { find: jest.Mock };
+  let trackingRepo: { find: jest.Mock };
+  let projectRepo: { find: jest.Mock };
   let contentFilter: ReturnType<typeof mockContentFilter>;
+  let moderation: ReturnType<typeof mockModeration>;
 
   beforeEach(async () => {
     repo = mockRepo();
     userRepo = mockUserRepo();
+    buddyRequestRepo = { find: jest.fn().mockResolvedValue([]) };
+    trackingRepo = { find: jest.fn().mockResolvedValue([]) };
+    projectRepo = { find: jest.fn().mockResolvedValue([]) };
     contentFilter = mockContentFilter();
+    moderation = mockModeration();
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         PrivateMessageService,
         { provide: getRepositoryToken(PrivateMessage), useValue: repo },
         { provide: getRepositoryToken(User), useValue: userRepo },
+        { provide: getRepositoryToken(BuddyContactRequest), useValue: buddyRequestRepo },
+        { provide: getRepositoryToken(ProcedureTracking), useValue: trackingRepo },
+        { provide: getRepositoryToken(ExpatriationProject), useValue: projectRepo },
         { provide: ContentFilterService, useValue: contentFilter },
+        { provide: ForumModerationService, useValue: moderation },
       ],
     }).compile();
 
@@ -135,6 +155,84 @@ describe('PrivateMessageService', () => {
         expect.objectContaining({ userId: 2, fullName: 'Bob', lastMessage: 'latest', unread: 1 }),
       );
       expect((res[0] as any).email).toBeUndefined();
+    });
+
+    it('flags verified experts and lists accepted buddy topics per interlocutor', async () => {
+      repo.find.mockResolvedValue([
+        {
+          senderId: 2, recipientId: 1, content: 'salut', sentAt: new Date('2026-02-02'),
+          readAt: null,
+          sender: { idUser: 2, firstName: 'Eve', isExpert: true, expertVerifiedAt: new Date(), expertTitle: 'Avocate', expertCountry: { countryName: 'Canada' } },
+          recipient: { idUser: 1 },
+        },
+        {
+          senderId: 3, recipientId: 1, content: 'hello', sentAt: new Date('2026-02-01'),
+          readAt: null,
+          sender: { idUser: 3, firstName: 'Marie', isExpert: true, expertVerifiedAt: null },
+          recipient: { idUser: 1 },
+        },
+      ]);
+      buddyRequestRepo.find.mockResolvedValue([
+        {
+          status: 'accepted',
+          sender: { idUser: 1 },
+          recipient: { idUser: 3 },
+          procedure: { procedureType: 'Assurance maladie & santé' },
+        },
+        {
+          status: 'accepted',
+          sender: { idUser: 3 },
+          recipient: { idUser: 1 },
+          procedure: { procedureType: 'Compte bancaire' },
+        },
+      ]);
+
+      // Le buddy a complété d'autres étapes pour MA destination : elles font
+      // partie des sujets d'entraide, pas seulement l'étape de la demande.
+      projectRepo.find.mockResolvedValue([{ idProject: 7, destinationCountryId: 33 }]);
+      trackingRepo.find.mockResolvedValue([
+        {
+          status: 'completed',
+          user: { idUser: 3 },
+          admin_procedure: { procedureType: 'Transport & permis de conduire' },
+          project: { destinationCountryId: 33, destinationCountry: { countryName: 'Canada' } },
+        },
+        {
+          // doublon avec la demande acceptée → dédupliqué, mais gagne son pays
+          status: 'completed',
+          user: { idUser: 3 },
+          admin_procedure: { procedureType: 'Compte bancaire' },
+          project: { destinationCountryId: 33, destinationCountry: { countryName: 'Canada' } },
+        },
+      ]);
+
+      const res = await service.getConversations(1);
+      const eve = res.find((c) => c.userId === 2)!;
+      const marie = res.find((c) => c.userId === 3)!;
+
+      expect(eve.isExpert).toBe(true);
+      expect(eve.expertTitle).toBe('Avocate');
+      expect(eve.expertCountry).toBe('Canada');
+      expect(eve.buddyTopics).toEqual([]);
+      // isExpert sans expertVerifiedAt = PAS un expert vérifié.
+      expect(marie.isExpert).toBe(false);
+      // Union : étapes des demandes acceptées (deux sens) + étapes complétées
+      // par le buddy pour ma destination, sans doublons — chaque sujet porte
+      // sa destination quand elle est connue.
+      expect(marie.buddyTopics).toEqual([
+        { label: 'Assurance maladie & santé', country: null },
+        { label: 'Compte bancaire', country: 'Canada' },
+        { label: 'Transport & permis de conduire', country: 'Canada' },
+      ]);
+    });
+  });
+
+  describe('send() — modération', () => {
+    it('rejects a message containing an admin forbidden word', async () => {
+      userRepo.findOne.mockResolvedValue({ idUser: 2 });
+      moderation.moderate.mockResolvedValue({ action: 'block', reason: 'Terme signalé « x »' });
+      await expect(service.send(1, 2, 'gros mot')).rejects.toBeInstanceOf(BadRequestException);
+      expect(repo.save).not.toHaveBeenCalled();
     });
   });
 

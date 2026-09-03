@@ -55,13 +55,15 @@ describe('LandingPage', () => {
   it('renders all landing sections', async () => {
     renderPage();
     expect(screen.getByTestId('visa-checker')).toBeInTheDocument();
-    expect(screen.getByTestId('destination-preview')).toBeInTheDocument();
+    // APERÇU GRATUIT + PRICING DÉSACTIVÉS (retour de recette) : ces deux
+    // sections ne sont plus rendues sur la landing.
+    expect(screen.queryByTestId('destination-preview')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('pricing')).not.toBeInTheDocument();
     expect(screen.getByTestId('how-it-works')).toBeInTheDocument();
     expect(screen.getByTestId('official-sources')).toBeInTheDocument();
     expect(screen.getByTestId('tools-section')).toBeInTheDocument();
     expect(screen.getByTestId('middle-cta')).toBeInTheDocument();
     expect(screen.getByTestId('testimonials')).toBeInTheDocument();
-    expect(screen.getByTestId('pricing')).toBeInTheDocument();
     expect(screen.getByTestId('newsletter-cta')).toBeInTheDocument();
     expect(screen.getByTestId('faq')).toBeInTheDocument();
     expect(screen.getAllByTestId('destination-card')).toHaveLength(3);

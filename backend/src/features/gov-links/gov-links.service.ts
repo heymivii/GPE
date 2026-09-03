@@ -30,6 +30,12 @@ export interface GovLinkResult {
   status: GovLinkStatus;
   summary?: string[];
   actions?: string[];
+  /** Texte lisible de la page retenue — carburant des garde-fous, jamais persisté. */
+  pageText?: string;
+  /** Le modèle a jugé la page hors-sujet pour la catégorie (prompt, règle 3). */
+  offTopic?: boolean;
+  /** URL épinglée par un admin : la SOURCE est vouchée (les contrôles d'URL s'inclinent). */
+  pinned?: boolean;
 }
 
 @Injectable()
@@ -229,9 +235,13 @@ export class GovLinksService {
         `LLM ranker unavailable for ${cc}/${category}; using top verified official link as fallback.`,
       );
       const top = verified[0];
-      const { facts, actions } = await this.ranker.summarize(
+      const { facts, actions, offTopic } = await this.ranker.summarize(
         top.snippet ?? '',
-        { country, category },
+        {
+          country,
+          category,
+          keywords,
+        },
       );
       return this.persist(
         cc,
@@ -243,13 +253,14 @@ export class GovLinksService {
         primaryQuery,
         facts,
         actions,
+        { pageText: top.snippet ?? '', offTopic },
       );
     }
     const chosen = verified[picked.index];
     // Grounded summary of the chosen official page's real content (anti-hallucination: from the page text only).
-    const { facts, actions } = await this.ranker.summarize(
+    const { facts, actions, offTopic } = await this.ranker.summarize(
       chosen.snippet ?? '',
-      { country, category },
+      { country, category, keywords },
     );
     return this.persist(
       cc,
@@ -261,6 +272,7 @@ export class GovLinksService {
       primaryQuery,
       facts,
       actions,
+      { pageText: chosen.snippet ?? '', offTopic },
     );
   }
 
@@ -306,13 +318,16 @@ export class GovLinksService {
         0,
         'needs_review',
         pinnedUrl,
+        undefined,
+        undefined,
+        { pinned: true },
       );
     }
     const finalUrl = v.finalUrl || pinnedUrl;
-    const { facts, actions } = await this.ranker.summarize(v.text ?? '', {
-      country,
-      category,
-    });
+    const { facts, actions, offTopic } = await this.ranker.summarize(
+      v.text ?? '',
+      { country, category },
+    );
     return this.persist(
       cc,
       category,
@@ -323,6 +338,7 @@ export class GovLinksService {
       pinnedUrl,
       facts,
       actions,
+      { pageText: v.text ?? '', offTopic, pinned: true },
     );
   }
 
@@ -384,6 +400,8 @@ export class GovLinksService {
     query: string,
     summary?: string[],
     actions?: string[],
+    // Transportés dans le RÉSULTAT pour les garde-fous de l'orchestrateur ; jamais en base.
+    extras?: { pageText?: string; offTopic?: boolean; pinned?: boolean },
   ): Promise<GovLinkResult> {
     if (url) {
       // FIX 2: upsert by (countryCode, category) — one row per pair, no duplicates
@@ -425,6 +443,9 @@ export class GovLinksService {
       status,
       summary,
       actions,
+      pageText: extras?.pageText,
+      offTopic: extras?.offTopic,
+      pinned: extras?.pinned,
     };
   }
 

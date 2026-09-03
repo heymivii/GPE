@@ -152,12 +152,14 @@ describe('expatriationProjectApi', () => {
     expect(mockedDelete).toHaveBeenCalledWith('/expatriation-project/1');
   });
 
+  /* ===== PRICING DÉSACTIVÉ — unlock() commenté dans l'API, test avec =====
   it('unlock() PATCHes /expatriation-project/:id/unlock with no body', async () => {
     mockedPatch.mockResolvedValue({ data: { idProject: 1, isPaid: true } });
     const result = await expatriationProjectApi.unlock(1);
     expect(mockedPatch).toHaveBeenCalledWith('/expatriation-project/1/unlock');
     expect(result.isPaid).toBe(true);
   });
+  ===== FIN PRICING DÉSACTIVÉ ===== */
 
   it('complete() PATCHes the project status to completed', async () => {
     mockedPatch.mockResolvedValue({ data: { idProject: 1, status: 'completed' } });

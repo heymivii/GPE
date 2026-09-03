@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { authApi } from "../../../api/auth";
+import PasswordInput from "../../../components/PasswordInput";
 
 const calculatePasswordStrength = (password: string) => {
   let strength = 0;
@@ -141,15 +142,12 @@ export default function ResetPasswordForm() {
       )}
 
       <div>
-        <input
-          type="password"
-          className="mt-1 w-full px-4 py-4 rounded-lg placeholder-black text-black"
-          style={{ backgroundColor: "rgba(217, 217, 217, 0.4)" }}
+        <PasswordInput
           value={newPassword}
           placeholder={t("auth.resetPassword.newPassword")}
-          onChange={(e) => setNewPassword(e.target.value)}
-          required
+          onChange={setNewPassword}
           disabled={resetMutation.isPending}
+          autoComplete="new-password"
         />
         
         {newPassword && (
@@ -177,15 +175,12 @@ export default function ResetPasswordForm() {
       </div>
 
       <div>
-        <input
-          type="password"
-          className="mt-1 w-full px-4 py-4 rounded-lg placeholder-black text-black"
-          style={{ backgroundColor: "rgba(217, 217, 217, 0.4)" }}
+        <PasswordInput
           value={confirmPassword}
           placeholder={t("auth.resetPassword.confirmPassword")}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          required
+          onChange={setConfirmPassword}
           disabled={resetMutation.isPending}
+          autoComplete="new-password"
         />
       </div>
 

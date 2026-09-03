@@ -1,4 +1,4 @@
-import { Car, Bus, DollarSign, Fuel, MapPin, Loader2, AlertCircle, ArrowRightLeft, Timer, CreditCard } from 'lucide-react';
+import { AlertCircle, ArrowRightLeft, Bus, Car, CreditCard, DollarSign, Fuel, Loader2, MapPin, Timer, TrainFront } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { costOfLivingApi } from '../../../api/costOfLiving';
@@ -176,11 +176,15 @@ export default function TransportStats({ countryName, cityName }: TransportStats
               <h3 className="font-semibold text-blue-900 mb-2">{t('services.stats.transport.monthlyComparison')}</h3>
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span className="text-blue-800">{t('services.stats.transport.publicTransportEmoji')}</span>
+                  <span className="inline-flex items-center gap-1.5 text-blue-800">
+                    <TrainFront className="w-4 h-4" /> {t('services.stats.transport.publicTransport')}
+                  </span>
                   <span className="font-bold text-blue-900">{fp(monthlyPass)}{t('services.stats.common.perMonth')}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-blue-800">{t('services.stats.transport.carEmoji')}</span>
+                  <span className="inline-flex items-center gap-1.5 text-blue-800">
+                    <Car className="w-4 h-4" /> {t('services.stats.transport.car')}
+                  </span>
                   <span className="font-bold text-blue-900">~{fp(monthlyFuelCost)}{t('services.stats.common.perMonth')}</span>
                 </div>
                 <div className="border-t border-blue-200 pt-2 mt-2">

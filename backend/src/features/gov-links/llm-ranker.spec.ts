@@ -1,5 +1,9 @@
 import axios from 'axios';
-import { clampRankResult, OllamaRanker } from './llm-ranker';
+import {
+  clampRankResult,
+  OllamaRanker,
+  buildSummarizePrompt,
+} from './llm-ranker';
 
 jest.mock('axios');
 
@@ -92,6 +96,7 @@ describe('OllamaRanker.summarize()', () => {
         'Préparer un passeport valide',
         'Remplir le formulaire de demande',
       ],
+      offTopic: false,
     });
   });
 
@@ -114,5 +119,109 @@ describe('OllamaRanker.summarize()', () => {
       category: 'sante',
     });
     expect(result).toEqual({ facts: [], actions: [] });
+  });
+});
+
+describe('buildSummarizePrompt — le contrat qualité passé au modèle', () => {
+  const prompt = buildSummarizePrompt('Texte de la page.', {
+    country: 'France',
+    category: 'sante',
+  });
+
+  it('donne au modèle un métier et un lecteur (expatrié entrant)', () => {
+    expect(prompt).toContain(
+      "rédacteur professionnel de guides d'expatriation",
+    );
+    expect(prompt).toContain("S'INSTALLE en France");
+  });
+
+  it('verrouille le périmètre sur la catégorie et exige le signal hors-sujet', () => {
+    expect(prompt).toContain('« sante »');
+    expect(prompt).toContain('"off_topic"');
+  });
+
+  it('interdit les contenus locaux (préfecture, email) — la faille du cas Calvados', () => {
+    expect(prompt).toContain('PORTÉE NATIONALE');
+    expect(prompt).toMatch(/adresse email.+administration locale/);
+  });
+
+  it('exclut explicitement menus et étapes de formulaire génériques', () => {
+    expect(prompt).toContain('entrée de menu');
+    expect(prompt).toContain('Renseigner les informations demandées');
+  });
+
+  it('garde la règle anti-hallucination historique', () => {
+    expect(prompt).toContain('AUCUNE connaissance externe');
+  });
+});
+
+describe('reprise sur 429 — le quota Groq (8k TPM) ne doit plus vider un run', () => {
+  const mockedAxios = axios as jest.Mocked<typeof axios>;
+  beforeEach(() => jest.clearAllMocks());
+
+  const ok = {
+    data: {
+      choices: [
+        {
+          message: {
+            content: JSON.stringify({
+              facts: ['Fait extrait après reprise'],
+              actions: ['Déposer le dossier au consulat'],
+              off_topic: false,
+            }),
+          },
+        },
+      ],
+    },
+  };
+  const rateLimited = {
+    response: { status: 429, headers: { 'retry-after': '0' } },
+  };
+
+  it('réessaie après un 429 et aboutit', async () => {
+    mockedAxios.post = jest
+      .fn()
+      .mockRejectedValueOnce(rateLimited)
+      .mockResolvedValueOnce(ok);
+    const ranker = new OllamaRanker('http://x/v1', 'm', 'k');
+    const result = await ranker.summarize(
+      'Texte de page suffisant pour appel.',
+      {
+        country: 'France',
+        category: 'visa',
+      },
+    );
+    expect(result.actions).toEqual(['Déposer le dossier au consulat']);
+    expect(mockedAxios.post).toHaveBeenCalledTimes(2);
+  });
+
+  it('abandonne proprement après 3 tentatives 429 (listes vides, pas de crash)', async () => {
+    mockedAxios.post = jest.fn().mockRejectedValue(rateLimited);
+    const ranker = new OllamaRanker('http://x/v1', 'm', 'k');
+    const result = await ranker.summarize(
+      'Texte de page suffisant pour appel.',
+      {
+        country: 'France',
+        category: 'visa',
+      },
+    );
+    expect(result).toEqual({ facts: [], actions: [] });
+    expect(mockedAxios.post).toHaveBeenCalledTimes(3);
+  });
+
+  it('ne réessaie PAS une erreur non-429 (un modèle décommissionné doit échouer vite)', async () => {
+    mockedAxios.post = jest.fn().mockRejectedValue({
+      response: { status: 404, data: 'model_not_found' },
+    });
+    const ranker = new OllamaRanker('http://x/v1', 'm', 'k');
+    const result = await ranker.summarize(
+      'Texte de page suffisant pour appel.',
+      {
+        country: 'France',
+        category: 'visa',
+      },
+    );
+    expect(result).toEqual({ facts: [], actions: [] });
+    expect(mockedAxios.post).toHaveBeenCalledTimes(1);
   });
 });

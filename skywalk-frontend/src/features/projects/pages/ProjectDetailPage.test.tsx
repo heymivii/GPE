@@ -114,12 +114,13 @@ describe('ProjectDetailPage', () => {
     expect(navigate).toHaveBeenCalledWith('/projects');
   });
 
-  it('renders the project header, status and documents vault', () => {
+  // DOCUMENTS DÉSACTIVÉS : le coffre n'est plus rendu sur la page projet.
+  it('renders the project header and status (documents vault désactivé)', () => {
     setup();
     renderPage();
     expect(screen.getAllByText('France').length).toBeGreaterThan(0);
     expect(screen.getByText('projectDetail.statusPlanning')).toBeInTheDocument();
-    expect(screen.getByTestId('documents-vault')).toHaveTextContent('vault-7');
+    expect(screen.queryByTestId('documents-vault')).not.toBeInTheDocument();
   });
 
   it('renders the priorities list', () => {

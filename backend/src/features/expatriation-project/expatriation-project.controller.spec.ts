@@ -63,10 +63,12 @@ describe('ExpatriationProjectController', () => {
     expect(service.update).toHaveBeenCalledWith(5, 1, dto);
   });
 
+  /* ===== PRICING DÉSACTIVÉ — endpoint unlock commenté, test avec =====
   it('unlock converts the id and scopes to the user', async () => {
     await controller.unlock(req, '5');
     expect(service.unlock).toHaveBeenCalledWith(5, 1);
   });
+  ===== FIN PRICING DÉSACTIVÉ ===== */
 
   it('remove converts the id and scopes to the user', async () => {
     await controller.remove(req, '5');

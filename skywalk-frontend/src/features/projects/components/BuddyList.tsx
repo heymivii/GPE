@@ -75,15 +75,15 @@ export default function BuddyList({ procedureId, procedureTitle, countryId }: Bu
               <span className="text-[11px] text-gray-400 flex-shrink-0">
                 {getDaysAgo(buddy.completedAt)}
               </span>
+              {/* Actions de contact compactées dans le menu « ⋯ » du row */}
+              <BuddyContactButtons
+                recipientId={buddy.idUser}
+                recipientFirstname={buddy.firstname}
+                procedureId={procedureId}
+                procedureTitle={procedureTitle}
+                countryId={countryId}
+              />
             </div>
-
-            <BuddyContactButtons
-              recipientId={buddy.idUser}
-              recipientFirstname={buddy.firstname}
-              procedureId={procedureId}
-              procedureTitle={procedureTitle}
-              countryId={countryId}
-            />
           </div>
         ))}
       </div>

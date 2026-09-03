@@ -8,6 +8,7 @@ const mockService = () => ({
   findAll: jest.fn(),
   findByTopic: jest.fn(),
   findOne: jest.fn(),
+  findOnePublic: jest.fn(),
   update: jest.fn(),
   remove: jest.fn(),
   moderatorRemove: jest.fn(),
@@ -130,10 +131,10 @@ describe('ForumMessageController', () => {
 
   describe('findOne()', () => {
     it('should return a single message', async () => {
-      service.findOne.mockResolvedValue({ idForumMessage: 3 });
+      service.findOnePublic.mockResolvedValue({ idForumMessage: 3 });
 
       const result = await controller.findOne(3);
-      expect(service.findOne).toHaveBeenCalledWith(3);
+      expect(service.findOnePublic).toHaveBeenCalledWith(3);
       expect(result.idForumMessage).toBe(3);
     });
   });

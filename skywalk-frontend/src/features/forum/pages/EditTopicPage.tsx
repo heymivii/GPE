@@ -4,23 +4,17 @@ import { ArrowLeft, Loader2, Save, ShieldAlert, X } from 'lucide-react';
 import { useForumTopic, useUpdateForumTopic } from '../../../hooks/useForum';
 import { useAuth } from '../../../hooks/useAuth';
 import { TopicCategoryValues, type TopicCategory } from '../../../types/forum';
+import { categoryIcon } from '../categoryIcons';
 import { useTranslation } from 'react-i18next';
 
-const categoryIcons: Record<string, string> = {
-  [TopicCategoryValues.QUESTION]: '❓',
-  [TopicCategoryValues.TESTIMONY]: '📝',
-  [TopicCategoryValues.ADVICE]: '💡',
-  [TopicCategoryValues.DISCUSSION]: '💬',
-  [TopicCategoryValues.ANNOUNCEMENT]: '📢',
-  [TopicCategoryValues.OTHER]: '📌',
-};
+
 
 export default function EditTopicPage() {
   const { t } = useTranslation();
   const categories = Object.values(TopicCategoryValues).map(id => ({
     id,
     name: t(`forum.categories.${id}.name`),
-    icon: categoryIcons[id] || '📌',
+    icon: categoryIcon(id),
   }));
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
@@ -264,7 +258,7 @@ export default function EditTopicPage() {
                   }`}
                 >
                   <div className="flex items-center gap-2">
-                    <span className="text-lg">{category.icon}</span>
+                    <category.icon className="w-5 h-5 text-[#5EA3C0]" />
                     <span className="font-medium">{category.name}</span>
                   </div>
                 </button>

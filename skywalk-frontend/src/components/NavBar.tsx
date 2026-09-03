@@ -1,13 +1,13 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Search, Menu, X, ChevronDown, Globe, LogOut, User, LayoutDashboard, FolderKanban, FolderLock, Settings, Compass, BarChart3, MapPin, Briefcase, BookOpen, BadgeCheck, Mail, ShieldAlert } from 'lucide-react';
+import { Search, Menu, X, ChevronDown, Globe, LogOut, User, LayoutDashboard, FolderKanban, Settings, Compass, BarChart3, MapPin, Briefcase, BookOpen, BadgeCheck, Mail, ShieldAlert } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import GlobalSearchModal from './GlobalSearchModal';
-import CurrencySelector from './CurrencySelector';
 import ProjectSwitcher from './ProjectSwitcher';
 import NotificationBell from '../features/notifications/NotificationBell';
 import { useUnreadMessages } from '../hooks/usePrivateMessages';
+import { getInitials } from '../lib/formatters';
 
 const languages = [
   { code: 'fr', label: 'Français', flag: '🇫🇷' },
@@ -167,16 +167,20 @@ export default function NavBar() {
           </div>
 
           <div className="flex items-center gap-3">
-            <button
-              onClick={() => setSearchOpen(true)}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 bg-gray-50 hover:bg-gray-100 text-gray-500 text-sm transition-colors"
-            >
-              <Search className="w-4 h-4" />
-              <span className="hidden md:inline">{t('globalSearch.trigger')}</span>
-              <kbd className="hidden md:inline-flex items-center gap-0.5 rounded border border-gray-200 bg-white px-1.5 py-0.5 text-[10px] font-medium text-gray-400">
-                ⌘K
-              </kbd>
-            </button>
+            {/* Recherche globale réservée aux connectés : côté visiteur elle se collait
+                au lien "Blog" et ne portait rien d'utile (retour de recette). */}
+            {isAuthenticated && (
+              <button
+                onClick={() => setSearchOpen(true)}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 bg-gray-50 hover:bg-gray-100 text-gray-500 text-sm transition-colors"
+              >
+                <Search className="w-4 h-4" />
+                <span className="hidden md:inline">{t('globalSearch.trigger')}</span>
+                <kbd className="hidden md:inline-flex items-center gap-0.5 rounded border border-gray-200 bg-white px-1.5 py-0.5 text-[10px] font-medium text-gray-400">
+                  ⌘K
+                </kbd>
+              </button>
+            )}
 
             {isAuthenticated && (
               <div className="hidden md:block">
@@ -184,12 +188,11 @@ export default function NavBar() {
               </div>
             )}
 
-            {/* Visitors keep currency + language visible (no profile menu to hold them);
-                signed-in users find these inside the profile menu instead. */}
+            {/* Le sélecteur de devise vit dans les Réglages : la navbar publique
+                n'affiche aucun prix, il n'y avait rien à convertir (retour de recette).
+                La langue reste ici, elle change bien tout le contenu de la page. */}
             {!isAuthenticated && (
               <>
-                <CurrencySelector />
-
                 <div className="relative hidden sm:block" ref={langRef}>
                   <button
                     className="flex items-center gap-1.5 px-2.5 py-2 border border-gray-200 rounded-lg bg-white hover:bg-gray-50 text-gray-600 text-sm"
@@ -241,7 +244,7 @@ export default function NavBar() {
                   onClick={() => setUserMenuOpen((v) => !v)}
                 >
                   <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#5EA3C0] to-[#4891b0] text-white flex items-center justify-center font-semibold text-sm">
-                    {user.fullName?.charAt(0).toUpperCase() || 'U'}
+                    {getInitials(user.fullName) || <User className="w-4 h-4" />}
                   </div>
                   <span className="text-sm text-gray-700 font-medium hidden md:inline max-w-[120px] truncate">{user.fullName}</span>
                   <ChevronDown className={`w-3.5 h-3.5 text-gray-400 transition-transform ${userMenuOpen ? 'rotate-180' : ''}`} />
@@ -277,6 +280,7 @@ export default function NavBar() {
                       <FolderKanban className="w-4 h-4 text-gray-400" />
                       {t('nav.projects')}
                     </Link>
+                    {/* ===== DOCUMENTS DÉSACTIVÉS — entrée du menu utilisateur =====
                     <Link
                       to="/documents"
                       className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-gray-700 text-sm"
@@ -285,6 +289,7 @@ export default function NavBar() {
                       <FolderLock className="w-4 h-4 text-gray-400" />
                       {t('nav.documents', { defaultValue: 'Mes documents' })}
                     </Link>
+                    ===== FIN DOCUMENTS DÉSACTIVÉS ===== */}
                     {isAdmin && (
                       <Link
                         to="/admin"
@@ -351,7 +356,9 @@ export default function NavBar() {
               <>
                 <MobileLink to="/dashboard" label={t('nav.dashboard')} active={isActive('/dashboard')} />
                 <MobileLink to="/projects" label={t('nav.projects')} active={isActive('/projects')} />
+                {/* ===== DOCUMENTS DÉSACTIVÉS — entrée du menu mobile =====
                 <MobileLink to="/documents" label={t('nav.documents', { defaultValue: 'Mes documents' })} active={isActive('/documents')} />
+                ===== FIN DOCUMENTS DÉSACTIVÉS ===== */}
                 <MobileLink to="/destinations" label={t('nav.destinations')} active={isActive('/destinations')} />
                 <MobileLink to="/comparison" label={t('nav.comparison')} active={isActive('/comparison')} />
                 <MobileLink to="/services" label={t('nav.services')} active={isActive('/services')} />
@@ -379,15 +386,11 @@ export default function NavBar() {
             </div>
 
             <div className="pt-3 border-t border-gray-100">
-              <CurrencySelector />
-            </div>
-
-            <div className="pt-3 border-t border-gray-100">
               {isAuthenticated && user ? (
                 <div className="space-y-1">
                   <Link to="/profile" className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-gray-700 text-sm">
                     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#5EA3C0] to-[#4891b0] text-white flex items-center justify-center font-semibold text-sm">
-                      {user.fullName?.charAt(0).toUpperCase() || 'U'}
+                      {getInitials(user.fullName) || <User className="w-4 h-4" />}
                     </div>
                     <div>
                       <p className="font-medium text-gray-900 text-sm">{user.fullName}</p>
