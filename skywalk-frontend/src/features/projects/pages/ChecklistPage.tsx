@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { CheckCircle, Circle, ChevronDown, ChevronRight, ExternalLink, ArrowLeft, ArrowRight, List, Calendar, AlertCircle, AlertTriangle, Plane, Home, Lightbulb } from 'lucide-react';
 // DOCUMENTS DÉSACTIVÉS : Paperclip et DocumentsVault ne servaient qu'au panneau par étape.
@@ -8,7 +8,7 @@ import { useProject } from '../hooks/useProjectMutations';
 // import { useUnlockProject } from '../hooks/useProjectMutations';
 import { useChecklistProgress, getStepDeadline, filterStepsForProject } from '../../dashboard/hooks/useChecklistProgress';
 import { getLinksForStep } from '../../../data/checklist-links';
-import BuddyList from '../components/BuddyList';
+import BuddySidebarCard from '../components/BuddySidebarCard';
 import { useGovLink } from '../../../api/useGovLink';
 import OfficialLinkCard from '../../../components/OfficialLinkCard';
 import TrustBadge from '../../../components/TrustBadge';
@@ -81,7 +81,7 @@ function StepLinks({ category, countryCode }: { category: string; countryCode?: 
             <Link
               to={links!.serviceLink}
               onClick={(e) => e.stopPropagation()}
-              className="text-xs text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1"
+              className="text-xs text-[#5EA3C0] hover:text-[#4891b0] hover:underline flex items-center gap-1"
             >
               Voir le service <ArrowRight className="w-3 h-3" />
             </Link>
@@ -129,7 +129,6 @@ function ChecklistItemRow({
   isExpanded,
   departureDate,
   countryCode,
-  destinationCountryId,
   onToggleExpand,
   onToggleItem,
   onToggleSubstep,
@@ -138,7 +137,6 @@ function ChecklistItemRow({
   isExpanded: boolean;
   departureDate?: string | Date | null;
   countryCode?: string;
-  destinationCountryId: number;
   onToggleExpand: (id: string) => void;
   onToggleItem: (id: string) => void;
   onToggleSubstep: (itemId: string, substepId: string, e: React.MouseEvent) => void;
@@ -190,7 +188,7 @@ function ChecklistItemRow({
                   phase={item.phase}
                 />
                 {item.phase === 'on_arrival' && (
-                  <span className="text-[11px] px-2 py-0.5 rounded-full bg-blue-50 text-blue-600">
+                  <span className="text-[11px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">
                     À faire sur place
                   </span>
                 )}
@@ -221,13 +219,6 @@ function ChecklistItemRow({
             </div>
           )}
 
-          {!item.completed && (
-            <BuddyList
-              procedureId={item.adminProcedureId}
-              procedureTitle={item.title}
-              countryId={destinationCountryId}
-            />
-          )}
         </div>
 
         {substepsTotal > 0 && (
@@ -538,6 +529,29 @@ export default function ChecklistPage() {
     }
   }, [profileSteps, updateFacts, updateStep]);
 
+  // Réconciliation au chargement : des sous-tâches TOUTES cochées avec un statut parent
+  // resté « à faire » (données écrites avant l'auto-complétion, ou écritures concurrentes)
+  // s'affichaient incohérentes — « 5/5 tâches » et un rond vide. On aligne le statut une
+  // seule fois par tracking, exactement comme le ferait le dernier clic de sous-tâche.
+  const healedTrackingIds = useRef<Set<number>>(new Set());
+  useEffect(() => {
+    for (const item of profileSteps) {
+      const total = item.substeps.length;
+      const done = item.substeps.filter((s) => s.completed).length;
+      if (
+        total > 0 &&
+        done === total &&
+        item.status !== 'completed' &&
+        !healedTrackingIds.current.has(item.trackingId)
+      ) {
+        healedTrackingIds.current.add(item.trackingId);
+        updateStep({ trackingId: item.trackingId, status: 'completed' }).catch(() => {
+          healedTrackingIds.current.delete(item.trackingId);
+        });
+      }
+    }
+  }, [profileSteps, updateStep]);
+
   const displaySteps = view === 'timeline' ? timelineSteps : filteredSteps;
 
   /* ===== PRICING DÉSACTIVÉ — verrou « par projet » =====
@@ -571,22 +585,32 @@ export default function ChecklistPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+      {/* Header épuré : titre seul — l'état du projet vit dans la sidebar */}
       <div className="bg-white border-b border-gray-100">
-        <div className="max-w-4xl mx-auto px-4 py-6">
+        <div className="max-w-7xl mx-auto px-4 py-5">
           <Link
             to={`/projects/${projectId}`}
-            className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 mb-4"
+            className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 mb-3"
           >
             <ArrowLeft className="w-4 h-4" /> Retour au projet
           </Link>
 
-          <h1 className="text-2xl font-bold text-gray-900 mb-1">
+          <h1 className="text-2xl font-bold text-gray-900">
             Ma checklist d'expatriation
           </h1>
+        </div>
+      </div>
+
+      {/* Corps : sidebar d'état (sticky) + liste pleine largeur */}
+      <div className="max-w-7xl mx-auto px-4 py-6 pb-12">
+        <div className="grid gap-6 items-start lg:grid-cols-[340px_minmax(0,1fr)]">
+          {/* ── Sidebar : où j'en suis / à faire maintenant ── */}
+          <aside className="min-w-0 lg:sticky lg:top-6 space-y-3">
+          {/* Où j'en suis — compte à rebours + progression, une seule carte */}
+          <div className="rounded-2xl border border-gray-100 bg-gradient-to-br from-[#5EA3C0]/10 to-transparent bg-white p-4">
 
           {departureDate ? (
-            <div className="mt-2 flex items-center gap-4 rounded-2xl border border-gray-100 bg-gradient-to-br from-[#5EA3C0]/10 to-transparent p-4">
+            <div className="flex items-center gap-4">
               <div className="text-center px-2 flex-shrink-0">
                 <div
                   className={`text-3xl font-bold font-outfit leading-none ${
@@ -628,6 +652,11 @@ export default function ChecklistPage() {
                   {urgentSteps > 0 && (
                     <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-orange-50 text-orange-700 border border-orange-100">
                       {urgentSteps} urgentes
+                    </span>
+                  )}
+                  {lateSteps === 0 && urgentSteps === 0 && completedSteps < totalSteps && (
+                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-green-50 text-green-700 border border-green-100">
+                      Dans les temps
                     </span>
                   )}
                   <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">
@@ -680,64 +709,12 @@ export default function ChecklistPage() {
               </div>
             )}
           </div>
+          </div>
 
-          {/* Personnalisation : sans objectif / nationalité / situation familiale, le moteur
-              ne peut pas affiner la checklist — on invite à compléter plutôt que d'afficher
-              des étapes génériques qui ne « fittent » pas le profil. */}
-          {missingProfileFields.length > 0 && (
-            <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
-              <p className="inline-flex items-start gap-1.5 text-sm text-amber-800 min-w-0">
-                <Lightbulb className="w-4 h-4 flex-shrink-0 mt-0.5 text-amber-500" />
-                <span>
-                  <span className="font-semibold">Checklist partiellement personnalisée.</span>{' '}
-                  Renseigne {formatList(missingProfileFields)} pour ne voir que les étapes qui
-                  te concernent vraiment.
-                </span>
-              </p>
-              <Link
-                to={`/onboarding/${projectId}`}
-                className="flex-shrink-0 text-sm font-semibold text-amber-700 hover:text-amber-900 underline underline-offset-2"
-              >
-                Compléter mon profil
-              </Link>
-            </div>
-          )}
-
-          {/* Conditions d'entrée selon la nationalité (installation, pas tourisme) */}
-          <VisaNotice
-            className="mt-4"
-            nationality={project?.nationality}
-            destinationIso={countryCode}
-            destinationName={project?.destinationCountry?.countryName}
-            sourceUrl={allSteps.find((s) => s.category === 'visa')?.sourceUrl}
-          />
-
-          {/* Verdict de faisabilité — le départ est-il encore réaliste ? */}
-          {feasibility && (
-            <div className="mt-4 rounded-xl border-2 border-red-200 bg-red-50 px-4 py-3">
-              <p className="text-sm font-bold text-red-800 flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4" /> Ce départ n'est peut-être plus tenable
-              </p>
-              <p className="text-sm text-red-700 mt-1 leading-relaxed">
-                {feasibility.count} démarche{feasibility.count > 1 ? 's' : ''} auraient dû démarrer{' '}
-                <span className="font-semibold">avant aujourd'hui</span>.{' '}
-                « {feasibility.worstTitle} » demande environ {feasibility.worstLead} jours de délai —
-                pour la boucler à temps, un départ réaliste serait plutôt{' '}
-                <span className="font-semibold">à partir du {feasibility.suggested}</span>.
-              </p>
-              <Link
-                to={`/projects/${projectId}`}
-                className="inline-flex items-center gap-1.5 mt-2 text-sm font-semibold text-red-700 hover:text-red-900"
-              >
-                Modifier ma date de départ
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-          )}
-
-          {/* Prochaine action recommandée — le guide « et maintenant, je fais quoi ? » */}
+          {/* Prochaine action recommandée — le guide « et maintenant, je fais quoi ? »,
+              avec le verdict de faisabilité replié dedans (même sujet : la démarche en retard). */}
           {nextAction ? (
-            <div className="mt-4 rounded-xl border border-[#5EA3C0]/30 bg-[#5EA3C0]/5 px-4 py-3">
+            <div className="rounded-xl border border-[#5EA3C0]/30 bg-[#5EA3C0]/5 px-4 py-3">
               <div className="flex items-start gap-3">
                 <div className="mt-0.5 flex-shrink-0 w-8 h-8 rounded-full bg-[#5EA3C0]/15 flex items-center justify-center">
                   <ArrowRight className="w-4 h-4 text-[#5EA3C0]" />
@@ -754,11 +731,12 @@ export default function ChecklistPage() {
                         avant le {nextActionDeadline.date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}
                       </span>
                     ) : nextAction.phase === 'on_arrival' ? (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-medium text-blue-500">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-medium text-gray-500">
                         <Home className="w-3 h-3" /> à faire à l'arrivée
                       </span>
                     ) : null}
-                    {nextAction.sourceUrl && <TrustBadge url={nextAction.sourceUrl} />}
+                    {/* Pas de TrustBadge ici : trop large pour la sidebar, il est déjà
+                        affiché sur l'étape elle-même dans la liste. */}
                   </div>
                 </div>
                 <button
@@ -769,36 +747,69 @@ export default function ChecklistPage() {
                   Fait
                 </button>
               </div>
+              {feasibility && (
+                <p className="mt-2.5 pt-2.5 border-t border-red-200/60 text-xs text-red-700 leading-relaxed">
+                  <AlertTriangle className="w-3.5 h-3.5 inline-block mr-1 -mt-0.5" />
+                  <span className="font-semibold">Ce départ n'est peut-être plus tenable</span> —
+                  « {feasibility.worstTitle} » demande ~{feasibility.worstLead} jours : un départ
+                  réaliste serait plutôt{' '}
+                  <span className="font-semibold">à partir du {feasibility.suggested}</span>.{' '}
+                  <Link
+                    to={`/projects/${projectId}`}
+                    className="font-semibold underline underline-offset-2 hover:text-red-900"
+                  >
+                    Modifier ma date de départ
+                  </Link>
+                </p>
+              )}
             </div>
           ) : completedSteps > 0 && completedSteps === totalSteps ? (
-            <div className="mt-4 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-semibold text-green-700 flex items-center gap-2">
+            <div className="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-semibold text-green-700 flex items-center gap-2">
               <CheckCircle className="w-4 h-4" /> Toutes tes démarches sont faites — bravo !
             </div>
           ) : null}
 
-          {/* Résumé stats */}
-          <div className="flex items-center gap-4 mt-4">
-            {lateSteps > 0 && (
-              <span className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-red-100 text-red-700 font-medium">
-                <AlertCircle className="w-3.5 h-3.5" /> {lateSteps} en retard
-              </span>
-            )}
-            {urgentSteps > 0 && (
-              <span className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-orange-100 text-orange-700 font-medium">
-                <AlertTriangle className="w-3.5 h-3.5" /> {urgentSteps} urgent{urgentSteps > 1 ? 's' : ''}
-              </span>
-            )}
-            {lateSteps === 0 && urgentSteps === 0 && completedSteps < totalSteps && (
-              <span className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-green-100 text-green-700 font-medium">
-                <CheckCircle className="w-3.5 h-3.5" /> Tout est dans les temps
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
+          {/* Buddies : UNE carte agrégée pour toute la checklist — fini l'encart
+              social répété sous chaque étape. */}
+          <BuddySidebarCard
+            steps={profileSteps.map((s) => ({
+              adminProcedureId: s.adminProcedureId,
+              title: s.title,
+            }))}
+            countryId={project?.idDestinationCountry ?? 0}
+          />
 
-      {/* Filtres + vue */}
-      <div className="max-w-4xl mx-auto px-4 py-4">
+          {/* Personnalisation : ligne discrète — sans objectif / nationalité / situation
+              familiale, le moteur ne peut pas affiner la checklist. */}
+          {missingProfileFields.length > 0 && (
+            <p className="px-1 text-[13px] text-gray-500 leading-relaxed">
+              <Lightbulb className="w-3.5 h-3.5 inline-block mr-1 -mt-0.5 text-amber-500" />
+              <span className="font-medium text-gray-700">Checklist partiellement personnalisée.</span>{' '}
+              Renseigne {formatList(missingProfileFields)} pour ne voir que les étapes qui te
+              concernent vraiment.{' '}
+              <Link
+                to={`/onboarding/${projectId}`}
+                className="font-semibold text-[#5EA3C0] hover:text-[#4891b0] underline underline-offset-2"
+              >
+                Compléter mon profil
+              </Link>
+            </p>
+          )}
+
+          {/* Conditions d'entrée : seulement quand la nationalité est connue — sinon le
+              message vague (« selon votre nationalité… ») doublonne la ligne profil. */}
+          {project?.nationality && (
+            <VisaNotice
+              nationality={project?.nationality}
+              destinationIso={countryCode}
+              destinationName={project?.destinationCountry?.countryName}
+              sourceUrl={allSteps.find((s) => s.category === 'visa')?.sourceUrl}
+            />
+          )}
+          </aside>
+
+          {/* ── Colonne principale : filtres, recherche, étapes ── */}
+          <div className="min-w-0">
         <div className="flex items-center justify-between gap-4 flex-wrap">
           {/* Filtres */}
           <div className="flex items-center gap-2 flex-wrap">
@@ -853,10 +864,9 @@ export default function ChecklistPage() {
           onChange={(e) => setSearch(e.target.value)}
           className="mt-3 w-full px-4 py-2.5 text-sm bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400"
         />
-      </div>
 
       {/* Liste des étapes */}
-      <div className="max-w-4xl mx-auto px-4 pb-12">
+      <div className="mt-4">
         {displaySteps.length === 0 ? (
           <div className="text-center py-16 text-gray-400">
             <p className="text-sm">Aucune étape ne correspond à ce filtre.</p>
@@ -878,7 +888,6 @@ export default function ChecklistPage() {
                       isExpanded={expandedIds.has(item.id)}
                       departureDate={departureDate}
                       countryCode={countryCode}
-                      destinationCountryId={project?.idDestinationCountry ?? 0}
                       onToggleExpand={toggleExpand}
                       onToggleItem={toggleItem}
                       onToggleSubstep={toggleSubstep}
@@ -903,7 +912,6 @@ export default function ChecklistPage() {
                       isExpanded={expandedIds.has(item.id)}
                       departureDate={departureDate}
                       countryCode={countryCode}
-                      destinationCountryId={project?.idDestinationCountry ?? 0}
                       onToggleExpand={toggleExpand}
                       onToggleItem={toggleItem}
                       onToggleSubstep={toggleSubstep}
@@ -937,6 +945,9 @@ export default function ChecklistPage() {
         )}
         ===== FIN PRICING DÉSACTIVÉ ===== */}
       </div>
+          </div>{/* fin colonne principale */}
+        </div>{/* fin grid sidebar + liste */}
+      </div>{/* fin corps */}
 
       {/* ===== PRICING DÉSACTIVÉ — modale de paiement (mock) =====
       -- Modale de paiement (mock)

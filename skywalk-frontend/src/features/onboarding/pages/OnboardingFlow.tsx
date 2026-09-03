@@ -38,6 +38,11 @@ export default function OnboardingFlow() {
   const { t } = useTranslation()
   const { id } = useParams<{ id: string }>()
   const editMode = !!id
+  // Mode édition : vrai une fois les données du projet injectées dans le wizard.
+  // Tant que c'est faux on ne monte PAS les étapes : elles initialisent leur état
+  // local au premier rendu, un montage précoce les figerait vides (seule
+  // DestinationStep se resynchronisait — Profile/Objective/Preparation/Needs non).
+  const [editHydrated, setEditHydrated] = useState(false)
   const dataLoadedRef = useRef(false)
   const profileLoadedRef = useRef(false)
   const { isAuthenticated, isLoading: isAuthLoading, refreshUser, user } = useAuth()
@@ -159,6 +164,7 @@ export default function OnboardingFlow() {
       };
 
       setAllData(projectData);
+      setEditHydrated(true);
 
     }
   }, [existingProject, editMode, countries, setAllData, user])
@@ -511,6 +517,20 @@ export default function OnboardingFlow() {
       default:
         return null
     }
+  }
+
+  // Attente d'hydratation en édition : projets en cours de chargement, ou projet
+  // trouvé mais données pas encore injectées. Un id sans projet correspondant ou un
+  // visiteur non connecté passent au rendu normal (pas de spinner sans fin).
+  const waitingForHydration =
+    editMode && isAuthenticated && !editHydrated && (!projects || !!existingProject)
+
+  if (waitingForHydration) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-gray-900" />
+      </div>
+    )
   }
 
   return (

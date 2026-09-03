@@ -21,7 +21,7 @@ vi.mock('../../dashboard/hooks/useChecklistProgress', async (importOriginal) => 
 vi.mock('../../../data/checklist-links', () => ({ getLinksForStep: () => null }));
 vi.mock('../../../api/useGovLink', () => ({ useGovLink: () => ({ link: undefined, isLoading: false }) }));
 vi.mock('../../documents/DocumentsVault', () => ({ default: () => null }));
-vi.mock('../components/BuddyList', () => ({ default: () => null }));
+vi.mock('../components/BuddySidebarCard', () => ({ default: () => null }));
 
 import { useProject, useUnlockProject } from '../hooks/useProjectMutations';
 import { useChecklistProgress } from '../../dashboard/hooks/useChecklistProgress';
@@ -469,6 +469,31 @@ describe('ChecklistPage', () => {
     renderPage();
     expect(screen.getByText('J-30')).toBeInTheDocument();
     vi.useRealTimers();
+  });
+
+  it('reconciles a step whose substeps are all already checked but whose status lags behind', async () => {
+    mockedUseProgress.mockReturnValue({
+      progress: [
+        tracking({
+          idProcedureTracking: 6,
+          status: 'in_progress',
+          completedFacts: [0, 1],
+          admin_procedure: {
+            ...tracking().admin_procedure,
+            actionItems: ['Faire A', 'Faire B'],
+          },
+        }),
+      ],
+      updateStep,
+      updateFacts,
+      isLoading: false,
+    } as any);
+
+    renderPage();
+
+    await waitFor(() =>
+      expect(updateStep).toHaveBeenCalledWith({ trackingId: 6, status: 'completed' }),
+    );
   });
 
   it('invites the user to complete the missing profile fields for full personalization', () => {
