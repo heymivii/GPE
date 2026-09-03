@@ -68,6 +68,7 @@ export default function CountdownWidget({
       destinationIso: countryCode,
       hasChildren: project?.hasChildren,
       priorities: project?.priorities,
+      objective: project?.objective,
     });
   }, [progress, project?.travelType, project?.objective, project?.nationality, project?.hasChildren, project?.priorities, countryCode]);
 

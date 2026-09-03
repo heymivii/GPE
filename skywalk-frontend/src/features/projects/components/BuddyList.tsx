@@ -43,7 +43,7 @@ export default function BuddyList({ procedureId, procedureTitle, countryId }: Bu
     return (
       <div className="mt-2 px-3 py-2 bg-blue-50 border border-blue-100 rounded-lg">
         <p className="text-xs text-blue-500">
-          Sois le premier a partager ton experience sur cette etape !
+          Sois le premier à partager ton expérience sur cette étape !
         </p>
       </div>
     );
@@ -52,7 +52,7 @@ export default function BuddyList({ procedureId, procedureTitle, countryId }: Bu
   return (
     <div className="mt-2 bg-blue-50 border border-blue-100 rounded-lg px-3 py-2.5">
       <p className="text-[11px] font-semibold text-blue-600 uppercase tracking-wide mb-2">
-        {buddies.length} personne{buddies.length > 1 ? 's ont' : ' a'} fait cette etape
+        {buddies.length} personne{buddies.length > 1 ? 's ont' : ' a'} fait cette étape
       </p>
 
       <div className="space-y-3">

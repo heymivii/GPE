@@ -49,9 +49,9 @@ export const CATEGORY_OBJECTIVES_MAP: Record<string, string[]> = {
   transport: [],
   emploi: ['work'],
   education: ['study'],
-  // business is work-adjacent but applies regardless of work objective (e.g. freelancer
-  // arriving under a long-stay visa). Keep empty to include for all expats.
-  business: [],
+  // Créer une entreprise ne concerne pas un projet d'études : ciblé 'work' pour ne pas
+  // polluer la checklist des étudiants. Un projet sans objectif défini voit toujours tout.
+  business: ['work'],
   culture: [],
 };
 

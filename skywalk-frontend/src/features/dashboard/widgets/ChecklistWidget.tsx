@@ -354,6 +354,7 @@ export default function ChecklistWidget({
       destinationIso: countryCode,
       hasChildren: project?.hasChildren,
       priorities: project?.priorities,
+      objective: project?.objective,
     });
   }, [allChecklist, project?.travelType, project?.objective, project?.nationality, project?.hasChildren, project?.priorities, countryCode]);
 

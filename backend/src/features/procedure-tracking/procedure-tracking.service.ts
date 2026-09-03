@@ -11,6 +11,17 @@ import { UpdateProcedureTrackingDto } from './dto/update-procedure-tracking.dto'
 import { ExpatriationProject } from '../expatriation-project/entities/expatriation-project.entity';
 import { AdminProcedure } from '../admin-procedure/entities/admin-procedure.entity';
 
+// Les comptes e2e (…@skywalk.test) et les comptes des scripts de test API
+// (…@example.com) complètent des étapes en prod : ils ne doivent jamais
+// apparaître comme « buddies » (preuve sociale) auprès des vrais utilisateurs.
+const TEST_EMAIL_DOMAINS = ['@skywalk.test', '@example.com'];
+
+function isTestAccountEmail(email?: string | null): boolean {
+  if (!email) return false;
+  const lower = email.toLowerCase();
+  return TEST_EMAIL_DOMAINS.some((domain) => lower.endsWith(domain));
+}
+
 @Injectable()
 export class ProcedureTrackingService {
   constructor(
@@ -56,15 +67,18 @@ export class ProcedureTrackingService {
       });
 
       // Only seed from ACTIVE procedures (archived ones are hidden — their gov_link lost verification).
-      // Also filter by project objective: keep procedures that apply to everyone
-      // (null/empty objectives) OR explicitly target this project's objective.
+      // Personnalisation stricte : une procédure ciblée (objectives non vide) n'apparaît
+      // que si l'objectif du projet correspond. Objectif non renseigné → seules les
+      // étapes universelles restent ; compléter le profil réactive les étapes ciblées.
       const projectObjective = project.objective;
-      const adminProcedures = allAdminProcedures.filter((ap) => {
-        if (ap.status !== 'active') return false;
-        if (!ap.objectives || ap.objectives.length === 0) return true;
-        if (!projectObjective) return true;
+      const matchesObjective = (ap?: AdminProcedure | null): boolean => {
+        if (!ap?.objectives || ap.objectives.length === 0) return true;
+        if (!projectObjective) return false;
         return ap.objectives.includes(projectObjective);
-      });
+      };
+      const adminProcedures = allAdminProcedures.filter(
+        (ap) => ap.status === 'active' && matchesObjective(ap),
+      );
 
       const existingTrackings = await this.trackingRepository.find({
         where: { project: { idProject: projectId }, user: { idUser: userId } },
@@ -96,10 +110,16 @@ export class ProcedureTrackingService {
         relations: ['admin_procedure', 'project'],
       });
 
-      // Only return trackings whose admin_procedure is currently active.
+      // Only return trackings whose admin_procedure is currently active AND still
+      // matches the project objective (a retargeted procedure — ex. business passé
+      // à ['work'] — disparaît des checklists study sans supprimer de lignes).
       // Archived procedures are hidden from the checklist (rows preserved for later reactivation).
       return allTrackings
-        .filter((t) => t.admin_procedure?.status === 'active')
+        .filter(
+          (t) =>
+            t.admin_procedure?.status === 'active' &&
+            matchesObjective(t.admin_procedure),
+        )
         .sort((a, b) => {
           const orderA = a.admin_procedure?.stepOrder ?? 0;
           const orderB = b.admin_procedure?.stepOrder ?? 0;
@@ -179,7 +199,10 @@ export class ProcedureTrackingService {
       },
       relations: ['user', 'user.originCountry', 'project'],
       order: { end_date: 'DESC' },
-      take: 4,
+      // Fenêtre plus large que les 3 affichés : les exclusions (soi-même, opt-out,
+      // comptes de test) ne doivent pas vider la liste alors que des buddies
+      // éligibles existent juste derrière.
+      take: 10,
     });
 
     return trackings
@@ -187,6 +210,7 @@ export class ProcedureTrackingService {
         if (t.user?.idUser === currentUserId) return false;
         if (!t.end_date) return false;
         if (t.user?.buddyOptIn === false) return false;
+        if (isTestAccountEmail(t.user?.email)) return false;
         return true;
       })
       .slice(0, 3)

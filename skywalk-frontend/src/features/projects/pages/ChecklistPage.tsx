@@ -24,6 +24,12 @@ type Phase = 'before' | 'on_arrival';
 
 // ---- Composants utilitaires ----
 
+// « ton objectif, ta nationalité et ta situation familiale » — liste FR naturelle.
+function formatList(items: string[]): string {
+  if (items.length <= 1) return items[0] ?? '';
+  return `${items.slice(0, -1).join(', ')} et ${items[items.length - 1]}`;
+}
+
 function DeadlineBadge({ daysBeforeDeparture, departureDate, phase }: {
   daysBeforeDeparture?: number;
   departureDate?: string | Date | null;
@@ -341,8 +347,19 @@ export default function ChecklistPage() {
       destinationIso: countryCode,
       hasChildren: project?.hasChildren,
       priorities: project?.priorities,
+      objective: project?.mainObjective,
     });
   }, [allSteps, project, countryCode]);
+
+  // Champs de profil absents = personnalisation impossible sur ces axes.
+  const missingProfileFields = useMemo(() => {
+    if (!project) return [];
+    const missing: string[] = [];
+    if (!project.mainObjective) missing.push('ton objectif');
+    if (!project.nationality) missing.push('ta nationalité');
+    if (project.hasChildren == null) missing.push('ta situation familiale');
+    return missing;
+  }, [project]);
 
   // Filtrage UI + recherche
   const filteredSteps = useMemo(() => {
@@ -663,6 +680,28 @@ export default function ChecklistPage() {
               </div>
             )}
           </div>
+
+          {/* Personnalisation : sans objectif / nationalité / situation familiale, le moteur
+              ne peut pas affiner la checklist — on invite à compléter plutôt que d'afficher
+              des étapes génériques qui ne « fittent » pas le profil. */}
+          {missingProfileFields.length > 0 && (
+            <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
+              <p className="inline-flex items-start gap-1.5 text-sm text-amber-800 min-w-0">
+                <Lightbulb className="w-4 h-4 flex-shrink-0 mt-0.5 text-amber-500" />
+                <span>
+                  <span className="font-semibold">Checklist partiellement personnalisée.</span>{' '}
+                  Renseigne {formatList(missingProfileFields)} pour ne voir que les étapes qui
+                  te concernent vraiment.
+                </span>
+              </p>
+              <Link
+                to={`/onboarding/${projectId}`}
+                className="flex-shrink-0 text-sm font-semibold text-amber-700 hover:text-amber-900 underline underline-offset-2"
+              >
+                Compléter mon profil
+              </Link>
+            </div>
+          )}
 
           {/* Conditions d'entrée selon la nationalité (installation, pas tourisme) */}
           <VisaNotice

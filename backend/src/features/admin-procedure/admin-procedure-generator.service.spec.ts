@@ -465,8 +465,8 @@ describe('AdminProcedureGeneratorService', () => {
       expect(STEP_ORDER_MAP.business).toBe(9);
     });
 
-    it('CATEGORY_OBJECTIVES_MAP has business=[] (applies to all expats)', () => {
-      expect(CATEGORY_OBJECTIVES_MAP.business).toEqual([]);
+    it("CATEGORY_OBJECTIVES_MAP has business=['work'] (hidden from study projects)", () => {
+      expect(CATEGORY_OBJECTIVES_MAP.business).toEqual(['work']);
     });
 
     it('generates admin procedure with correct French title for business gov_link', async () => {
@@ -496,7 +496,7 @@ describe('AdminProcedureGeneratorService', () => {
       expect(result.phase).toBe('on_arrival');
       expect(result.stepOrder).toBe(STEP_ORDER_MAP.business);
       expect(result.daysBeforeDeparture).toBe(DAYS_BEFORE_DEPARTURE_MAP.business);
-      expect(result.objectives).toEqual([]);
+      expect(result.objectives).toEqual(['work']);
     });
 
     // ── Cascade archive + status='active' on upsert ──────────────────────────────

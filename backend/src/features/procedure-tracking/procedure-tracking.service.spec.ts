@@ -285,15 +285,39 @@ describe('ProcedureTrackingService', () => {
       expect(categories).not.toContain('emploi');
     });
 
-    it('includes all procedures when project objective is null', async () => {
+    it('keeps only universal procedures when project objective is null (strict personalization)', async () => {
       const apVisa = makeAP(1, 'visa', []);
       const apEmploi = makeAP(2, 'emploi', ['work']);
       setupProject(null);
       adminProcedureRepo.find.mockResolvedValue([apVisa, apEmploi]);
-      setupTrackingFindAll([apVisa, apEmploi]);
+      // Only the universal visa procedure passes the strict filter
+      setupTrackingFindAll([apVisa]);
 
       const result = await service.findAllByUser(userId, projectId);
-      expect(result).toHaveLength(2);
+      const categories = result.map((r) => r.admin_procedure?.category);
+      expect(categories).toEqual(['visa']);
+    });
+
+    it('hides an EXISTING tracking whose procedure no longer matches the project objective', async () => {
+      // Ex. « Créer une entreprise » retargetée ['work'] : un projet study qui avait
+      // déjà son tracking ne doit plus la voir, sans suppression de ligne.
+      const apVisa = makeAP(1, 'visa', []);
+      const apBusiness = makeAP(2, 'business', ['work']);
+      setupProject('study');
+      adminProcedureRepo.find.mockResolvedValue([apVisa, apBusiness]);
+      trackingRepo.find.mockResolvedValueOnce([
+        { idProcedureTracking: 1, admin_procedure: apVisa, status: 'not_started' },
+        { idProcedureTracking: 2, admin_procedure: apBusiness, status: 'not_started' },
+      ]); // existingTrackings — both already seeded
+      trackingRepo.find.mockResolvedValueOnce([
+        { idProcedureTracking: 1, admin_procedure: apVisa, status: 'not_started' },
+        { idProcedureTracking: 2, admin_procedure: apBusiness, status: 'not_started' },
+      ]); // allTrackings
+
+      const result = await service.findAllByUser(userId, projectId);
+      const categories = result.map((r) => r.admin_procedure?.category);
+      expect(categories).toContain('visa');
+      expect(categories).not.toContain('business');
     });
 
     it('throws NotFoundException when project not found', async () => {
@@ -505,7 +529,7 @@ describe('ProcedureTrackingService', () => {
       ...overrides,
     });
 
-    it('queries completed trackings for the given procedure/country, newest first, capped at 4', async () => {
+    it('queries completed trackings for the given procedure/country, newest first, capped at 10', async () => {
       trackingRepo.find.mockResolvedValue([]);
 
       await service.getBuddies(5, 10, 99);
@@ -518,8 +542,44 @@ describe('ProcedureTrackingService', () => {
         },
         relations: ['user', 'user.originCountry', 'project'],
         order: { end_date: 'DESC' },
-        take: 4,
+        take: 10,
       });
+    });
+
+    it('excludes e2e and API-test accounts from the buddy list', async () => {
+      trackingRepo.find.mockResolvedValue([
+        makeTracking({
+          user: {
+            idUser: 13,
+            firstName: 'E2e',
+            email: 'e2e_notif_1783688635@skywalk.test',
+            buddyOptIn: true,
+            originCountry: null,
+          },
+        }),
+        makeTracking({
+          user: {
+            idUser: 14,
+            firstName: 'Test',
+            email: 'test@example.com',
+            buddyOptIn: true,
+            originCountry: null,
+          },
+        }),
+        makeTracking({
+          user: {
+            idUser: 15,
+            firstName: 'Vraie',
+            email: 'vraie.personne@gmail.com',
+            buddyOptIn: true,
+            originCountry: { countryName: 'Senegal' },
+          },
+        }),
+      ]);
+
+      const result = await service.getBuddies(5, 10, 99);
+
+      expect(result.map((b) => b.firstname)).toEqual(['Vraie']);
     });
 
     it('excludes the current user from their own buddy list', async () => {
