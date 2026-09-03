@@ -3,15 +3,17 @@
     "curated": true,
     "source": "Numbeo",
     "sourceUrl": "https://www.numbeo.com/cost-of-living/in/Sapporo",
-    "capturedAt": "2026-06-16",
-    "sourceLastUpdate": "14 June 2026",
-    "sample": "59 contributions / 16 contributors (last 12 months)",
+    "capturedAt": "2026-09-03",
+    "sourceLastUpdate": "2 September 2026",
+    "sample": "66 contributions / 17 contributors (last 12 months)",
     "notes": [
       "Numbeo provides no single-person monthly estimate for this city; summary.monthlyBudget left unavailable.",
       "categories.utilities.mobileMinute holds the Numbeo monthly mobile plan (per-minute item discontinued upstream).",
       "currency.exchangeRates intentionally empty — FX is a separate concern."
     ],
     "unavailable": [
+      "categories.transportation.taxi.waitingHour",
+      "categories.childcare.preschool",
       "summary.monthlyBudget"
     ]
   },
@@ -23,7 +25,7 @@
   "currency": {
     "code": "JPY",
     "exchangeRates": {},
-    "lastUpdated": "14 June 2026"
+    "lastUpdated": "2 September 2026"
   },
   "categories": {
     "housing": {
@@ -78,7 +80,7 @@
       "markets": {
         "milk1L": {
           "min": 200,
-          "avg": 252.25,
+          "avg": 252.57,
           "max": 300,
           "currency": "JPY"
         },
@@ -90,7 +92,7 @@
         },
         "eggs12": {
           "min": 240,
-          "avg": 277.2,
+          "avg": 277.58,
           "max": 300,
           "currency": "JPY"
         },
@@ -119,21 +121,21 @@
           "currency": "JPY"
         },
         "potato1kg": {
-          "min": 343.49,
-          "avg": 343.49,
-          "max": 343.49,
+          "min": 345.39,
+          "avg": 345.39,
+          "max": 345.39,
           "currency": "JPY"
         },
         "tomato1kg": {
-          "min": 686.98,
-          "avg": 686.98,
-          "max": 686.98,
+          "min": 690.78,
+          "avg": 690.78,
+          "max": 690.78,
           "currency": "JPY"
         },
         "onion1kg": {
           "min": 200,
-          "avg": 271.74,
-          "max": 343.49,
+          "avg": 272.7,
+          "max": 345.39,
           "currency": "JPY"
         },
         "apple1kg": {
@@ -144,8 +146,8 @@
         },
         "banana1kg": {
           "min": 300,
-          "avg": 493.49,
-          "max": 686.98,
+          "avg": 495.39,
+          "max": 690.78,
           "currency": "JPY"
         },
         "orange1kg": {
@@ -156,8 +158,8 @@
         },
         "lettuce": {
           "min": 150,
-          "avg": 246.74,
-          "max": 343.49,
+          "avg": 247.7,
+          "max": 345.39,
           "currency": "JPY"
         },
         "water15L": {
@@ -221,16 +223,16 @@
           "currency": "JPY"
         },
         "waitingHour": {
-          "min": 3000,
-          "avg": 3000,
-          "max": 3000,
+          "min": 0,
+          "avg": 0,
+          "max": 0,
           "currency": "JPY"
         }
       },
       "personal": {
         "gasoline1L": {
           "min": 160,
-          "avg": 172.61,
+          "avg": 171.58,
           "max": 175.7,
           "currency": "JPY"
         },
@@ -244,8 +246,8 @@
     },
     "utilities": {
       "basic85m2": {
-        "min": 42500,
-        "avg": 53126.25,
+        "min": 26444.44,
+        "avg": 44736.11,
         "max": 60005,
         "currency": "JPY"
       },
@@ -257,7 +259,7 @@
       },
       "mobileMinute": {
         "min": 2500,
-        "avg": 4080,
+        "avg": 3814,
         "max": 4080,
         "currency": "JPY"
       }
@@ -270,32 +272,32 @@
         "currency": "JPY"
       },
       "midRangeMeal2People": {
-        "min": 3000,
-        "avg": 4750,
+        "min": 4500,
+        "avg": 5000,
         "max": 5000,
         "currency": "JPY"
       },
       "mcMeal": {
-        "min": 750,
-        "avg": 850,
+        "min": 850,
+        "avg": 1000,
         "max": 1120,
         "currency": "JPY"
       },
       "cappuccino": {
         "min": 400,
-        "avg": 700,
+        "avg": 766.67,
         "max": 1200,
         "currency": "JPY"
       },
       "cocaCola": {
         "min": 120,
-        "avg": 202.5,
+        "avg": 270,
         "max": 400,
         "currency": "JPY"
       },
       "domesticBeer": {
-        "min": 200,
-        "avg": 550,
+        "min": 300,
+        "avg": 675,
         "max": 800,
         "currency": "JPY"
       },
@@ -334,9 +336,9 @@
     },
     "childcare": {
       "preschool": {
-        "min": 39800,
-        "avg": 39800,
-        "max": 39800,
+        "min": 0,
+        "avg": 0,
+        "max": 0,
         "currency": "JPY"
       },
       "primarySchool": {
@@ -368,14 +370,14 @@
     },
     "salary": {
       "averageMonthly": {
-        "min": 280261.98,
-        "avg": 280261.98,
-        "max": 280261.98,
+        "min": 335261.63,
+        "avg": 335261.63,
+        "max": 335261.63,
         "currency": "JPY"
       },
       "mortgageRate": {
         "min": 1.5,
-        "avg": 2.23,
+        "avg": 2.31,
         "max": 2.82
       }
     }
@@ -386,6 +388,6 @@
       "avg": 0,
       "max": 0
     },
-    "averageSalary": 280261.98
+    "averageSalary": 335261.63
   }
 }

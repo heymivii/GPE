@@ -3,11 +3,11 @@
     "curated": true,
     "source": "Numbeo",
     "sourceUrl": "https://www.numbeo.com/cost-of-living/in/Nice",
-    "capturedAt": "2026-06-16",
-    "sourceLastUpdate": "11 June 2026",
-    "sample": "271 contributions / 33 contributors (last 12 months)",
+    "capturedAt": "2026-09-03",
+    "sourceLastUpdate": "18 July 2026",
+    "sample": "313 contributions / 36 contributors (last 12 months)",
     "notes": [
-      "summary.monthlyBudget = one-bedroom city-centre rent + 1054.9 (Numbeo single-person monthly estimate excl. rent).",
+      "summary.monthlyBudget = one-bedroom city-centre rent + 1040 (Numbeo single-person monthly estimate excl. rent).",
       "categories.utilities.mobileMinute holds the Numbeo monthly mobile plan (per-minute item discontinued upstream).",
       "currency.exchangeRates intentionally empty — FX is a separate concern."
     ],
@@ -21,36 +21,36 @@
   "currency": {
     "code": "EUR",
     "exchangeRates": {},
-    "lastUpdated": "11 June 2026"
+    "lastUpdated": "18 July 2026"
   },
   "categories": {
     "housing": {
       "rent": {
         "oneBedroom": {
           "cityCenter": {
-            "min": 750,
-            "avg": 918.3,
-            "max": 1110,
+            "min": 800,
+            "avg": 994.3,
+            "max": 1400,
             "currency": "EUR"
           },
           "outsideCenter": {
-            "min": 650,
-            "avg": 813.55,
-            "max": 1200,
+            "min": 600,
+            "avg": 755.44,
+            "max": 900,
             "currency": "EUR"
           }
         },
         "threeBedroom": {
           "cityCenter": {
             "min": 1500,
-            "avg": 1810.89,
+            "avg": 1787.25,
             "max": 2500,
             "currency": "EUR"
           },
           "outsideCenter": {
-            "min": 1100,
-            "avg": 1442.22,
-            "max": 1900,
+            "min": 1200,
+            "avg": 1531.11,
+            "max": 2000,
             "currency": "EUR"
           }
         }
@@ -59,13 +59,13 @@
         "pricePerSqm": {
           "cityCenter": {
             "min": 5500,
-            "avg": 6533.27,
+            "avg": 6529.11,
             "max": 7200,
             "currency": "EUR"
           },
           "outsideCenter": {
             "min": 3389,
-            "avg": 3742.81,
+            "avg": 3702.34,
             "max": 4000,
             "currency": "EUR"
           }
@@ -82,61 +82,61 @@
         },
         "bread500g": {
           "min": 1,
-          "avg": 1.88,
-          "max": 2.6,
+          "avg": 1.99,
+          "max": 3.31,
           "currency": "EUR"
         },
         "eggs12": {
-          "min": 3.4,
-          "avg": 4.15,
-          "max": 4.8,
+          "min": 3.18,
+          "avg": 4.28,
+          "max": 5,
           "currency": "EUR"
         },
         "chicken1kg": {
-          "min": 10,
-          "avg": 15,
-          "max": 18,
+          "min": 7,
+          "avg": 15.07,
+          "max": 16,
           "currency": "EUR"
         },
         "beef1kg": {
-          "min": 13,
-          "avg": 22.75,
+          "min": 12,
+          "avg": 20.8,
           "max": 30,
           "currency": "EUR"
         },
         "cheese1kg": {
-          "min": 15,
+          "min": 8,
           "avg": 19,
           "max": 25,
           "currency": "EUR"
         },
         "rice1kg": {
           "min": 1,
-          "avg": 2.44,
+          "avg": 2.4,
           "max": 4,
           "currency": "EUR"
         },
         "potato1kg": {
           "min": 1.6,
-          "avg": 2.44,
+          "avg": 2.5,
           "max": 4,
           "currency": "EUR"
         },
         "tomato1kg": {
           "min": 2,
-          "avg": 3.75,
+          "avg": 3.6,
           "max": 6,
           "currency": "EUR"
         },
         "onion1kg": {
           "min": 1,
-          "avg": 2.25,
+          "avg": 2.31,
           "max": 6,
           "currency": "EUR"
         },
         "apple1kg": {
-          "min": 2.5,
-          "avg": 4,
+          "min": 2,
+          "avg": 3.8,
           "max": 6,
           "currency": "EUR"
         },
@@ -148,25 +148,25 @@
         },
         "orange1kg": {
           "min": 2,
-          "avg": 2.95,
+          "avg": 2.7,
           "max": 4,
           "currency": "EUR"
         },
         "lettuce": {
           "min": 1,
-          "avg": 1.7,
+          "avg": 1.56,
           "max": 2.5,
           "currency": "EUR"
         },
         "water15L": {
           "min": 0.2,
-          "avg": 0.57,
+          "avg": 0.71,
           "max": 2,
           "currency": "EUR"
         },
         "wine": {
           "min": 5,
-          "avg": 7.5,
+          "avg": 8,
           "max": 12,
           "currency": "EUR"
         },
@@ -228,7 +228,7 @@
       "personal": {
         "gasoline1L": {
           "min": 1.7,
-          "avg": 1.77,
+          "avg": 1.89,
           "max": 1.98,
           "currency": "EUR"
         },
@@ -249,22 +249,22 @@
       },
       "internet": {
         "min": 25,
-        "avg": 31,
+        "avg": 29.88,
         "max": 45,
         "currency": "EUR"
       },
       "mobileMinute": {
         "min": 9.9,
-        "avg": 14.88,
+        "avg": 14.89,
         "max": 29,
         "currency": "EUR"
       }
     },
     "restaurants": {
       "inexpensiveMeal": {
-        "min": 10,
-        "avg": 20,
-        "max": 28,
+        "min": 12,
+        "avg": 18,
+        "max": 25,
         "currency": "EUR"
       },
       "midRangeMeal2People": {
@@ -281,26 +281,26 @@
       },
       "cappuccino": {
         "min": 2.2,
-        "avg": 3.25,
+        "avg": 3.33,
         "max": 6,
         "currency": "EUR"
       },
       "cocaCola": {
         "min": 3,
-        "avg": 3.31,
+        "avg": 3.28,
         "max": 5,
         "currency": "EUR"
       },
       "domesticBeer": {
         "min": 4,
-        "avg": 6.5,
+        "avg": 7,
         "max": 10,
         "currency": "EUR"
       },
       "importedBeer": {
         "min": 5,
-        "avg": 6.5,
-        "max": 8,
+        "avg": 7,
+        "max": 9,
         "currency": "EUR"
       }
     },
@@ -366,9 +366,9 @@
     },
     "salary": {
       "averageMonthly": {
-        "min": 2369.18,
-        "avg": 2369.18,
-        "max": 2369.18,
+        "min": 2280.29,
+        "avg": 2280.29,
+        "max": 2280.29,
         "currency": "EUR"
       },
       "mortgageRate": {
@@ -380,10 +380,10 @@
   },
   "summary": {
     "monthlyBudget": {
-      "min": 1804.9,
-      "avg": 1973.2,
-      "max": 2164.9
+      "min": 1840,
+      "avg": 2034.3,
+      "max": 2440
     },
-    "averageSalary": 2369.18
+    "averageSalary": 2280.29
   }
 }

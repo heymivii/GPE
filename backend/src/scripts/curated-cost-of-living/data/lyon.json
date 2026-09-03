@@ -3,11 +3,11 @@
     "curated": true,
     "source": "Numbeo",
     "sourceUrl": "https://www.numbeo.com/cost-of-living/in/Lyon",
-    "capturedAt": "2026-06-16",
-    "sourceLastUpdate": "4 June 2026",
-    "sample": "652 contributions / 68 contributors (last 12 months)",
+    "capturedAt": "2026-09-03",
+    "sourceLastUpdate": "20 August 2026",
+    "sample": "664 contributions / 72 contributors (last 12 months)",
     "notes": [
-      "summary.monthlyBudget = one-bedroom city-centre rent + 1032.6 (Numbeo single-person monthly estimate excl. rent).",
+      "summary.monthlyBudget = one-bedroom city-centre rent + 1023.6 (Numbeo single-person monthly estimate excl. rent).",
       "categories.utilities.mobileMinute holds the Numbeo monthly mobile plan (per-minute item discontinued upstream).",
       "currency.exchangeRates intentionally empty — FX is a separate concern."
     ],
@@ -21,7 +21,7 @@
   "currency": {
     "code": "EUR",
     "exchangeRates": {},
-    "lastUpdated": "4 June 2026"
+    "lastUpdated": "20 August 2026"
   },
   "categories": {
     "housing": {
@@ -29,13 +29,13 @@
         "oneBedroom": {
           "cityCenter": {
             "min": 650,
-            "avg": 844,
-            "max": 1200,
+            "avg": 765.09,
+            "max": 1000,
             "currency": "EUR"
           },
           "outsideCenter": {
             "min": 430,
-            "avg": 589.56,
+            "avg": 600.6,
             "max": 800,
             "currency": "EUR"
           }
@@ -43,13 +43,13 @@
         "threeBedroom": {
           "cityCenter": {
             "min": 1200,
-            "avg": 1646.36,
-            "max": 2500,
+            "avg": 1610,
+            "max": 2100,
             "currency": "EUR"
           },
           "outsideCenter": {
-            "min": 750,
-            "avg": 1053.33,
+            "min": 800,
+            "avg": 1125.56,
             "max": 1900,
             "currency": "EUR"
           }
@@ -59,14 +59,14 @@
         "pricePerSqm": {
           "cityCenter": {
             "min": 4900,
-            "avg": 5755.8,
+            "avg": 5738.48,
             "max": 6256.68,
             "currency": "EUR"
           },
           "outsideCenter": {
             "min": 2800,
-            "avg": 3474,
-            "max": 4157,
+            "avg": 3549.89,
+            "max": 4200,
             "currency": "EUR"
           }
         }
@@ -76,7 +76,7 @@
       "markets": {
         "milk1L": {
           "min": 0.99,
-          "avg": 1.33,
+          "avg": 1.36,
           "max": 1.8,
           "currency": "EUR"
         },
@@ -88,13 +88,13 @@
         },
         "eggs12": {
           "min": 2.5,
-          "avg": 4.07,
+          "avg": 4.14,
           "max": 6.84,
           "currency": "EUR"
         },
         "chicken1kg": {
           "min": 7.5,
-          "avg": 11.85,
+          "avg": 11.94,
           "max": 20,
           "currency": "EUR"
         },
@@ -166,7 +166,7 @@
         },
         "wine": {
           "min": 3.69,
-          "avg": 7.14,
+          "avg": 7.64,
           "max": 12,
           "currency": "EUR"
         },
@@ -199,7 +199,7 @@
           "currency": "EUR"
         },
         "monthlyPass": {
-          "min": 72,
+          "min": 67,
           "avg": 74.1,
           "max": 75,
           "currency": "EUR"
@@ -228,8 +228,8 @@
       "personal": {
         "gasoline1L": {
           "min": 1.7,
-          "avg": 1.8,
-          "max": 1.98,
+          "avg": 1.96,
+          "max": 2,
           "currency": "EUR"
         },
         "newCar": {
@@ -243,26 +243,26 @@
     "utilities": {
       "basic85m2": {
         "min": 104.62,
-        "avg": 261.9,
+        "avg": 237.38,
         "max": 400,
         "currency": "EUR"
       },
       "internet": {
         "min": 20,
-        "avg": 28.66,
+        "avg": 28.3,
         "max": 49.99,
         "currency": "EUR"
       },
       "mobileMinute": {
         "min": 6,
-        "avg": 11.61,
+        "avg": 13.14,
         "max": 29,
         "currency": "EUR"
       }
     },
     "restaurants": {
       "inexpensiveMeal": {
-        "min": 9,
+        "min": 10,
         "avg": 15,
         "max": 25,
         "currency": "EUR"
@@ -280,26 +280,26 @@
         "currency": "EUR"
       },
       "cappuccino": {
-        "min": 2,
-        "avg": 3.54,
-        "max": 4.5,
+        "min": 1.5,
+        "avg": 3.7,
+        "max": 5,
         "currency": "EUR"
       },
       "cocaCola": {
         "min": 1.8,
-        "avg": 2.35,
+        "avg": 2.51,
         "max": 4,
         "currency": "EUR"
       },
       "domesticBeer": {
         "min": 4.9,
-        "avg": 6,
+        "avg": 7,
         "max": 9,
         "currency": "EUR"
       },
       "importedBeer": {
         "min": 4,
-        "avg": 5,
+        "avg": 5.5,
         "max": 8,
         "currency": "EUR"
       }
@@ -307,7 +307,7 @@
     "clothing": {
       "jeans": {
         "min": 60,
-        "avg": 107.71,
+        "avg": 104.25,
         "max": 130,
         "currency": "EUR"
       },
@@ -319,7 +319,7 @@
       },
       "runningShoes": {
         "min": 69,
-        "avg": 111.25,
+        "avg": 110,
         "max": 150,
         "currency": "EUR"
       },
@@ -352,38 +352,38 @@
         "currency": "EUR"
       },
       "gym": {
-        "min": 20.83,
-        "avg": 36.5,
+        "min": 24.99,
+        "avg": 37.5,
         "max": 54,
         "currency": "EUR"
       },
       "tennis": {
         "min": 20,
-        "avg": 25.56,
+        "avg": 25,
         "max": 30,
         "currency": "EUR"
       }
     },
     "salary": {
       "averageMonthly": {
-        "min": 2802.13,
-        "avg": 2802.13,
-        "max": 2802.13,
+        "min": 2711.97,
+        "avg": 2711.97,
+        "max": 2711.97,
         "currency": "EUR"
       },
       "mortgageRate": {
-        "min": 3,
-        "avg": 3.76,
-        "max": 4
+        "min": 3.1,
+        "avg": 3.68,
+        "max": 3.95
       }
     }
   },
   "summary": {
     "monthlyBudget": {
-      "min": 1682.6,
-      "avg": 1876.6,
-      "max": 2232.6
+      "min": 1673.6,
+      "avg": 1788.69,
+      "max": 2023.6
     },
-    "averageSalary": 2802.13
+    "averageSalary": 2711.97
   }
 }

@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { fetchNumbeoPage } from '../../services/numbeo-fetch.util';
 
 // Country-level Quality of Life indices scraped from Numbeo (deterministic, no AI).
 // One page covers the composite index + safety / health / pollution / purchasing
@@ -15,28 +15,21 @@ export interface QualityOfLifeData {
   climate: number | null;
 }
 
-const UA =
-  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36';
-
 export async function fetchQualityOfLifeHtml(country: string): Promise<string> {
-  const url = `https://www.numbeo.com/quality-of-life/country_result.jsp?country=${encodeURIComponent(country)}`;
-  const { data } = await axios.get<string>(url, {
-    timeout: 15000,
-    headers: { 'User-Agent': UA, 'Accept-Language': 'en-US,en;q=0.9' },
-  });
-  return data;
+  return fetchNumbeoPage(
+    `https://www.numbeo.com/quality-of-life/country_result.jsp?country=${encodeURIComponent(country)}`,
+    15000,
+  );
 }
 
 /** CITY page (e.g. /quality-of-life/in/Paris) — same index labels, same parser. */
 export async function fetchCityQualityOfLifeHtml(
   slug: string,
 ): Promise<string> {
-  const url = `https://www.numbeo.com/quality-of-life/in/${slug}`;
-  const { data } = await axios.get<string>(url, {
-    timeout: 15000,
-    headers: { 'User-Agent': UA, 'Accept-Language': 'en-US,en;q=0.9' },
-  });
-  return data;
+  return fetchNumbeoPage(
+    `https://www.numbeo.com/quality-of-life/in/${slug}`,
+    15000,
+  );
 }
 
 const INDEX_LABELS: { key: keyof QualityOfLifeData; label: string }[] = [

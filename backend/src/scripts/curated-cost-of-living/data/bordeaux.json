@@ -3,11 +3,11 @@
     "curated": true,
     "source": "Numbeo",
     "sourceUrl": "https://www.numbeo.com/cost-of-living/in/Bordeaux",
-    "capturedAt": "2026-06-16",
-    "sourceLastUpdate": "12 May 2026",
-    "sample": "241 contributions / 29 contributors (last 12 months)",
+    "capturedAt": "2026-09-03",
+    "sourceLastUpdate": "8 August 2026",
+    "sample": "251 contributions / 33 contributors (last 12 months)",
     "notes": [
-      "summary.monthlyBudget = one-bedroom city-centre rent + 958.9 (Numbeo single-person monthly estimate excl. rent).",
+      "summary.monthlyBudget = one-bedroom city-centre rent + 968.7 (Numbeo single-person monthly estimate excl. rent).",
       "categories.utilities.mobileMinute holds the Numbeo monthly mobile plan (per-minute item discontinued upstream).",
       "currency.exchangeRates intentionally empty — FX is a separate concern."
     ],
@@ -21,7 +21,7 @@
   "currency": {
     "code": "EUR",
     "exchangeRates": {},
-    "lastUpdated": "12 May 2026"
+    "lastUpdated": "8 August 2026"
   },
   "categories": {
     "housing": {
@@ -29,13 +29,13 @@
         "oneBedroom": {
           "cityCenter": {
             "min": 600,
-            "avg": 789.28,
+            "avg": 784.92,
             "max": 988,
             "currency": "EUR"
           },
           "outsideCenter": {
             "min": 500,
-            "avg": 682,
+            "avg": 672.89,
             "max": 850,
             "currency": "EUR"
           }
@@ -58,8 +58,8 @@
       "buy": {
         "pricePerSqm": {
           "cityCenter": {
-            "min": 4800,
-            "avg": 6065.35,
+            "min": 5748,
+            "avg": 6223.52,
             "max": 7500,
             "currency": "EUR"
           },
@@ -228,8 +228,8 @@
       "personal": {
         "gasoline1L": {
           "min": 1.7,
-          "avg": 1.8,
-          "max": 2,
+          "avg": 1.85,
+          "max": 1.98,
           "currency": "EUR"
         },
         "newCar": {
@@ -269,7 +269,7 @@
       },
       "midRangeMeal2People": {
         "min": 43.82,
-        "avg": 62.5,
+        "avg": 70,
         "max": 80,
         "currency": "EUR"
       },
@@ -358,17 +358,17 @@
         "currency": "EUR"
       },
       "tennis": {
-        "min": 20,
-        "avg": 26.67,
+        "min": 15,
+        "avg": 25,
         "max": 30,
         "currency": "EUR"
       }
     },
     "salary": {
       "averageMonthly": {
-        "min": 2680.72,
-        "avg": 2680.72,
-        "max": 2680.72,
+        "min": 2582.86,
+        "avg": 2582.86,
+        "max": 2582.86,
         "currency": "EUR"
       },
       "mortgageRate": {
@@ -380,10 +380,10 @@
   },
   "summary": {
     "monthlyBudget": {
-      "min": 1558.9,
-      "avg": 1748.18,
-      "max": 1946.9
+      "min": 1568.7,
+      "avg": 1753.62,
+      "max": 1956.7
     },
-    "averageSalary": 2680.72
+    "averageSalary": 2582.86
   }
 }

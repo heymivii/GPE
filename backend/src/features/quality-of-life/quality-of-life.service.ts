@@ -12,6 +12,10 @@ import { QualityOfLifeCityCache } from './entities/quality-of-life-city-cache.en
 import { City } from '../city/entities/city.entity';
 import { numbeoCitySlug } from '../../services/numbeo-slug.util';
 import {
+  NumbeoBlockedError,
+  NumbeoUnknownSlugError,
+} from '../../services/numbeo-fetch.util';
+import {
   fetchQualityOfLifeHtml,
   fetchCityQualityOfLifeHtml,
   parseQualityOfLife,
@@ -96,7 +100,7 @@ export class QualityOfLifeService {
         `Numbeo city quality-of-life fetch failed for "${slug}": ${e}`,
       );
       throw new HttpException(
-        `Could not fetch Numbeo quality-of-life for city slug "${slug}". Check the Numbeo slug.`,
+        (e instanceof NumbeoBlockedError || e instanceof NumbeoUnknownSlugError ? e.message : `Could not fetch Numbeo quality-of-life for city slug "${slug}".`),
         HttpStatus.BAD_GATEWAY,
       );
     }
@@ -199,7 +203,7 @@ export class QualityOfLifeService {
         `Numbeo quality-of-life fetch failed for "${country}": ${e}`,
       );
       throw new HttpException(
-        `Could not fetch Numbeo quality-of-life data for "${country}".`,
+        (e instanceof NumbeoBlockedError || e instanceof NumbeoUnknownSlugError ? e.message : `Could not fetch Numbeo quality-of-life data for "${country}".`),
         HttpStatus.BAD_GATEWAY,
       );
     }

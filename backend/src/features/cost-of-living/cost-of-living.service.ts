@@ -8,6 +8,10 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, LessThan } from 'typeorm';
 import axios from 'axios';
+import {
+  NumbeoBlockedError,
+  NumbeoUnknownSlugError,
+} from '../../services/numbeo-fetch.util';
 import { CostOfLivingCleanerService } from './cost-of-living-cleaner.service';
 import { CostOfLivingCache } from './entities/cost-of-living-cache.entity';
 import { City } from '../city/entities/city.entity';
@@ -403,8 +407,14 @@ export class CostOfLivingService {
       html = await fetchNumbeoHtml(slug);
     } catch (e) {
       this.logger.error(`Numbeo fetch failed for "${slug}": ${e}`);
+      // Erreurs typées (IP bloquée / slug inconnu) : leur message EST le diagnostic —
+      // « Check the Numbeo slug » envoyait l'admin chasser des slugs corrects alors
+      // que Numbeo bloquait simplement l'IP du serveur (503 anti-bot).
+      if (e instanceof NumbeoBlockedError || e instanceof NumbeoUnknownSlugError) {
+        throw new HttpException(e.message, HttpStatus.BAD_GATEWAY);
+      }
       throw new HttpException(
-        `Could not fetch Numbeo for slug "${slug}". Check the Numbeo slug.`,
+        `Could not fetch Numbeo for slug "${slug}": ${(e as Error).message}`,
         HttpStatus.BAD_GATEWAY,
       );
     }

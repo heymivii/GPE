@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { fetchNumbeoPage } from '../../services/numbeo-fetch.util';
 
 // Country-level property / investment indicators scraped from Numbeo's
 // property-investment page (deterministic parsing, no AI).
@@ -15,30 +15,19 @@ export interface PropertyInvestmentData {
   populationGrowthRate: number | null; // %
 }
 
-const UA =
-  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36';
-
 export async function fetchPropertyInvestmentHtml(
   country: string,
 ): Promise<string> {
-  const url = `https://www.numbeo.com/property-investment/country_result.jsp?country=${encodeURIComponent(country)}`;
-  const { data } = await axios.get<string>(url, {
-    timeout: 25000,
-    headers: { 'User-Agent': UA, 'Accept-Language': 'en-US,en;q=0.9' },
-  });
-  return data;
+  return fetchNumbeoPage(
+    `https://www.numbeo.com/property-investment/country_result.jsp?country=${encodeURIComponent(country)}`,
+  );
 }
 
 /** CITY page (e.g. /property-investment/in/Paris) — same two-cell rows, same parser. */
 export async function fetchCityPropertyInvestmentHtml(
   slug: string,
 ): Promise<string> {
-  const url = `https://www.numbeo.com/property-investment/in/${slug}`;
-  const { data } = await axios.get<string>(url, {
-    timeout: 25000,
-    headers: { 'User-Agent': UA, 'Accept-Language': 'en-US,en;q=0.9' },
-  });
-  return data;
+  return fetchNumbeoPage(`https://www.numbeo.com/property-investment/in/${slug}`);
 }
 
 interface Row {
