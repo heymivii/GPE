@@ -6,7 +6,7 @@ import { cityIndicesApi } from '../../../api/cityIndices';
 import { userApi } from '../../../api/user';
 import { useAuth } from '../../../hooks/useAuth';
 import { useState, useMemo, useEffect, useRef } from 'react';
-import { Plus, Edit2, Globe, RefreshCw, X, Search, Eye, ChevronRight, ArrowLeft, Save, Coins, Building2, Utensils, Car, Loader2, Globe2, ShoppingBag, Shirt, Baby, Activity, Archive, ArchiveRestore, CheckCircle2, XCircle, Trash2 } from 'lucide-react';
+import { Plus, Edit2, Globe, RefreshCw, X, Search, Eye, ChevronRight, ArrowLeft, Save, Coins, Building2, Utensils, Car, Loader2, Globe2, ShoppingBag, Shirt, Baby, Activity, Archive, ArchiveRestore, CheckCircle2, XCircle, Trash2, AlertTriangle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import Combobox from '../components/Combobox';
@@ -2011,6 +2011,26 @@ export default function AdminCities() {
                   numbeo.com/cost-of-living/in/{colSlug.trim() || '…'}
                 </a>
               </div>
+
+              {/* Ce que tout admin doit savoir AVANT de soupçonner le slug : Numbeo
+                  bloque souvent les requêtes de nos serveurs (anti-robot). Sans cette
+                  note, chaque 503 part en chasse au slug (vécu le 03/09/2026). */}
+              <div className="rounded-xl border border-amber-200 bg-amber-50 px-3.5 py-3 text-xs text-amber-800 leading-relaxed">
+                <p className="font-semibold flex items-center gap-1.5">
+                  <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />
+                  Si la récupération échoue alors que la page Numbeo s'ouvre chez toi
+                </p>
+                <p className="mt-1">
+                  Ce n'est pas le slug : Numbeo <span className="font-semibold">bloque souvent
+                  les requêtes venant de nos serveurs</span> (protection anti-robot, erreur 503),
+                  même quand la page marche dans ton navigateur. Dans ce cas, la récupération
+                  passe par un poste de développeur :{' '}
+                  <span className="font-mono text-amber-900">npm run col:refresh</span> dans le
+                  backend, puis déploiement — la marche à suivre est en tête de{' '}
+                  <span className="font-mono text-amber-900">scripts/curated-cost-of-living/registry.ts</span>.
+                </p>
+              </div>
+
               <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-150">
                 <button
                   type="button"
