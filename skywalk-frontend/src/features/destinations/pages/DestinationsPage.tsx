@@ -1,17 +1,23 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { CountryCard } from '../components/CountryCard';
-import { Search, SlidersHorizontal, Loader2, AlertCircle } from 'lucide-react';
+import { Search, SlidersHorizontal, Loader2, AlertCircle, Map as MapIcon, List } from 'lucide-react';
 import { PageHeader } from '../../../components/PageHeader';
 import { PageSearch } from '../../../components/PageSearch';
 import type { CountryDestination } from '../types';
 import { destinationsApi } from '../../../api/destinations';
 
+// Lazy : le topojson monde (~110 Ko) ne doit pas alourdir le bundle initial.
+const WorldMap = lazy(() => import('../components/WorldMap'));
+
 export function DestinationsPage() {
   const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('name');
+  // Carte par défaut (le panorama), liste pour comparer les stats — même
+  // bascule que la vue liste/timeline de la checklist.
+  const [view, setView] = useState<'map' | 'list'>('map');
 
   const { data: destinations = [], isLoading: loading, isError: hasError } = useQuery<CountryDestination[]>({
     queryKey: ['destinations-list'],
@@ -59,7 +65,11 @@ export function DestinationsPage() {
               className="block w-full pl-11 pr-4 py-3 bg-gray-50 border-none rounded-2xl text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-100 focus:bg-white transition-all"
               placeholder={t('destinations.searchPlaceholder')}
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                // Chercher, c'est vouloir comparer : la carte ne filtre pas, la liste oui.
+                if (e.target.value && view === 'map') setView('list');
+              }}
             />
           </div>
 
@@ -78,10 +88,45 @@ export function DestinationsPage() {
                 <option value="jobs">{t('destinations.sortOptions.jobs')}</option>
               </select>
             </div>
+
+            {/* Bascule carte / liste — même motif que liste/timeline sur la checklist */}
+            <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+              <button
+                onClick={() => setView('map')}
+                className={`p-2 rounded-md transition-colors ${view === 'map' ? 'bg-white shadow-sm' : 'hover:bg-gray-200'}`}
+                title={t('destinations.viewMap', { defaultValue: 'Vue carte' })}
+              >
+                <MapIcon className="w-4 h-4 text-gray-600" />
+              </button>
+              <button
+                onClick={() => setView('list')}
+                className={`p-2 rounded-md transition-colors ${view === 'list' ? 'bg-white shadow-sm' : 'hover:bg-gray-200'}`}
+                title={t('destinations.viewList', { defaultValue: 'Vue liste' })}
+              >
+                <List className="w-4 h-4 text-gray-600" />
+              </button>
+            </div>
           </div>
         </div>
       </PageSearch>
 
+      {/* Vue carte : le panorama interactif remplace la grille (pas les deux empilés) */}
+      {view === 'map' && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <Suspense
+            fallback={<div className="rounded-3xl border border-gray-100 bg-gray-50 animate-pulse aspect-[2/1]" />}
+          >
+            <WorldMap />
+          </Suspense>
+          <p className="mt-4 text-center text-sm text-gray-400">
+            {t('destinations.mapHint', {
+              defaultValue: 'Clique une destination en couleur pour l’explorer — ou passe en vue liste pour comparer les stats.',
+            })}
+          </p>
+        </div>
+      )}
+
+      {view === 'list' && (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-32">
@@ -118,6 +163,7 @@ export function DestinationsPage() {
           </div>
         )}
       </div>
+      )}
     </div>
   );
 }
