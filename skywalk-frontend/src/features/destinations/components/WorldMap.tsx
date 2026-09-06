@@ -31,11 +31,41 @@ const MARKER_CONFIG: Record<string, MarkerConfig> = {
   CH: { coords: [7.45, 46.95], label: { dx: 9, dy: 12, anchor: 'start' } },
 };
 
+/**
+ * Morceaux d'un pays qui ne sont PAS le territoire principal. Les données
+ * cartographiques ne nomment que le pays (la Guyane fait partie de la feature
+ * « France », même code ISO 250) : sans ce repérage, survoler la Guyane
+ * annonçait « France — disponible », alors que nos villes et nos coûts de la
+ * vie sont métropolitains.
+ * Zones en [lonMin, latMin, lonMax, latMax].
+ */
+interface Territory {
+  name: string;
+  bbox: [number, number, number, number];
+}
+
+const TERRITORIES: Record<string, Territory[]> = {
+  FR: [{ name: 'Guyane', bbox: [-55, 2, -51, 6] }],
+};
+
+/** Territoire non couvert situé à ces coordonnées, s'il y en a un. */
+export function territoryAt(
+  countryCode: string,
+  lon: number,
+  lat: number,
+): string | undefined {
+  return TERRITORIES[countryCode]?.find(
+    (z) => lon >= z.bbox[0] && lon <= z.bbox[2] && lat >= z.bbox[1] && lat <= z.bbox[3],
+  )?.name;
+}
+
 interface HoverState {
   x: number;
   y: number;
   name: string;
   supported?: SupportedCountry;
+  /** Territoire non couvert survolé (ex. Guyane), le cas échéant. */
+  territory?: string;
 }
 
 type CountryFeature = Feature<Geometry, { name: string }> & { id?: string | number };
@@ -50,7 +80,7 @@ export default function WorldMap() {
   const { t } = useTranslation();
   const [hover, setHover] = useState<HoverState | null>(null);
 
-  const { countries, pathFor, markers, graticulePath, spherePath } = useMemo(() => {
+  const { countries, projection, pathFor, markers, graticulePath, spherePath } = useMemo(() => {
     const topology = worldTopo as unknown as Topology<{ countries: GeometryCollection<{ name: string }> }>;
     const collection = feature(topology, topology.objects.countries);
     // Antarctique : beaucoup de pixels, zéro expatriation — on l'écarte pour cadrer le reste.
@@ -74,6 +104,7 @@ export default function WorldMap() {
 
     return {
       countries,
+      projection,
       pathFor: (f: CountryFeature) => path(f) ?? '',
       markers,
       graticulePath: path(geoGraticule10()) ?? '',
@@ -90,12 +121,32 @@ export default function WorldMap() {
   }, []);
 
   const handleMove = (e: React.MouseEvent, f: CountryFeature) => {
-    const rect = (e.currentTarget as SVGPathElement).ownerSVGElement!.parentElement!.getBoundingClientRect();
+    const svg = (e.currentTarget as SVGPathElement).ownerSVGElement!;
+    const rect = svg.parentElement!.getBoundingClientRect();
+    const supported = supportedByNumericId.get(String(f.id).padStart(3, '0'));
+
+    // Repasse du pixel écran aux coordonnées géographiques pour savoir QUEL
+    // morceau du pays est sous le curseur. Le SVG est mis à l'échelle par CSS :
+    // on ramène d'abord la position dans le repère du viewBox.
+    let territory: string | undefined;
+    const zones = supported ? TERRITORIES[supported.code] : undefined;
+    if (zones) {
+      const svgRect = svg.getBoundingClientRect();
+      const scale = WIDTH / svgRect.width;
+      const point: [number, number] = [
+        (e.clientX - svgRect.left) * scale,
+        (e.clientY - svgRect.top) * scale,
+      ];
+      const geo = projection.invert?.(point);
+      if (geo) territory = territoryAt(supported!.code, geo[0], geo[1]);
+    }
+
     setHover({
       x: e.clientX - rect.left,
       y: e.clientY - rect.top,
       name: f.properties?.name ?? '',
-      supported: supportedByNumericId.get(String(f.id).padStart(3, '0')),
+      supported,
+      territory,
     });
   };
 
@@ -227,10 +278,21 @@ export default function WorldMap() {
             <>
               <p className="text-sm font-semibold text-gray-900 whitespace-nowrap">
                 {hover.supported.flag} {hover.supported.name}
+                {hover.territory && (
+                  <span className="font-normal text-gray-500"> — {hover.territory}</span>
+                )}
               </p>
-              <p className="text-[11px] font-medium text-[#5EA3C0] whitespace-nowrap">
-                {t('worldMap.clickToExplore', { defaultValue: 'Disponible — cliquer pour explorer' })}
-              </p>
+              {hover.territory ? (
+                <p className="text-[11px] text-gray-400 whitespace-nowrap">
+                  {t('worldMap.territoryNoData', {
+                    defaultValue: 'Pas encore de données pour ce territoire',
+                  })}
+                </p>
+              ) : (
+                <p className="text-[11px] font-medium text-[#5EA3C0] whitespace-nowrap">
+                  {t('worldMap.clickToExplore', { defaultValue: 'Disponible — cliquer pour explorer' })}
+                </p>
+              )}
             </>
           ) : (
             <>

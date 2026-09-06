@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import WorldMap from './WorldMap';
+import WorldMap, { territoryAt } from './WorldMap';
 
 const navigate = vi.fn();
 vi.mock('react-router-dom', async (importOriginal) => {
@@ -56,5 +56,25 @@ describe('WorldMap', () => {
     const { container } = renderMap();
 
     expect(container.querySelectorAll('path[fill="#14425A"]')).toHaveLength(4);
+  });
+
+  describe('territoryAt', () => {
+    // Les données cartographiques ne nomment que le pays : la Guyane fait
+    // partie de la feature « France ». Sans ce repérage, la survoler annonçait
+    // « France — disponible » alors que nos données sont métropolitaines.
+    it('reconnaît la Guyane dans la feature France', () => {
+      expect(territoryAt('FR', -53, 4)).toBe('Guyane');
+    });
+
+    it('ne signale rien sur la France métropolitaine', () => {
+      expect(territoryAt('FR', 2.35, 48.86)).toBeUndefined(); // Paris
+      expect(territoryAt('FR', 9.1, 42.1)).toBeUndefined(); // Corse
+    });
+
+    it("n'invente pas de territoire pour les pays qui n'en déclarent pas", () => {
+      // L'Alaska reste « États-Unis » : personne ne s'en étonne sur une carte.
+      expect(territoryAt('US', -150, 64)).toBeUndefined();
+      expect(territoryAt('JP', 139, 35)).toBeUndefined();
+    });
   });
 });
