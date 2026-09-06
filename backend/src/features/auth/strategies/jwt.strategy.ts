@@ -32,6 +32,18 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (!payload || !payload.sub) {
       throw new UnauthorizedException('Token invalide');
     }
+
+    // Les jetons à usage unique — reset de mot de passe (`reset`), confirmation
+    // d'adresse (`email-verification`), rafraîchissement (`refresh`) — sont signés
+    // avec le MÊME secret que les jetons de session. Sans ce contrôle, ils ouvrent
+    // une session complète : un lien de confirmation reçu par email traîne dans une
+    // boîte mail, un historique de navigation ou un en-tête Referer, et vaudrait
+    // alors un mot de passe. Un jeton d'accès ne porte jamais de `type` : tout
+    // jeton typé est refusé ici, quelle que soit sa valeur.
+    if (payload.type) {
+      throw new UnauthorizedException('Token invalide');
+    }
+
     return { userId: payload.sub, email: payload.email, role: payload.role };
   }
 }
