@@ -18,17 +18,11 @@ import { UpdateCityDto } from './dto/update-city.dto';
 import restCountriesService from '../../services/restCountries.service';
 import { ReviewService } from '../review/review.service';
 import { User } from '../user/entities/user.entity';
+import { fetchCityAutofill, type CityAutofillData } from './city-autofill';
 
 /** Geo data auto-filled from free, keyless sources (Open-Meteo geocoding + Wikipedia). */
-export interface CityAutofillData {
-  latitude: number | null;
-  longitude: number | null;
-  population: number | null;
-  timezone: string | null;
-  isCapital: boolean;
-  imageUrl: string | null;
-  matchedName: string | null;
-}
+// Ré-exportée pour ne pas casser les imports existants.
+export type { CityAutofillData } from './city-autofill';
 
 @Injectable()
 export class CityService {
@@ -69,77 +63,15 @@ export class CityService {
   }
 
   /**
-   * Auto-fill a city's geo data from FREE keyless sources:
-   *   - Open-Meteo geocoding → latitude, longitude, population, timezone, capital flag
-   *     (feature_code 'PPLC' = country capital), matched against the country name;
-   *   - Wikipedia (fr) page image → imageUrl.
-   * Best-effort: any missing piece stays null; throws only when NOTHING matched.
+   * Auto-fill a city's geo data from FREE keyless sources (voir city-autofill.ts).
+   * La logique vit dans un module autonome pour être réutilisable hors contexte
+   * Nest — le script de rattrapage des villes existantes s'en sert aussi.
    */
   async autofill(
     name: string,
     countryName?: string,
   ): Promise<CityAutofillData> {
-    const norm = (s: string) =>
-      s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
-
-    const { data } = await axios.get<{
-      results?: Array<{
-        name: string;
-        latitude: number;
-        longitude: number;
-        population?: number;
-        timezone?: string;
-        country?: string;
-        feature_code?: string;
-      }>;
-    }>('https://geocoding-api.open-meteo.com/v1/search', {
-      params: { name, count: 10, language: 'fr', format: 'json' },
-      timeout: 10000,
-    });
-
-    const results = data.results ?? [];
-    const match =
-      (countryName &&
-        results.find((r) => norm(r.country ?? '') === norm(countryName))) ||
-      results[0];
-    if (!match) {
-      throw new NotFoundException(
-        `Aucune donnée géographique trouvée pour « ${name} »`,
-      );
-    }
-
-    // Wikipedia page image (best-effort — many cities have one, some don't).
-    let imageUrl: string | null = null;
-    try {
-      const wiki = await axios.get<{
-        query?: { pages?: Record<string, { thumbnail?: { source?: string } }> };
-      }>('https://fr.wikipedia.org/w/api.php', {
-        params: {
-          action: 'query',
-          titles: match.name,
-          prop: 'pageimages',
-          format: 'json',
-          pithumbsize: 1200,
-          redirects: 1,
-        },
-        timeout: 8000,
-        headers: { 'User-Agent': 'SkyWalk/1.0 (school project)' },
-      });
-      const pages = wiki.data.query?.pages ?? {};
-      imageUrl = Object.values(pages)[0]?.thumbnail?.source ?? null;
-    } catch {
-      // image is a nice-to-have — never fail the autofill for it
-    }
-
-    return {
-      latitude: match.latitude ?? null,
-      longitude: match.longitude ?? null,
-      population: match.population ?? null,
-      timezone: match.timezone ?? null,
-      isCapital: match.feature_code === 'PPLC',
-      imageUrl,
-      matchedName: match.name ?? null,
-    };
+    return fetchCityAutofill(name, countryName);
   }
 
   /**

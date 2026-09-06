@@ -144,6 +144,31 @@ En local, aucune de ces variables n'est nécessaire : les mails partent dans
 
 ---
 
+## 3 ter. Compléter les données des villes (images, population)
+
+L'auto-remplissage géo n'existait qu'à la **création** d'une ville dans l'admin :
+les villes importées autrement se retrouvaient sans image, et la page destination
+affichait alors la même photo Unsplash générique pour toutes.
+
+Le script de rattrapage interroge les mêmes sources gratuites et sans clé
+(Open-Meteo pour la géo, Wikipédia pour la photo) :
+
+```bash
+# en local
+cd backend && npm run cities:autofill
+
+# en prod (Wikipédia et Open-Meteo ne bloquent pas les IP de datacenter,
+# contrairement à Numbeo)
+heroku run:detached "npm run cities:autofill" -a skywalk-backend-api
+heroku logs --app skywalk-backend-api --dyno run.XXXX   # suivre la sortie
+```
+
+Par défaut il ne remplit que les champs vides — une valeur corrigée à la main
+dans l'admin n'est jamais écrasée. `-- --force` réécrit tout, `-- Lyon` limite à
+une ville.
+
+---
+
 ## 4. Déploiement backend (GitHub Actions → Heroku)
 
 Le déploiement n'utilise **pas** l'auto-deploy natif de Heroku (qui déploierait sur chaque push, même si les tests échouent) : c'est le job `deploy-backend` de `.github/workflows/ci.yml` qui pousse vers Heroku, uniquement après que `backend-test` et `backend-build` soient passés, sur push vers `develop`.
