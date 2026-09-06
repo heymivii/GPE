@@ -96,8 +96,8 @@ describe('SettingsPage', () => {
     meState.data = { isExpert: true, expertVerifiedAt: '2026-01-01', expertTitle: 'Avocat', expertBio: 'Ma bio' };
     renderPage();
     expect(await screen.findByText('Profil expert')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('Titre')).toHaveValue('Avocat');
-    expect(screen.getByPlaceholderText('Bio')).toHaveValue('Ma bio');
+    await waitFor(() => expect(screen.getByPlaceholderText('Titre')).toHaveValue('Avocat'));
+    await waitFor(() => expect(screen.getByPlaceholderText('Bio')).toHaveValue('Ma bio'));
   });
 
   it('saves the expert profile and shows a success toast', async () => {
