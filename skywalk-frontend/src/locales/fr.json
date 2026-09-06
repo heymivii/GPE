@@ -51,7 +51,8 @@
     "ireland": "Irlande",
     "unitedStates": "États-Unis",
     "australia": "Australie",
-    "japan": "Japon"
+    "japan": "Japon",
+    "mali": "Mali"
   },
   "common": {
     "loading": "Chargement...",
@@ -655,7 +656,7 @@
       "noTopics": "Aucun sujet de discussion pour {{country}} pour le moment.",
       "accessForum": "Accéder au forum",
       "guidesAndResources": "Guides et ressources",
-      "guidesDescription": "Consultez nos {{count}} guides pour votre installation en {{country}}.",
+      "guidesDescription": "Consultez nos {{count}} guides pour votre installation {{country}}.",
       "viewResources": "Voir les ressources",
       "noResources": "Aucune ressource disponible pour {{country}} pour le moment.",
       "viewAllBlog": "Voir tous les articles du blog",
@@ -673,15 +674,15 @@
         "source": "Source : OCDE – Base de données sur les migrations internationales"
       },
       "readyToGo": "Prêt à partir ?",
-      "startProject": "Commencez votre projet d'expatriation en {{country}} dès aujourd'hui.",
+      "startProject": "Commencez votre projet d'expatriation {{country}} dès aujourd'hui.",
       "findJob": "Trouver un emploi",
       "discussOnForum": "Discuter sur le forum",
       "createProjectTitle": "Créez votre projet d'expatriation",
-      "createProjectDesc": "Rejoignez {{memberCount}} expatriés en {{country}} et accédez à du contenu personnalisé.",
+      "createProjectDesc": "Rejoignez {{memberCount}} expatriés {{country}} et accédez à du contenu personnalisé.",
       "createFreeAccount": "Créer mon compte gratuitement",
       "premiumContent": "Contenu premium",
-      "premiumCostOfLiving": "Créez un compte gratuit pour accéder aux données détaillées du coût de la vie en {{country}}.",
-      "premiumOpportunities": "Créez un compte gratuit pour découvrir les opportunités professionnelles en {{country}}.",
+      "premiumCostOfLiving": "Créez un compte gratuit pour accéder aux données détaillées du coût de la vie {{country}}.",
+      "premiumOpportunities": "Créez un compte gratuit pour découvrir les opportunités professionnelles {{country}}.",
       "premiumResources": "Créez un compte gratuit pour accéder aux guides et ressources pour {{country}}.",
       "premiumMigration": "Créez un compte gratuit pour accéder aux statistiques détaillées de migration et immigration.",
       "benefits": {
@@ -2191,7 +2192,7 @@
     "retry": "Réessayer",
     "card": {
       "defaultDestination": "Destination",
-      "defaultDescription": "Découvrez la vie en {{country}}, une destination vibrante offrant de nombreuses opportunités.",
+      "defaultDescription": "Découvrez la vie {{country}}, une destination vibrante offrant de nombreuses opportunités.",
       "projects": "projets",
       "jobs": "emplois",
       "topics": "sujets",
@@ -3739,5 +3740,23 @@
       "priceToRentHint": "Années de loyer équivalentes au prix d'achat",
       "priceToRentOutside": "Prix / loyer (périphérie)"
     }
+  },
+  "countriesIn": {
+    "france": "en France",
+    "canada": "au Canada",
+    "switzerland": "en Suisse",
+    "germany": "en Allemagne",
+    "spain": "en Espagne",
+    "italy": "en Italie",
+    "portugal": "au Portugal",
+    "belgium": "en Belgique",
+    "netherlands": "aux Pays-Bas",
+    "luxembourg": "au Luxembourg",
+    "unitedKingdom": "au Royaume-Uni",
+    "ireland": "en Irlande",
+    "unitedStates": "aux États-Unis",
+    "australia": "en Australie",
+    "japan": "au Japon",
+    "mali": "au Mali"
   }
 }

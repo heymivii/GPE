@@ -35,9 +35,12 @@ import AuthPromptCard from '../../../components/AuthPromptCard';
 import CostOfLivingTab from '../components/CostOfLivingTab';
 import { ISO2_TO_ISO3, getLocale, getCurrentLocale } from '../../../data/supportedCountries';
 import { getCityId } from '../cityId';
+import { useCountryName, useCountryNameIn } from '../../../hooks/useCountryName';
 
 export function DestinationDetailPage() {
   const { countrySlug } = useParams<{ countrySlug: string }>();
+  const localizedCountry = useCountryName();
+  const countryIn = useCountryNameIn();
   const { isAuthenticated } = useAuth();
   const { t, i18n } = useTranslation();
   const dateLocale = getLocale(i18n.language);
@@ -113,7 +116,7 @@ export function DestinationDetailPage() {
       <div className="relative h-[400px]">
         <img
           src={country.imageUrl || 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1920&q=80'}
-          alt={country.countryName}
+          alt={localizedCountry(country.countryName)}
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
@@ -128,9 +131,9 @@ export function DestinationDetailPage() {
             </Link>
             <div className="flex items-center gap-4 mb-4">
               {country.flagUrl && (
-                <img src={country.flagUrl} alt={country.countryName} className="w-12 h-12 rounded-full border-2 border-white shadow-lg" />
+                <img src={country.flagUrl} alt={localizedCountry(country.countryName)} className="w-12 h-12 rounded-full border-2 border-white shadow-lg" />
               )}
-              <h1 className="text-4xl md:text-5xl font-bold text-white font-outfit">{country.countryName}</h1>
+              <h1 className="text-4xl md:text-5xl font-bold text-white font-outfit">{localizedCountry(country.countryName)}</h1>
             </div>
             <div className="flex items-center gap-6 text-white/90">
               <span className="flex items-center gap-2">
@@ -174,12 +177,12 @@ export function DestinationDetailPage() {
                     <div>
                       <h3 className="text-xl font-bold text-gray-900 mb-4">{t('services.destinationDetail.about')}</h3>
                       <p className="text-gray-600 leading-relaxed">
-                        {country.description || t('services.destinationDetail.defaultDescription', { country: country.countryName })}
+                        {country.description || t('services.destinationDetail.defaultDescription', { country: localizedCountry(country.countryName) })}
                       </p>
                     </div>
 
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('services.destinationDetail.whyChoose', { country: country.countryName })}</h3>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('services.destinationDetail.whyChoose', { country: localizedCountry(country.countryName) })}</h3>
                       <div className="grid sm:grid-cols-2 gap-4">
                         {[
                           t('services.destinationDetail.highlights.qualityOfLife'),
@@ -253,7 +256,7 @@ export function DestinationDetailPage() {
                         <Sparkles className="w-8 h-8 text-gray-400" />
                       </div>
                       <h3 className="text-xl font-bold text-gray-900 mb-2">{t('services.destinationDetail.premiumContent')}</h3>
-                      <p className="text-gray-500 mb-6 max-w-md mx-auto">{t('services.destinationDetail.premiumCostOfLiving', { country: country.countryName })}</p>
+                      <p className="text-gray-500 mb-6 max-w-md mx-auto">{t('services.destinationDetail.premiumCostOfLiving', { country: countryIn(country.countryName) })}</p>
                       <Link
                         to="/auth/register"
                         className="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white font-medium rounded-xl hover:bg-gray-800 transition-colors"
@@ -343,7 +346,7 @@ export function DestinationDetailPage() {
                         <Briefcase className="w-8 h-8 text-gray-400" />
                       </div>
                       <h3 className="text-xl font-bold text-gray-900 mb-2">{t('services.destinationDetail.premiumContent')}</h3>
-                      <p className="text-gray-500 mb-6 max-w-md mx-auto">{t('services.destinationDetail.premiumOpportunities', { country: country.countryName })}</p>
+                      <p className="text-gray-500 mb-6 max-w-md mx-auto">{t('services.destinationDetail.premiumOpportunities', { country: countryIn(country.countryName) })}</p>
                       <Link
                         to="/auth/register"
                         className="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white font-medium rounded-xl hover:bg-gray-800 transition-colors"
@@ -436,7 +439,7 @@ export function DestinationDetailPage() {
                     ) : (
                       <div className="text-center py-8">
                         <MessageSquare className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                        <p className="text-gray-500 mb-4">{t('services.destinationDetail.noTopics', { country: country.countryName })}</p>
+                        <p className="text-gray-500 mb-4">{t('services.destinationDetail.noTopics', { country: localizedCountry(country.countryName) })}</p>
                         <Link
                           to={`/forum?country=${country.isoCode}`}
                           className="inline-flex items-center gap-2 text-[#5EA3C0] font-medium hover:underline"
@@ -473,7 +476,7 @@ export function DestinationDetailPage() {
                     return (
                       <div className="text-center py-8">
                         <BookOpen className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                        <p className="text-gray-500 mb-4">{t('services.destinationDetail.noResources', { country: country.countryName })}</p>
+                        <p className="text-gray-500 mb-4">{t('services.destinationDetail.noResources', { country: localizedCountry(country.countryName) })}</p>
                         <Link
                           to="/blog"
                           className="inline-flex items-center gap-2 text-[#5EA3C0] font-medium hover:underline"
@@ -487,7 +490,7 @@ export function DestinationDetailPage() {
                   return (
                     <div>
                       <h3 className="text-lg font-medium text-gray-900 mb-2">{t('services.destinationDetail.guidesAndResources')}</h3>
-                      <p className="text-gray-500 mb-6">{t('services.destinationDetail.guidesDescription', { count: countryArticles.length, country: country.countryName })}</p>
+                      <p className="text-gray-500 mb-6">{t('services.destinationDetail.guidesDescription', { count: countryArticles.length, country: countryIn(country.countryName) })}</p>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {countryArticles.map((article) => (
                           <Link
@@ -680,7 +683,7 @@ export function DestinationDetailPage() {
               <AuthPromptCard
                 icon={Sparkles}
                 title={t('services.destinationDetail.createProjectTitle')}
-                description={t('services.destinationDetail.createProjectDesc', { memberCount: (country.stats?.memberCount || 0).toLocaleString(getCurrentLocale()), country: country.countryName })}
+                description={t('services.destinationDetail.createProjectDesc', { memberCount: (country.stats?.memberCount || 0).toLocaleString(getCurrentLocale()), country: countryIn(country.countryName) })}
                 ctaText={t('services.destinationDetail.createFreeAccount')}
                 ctaLink="/auth/register"
                 benefits={[
@@ -695,7 +698,7 @@ export function DestinationDetailPage() {
             <div className="bg-[#5EA3C0] rounded-xl shadow-sm p-6 text-white">
               <h3 className="font-bold text-lg mb-4">{t('services.destinationDetail.readyToGo')}</h3>
               <p className="text-blue-50 text-sm mb-6">
-                {t('services.destinationDetail.startProject', { country: country.countryName })}
+                {t('services.destinationDetail.startProject', { country: countryIn(country.countryName) })}
               </p>
               <div className="space-y-3">
                 <Link

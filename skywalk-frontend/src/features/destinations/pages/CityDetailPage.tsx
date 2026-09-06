@@ -14,6 +14,7 @@ import { useCityDetail } from '../hooks/useCityDetail';
 import CostOfLivingTab from '../components/CostOfLivingTab';
 import TrustBadge from '../../../components/TrustBadge';
 import type { CityDestination } from '../types';
+import { useCountryName } from '../../../hooks/useCountryName';
 
 /** Une tuile de chiffre, sans barre de progression : les indices Numbeo n'ont
  *  pas tous la même échelle, une jauge donnerait une fausse impression de note. */
@@ -68,6 +69,7 @@ function Section({
 
 export default function CityDetailPage() {
   const { t } = useTranslation();
+  const localizedCountry = useCountryName();
   const { countrySlug, cityId: cityIdParam } = useParams<{
     countrySlug: string;
     cityId: string;
@@ -124,7 +126,7 @@ export default function CityDetailPage() {
     );
   }
 
-  const countryName = city.country?.countryName;
+  const countryName = localizedCountry(city.country?.countryName);
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] pb-16">

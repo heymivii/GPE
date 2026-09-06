@@ -1,7 +1,7 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Search, Menu, X, ChevronDown, Globe, LogOut, User, LayoutDashboard, FolderKanban, Settings, Compass, BarChart3, MapPin, Briefcase, BookOpen, BadgeCheck, Mail, ShieldAlert } from 'lucide-react';
+import { Search, Menu, X, ChevronDown, Globe, LogOut, User, LayoutDashboard, FolderKanban, Settings, Compass, BarChart3, MapPin, Briefcase, BookOpen, Mail, ShieldAlert } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import GlobalSearchModal from './GlobalSearchModal';
 import ProjectSwitcher from './ProjectSwitcher';
@@ -110,6 +110,14 @@ export default function NavBar() {
                   <Link to="/comparison" className={linkClass('/comparison')}>{t('nav.comparison')}</Link>
                   <Link to="/services" className={linkClass('/services')}>{t('nav.services')}</Link>
                   <Link to="/blog" className={linkClass('/blog')}>{t('nav.blog')}</Link>
+                  {/* Experts au premier niveau : c'est le point d'entrée pour
+                      « parler à un expert », et les testeurs ne le trouvaient pas
+                      enfoui dans le menu Explorer. Texte seul, comme les autres
+                      liens de la barre — une icône isolée jurait. */}
+                  <Link to="/experts" className={linkClass('/experts')}>
+                    {t('nav.experts', { defaultValue: 'Experts' })}
+                  </Link>
+
                   <Link to="/forum" className={linkClass('/forum')}>{t('nav.forum')}</Link>
                 </>
               ) : (
@@ -152,14 +160,18 @@ export default function NavBar() {
                           <BookOpen className="w-4 h-4 text-[#5EA3C0]" />
                           {t('nav.blog')}
                         </Link>
-                        <Link to="/experts" onClick={() => setExploreOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-gray-700 text-sm">
-                          <BadgeCheck className="w-4 h-4 text-[#5EA3C0]" />
-                          {t('nav.experts', { defaultValue: 'Experts' })}
-                        </Link>
                       </div>
                     )}
                   </div>
                   
+                  {/* Experts au premier niveau : c'est le point d'entrée pour
+                      « parler à un expert », et les testeurs ne le trouvaient pas
+                      enfoui dans le menu Explorer. Texte seul, comme les autres
+                      liens de la barre — une icône isolée jurait. */}
+                  <Link to="/experts" className={linkClass('/experts')}>
+                    {t('nav.experts', { defaultValue: 'Experts' })}
+                  </Link>
+
                   <Link to="/forum" className={linkClass('/forum')}>{t('nav.forum')}</Link>
                 </>
               )}

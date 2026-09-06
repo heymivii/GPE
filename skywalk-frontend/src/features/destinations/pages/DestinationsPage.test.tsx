@@ -6,7 +6,7 @@ import { DestinationsPage } from './DestinationsPage';
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (k: string) => k,
+    t: (k: string, o?: { defaultValue?: string }) => o?.defaultValue ?? k,
     i18n: { language: 'fr' },
   }),
 }));
@@ -35,7 +35,8 @@ function renderPage() {
 }
 
 // La carte est la vue par défaut — les assertions sur les cards passent en vue liste.
-const switchToList = () => fireEvent.click(screen.getByTitle('destinations.viewList'));
+// Le bouton porte son libellé traduit (defaultValue), pas la clé.
+const switchToList = () => fireEvent.click(screen.getByTitle('Vue liste'));
 
 const dest = (overrides: any = {}) => ({
   idCountry: 1,
