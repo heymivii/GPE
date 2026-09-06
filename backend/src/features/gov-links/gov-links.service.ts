@@ -292,12 +292,16 @@ export class GovLinksService {
     if (!link) {
       throw new NotFoundException(`Lien ${id} introuvable`);
     }
-    if (link.status !== 'pending_review') {
+    // needs_review = la machine a signalé un doute (portée, sens de lecture…) ;
+    // c'est précisément le cas qui appelle une décision humaine. Refuser ces
+    // liens les laissait bloqués : ni validables ni rejetables, la procédure
+    // de leur catégorie archivée en attendant.
+    if (link.status !== 'pending_review' && link.status !== 'needs_review') {
       throw new BadRequestException(
         `Ce lien n'est pas en attente de validation (statut actuel : ${link.status}).`,
       );
     }
-    link.status = approve ? 'active' : 'needs_review';
+    link.status = approve ? 'active' : 'dead';
     return this.repo.save(link);
   }
 

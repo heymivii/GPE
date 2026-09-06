@@ -164,6 +164,22 @@ describe('AdminGovLinks', () => {
     expect(mutationMocks[1]).toHaveBeenCalledWith({ id: 1, approve: false });
   });
 
+  // Un lien « à vérifier » (needs_review = doute machine) n'avait aucun bouton :
+  // ni validable ni rejetable, la procédure de sa catégorie restait archivée.
+  it('lets a human decide on a needs_review link', () => {
+    links.push({ ...links[0], id: 3, countryCode: 'CH', category: 'logement', status: 'needs_review' });
+    try {
+      setup();
+      render(<AdminGovLinks />);
+      const valider = screen.getAllByText('Valider');
+      expect(valider).toHaveLength(2);
+      fireEvent.click(valider[1]);
+      expect(mutationMocks[1]).toHaveBeenCalledWith({ id: 3, approve: true });
+    } finally {
+      links.pop();
+    }
+  });
+
   it('regenerates a link from its row', () => {
     setup();
     render(<AdminGovLinks />);

@@ -711,7 +711,7 @@ export default function AdminGovLinks() {
                       </td>
                       <td className="px-5 py-3.5">
                         <div className="flex items-center gap-2">
-                        {link.status === 'pending_review' && (
+                        {(link.status === 'pending_review' || link.status === 'needs_review') && (
                           <>
                             <button
                               type="button"

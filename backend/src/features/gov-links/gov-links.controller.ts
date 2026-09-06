@@ -62,7 +62,7 @@ export class GovLinksController {
     return link;
   }
 
-  /** HUMAN rejection: the link stays hidden (needs_review) — regenerate or pin a URL. */
+  /** HUMAN rejection: terminal (dead) — a rejected link is never re-proposed as is; regenerate or pin a URL. */
   @Patch(':id/reject')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')

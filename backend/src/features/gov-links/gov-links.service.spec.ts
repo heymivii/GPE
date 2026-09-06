@@ -668,7 +668,7 @@ describe('GovLinksService — supported countries, review, retry, normalize', ()
       );
     });
 
-    it('reject → status becomes needs_review', async () => {
+    it('reject → status becomes dead (terminal, not a loop back to needs_review)', async () => {
       const repo = makeRepo();
       repo.findOne.mockResolvedValue({ id: 1, status: 'pending_review' });
       const svc = new GovLinksService(
@@ -678,7 +678,35 @@ describe('GovLinksService — supported countries, review, retry, normalize', ()
         { pickBest: jest.fn(), summarize: jest.fn() } as never,
       );
       const res = await svc.reviewLink(1, false);
-      expect(res.status).toBe('needs_review');
+      expect(res.status).toBe('dead');
+    });
+
+    // needs_review = doute machine (portée, sens de lecture). Refuser la décision
+    // humaine sur ces liens les laissait bloqués : ni validables ni rejetables.
+    it('approve a needs_review link → active', async () => {
+      const repo = makeRepo();
+      repo.findOne.mockResolvedValue({ id: 1, status: 'needs_review' });
+      const svc = new GovLinksService(
+        repo as never,
+        { search: jest.fn() } as never,
+        { verify: jest.fn() } as never,
+        { pickBest: jest.fn(), summarize: jest.fn() } as never,
+      );
+      const res = await svc.reviewLink(1, true);
+      expect(res.status).toBe('active');
+    });
+
+    it('reject a needs_review link → dead', async () => {
+      const repo = makeRepo();
+      repo.findOne.mockResolvedValue({ id: 1, status: 'needs_review' });
+      const svc = new GovLinksService(
+        repo as never,
+        { search: jest.fn() } as never,
+        { verify: jest.fn() } as never,
+        { pickBest: jest.fn(), summarize: jest.fn() } as never,
+      );
+      const res = await svc.reviewLink(1, false);
+      expect(res.status).toBe('dead');
     });
   });
 
