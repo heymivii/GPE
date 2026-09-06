@@ -25,6 +25,7 @@ import { VerifyExpertDto } from './dto/verify-expert.dto';
 import { UpdateExpertProfileDto } from './dto/update-expert-profile.dto';
 import { AdminLogService } from '../admin-log/admin-log.service';
 import { SupportRatingService } from '../support-rating/support-rating.service';
+import { toPublicUser } from './user.sanitizer';
 
 @ApiTags('User')
 @Controller('users')
@@ -73,8 +74,7 @@ export class UserController {
       id.toString(),
       `Vérification expert : "${updated.email}" (${dto.expertTitle ?? ''})`,
     );
-    const { password: _pw, ...result } = updated;
-    return result;
+    return toPublicUser(updated);
   }
 
   @ApiOperation({ summary: 'Revoke an expert verification (Admin only)' })
@@ -90,8 +90,7 @@ export class UserController {
       id.toString(),
       `Révocation du statut expert : "${updated.email}"`,
     );
-    const { password: _pw, ...result } = updated;
-    return result;
+    return toPublicUser(updated);
   }
 
   @ApiOperation({ summary: 'Update my own expert title/bio (verified expert)' })
@@ -105,16 +104,14 @@ export class UserController {
       req.user.userId,
       dto,
     );
-    const { password: _pw, ...result } = updated;
-    return result;
+    return toPublicUser(updated);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('me')
   async getProfile(@Request() req) {
     const user = await this.userService.findOne(req.user.userId);
-    const { password: _h1, ...result } = user;
-    return result;
+    return toPublicUser(user);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -124,8 +121,7 @@ export class UserController {
       req.user.userId,
       updateUserDto,
     );
-    const { password: _h2, ...result } = updatedUser;
-    return result;
+    return toPublicUser(updatedUser);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -156,7 +152,7 @@ export class UserController {
     return {
       ...result,
       data: result.data.map((user) => {
-        const { password: _pw, ...sanitized } = user;
+        const sanitized = toPublicUser(user);
         return sanitized;
       }),
     };
@@ -194,8 +190,7 @@ export class UserController {
       id.toString(),
       `Changement de rôle de l'utilisateur "${targetUser.firstName || ''} ${targetUser.lastName || ''}" (${targetUser.email}) : "${targetUser.roles}" -> "${dto.role}"`
     );
-    const { password: _pw, ...result } = updatedUser;
-    return result;
+    return toPublicUser(updatedUser);
   }
 
   @ApiOperation({ summary: 'Get user statistics (Admin only)' })

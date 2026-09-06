@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, within } from '@testing-library/react';
+import { render, screen, fireEvent, within, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import PostDetailPage from './PostDetailPage';
 import {
@@ -12,6 +12,7 @@ import {
   usePinTopic,
   useModeratorDeleteMessage,
   useModeratorDeleteTopic,
+  useDeleteTopic,
   useFollowTopic,
   useUnfollowTopic,
 } from '../../../hooks/useForum';
@@ -46,6 +47,7 @@ vi.mock('../../../hooks/useForum', () => ({
   usePinTopic: vi.fn(),
   useModeratorDeleteMessage: vi.fn(),
   useModeratorDeleteTopic: vi.fn(),
+  useDeleteTopic: vi.fn(),
   useFollowTopic: vi.fn(),
   useUnfollowTopic: vi.fn(),
 }));
@@ -70,6 +72,8 @@ const mockedUseLockTopic = vi.mocked(useLockTopic);
 const mockedUsePinTopic = vi.mocked(usePinTopic);
 const mockedUseModeratorDeleteMessage = vi.mocked(useModeratorDeleteMessage);
 const mockedUseModeratorDeleteTopic = vi.mocked(useModeratorDeleteTopic);
+const mockedUseDeleteTopic = vi.mocked(useDeleteTopic);
+const deleteTopicMutateAsync = vi.fn();
 const mockedUseFollowTopic = vi.mocked(useFollowTopic);
 const mockedUseUnfollowTopic = vi.mocked(useUnfollowTopic);
 const mockedUseAuth = vi.mocked(useAuth);
@@ -120,6 +124,7 @@ function setup({
   mockedUsePinTopic.mockReturnValue({ mutateAsync: pinMutateAsync, isPending: false } as any);
   mockedUseModeratorDeleteMessage.mockReturnValue({ mutateAsync: modDeleteMessageMutateAsync, isPending: false } as any);
   mockedUseModeratorDeleteTopic.mockReturnValue({ mutateAsync: modDeleteTopicMutateAsync, isPending: false } as any);
+  mockedUseDeleteTopic.mockReturnValue({ mutateAsync: deleteTopicMutateAsync, isPending: false } as any);
   mockedUseFollowTopic.mockReturnValue({ mutate: followMutate, isPending: false } as any);
   mockedUseUnfollowTopic.mockReturnValue({ mutate: unfollowMutate, isPending: false } as any);
   mockedUseAuth.mockReturnValue({ user } as any);
@@ -294,5 +299,49 @@ describe('PostDetailPage', () => {
       .find((g) => g.getAttribute('aria-label')?.includes('rating.rateAuthor'))!;
     fireEvent.click(within(group).getAllByRole('radio')[2]);
     expect(rateMutate).toHaveBeenCalledWith(expect.objectContaining({ messageId: 2 }));
+  });
+
+  describe('suppression du sujet par son auteur', () => {
+    // Retour de recette : un doublon publié par erreur ne pouvait qu'être
+    // modifié, jamais supprimé — alors que l'API l'autorisait déjà.
+    it('propose Supprimer à l’auteur du sujet', () => {
+      setup({ user: { idUser: 1, id: 1, userRole: 'user' } });
+      renderPage();
+      expect(
+        screen.getByRole('button', { name: 'forum.postDetail.delete' }),
+      ).toBeInTheDocument();
+    });
+
+    it('ne le propose pas à quelqu’un d’autre', () => {
+      setup({ user: { idUser: 2, id: 2, userRole: 'user' } });
+      renderPage();
+      expect(
+        screen.queryByRole('button', { name: 'forum.postDetail.delete' }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('supprime puis renvoie au forum après confirmation', async () => {
+      const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
+      deleteTopicMutateAsync.mockResolvedValue(undefined);
+      setup({ user: { idUser: 1, id: 1, userRole: 'user' } });
+      renderPage();
+
+      fireEvent.click(screen.getByRole('button', { name: 'forum.postDetail.delete' }));
+
+      await waitFor(() => expect(deleteTopicMutateAsync).toHaveBeenCalledWith(42));
+      await waitFor(() => expect(navigate).toHaveBeenCalledWith('/forum'));
+      confirmSpy.mockRestore();
+    });
+
+    it('ne supprime rien si la confirmation est annulée', () => {
+      const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);
+      setup({ user: { idUser: 1, id: 1, userRole: 'user' } });
+      renderPage();
+
+      fireEvent.click(screen.getByRole('button', { name: 'forum.postDetail.delete' }));
+
+      expect(deleteTopicMutateAsync).not.toHaveBeenCalled();
+      confirmSpy.mockRestore();
+    });
   });
 });

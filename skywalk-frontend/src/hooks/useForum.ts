@@ -246,6 +246,21 @@ export function useModeratorDeleteMessage(): UseMutationResult<void, Error, { id
   });
 }
 
+/**
+ * Suppression d'un sujet par SON AUTEUR (le backend refuse pour les autres).
+ * Distinct de useModeratorDeleteTopic, qui passe par la route de modération.
+ */
+export function useDeleteTopic(): UseMutationResult<void, Error, number> {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: number) => forumTopicsApi.remove(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: forumKeys.topics() });
+    },
+  });
+}
+
 export function useModeratorDeleteTopic(): UseMutationResult<void, Error, number> {
   const queryClient = useQueryClient();
 
