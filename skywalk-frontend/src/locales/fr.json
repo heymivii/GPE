@@ -3835,5 +3835,202 @@
     "comingSoon": "Bientôt",
     "notYet": "Bientôt disponible",
     "territoryNoData": "Pas encore de données pour ce territoire"
+  },
+  "legal": {
+    "layout": {
+      "back": "Retour à l'accueil",
+      "updated": "Dernière mise à jour : {{date}}"
+    },
+    "toFill": "à compléter",
+    "about": {
+      "title": "À propos de SkyWalk",
+      "intro": "Un compagnon d'expatriation qui ne vous fait pas deviner.",
+      "problem": {
+        "title": "Le problème qu'on essaie de résoudre",
+        "p1": "Préparer une expatriation, c'est reconstituer soi-même un parcours éparpillé entre des sites officiels, des forums et des blogs, sans savoir ce qui est à jour ni ce qui s'applique à sa situation. On y perd du temps, et parfois des droits."
+      },
+      "does": {
+        "title": "Ce que fait SkyWalk",
+        "checklist": {
+          "a": "Une ",
+          "b": "checklist personnalisée",
+          "c": " selon votre destination, votre objectif et votre situation, avec des échéances calculées depuis votre date de départ."
+        },
+        "sources": {
+          "a": "Des ",
+          "b": "démarches adossées aux sources officielles",
+          "c": " : chaque étape porte le lien gouvernemental dont elle est tirée."
+        },
+        "cost": {
+          "a": "Des ",
+          "b": "données de coût de la vie",
+          "c": " par ville, avec leur source et leur date de collecte."
+        },
+        "community": {
+          "a": "Une ",
+          "b": "communauté",
+          "c": " : forum, retours de personnes déjà passées par la même étape, et des experts vérifiés joignables en message privé."
+        }
+      },
+      "principle": {
+        "title": "Notre principe : pas de contenu inventé",
+        "p1": "Les informations administratives affichées proviennent de sources officielles, vérifiées par notre équipe avant publication. Quand une donnée manque pour une ville ou un territoire, nous l'écrivons plutôt que de combler le vide. Les indicateurs chiffrés portent leur source et leur date de capture."
+      },
+      "project": {
+        "title": "Le projet",
+        "p1": "SkyWalk est développé dans un cadre pédagogique. Les informations proposées sont fournies à titre indicatif et ne remplacent pas l'avis d'une administration ou d'un professionnel du droit.",
+        "contact": "Une question, une erreur repérée ?"
+      }
+    },
+    "notice": {
+      "title": "Mentions légales",
+      "intro": "Informations prévues par l'article 6 de la loi pour la confiance dans l'économie numérique.",
+      "publisher": {
+        "title": "Éditeur du site",
+        "line1": "SkyWalk — projet développé dans un cadre pédagogique (ETNA).",
+        "legalForm": "Forme juridique et immatriculation :",
+        "address": "Adresse :",
+        "contact": "Contact :"
+      },
+      "director": {
+        "title": "Directeur de la publication"
+      },
+      "hosting": {
+        "title": "Hébergement",
+        "frontend": {
+          "a": "Interface : ",
+          "c": ", 440 N Barranca Ave #4133, Covina, CA 91723, États-Unis — vercel.com"
+        },
+        "backend": {
+          "a": "Application et base de données : ",
+          "c": ", 415 Mission Street, San Francisco, CA 94105, États-Unis — heroku.com"
+        }
+      },
+      "ip": {
+        "title": "Propriété intellectuelle",
+        "p1": "La structure du site, ses textes et son interface sont la propriété de leurs auteurs. Les contenus publiés par les membres (messages du forum, retours d'expérience, biographies d'experts) restent la propriété de leurs auteurs respectifs.",
+        "s1": "Les données administratives citent leur source officielle. Les indicateurs de coût de la vie et de qualité de vie proviennent de ",
+        "s2": ", les offres d'emploi d'",
+        "s3": ", les photographies de villes de ",
+        "s4": ", les données géographiques d'",
+        "s5": ". Chaque donnée affichée renvoie à sa source."
+      },
+      "liability": {
+        "title": "Responsabilité",
+        "p1": "Les informations administratives sont fournies à titre indicatif. Malgré la vérification des sources, elles peuvent évoluer ou ne pas correspondre à votre situation particulière : seules les administrations compétentes font foi. SkyWalk ne saurait être tenu responsable d'une décision prise sur la seule base des informations du site."
+      },
+      "report": {
+        "title": "Signaler un contenu",
+        "a": "Un contenu vous semble illicite ou erroné ? Signalez-le depuis le bouton prévu sur chaque message du forum, ou écrivez à "
+      }
+    },
+    "privacy": {
+      "title": "Politique de confidentialité",
+      "intro": "Quelles données nous collectons, pourquoi, et ce que vous pouvez exiger.",
+      "collect": {
+        "title": "Ce que nous collectons, et pourquoi",
+        "p1": "Nous ne collectons que ce dont le service a besoin pour fonctionner.",
+        "account": {
+          "b": "Votre compte",
+          "c": " — prénom, nom, email, mot de passe (chiffré, jamais stocké en clair), date de dernière connexion. Nécessaire pour vous identifier."
+        },
+        "profile": {
+          "b": "Votre profil",
+          "c": " — âge, statut, pays d'origine, niveau de langue, langues parlées. Sert à personnaliser vos démarches : sans nationalité, par exemple, nous ne pouvons pas déterminer si un visa vous est nécessaire."
+        },
+        "projects": {
+          "b": "Vos projets d'expatriation",
+          "c": " — destination, date de départ envisagée, objectif, budget, situation familiale, avancement de vos démarches."
+        },
+        "contributions": {
+          "b": "Vos contributions",
+          "c": " — messages du forum, messages privés, retours d'expérience, avis sur les experts, documents que vous déposez."
+        }
+      },
+      "dont": {
+        "title": "Ce que nous ne faisons pas",
+        "p1": "Nous ne vendons pas vos données, nous ne les cédons pas à des annonceurs, et nous n'utilisons aucun traceur publicitaire ni outil de mesure d'audience tiers."
+      },
+      "cookies": {
+        "title": "Cookies",
+        "a": "Seuls des cookies strictement nécessaires sont déposés : ceux qui maintiennent votre session (",
+        "and": " et ",
+        "b": "). Ils sont ",
+        "c": " — inaccessibles au JavaScript de la page — et disparaissent à la déconnexion. Sans eux, impossible de rester connecté : ils ne requièrent pas de consentement préalable."
+      },
+      "others": {
+        "title": "Qui d'autre voit vos données",
+        "hosts": {
+          "a": "Nos hébergeurs, ",
+          "and": " et ",
+          "c": ", techniquement nécessaires. Les emails transactionnels (confirmation d'adresse, réinitialisation de mot de passe) transitent par notre prestataire d'envoi."
+        },
+        "services": {
+          "a": "Les services que nous interrogeons pour enrichir le contenu — Numbeo, Adzuna, Open-Meteo, Wikipédia — sont appelés ",
+          "b": "depuis nos serveurs",
+          "c": " et ne reçoivent aucune donnée vous concernant."
+        }
+      },
+      "members": {
+        "title": "Ce que les autres membres voient",
+        "p1": "Votre prénom, votre nom et votre pays d'origine apparaissent sur vos messages publics du forum. Si vous activez le partage d'expérience, votre prénom peut apparaître auprès des personnes préparant la même démarche. Vos projets, vos documents et vos messages privés restent privés."
+      },
+      "retention": {
+        "title": "Combien de temps",
+        "p1": "Vos données sont conservées tant que votre compte existe. La suppression de votre compte, depuis votre profil, efface vos données personnelles. Les messages publics du forum peuvent être conservés de façon anonymisée pour ne pas trouer les discussions."
+      },
+      "rights": {
+        "title": "Vos droits",
+        "a": "Vous disposez d'un droit d'accès, de rectification, d'effacement, de portabilité et d'opposition sur vos données (RGPD, articles 15 à 22). Le profil permet déjà de consulter, corriger et supprimer vos informations. Pour toute autre demande, écrivez à ",
+        "cnil": {
+          "a": "Vous pouvez également introduire une réclamation auprès de la CNIL (",
+          "b": ")."
+        },
+        "controller": "Responsable du traitement :"
+      }
+    },
+    "terms": {
+      "title": "Conditions générales d'utilisation",
+      "intro": "Ce que SkyWalk s'engage à faire, et ce que nous attendons de vous.",
+      "s1": {
+        "title": "1. Objet",
+        "p1": "SkyWalk est un service d'accompagnement à l'expatriation : checklists de démarches, informations sur les destinations, et mise en relation avec une communauté et des experts vérifiés. L'utilisation du service vaut acceptation des présentes conditions."
+      },
+      "s2": {
+        "title": "2. Votre compte",
+        "p1": "La création d'un compte requiert une adresse email valide, que vous confirmez par un lien reçu par email. Vous êtes responsable de la confidentialité de votre mot de passe et des actions effectuées depuis votre compte. Les informations que vous renseignez doivent être exactes : elles déterminent les démarches qui vous sont présentées."
+      },
+      "s3": {
+        "title": "3. Ce que vous publiez",
+        "intro": "Sur le forum, dans vos retours d'expérience et vos messages, vous vous engagez à ne pas publier :",
+        "li1": "de propos injurieux, haineux, discriminatoires ou harcelants ;",
+        "li2": "de données personnelles concernant un tiers sans son accord ;",
+        "li3": "de contenu publicitaire ou frauduleux ;",
+        "li4": "de conseil juridique présenté comme certifié si vous n'êtes pas expert vérifié.",
+        "p2": "Vous restez propriétaire de vos contributions et nous accordez le droit de les afficher sur le service. Un contenu signalé peut être masqué le temps de sa vérification, et un compte suspendu en cas de manquement répété."
+      },
+      "s4": {
+        "title": "4. Les experts vérifiés",
+        "p1": "Le badge « expert vérifié » atteste qu'une pièce justificative (diplôme, inscription à un ordre, certification) a été contrôlée par notre équipe. Il ne constitue ni une garantie de résultat, ni un mandat : les échanges avec un expert relèvent de votre relation avec lui. Le badge peut être retiré à tout moment."
+      },
+      "s5": {
+        "title": "5. Fiabilité des informations",
+        "a": "Les démarches affichées sont adossées à des sources officielles et vérifiées avant publication, avec leur date de collecte. Elles restent ",
+        "b": "indicatives",
+        "c": " : une réglementation évolue, et votre situation peut relever d'un cas particulier. Seules les administrations compétentes font foi. Vérifiez toujours auprès de la source officielle avant une démarche engageante."
+      },
+      "s6": {
+        "title": "6. Disponibilité",
+        "p1": "Nous nous efforçons de maintenir le service accessible, sans garantie d'absence d'interruption. Certaines fonctionnalités dépendent de services tiers dont la disponibilité ne dépend pas de nous."
+      },
+      "s7": {
+        "title": "7. Résiliation",
+        "p1": "Vous pouvez supprimer votre compte à tout moment depuis votre profil, sans justification. Nous pouvons suspendre un compte en cas de manquement grave aux présentes conditions."
+      },
+      "s8": {
+        "title": "8. Évolution des conditions",
+        "a": "Ces conditions peuvent être modifiées. En cas de changement substantiel, les membres sont informés. Pour toute question : "
+      }
+    }
   }
 }

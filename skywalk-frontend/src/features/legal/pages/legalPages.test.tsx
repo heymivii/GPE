@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import AboutPage from './AboutPage';
@@ -7,6 +7,17 @@ import PrivacyPage from './PrivacyPage';
 import TermsPage from './TermsPage';
 import Footer from '../../../components/Footer';
 import { router } from '../../../routes';
+
+// Les pages passent par i18n ; le mock rend le texte français de repli, ce que
+// les assertions ci-dessous affirment littéralement.
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string, opts?: { defaultValue?: string }) => opts?.defaultValue ?? key,
+    i18n: { language: 'fr' },
+  }),
+  Trans: ({ children }: { children?: React.ReactNode }) => children,
+  initReactI18next: { type: '3rdParty', init: () => {} },
+}));
 
 const wrap = (ui: React.ReactElement) => render(<MemoryRouter>{ui}</MemoryRouter>);
 
