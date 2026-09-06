@@ -134,6 +134,20 @@ describe('DestinationsService', () => {
       adzunaService.searchJobs.mockResolvedValue({ total: 0 });
     });
 
+    it('ne renvoie QUE les villes validées (ni archivées, ni en attente de revue)', async () => {
+      // Le pays était filtré sur status='active' mais pas ses villes : la page
+      // publique montrait les 5 villes archivées du Japon et « Bretagne »,
+      // encore en attente de vérification côté admin.
+      countryRepo.findOne.mockResolvedValue(baseCountry);
+
+      await service.findOneCountryBySlug('fr');
+
+      expect(cityRepo.find).toHaveBeenCalledWith({
+        where: { countryId: 1, status: 'active' },
+        order: { name: 'ASC' },
+      });
+    });
+
     it('resolves a 2-letter slug via ISO code lookup', async () => {
       countryRepo.findOne.mockResolvedValue(baseCountry);
       const result = await service.findOneCountryBySlug('fr');
