@@ -311,8 +311,13 @@ export class DestinationsService {
       throw new NotFoundException(`Country with slug "${slug}" not found`);
     }
 
+    // Seules les villes VALIDÉES sont publiques. Le pays était déjà filtré sur
+    // `status = 'active'` mais pas ses villes : la page destination affichait
+    // aussi bien les villes archivées que celles encore en attente de
+    // vérification (les 5 villes du Japon étaient archivées, et « Bretagne »,
+    // en attente de revue, était visible de tous).
     const cities = await this.cityRepository.find({
-      where: { countryId: country.idCountry },
+      where: { countryId: country.idCountry, status: 'active' },
       order: { name: 'ASC' },
     });
 
