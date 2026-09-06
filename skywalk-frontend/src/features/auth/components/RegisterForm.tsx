@@ -111,7 +111,10 @@ export default function RegisterForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {error && (
-        <div className="p-3 text-red-700 bg-red-100 rounded-lg">
+        // role="alert" : le formulaire de connexion passe par un toast (annoncé
+        // via aria-live) ; ce bandeau inline, lui, restait muet pour un lecteur
+        // d'écran — l'inscription échouait sans qu'on sache pourquoi.
+        <div role="alert" className="p-3 text-red-700 bg-red-100 rounded-lg">
           {error}
         </div>
       )}

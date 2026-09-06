@@ -136,7 +136,7 @@ export default function ResetPasswordForm() {
       </div>
 
       {error && (
-        <div className="p-3 text-red-700 bg-red-100 rounded-lg text-sm">
+        <div role="alert" className="p-3 text-red-700 bg-red-100 rounded-lg text-sm">
           {error}
         </div>
       )}

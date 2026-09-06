@@ -30,7 +30,7 @@ export default function PasswordForgotForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {error && (
-        <div className="p-3 text-red-700 bg-red-100 rounded-lg">
+        <div role="alert" className="p-3 text-red-700 bg-red-100 rounded-lg">
           {error}
         </div>
       )}
