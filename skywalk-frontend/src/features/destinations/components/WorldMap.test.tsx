@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import WorldMap, { territoryAt } from './WorldMap';
+import WorldMap, { territoryAt, detachTerritories } from './WorldMap';
 import { SUPPORTED_COUNTRIES, type SupportedCountry } from '../../../data/supportedCountries';
 
 const navigate = vi.fn();
@@ -108,4 +108,34 @@ describe('liste des pays servie par l’API', () => {
     expect(screen.queryByTestId('map-country-JP')).not.toBeInTheDocument();
     expect(screen.getByTestId('map-country-FR')).toBeInTheDocument();
   });
+
+describe('detachTerritories', () => {
+  // Retour de recette : « enlève la Guyane pour l'instant ». Elle est un
+  // polygone de la feature France dans le fond de carte.
+  const carre = (lon: number, lat: number) => [[[lon, lat], [lon + 1, lat], [lon + 1, lat + 1], [lon, lat + 1], [lon, lat]]];
+  const france = {
+    type: 'Feature' as const,
+    id: 250,
+    properties: { name: 'France' },
+    geometry: { type: 'MultiPolygon' as const, coordinates: [carre(2, 48), carre(-53, 4)] },
+  };
+
+  it('sort la Guyane du tracé de la France, en feature grise à part', () => {
+    const out = detachTerritories([france]);
+    expect(out).toHaveLength(2);
+    expect(out[0].geometry.type).toBe('Polygon'); // la métropole seule
+    expect(out[1]).toMatchObject({ id: '250-Guyane', properties: { name: 'Guyane', detached: true } });
+  });
+
+  it('laisse intacts les pays sans territoire listé', () => {
+    const japon = { ...france, id: 392, properties: { name: 'Japan' } };
+    expect(detachTerritories([japon])).toEqual([japon]);
+  });
+
+  it('dessine la Guyane dans la couche grise, plus dans la France', () => {
+    renderMap();
+    expect(screen.getByTestId('map-territory-Guyane')).toBeInTheDocument();
+    expect(screen.getByTestId('map-country-FR')).toBeInTheDocument();
+  });
+});
 });

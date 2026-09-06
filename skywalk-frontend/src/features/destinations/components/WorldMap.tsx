@@ -61,6 +61,50 @@ export function territoryAt(
   )?.name;
 }
 
+/**
+ * Détache des tracés nationaux les territoires listés dans TERRITORIES.
+ *
+ * Retour de recette : « enlève la Guyane pour l'instant ». Dans le fond de
+ * carte, la Guyane est un polygone de la feature « France » : coloriée avec
+ * la métropole, elle se lisait comme une destination couverte. On sort ces
+ * polygones en features à part entière ; sans code ISO numérique, elles
+ * rejoignent la couche grise « Bientôt », comme n'importe quel territoire
+ * non couvert. Le pays garde le reste de ses polygones.
+ */
+export function detachTerritories(features: CountryFeature[]): CountryFeature[] {
+  const out: CountryFeature[] = [];
+  for (const f of features) {
+    const numeric = String(f.id ?? '').padStart(3, '0');
+    const alpha2 = ISO_NUMERIC_TO_ALPHA2[numeric];
+    const zones = alpha2 ? TERRITORIES[alpha2] : undefined;
+    if (!zones || f.geometry.type !== 'MultiPolygon') {
+      out.push(f);
+      continue;
+    }
+    const kept: number[][][][] = [];
+    const detached = new Map<string, number[][][][]>();
+    for (const polygon of f.geometry.coordinates as number[][][][]) {
+      const [lon, lat] = polygon[0][0];
+      const name = territoryAt(alpha2, lon, lat);
+      if (name) (detached.get(name) ?? detached.set(name, []).get(name)!).push(polygon);
+      else kept.push(polygon);
+    }
+    out.push({
+      ...f,
+      geometry: kept.length === 1 ? { type: 'Polygon', coordinates: kept[0] } : { type: 'MultiPolygon', coordinates: kept },
+    });
+    for (const [name, polygons] of detached) {
+      out.push({
+        type: 'Feature',
+        id: `${f.id}-${name}`,
+        properties: { name, detached: true },
+        geometry: polygons.length === 1 ? { type: 'Polygon', coordinates: polygons[0] } : { type: 'MultiPolygon', coordinates: polygons },
+      });
+    }
+  }
+  return out;
+}
+
 interface HoverState {
   x: number;
   y: number;
@@ -70,7 +114,7 @@ interface HoverState {
   territory?: string;
 }
 
-type CountryFeature = Feature<Geometry, { name: string }> & { id?: string | number };
+type CountryFeature = Feature<Geometry, { name: string; detached?: boolean }> & { id?: string | number };
 
 /**
  * Carte du monde interactive : les destinations couvertes par SkyWalk ressortent
@@ -112,8 +156,8 @@ export default function WorldMap() {
     const topology = worldTopo as unknown as Topology<{ countries: GeometryCollection<{ name: string }> }>;
     const collection = feature(topology, topology.objects.countries);
     // Antarctique : beaucoup de pixels, zéro expatriation — on l'écarte pour cadrer le reste.
-    const countries = (collection.features as CountryFeature[]).filter(
-      (f) => String(f.id) !== '010',
+    const countries = detachTerritories(
+      (collection.features as CountryFeature[]).filter((f) => String(f.id) !== '010'),
     );
 
     // fitExtent avec une marge NÉGATIVE = zoom : la carte déborde du cadre, ce
@@ -181,7 +225,9 @@ export default function WorldMap() {
     setHover({
       x: e.clientX - rect.left,
       y: e.clientY - rect.top,
-      name: countryName(String(f.id).padStart(3, '0'), f.properties?.name ?? ''),
+      name: f.properties?.detached
+        ? f.properties.name
+        : countryName(String(f.id).padStart(3, '0'), f.properties?.name ?? ''),
       supported,
       territory,
     });
@@ -235,6 +281,7 @@ export default function WorldMap() {
               strokeWidth="0.5"
               className="transition-colors duration-150"
               onMouseMove={(e) => handleMove(e, f)}
+              data-testid={f.properties?.detached ? `map-territory-${f.properties.name}` : undefined}
             />
           ))}
 
