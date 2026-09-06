@@ -15,6 +15,8 @@ export interface User {
   countryOriginId?: number;
   /** Adresse email confirmée via le lien reçu à l'inscription. */
   emailVerified?: boolean;
+  /** Le serveur peut-il réellement envoyer un email (SMTP configuré) ? */
+  emailDeliveryEnabled?: boolean;
   createdAt: string;
   updatedAt: string;
 }

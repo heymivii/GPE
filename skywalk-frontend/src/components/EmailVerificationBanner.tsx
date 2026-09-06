@@ -16,6 +16,11 @@ export default function EmailVerificationBanner() {
 
   if (!isAuthenticated || !user || user.emailVerified !== false) return null;
 
+  // Sans SMTP configuré côté serveur, aucun lien n'a pu partir : on n'affiche
+  // ni le bouton « renvoyer » (il échouerait à chaque clic) ni la phrase qui
+  // prétend qu'un email a été envoyé.
+  const canResend = user.emailDeliveryEnabled !== false;
+
   const handleResend = async () => {
     setSending(true);
     try {
@@ -39,11 +44,21 @@ export default function EmailVerificationBanner() {
             <MailWarning className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5 sm:mt-0" />
             <p className="text-xs sm:text-sm text-amber-900 leading-snug">
               <span className="font-semibold">Confirmez votre adresse email.</span>{' '}
-              Un lien a été envoyé à{' '}
-              <span className="font-medium break-all">{user.email}</span>.
+              {canResend ? (
+                <>
+                  Un lien a été envoyé à{' '}
+                  <span className="font-medium break-all">{user.email}</span>.
+                </>
+              ) : (
+                <>
+                  <span className="font-medium break-all">{user.email}</span> n'est pas
+                  encore confirmée.
+                </>
+              )}
             </p>
           </div>
 
+          {canResend && (
           <button
             onClick={handleResend}
             disabled={sending}
@@ -52,6 +67,7 @@ export default function EmailVerificationBanner() {
             {sending && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
             {sending ? 'Envoi…' : "Renvoyer l'email"}
           </button>
+          )}
         </div>
       </div>
     </div>
