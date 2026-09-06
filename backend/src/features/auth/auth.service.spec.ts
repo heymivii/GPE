@@ -26,6 +26,7 @@ const mockJwtService = () => ({
 
 const mockMailService = () => ({
   sendPasswordResetEmail: jest.fn(),
+  sendEmailVerification: jest.fn().mockResolvedValue(true),
 });
 
 describe('AuthService', () => {
@@ -82,7 +83,7 @@ describe('AuthService', () => {
 
       const result = await service.register(dto as any);
 
-      expect(result.message).toBe('Inscription réussie');
+      expect(result.message).toContain('Inscription réussie');
       expect(result.access_token).toBe('mock-jwt-token');
       expect(result.user).toBeDefined();
       // password should be stripped by sanitizeUser
@@ -272,6 +273,126 @@ describe('AuthService', () => {
       await expect(
         service.resetPassword('reset-token', 'NewPass1'),
       ).rejects.toThrow(UnauthorizedException);
+    });
+  });
+
+  describe("vérification de l'adresse email", () => {
+    it('envoie le mail de confirmation à l’inscription', async () => {
+      const dto = {
+        firstName: 'Tene',
+        lastName: 'Coulibaly',
+        email: 'tene@skywalk.com',
+        password: 'Password1',
+      };
+      userRepo.findOne.mockResolvedValue(null);
+      userRepo.create.mockImplementation((u: any) => u);
+      userRepo.save.mockImplementation(async (u: any) => ({ ...u, idUser: 1 }));
+
+      await service.register(dto as any);
+
+      expect(mailService.sendEmailVerification).toHaveBeenCalledWith(
+        'tene@skywalk.com',
+        'mock-jwt-token',
+      );
+    });
+
+    it("n'annule pas l'inscription quand l'envoi du mail échoue", async () => {
+      // La prod n'a pas de credentials SMTP : un envoi raté ne doit pas
+      // transformer une inscription valide en erreur 500.
+      mailService.sendEmailVerification.mockResolvedValue(false);
+      userRepo.findOne.mockResolvedValue(null);
+      userRepo.create.mockImplementation((u: any) => u);
+      userRepo.save.mockImplementation(async (u: any) => ({ ...u, idUser: 1 }));
+
+      const result = await service.register({
+        firstName: 'Tene',
+        lastName: 'Coulibaly',
+        email: 'tene@skywalk.com',
+        password: 'Password1',
+      } as any);
+
+      expect(result.access_token).toBe('mock-jwt-token');
+    });
+
+    it('marque l’adresse comme vérifiée avec un token valide', async () => {
+      const user = { idUser: 1, email: 'a@b.com', emailVerifiedAt: null };
+      jwtService.verify.mockReturnValue({ sub: 1, type: 'email-verification' });
+      userRepo.findOne.mockResolvedValue(user);
+      userRepo.save.mockImplementation(async (u: any) => u);
+
+      const result = await service.verifyEmail('token');
+
+      expect(user.emailVerifiedAt).toBeInstanceOf(Date);
+      expect(result.user.emailVerified).toBe(true);
+    });
+
+    it('reste idempotent : un lien déjà utilisé ne renvoie pas d’erreur', async () => {
+      const alreadyVerified = new Date('2026-01-01');
+      const user = { idUser: 1, email: 'a@b.com', emailVerifiedAt: alreadyVerified };
+      jwtService.verify.mockReturnValue({ sub: 1, type: 'email-verification' });
+      userRepo.findOne.mockResolvedValue(user);
+
+      const result = await service.verifyEmail('token');
+
+      expect(result.message).toBe('Adresse email confirmée');
+      expect(user.emailVerifiedAt).toBe(alreadyVerified); // pas réécrite
+      expect(userRepo.save).not.toHaveBeenCalled();
+    });
+
+    it('refuse un token signé pour un autre usage (ex. reset de mot de passe)', async () => {
+      jwtService.verify.mockReturnValue({ sub: 1, type: 'reset' });
+
+      await expect(service.verifyEmail('reset-token')).rejects.toThrow(
+        UnauthorizedException,
+      );
+    });
+
+    it('refuse un token expiré ou falsifié', async () => {
+      jwtService.verify.mockImplementation(() => {
+        throw new Error('jwt expired');
+      });
+
+      await expect(service.verifyEmail('expired')).rejects.toThrow(
+        UnauthorizedException,
+      );
+    });
+
+    it('renvoie un nouveau lien à un compte non vérifié', async () => {
+      userRepo.findOne.mockResolvedValue({
+        idUser: 1,
+        email: 'a@b.com',
+        emailVerifiedAt: null,
+      });
+
+      const result = await service.resendVerificationEmail(1);
+
+      expect(mailService.sendEmailVerification).toHaveBeenCalled();
+      expect(result.message).toBe('Email de confirmation envoyé');
+    });
+
+    it('ne renvoie rien si l’adresse est déjà confirmée', async () => {
+      userRepo.findOne.mockResolvedValue({
+        idUser: 1,
+        email: 'a@b.com',
+        emailVerifiedAt: new Date(),
+      });
+
+      const result = await service.resendVerificationEmail(1);
+
+      expect(mailService.sendEmailVerification).not.toHaveBeenCalled();
+      expect(result.message).toContain('déjà confirmée');
+    });
+
+    it('expose emailVerified=false tant que l’adresse n’est pas confirmée', async () => {
+      userRepo.findOne.mockResolvedValue({
+        idUser: 1,
+        email: 'a@b.com',
+        emailVerifiedAt: null,
+      });
+
+      const profile: any = await service.getProfile(1);
+
+      expect(profile.emailVerified).toBe(false);
     });
   });
 });

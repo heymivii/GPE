@@ -73,6 +73,40 @@ export class MailService {
     }
   }
 
+  /**
+   * Confirmation d'adresse email. Comme les autres envois, ne lève JAMAIS :
+   * une inscription ne doit pas échouer parce que le SMTP est injoignable
+   * (la prod n'a pas encore de credentials SMTP). Retourne false à la place.
+   */
+  async sendEmailVerification(to: string, verificationToken: string) {
+    await this.transporterReady;
+
+    const verifyLink = `${process.env.FRONTEND_URL}/auth/verify-email?token=${verificationToken}`;
+
+    const mailOptions = {
+      from: `"SkyWalk" <${process.env.SMTP_FROM || 'noreply@skywalk.com'}>`,
+      to,
+      subject: 'Confirmez votre adresse email - SkyWalk',
+      html: this.getEmailVerificationTemplate(verifyLink),
+    };
+
+    try {
+      await this.transporter.sendMail(mailOptions);
+      this.logger.log(`✅ Verification email sent to ${to}`);
+
+      if (process.env.NODE_ENV !== 'production') {
+        this.logger.log(
+          `📧 Visible dans smtp4dev : ${process.env.SMTP_DEV_UI || 'http://localhost:8025'}`,
+        );
+      }
+
+      return true;
+    } catch (error) {
+      this.logger.error(`❌ Failed to send verification email to ${to}`, error);
+      return false;
+    }
+  }
+
   async sendWelcomeEmail(to: string, fullName: string) {
     await this.transporterReady;
 
@@ -204,6 +238,35 @@ export class MailService {
           <div class="footer">
             <p>Cet email a été envoyé par SkyWalk</p>
             <p>Votre compagnon pour l'expatriation 🌍</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+  }
+
+  private getEmailVerificationTemplate(verifyLink: string): string {
+    return `
+      <!DOCTYPE html>
+      <html lang="fr">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Confirmez votre adresse email</title>
+      </head>
+      <body style="margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;background-color:#f5f5f5;">
+        <div style="max-width:600px;margin:40px auto;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 6px rgba(0,0,0,0.1);">
+          <div style="background:linear-gradient(135deg,#5EA3C0 0%,#4A8BA0 100%);padding:40px 20px;text-align:center;color:#ffffff;">
+            <h1 style="margin:0;font-size:28px;font-weight:600;">Bienvenue sur SkyWalk 🌍</h1>
+          </div>
+          <div style="padding:40px 30px;">
+            <p style="color:#333;line-height:1.6;margin:0 0 20px;">Plus qu'une étape : confirmez votre adresse email pour sécuriser votre compte et recevoir les rappels de vos démarches.</p>
+            <p style="text-align:center;margin:32px 0;">
+              <a href="${verifyLink}" style="display:inline-block;padding:14px 32px;background:#5EA3C0;color:#ffffff;text-decoration:none;border-radius:8px;font-weight:600;">Confirmer mon adresse</a>
+            </p>
+            <p style="color:#666;font-size:13px;line-height:1.6;margin:0 0 8px;">Ce lien est valable 24 heures. Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :</p>
+            <p style="color:#5EA3C0;font-size:12px;word-break:break-all;margin:0;">${verifyLink}</p>
+            <p style="color:#999;font-size:12px;line-height:1.6;margin:24px 0 0;">Vous n'êtes pas à l'origine de cette inscription ? Ignorez simplement cet email.</p>
           </div>
         </div>
       </body>

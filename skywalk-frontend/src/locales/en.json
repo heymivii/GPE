@@ -1742,7 +1742,8 @@
       "submitting": "Signing up...",
       "submit": "Join the SkyWalk adventure",
       "hasAccount": "Already have an account?",
-      "login": "Log in"
+      "login": "Log in",
+      "nameInvalid": "First and last name may only contain letters, spaces, apostrophes and hyphens"
     },
     "forgotPassword": {
       "emailSent": "Email sent! Check your inbox.",
@@ -2280,7 +2281,8 @@
     "deleteAccount": "Delete my account",
     "deleteConfirm": "Are you sure you want to delete your account?",
     "deleting": "Deleting...",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "nameInvalid": "First and last name may only contain letters, spaces, apostrophes and hyphens"
   },
   "projectDetail": {
     "projects": "Projects",

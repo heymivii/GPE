@@ -4,6 +4,7 @@ import NavBar  from '../components/NavBar';
 import Footer from '../components/Footer';
 import ScrollToTop from '../components/ScrollToTop';
 import GuestBanner from '../components/GuestBanner';
+import EmailVerificationBanner from '../components/EmailVerificationBanner';
 import { useAuth } from '../hooks/useAuth';
 import { DestinationProvider } from '../contexts/DestinationContext';
 
@@ -17,6 +18,7 @@ export default function MainLayout() {
         <Toaster position="top-right" />
         <NavBar />
         {!isAuthenticated && <GuestBanner />}
+        <EmailVerificationBanner />
         <main className="flex-1">
           <Outlet />
         </main>

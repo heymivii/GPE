@@ -17,6 +17,7 @@ import {
   Edit2,
   MapPin,
 } from 'lucide-react';
+import { isValidPersonName, normalizePersonName } from '../../../lib/personName';
 
 interface InputFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
@@ -76,8 +77,23 @@ export default function ProfilePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Même règle qu'à l'inscription : le profil ne doit pas être une porte
+    // dérobée pour remettre des caractères spéciaux dans le nom affiché.
+    if (
+      !isValidPersonName(formData.firstName || '') ||
+      !isValidPersonName(formData.lastName || '')
+    ) {
+      toast.error(t('profilePage.nameInvalid'));
+      return;
+    }
+
     try {
-      await updateProfile.mutateAsync(formData);
+      await updateProfile.mutateAsync({
+        ...formData,
+        firstName: normalizePersonName(formData.firstName || ''),
+        lastName: normalizePersonName(formData.lastName || ''),
+      });
       toast.success(t('profilePage.updateSuccess'));
       setIsEditing(false);
     } catch (error) {

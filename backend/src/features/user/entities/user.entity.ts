@@ -26,6 +26,12 @@ export class User {
   @Column({ type: 'varchar', length: 255, unique: true })
   email: string;
 
+  // Date de confirmation de l'adresse email (null = pas encore vérifiée).
+  // Les comptes créés AVANT l'ajout de la vérification sont marqués vérifiés
+  // par la migration : on n'a pas de moyen de leur redemander après coup.
+  @Column({ name: 'email_verified_at', type: 'timestamp', nullable: true })
+  emailVerifiedAt?: Date | null;
+
   @Exclude()
   @Column({ name: 'password', type: 'varchar', length: 255 })
   password: string;

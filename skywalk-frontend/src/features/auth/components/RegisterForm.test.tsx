@@ -97,6 +97,41 @@ describe('RegisterForm', () => {
     expect(mockRegister).not.toHaveBeenCalled();
   });
 
+  it('rejects names containing special characters (recette feedback)', async () => {
+    renderForm();
+    const user = userEvent.setup();
+    await user.type(screen.getByPlaceholderText('auth.register.firstName'), '<script>');
+    await user.type(screen.getByPlaceholderText('auth.register.lastName'), 'Dupont');
+    await user.type(screen.getByPlaceholderText('auth.register.email'), 'jean@x.com');
+    await user.type(screen.getByPlaceholderText('auth.register.password'), 'Secret123!');
+    await user.type(screen.getByPlaceholderText('auth.register.confirmPassword'), 'Secret123!');
+    await user.click(screen.getByRole('checkbox'));
+    await user.click(screen.getByRole('button', { name: 'auth.register.submit' }));
+
+    expect(await screen.findByText('auth.register.nameInvalid')).toBeInTheDocument();
+    expect(mockRegister).not.toHaveBeenCalled();
+  });
+
+  it('rejects digits in a name but accepts accents and hyphens', async () => {
+    renderForm();
+    const user = userEvent.setup();
+    const firstName = screen.getByPlaceholderText('auth.register.firstName');
+    await user.type(firstName, 'Jean123');
+    await user.type(screen.getByPlaceholderText('auth.register.lastName'), 'Dupont');
+    await user.type(screen.getByPlaceholderText('auth.register.email'), 'jean@x.com');
+    await user.type(screen.getByPlaceholderText('auth.register.password'), 'Secret123!');
+    await user.type(screen.getByPlaceholderText('auth.register.confirmPassword'), 'Secret123!');
+    await user.click(screen.getByRole('checkbox'));
+    await user.click(screen.getByRole('button', { name: 'auth.register.submit' }));
+    expect(await screen.findByText('auth.register.nameInvalid')).toBeInTheDocument();
+
+    // « José-Marie » doit passer : la règle vise les caractères spéciaux, pas les accents.
+    await user.clear(firstName);
+    await user.type(firstName, 'José-Marie');
+    await user.click(screen.getByRole('button', { name: 'auth.register.submit' }));
+    await waitFor(() => expect(mockRegister).toHaveBeenCalled());
+  });
+
   it('includes the selected origin country in the registration payload', async () => {
     renderForm();
     const user = userEvent.setup();

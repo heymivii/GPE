@@ -7,18 +7,23 @@ import {
   IsEnum,
   Min,
   Max,
+  MaxLength,
 } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsPersonName } from '../../../common/validation/person-name';
 
 export class CreateUserDto {
-  @IsString()
-  @MinLength(2)
+  @IsPersonName('Le prénom')
   firstName: string;
 
-  @IsString()
-  @MinLength(2)
+  @IsPersonName('Le nom')
   lastName: string;
 
+  @Transform(({ value }) =>
+    typeof value === 'string' ? value.trim().toLowerCase() : value,
+  )
   @IsEmail()
+  @MaxLength(255)
   email: string;
 
   @IsString()
