@@ -13,11 +13,22 @@ const HEIGHT = 460;
 
 // Ville repère par pays (coordonnées [lon, lat]) : le centroïde géométrique est
 // piégeux (la France « pèse » jusqu'en Guyane) — un point métropole est plus juste.
-const MARKER_COORDS: Record<string, [number, number]> = {
-  FR: [2.35, 48.86], // Paris
-  US: [-74.0, 40.71], // New York
-  JP: [139.69, 35.68], // Tokyo
-  CH: [6.14, 46.2], // Genève
+interface MarkerConfig {
+  /** [longitude, latitude] d'une ville repère. */
+  coords: [number, number];
+  /** Décalage du libellé, pour que France et Suisse ne se chevauchent pas. */
+  label: { dx: number; dy: number; anchor: 'start' | 'middle' | 'end' };
+}
+
+const MARKER_CONFIG: Record<string, MarkerConfig> = {
+  // Paris — libellé au-dessus à gauche, la Suisse occupant le côté droit.
+  FR: { coords: [2.35, 48.86], label: { dx: -10, dy: -14, anchor: 'end' } },
+  US: { coords: [-74.0, 40.71], label: { dx: 10, dy: -12, anchor: 'start' } },
+  JP: { coords: [139.69, 35.68], label: { dx: 10, dy: 4, anchor: 'start' } },
+  // Berne plutôt que Genève : à cette échelle (topojson 110m) Genève, enclavée
+  // à l'extrême ouest, tombe hors du polygone suisse — l'épingle se plantait en
+  // France. Libellé décalé vers le bas droite pour dégager la France.
+  CH: { coords: [7.45, 46.95], label: { dx: 9, dy: 12, anchor: 'start' } },
 };
 
 interface HoverState {
@@ -54,9 +65,11 @@ export default function WorldMap() {
     const path = geoPath(projection);
 
     const markers = SUPPORTED_COUNTRIES.flatMap((c) => {
-      const coords = MARKER_COORDS[c.code];
-      const projected = coords ? projection(coords) : null;
-      return projected ? [{ country: c, x: projected[0], y: projected[1] }] : [];
+      const config = MARKER_CONFIG[c.code];
+      const projected = config ? projection(config.coords) : null;
+      return projected
+        ? [{ country: c, x: projected[0], y: projected[1], label: config.label }]
+        : [];
     });
 
     return {
@@ -158,15 +171,48 @@ export default function WorldMap() {
             );
           })}
 
-        {/* Marqueurs pulsants sur les destinations couvertes — décoratifs :
-            pointer-events none pour que le clic atteigne le pays en dessous. */}
-        {markers.map(({ country, x, y }) => (
+        {/* Marqueurs des destinations couvertes — décoratifs : pointer-events
+            none pour que le clic atteigne le pays en dessous.
+            Un point clair cerclé de teal se perdait sur le teal du pays : on
+            utilise une épingle sombre à contour blanc, lisible aussi bien sur
+            les pays colorés que sur le gris, et on nomme chaque destination
+            pour ne plus dépendre du survol. */}
+        {markers.map(({ country, x, y, label }) => (
           <g key={country.code} pointerEvents="none">
-            <circle cx={x} cy={y} r="9" fill="#5EA3C0" opacity="0.25">
-              <animate attributeName="r" values="5;11;5" dur="2.4s" repeatCount="indefinite" />
-              <animate attributeName="opacity" values="0.35;0.08;0.35" dur="2.4s" repeatCount="indefinite" />
+            <circle cx={x} cy={y} r="7" fill="#fff" opacity="0.5">
+              <animate attributeName="r" values="4;12;4" dur="2.6s" repeatCount="indefinite" />
+              <animate
+                attributeName="opacity"
+                values="0.55;0;0.55"
+                dur="2.6s"
+                repeatCount="indefinite"
+              />
             </circle>
-            <circle cx={x} cy={y} r="3.2" fill="#fff" stroke="#4891b0" strokeWidth="1.8" />
+            {/* Épingle : pointe posée exactement sur la ville repère. */}
+            <path
+              d={`M ${x} ${y} c -3.6 -4.6 -5.4 -7 -5.4 -9.4 a 5.4 5.4 0 1 1 10.8 0 c 0 2.4 -1.8 4.8 -5.4 9.4 z`}
+              fill="#14425A"
+              stroke="#fff"
+              strokeWidth="1.4"
+              strokeLinejoin="round"
+            />
+            <circle cx={x} cy={y - 9.4} r="2" fill="#fff" />
+            {/* Nom de la destination, cerné de blanc pour rester lisible
+                quel que soit ce qu'il y a dessous (paint-order). */}
+            <text
+              x={x + label.dx}
+              y={y + label.dy}
+              textAnchor={label.anchor}
+              fontSize="9.5"
+              fontWeight="700"
+              fill="#14425A"
+              stroke="#fff"
+              strokeWidth="2.6"
+              paintOrder="stroke"
+              strokeLinejoin="round"
+            >
+              {country.name}
+            </text>
           </g>
         ))}
       </svg>

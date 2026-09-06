@@ -41,4 +41,20 @@ describe('WorldMap', () => {
     fireEvent.click(screen.getByTestId('map-country-CH'));
     expect(navigate).toHaveBeenCalledWith('/destinations/suisse');
   });
+
+  it('nomme chaque destination sur la carte, sans dépendre du survol', () => {
+    renderMap();
+
+    for (const nom of ['France', 'États-Unis', 'Japon', 'Suisse']) {
+      expect(screen.getByText(nom)).toBeInTheDocument();
+    }
+  });
+
+  it('dessine une épingle contrastée par destination', () => {
+    // Un point clair cerclé de teal disparaissait sur le teal du pays :
+    // l'épingle est sombre avec un contour blanc.
+    const { container } = renderMap();
+
+    expect(container.querySelectorAll('path[fill="#14425A"]')).toHaveLength(4);
+  });
 });
