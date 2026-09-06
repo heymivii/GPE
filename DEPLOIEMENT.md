@@ -91,7 +91,7 @@ heroku config:get DATABASE_URL -a <TON_APP>
 |-----|--------|-----------|
 | `ADZUNA_APP_ID` / `ADZUNA_APP_KEY` | offres d'emploi | pas d'emplois live |
 | `RAPIDAPI_KEY` / `RAPIDAPI_HOST` | coût de la vie | valeurs de repli |
-| `SMTP_HOST/PORT/USER/PASS/SECURE/FROM` | e-mails (reset mdp, notifs) | pas d'e-mail envoyé |
+| `SMTP_HOST/PORT/USER/PASS/SECURE/FROM` | e-mails (**confirmation d'adresse à l'inscription**, reset mdp, notifs) | aucun e-mail envoyé — l'inscription marche toujours, mais le lien de confirmation n'arrive jamais et le reset de mot de passe est inopérant (voir §3 bis) |
 | `SEARCH_PROVIDER` | `tavily` en prod (sinon `searxng`) | recherche gov-links limitée |
 | `TAVILY_API_KEY` | recherche web (si provider=tavily) | idem |
 | `SEARXNG_BASE_URL` | recherche web self-hosted | idem |
@@ -102,6 +102,45 @@ heroku config:get DATABASE_URL -a <TON_APP>
 
 > **L'IA gov-links (Ollama, `qwen2.5:7b-instruct`) tourne en local** et n'est pas trivialement hébergeable sur Heroku.
 > En prod : soit tu pointes `LLM_BASE_URL` vers un LLM hébergé, soit tu laisses vide → le pipeline reste **anti-hallucination** (il met les liens en `pending_review` au lieu d'inventer). Rien ne casse.
+
+---
+
+## 3 bis. SMTP — obligatoire pour la confirmation d'adresse
+
+Sans SMTP, `MailService` bascule en prod sur `smtp.gmail.com` avec des identifiants
+vides : **tous les envois échouent silencieusement** (l'appelant reçoit `false`, il ne
+lève pas). Concrètement l'inscription aboutit mais le nouveau compte garde le bandeau
+« Confirmez votre adresse email » sans jamais recevoir le lien, et « mot de passe
+oublié » ne fait rien.
+
+Config testée avec **Brevo** (ex-Sendinblue, 300 e-mails/jour gratuits) :
+
+1. Compte sur [brevo.com](https://www.brevo.com) → **Senders, Domains & Dedicated IPs**
+   → ajouter et **valider** l'adresse expéditrice (clic sur le mail de confirmation).
+   Un `SMTP_FROM` non validé fait rejeter tous les envois.
+2. Menu **SMTP & API** → onglet **SMTP** → relever le *Login* et générer une *clé SMTP*.
+3. Renseigner les variables (la clé ne doit pas finir dans un fichier versionné) :
+
+```bash
+heroku config:set \
+  SMTP_HOST=smtp-relay.brevo.com \
+  SMTP_PORT=587 \
+  SMTP_SECURE=false \
+  SMTP_USER='<le Login Brevo>' \
+  SMTP_PASS='<la clé SMTP Brevo>' \
+  SMTP_FROM='<adresse expéditrice validée>' \
+  -a skywalk-backend-api
+```
+
+`FRONTEND_URL` doit aussi être correct : c'est la base des liens contenus dans les
+e-mails (`$FRONTEND_URL/auth/verify-email?token=…`).
+
+Vérification : créer un compte de test en prod, puis
+`heroku logs -a skywalk-backend-api | grep "Verification email"` — on attend
+`✅ Verification email sent to …` et non `❌ Failed to send`.
+
+En local, aucune de ces variables n'est nécessaire : les mails partent dans
+**smtp4dev** (`http://localhost:8025`), qui n'existe qu'en dev.
 
 ---
 
