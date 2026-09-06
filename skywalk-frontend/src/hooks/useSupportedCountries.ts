@@ -25,6 +25,14 @@ import {
     type SupportedCountry,
 } from '../data/supportedCountries';
 import { flagEmoji, slugify, hydrateCountries } from '../data/countryMappings';
+import { ISO_NUMERIC_TO_ALPHA2 } from '../data/isoNumericToAlpha2';
+
+// La carte du monde apparie ses tracés (topojson, identifiés par le code ISO
+// numérique) aux pays servis par l'API. Un pays activé depuis l'admin mais
+// absent de la liste de départ n'en avait pas : il ne s'allumait jamais.
+const ALPHA2_TO_NUMERIC: Record<string, string> = Object.fromEntries(
+    Object.entries(ISO_NUMERIC_TO_ALPHA2).map(([numeric, alpha2]) => [alpha2, numeric]),
+);
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
@@ -87,6 +95,7 @@ function buildSupportedCountry(
         slug,
         flag: flagEmoji(code),
         iso3,
+        isoNumeric: ALPHA2_TO_NUMERIC[code],
         i18nKey: `countries.${slug}`,
         apiCity,
         apiCountryName: name,

@@ -6,7 +6,8 @@ import { feature } from 'topojson-client';
 import type { Topology, GeometryCollection } from 'topojson-specification';
 import type { Feature, Geometry } from 'geojson';
 import worldTopo from 'world-atlas/countries-110m.json';
-import { SUPPORTED_COUNTRIES, type SupportedCountry } from '../../../data/supportedCountries';
+import type { SupportedCountry } from '../../../data/supportedCountries';
+import { useSupportedCountries } from '../../../hooks/useSupportedCountries';
 import { ISO_NUMERIC_TO_ALPHA2 } from '../../../data/isoNumericToAlpha2';
 
 const WIDTH = 960;
@@ -77,6 +78,10 @@ type CountryFeature = Feature<Geometry, { name: string }> & { id?: string | numb
  * Clic sur un pays disponible → sa page destination.
  */
 export default function WorldMap() {
+  // La liste des pays vient de l'API (pays actifs), pas de la constante figée
+  // dans le code : avec elle, un pays archivé depuis l'admin restait
+  // « Disponible » et un pays activé n'apparaissait pas.
+  const { countries: supportedCountries } = useSupportedCountries();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
 
@@ -126,7 +131,7 @@ export default function WorldMap() {
     );
     const path = geoPath(projection);
 
-    const markers = SUPPORTED_COUNTRIES.flatMap((c) => {
+    const markers = supportedCountries.flatMap((c) => {
       const config = MARKER_CONFIG[c.code];
       const projected = config ? projection(config.coords) : null;
       return projected
@@ -142,15 +147,15 @@ export default function WorldMap() {
       graticulePath: path(geoGraticule10()) ?? '',
       spherePath: path({ type: 'Sphere' }) ?? '',
     };
-  }, []);
+  }, [supportedCountries]);
 
   const supportedByNumericId = useMemo(() => {
     const map = new Map<string, SupportedCountry>();
-    for (const c of SUPPORTED_COUNTRIES) {
+    for (const c of supportedCountries) {
       if (c.isoNumeric) map.set(c.isoNumeric, c);
     }
     return map;
-  }, []);
+  }, [supportedCountries]);
 
   const handleMove = (e: React.MouseEvent, f: CountryFeature) => {
     const svg = (e.currentTarget as SVGPathElement).ownerSVGElement!;
@@ -191,7 +196,7 @@ export default function WorldMap() {
         <div className="flex items-center gap-4 text-xs text-gray-500">
           <span className="inline-flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full bg-brand-ink" />
-            {t('worldMap.available', { defaultValue: 'Disponible' })} ({SUPPORTED_COUNTRIES.length})
+            {t('worldMap.available', { defaultValue: 'Disponible' })} ({supportedCountries.length})
           </span>
           <span className="inline-flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full bg-gray-200" />

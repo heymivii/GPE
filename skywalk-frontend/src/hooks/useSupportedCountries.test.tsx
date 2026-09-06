@@ -100,6 +100,7 @@ describe('useSupportedCountries', () => {
       slug: 'allemagne',
       flag: 'flag-DE',
       iso3: 'DEU',
+      isoNumeric: '276', // dérivé de l'alpha-2 : la carte apparie ses tracés par ce code
       i18nKey: 'countries.allemagne',
       apiCity: 'Berlin', // capital city of the active cities for that country
       apiCountryName: 'Allemagne',

@@ -2,12 +2,19 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import WorldMap, { territoryAt } from './WorldMap';
+import { SUPPORTED_COUNTRIES, type SupportedCountry } from '../../../data/supportedCountries';
 
 const navigate = vi.fn();
 vi.mock('react-router-dom', async (importOriginal) => {
   const actual = await importOriginal<typeof import('react-router-dom')>();
   return { ...actual, useNavigate: () => navigate };
 });
+
+// La carte lit désormais la liste servie par l'API ; on la pilote par test.
+const hookState: { countries: SupportedCountry[] } = { countries: SUPPORTED_COUNTRIES };
+vi.mock('../../../hooks/useSupportedCountries', () => ({
+  useSupportedCountries: () => hookState,
+}));
 
 function renderMap() {
   return render(
@@ -20,6 +27,7 @@ function renderMap() {
 describe('WorldMap', () => {
   beforeEach(() => {
     navigate.mockReset();
+    hookState.countries = SUPPORTED_COUNTRIES;
   });
 
   it('illumine les 4 destinations couvertes et affiche la légende', () => {
@@ -76,5 +84,28 @@ describe('WorldMap', () => {
       expect(territoryAt('US', -150, 64)).toBeUndefined();
       expect(territoryAt('JP', 139, 35)).toBeUndefined();
     });
+  });
+});
+
+describe('liste des pays servie par l’API', () => {
+  // La carte lisait la constante SUPPORTED_COUNTRIES figée dans le code : un
+  // pays archivé depuis l'admin restait « Disponible », un pays activé
+  // n'apparaissait pas. Aujourd'hui les deux listes coïncident par chance.
+  const canada: SupportedCountry = {
+    code: 'CA', iso3: 'CAN', isoNumeric: '124', name: 'Canada', slug: 'canada',
+    flag: '🇨🇦', i18nKey: 'countries.canada', apiCity: 'Toronto', apiCountryName: 'Canada',
+  };
+
+  it('allume un pays activé depuis l’admin, même hors liste de départ', () => {
+    hookState.countries = [...SUPPORTED_COUNTRIES, canada];
+    renderMap();
+    expect(screen.getByTestId('map-country-CA')).toBeInTheDocument();
+  });
+
+  it('n’allume plus un pays archivé depuis l’admin', () => {
+    hookState.countries = SUPPORTED_COUNTRIES.filter((c) => c.code !== 'JP');
+    renderMap();
+    expect(screen.queryByTestId('map-country-JP')).not.toBeInTheDocument();
+    expect(screen.getByTestId('map-country-FR')).toBeInTheDocument();
   });
 });
