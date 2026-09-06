@@ -115,4 +115,32 @@ describe('ExpertsPage', () => {
     renderPage();
     expect(screen.queryByText('Envoyer un message')).not.toBeInTheDocument();
   });
+
+  describe('lisibilité des cartes', () => {
+    // Retour de recette : « les cards sont un peu bizarres ». Le badge cumulait
+    // « Expert vérifié · métier · note » et la note réapparaissait juste en
+    // dessous ; le pays restait en anglais.
+    it("n'affiche la note qu'une seule fois", () => {
+      useExpertsState.data = [expert({ averageRating: 5, ratingCount: 1 })];
+      renderPage();
+
+      expect(screen.getAllByText(/1 avis/)).toHaveLength(1);
+    });
+
+    it('traduit le pays de l’expert', () => {
+      useExpertsState.data = [expert({ expertCountry: { idCountry: 3, countryName: 'Japan' } })];
+      renderPage();
+
+      expect(screen.queryByText('Japan')).not.toBeInTheDocument();
+    });
+
+    it('sort le métier du badge de vérification', () => {
+      // Le métier est une information d'identité, pas un fait de vérification.
+      useExpertsState.data = [expert({ expertTitle: 'Immigration lawyer' })];
+      renderPage();
+
+      const metier = screen.getByText('Immigration lawyer');
+      expect(metier.textContent).toBe('Immigration lawyer');
+    });
+  });
 });

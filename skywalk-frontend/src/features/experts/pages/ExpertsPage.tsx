@@ -2,16 +2,17 @@ import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { Search, MapPin, Loader2, UserCheck, Mail, ShieldCheck, ArrowRight, Clock } from 'lucide-react';
+import { Search, MapPin, Loader2, UserCheck, Mail, ShieldCheck, ArrowRight, Clock, BadgeCheck } from 'lucide-react';
 import { PageHeader } from '../../../components/PageHeader';
-import ExpertBadge from '../../../components/ExpertBadge';
 import StarRating from '../../../components/StarRating';
 import { useExperts } from '../../../hooks/useExperts';
 import { useAuth } from '../../../hooks/useAuth';
 import { countryApi } from '../../../api/country';
 import { expertApplicationsApi } from '../../../api/experts';
+import { useCountryName } from '../../../hooks/useCountryName';
 
 export default function ExpertsPage() {
+  const countryName = useCountryName();
   const { t } = useTranslation();
   const { user } = useAuth();
   const currentUserId = user ? (user.idUser || user.id) : undefined;
@@ -117,7 +118,7 @@ export default function ExpertsPage() {
             </option>
             {countries.map((c: any) => (
               <option key={c.idCountry} value={c.idCountry}>
-                {c.countryName}
+                {countryName(c.countryName)}
               </option>
             ))}
           </select>
@@ -149,37 +150,48 @@ export default function ExpertsPage() {
                     {e.fullName?.charAt(0).toUpperCase() || 'E'}
                   </div>
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-gray-900 truncate">{e.fullName}</p>
-                    <ExpertBadge
-                      title={e.expertTitle}
-                      averageRating={e.averageRating}
-                      ratingCount={e.ratingCount}
-                      className="mt-0.5"
-                    />
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      <p className="text-sm font-semibold text-gray-900 truncate">{e.fullName}</p>
+                      {/* Pastille courte : sur un annuaire d'experts, répéter
+                          « Expert vérifié · métier · note » dans un badge vert
+                          surchargeait la carte et redisait la note affichée
+                          juste en dessous. */}
+                      <BadgeCheck
+                        className="w-4 h-4 flex-shrink-0 text-emerald-600"
+                        aria-label={t('experts.verified', { defaultValue: 'Expert vérifié' })}
+                      />
+                    </div>
+                    {e.expertTitle && (
+                      <p className="text-xs text-gray-500 truncate">{e.expertTitle}</p>
+                    )}
                   </div>
                 </div>
 
                 {/* F4 — note visuelle + nombre d'avis (ou « pas encore d'avis ») */}
-                {(e.ratingCount ?? 0) > 0 ? (
-                  <div className="mt-3 flex items-center gap-1.5">
-                    <StarRating value={e.averageRating ?? 0} readOnly size="sm" />
-                    <span className="text-xs text-gray-500">
-                      {t('experts.page.reviews', {
-                        count: e.ratingCount ?? 0,
-                        defaultValue: '{{count}} avis',
-                      })}
+                {/* Hauteur fixe : sans elle, une carte notée et une carte sans
+                    avis n'ont pas la même hauteur et la grille se décale. */}
+                <div className="mt-3 flex h-5 items-center gap-1.5">
+                  {(e.ratingCount ?? 0) > 0 ? (
+                    <>
+                      <StarRating value={e.averageRating ?? 0} readOnly size="sm" />
+                      <span className="text-xs text-gray-500">
+                        {t('experts.page.reviews', {
+                          count: e.ratingCount ?? 0,
+                          defaultValue: '{{count}} avis',
+                        })}
+                      </span>
+                    </>
+                  ) : (
+                    <span className="text-xs text-gray-400">
+                      {t('experts.page.noRating', { defaultValue: 'Pas encore d’avis' })}
                     </span>
-                  </div>
-                ) : (
-                  <p className="mt-3 text-xs text-gray-400">
-                    {t('experts.page.noRating', { defaultValue: 'Pas encore d’avis' })}
-                  </p>
-                )}
+                  )}
+                </div>
 
                 {e.expertCountry && (
                   <p className="mt-2 inline-flex items-center gap-1 text-xs text-[#5EA3C0] font-medium">
                     <MapPin className="w-3.5 h-3.5" />
-                    {e.expertCountry.countryName}
+                    {countryName(e.expertCountry.countryName)}
                   </p>
                 )}
 
