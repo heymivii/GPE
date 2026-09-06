@@ -27,6 +27,7 @@ const mockJwtService = () => ({
 const mockMailService = () => ({
   sendPasswordResetEmail: jest.fn(),
   sendEmailVerification: jest.fn().mockResolvedValue(true),
+  isConfigured: jest.fn().mockReturnValue(true),
 });
 
 describe('AuthService', () => {
@@ -381,6 +382,19 @@ describe('AuthService', () => {
 
       expect(mailService.sendEmailVerification).not.toHaveBeenCalled();
       expect(result.message).toContain('déjà confirmée');
+    });
+
+    it('signale au front que le renvoi est impossible sans SMTP configuré', async () => {
+      mailService.isConfigured.mockReturnValue(false);
+      userRepo.findOne.mockResolvedValue({
+        idUser: 1,
+        email: 'a@b.com',
+        emailVerifiedAt: null,
+      });
+
+      const profile: any = await service.getProfile(1);
+
+      expect(profile.emailDeliveryEnabled).toBe(false);
     });
 
     it('expose emailVerified=false tant que l’adresse n’est pas confirmée', async () => {

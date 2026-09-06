@@ -289,6 +289,12 @@ export class AuthService {
   private sanitizeUser(user: User) {
     const { password: _pw, ...sanitized } = user;
     // Booléen dérivé : le front n'a pas à connaître la date, seulement l'état.
-    return { ...sanitized, emailVerified: !!user.emailVerifiedAt };
+    // `emailDeliveryEnabled` dit au front si un renvoi de lien a une chance
+    // d'aboutir : sans SMTP configuré, proposer le bouton serait mentir.
+    return {
+      ...sanitized,
+      emailVerified: !!user.emailVerifiedAt,
+      emailDeliveryEnabled: this.mailService.isConfigured(),
+    };
   }
 }

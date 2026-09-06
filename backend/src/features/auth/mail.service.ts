@@ -41,6 +41,21 @@ export class MailService {
     }
   }
 
+  /**
+   * Le service peut-il réellement délivrer un email ?
+   * En dev, oui : les envois partent dans smtp4dev, qui tourne en local.
+   * En prod, il faut de vraies identités SMTP — sans elles nodemailer se
+   * rabat sur smtp.gmail.com sans authentification et TOUT échoue en silence.
+   * Sert à ne pas proposer un bouton « renvoyer l'email » qui ne peut pas
+   * tenir sa promesse.
+   */
+  isConfigured(): boolean {
+    if (process.env.NODE_ENV !== 'production') return true;
+    return Boolean(
+      process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS,
+    );
+  }
+
   async sendPasswordResetEmail(to: string, resetToken: string) {
     await this.transporterReady;
 

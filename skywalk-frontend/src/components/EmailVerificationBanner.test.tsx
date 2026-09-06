@@ -59,10 +59,36 @@ describe('EmailVerificationBanner', () => {
     expect(container).toBeEmptyDOMElement();
   });
 
-  it('renvoie le lien de confirmation au clic', async () => {
+  it("masque le bouton de renvoi quand le serveur ne peut pas envoyer d'email", () => {
+    // Prod sans SMTP : proposer « Renvoyer » ferait échouer chaque clic, et
+    // annoncer « un lien a été envoyé » serait faux.
+    mockAuth.mockReturnValue({
+      isAuthenticated: true,
+      user: { email: 'a@b.com', emailVerified: false, emailDeliveryEnabled: false },
+    });
+
+    render(<EmailVerificationBanner />);
+
+    expect(screen.queryByRole('button', { name: /Renvoyer/ })).not.toBeInTheDocument();
+    expect(screen.getByText(/Confirmez votre adresse email/)).toBeInTheDocument();
+    expect(screen.queryByText(/Un lien a été envoyé/)).not.toBeInTheDocument();
+  });
+
+  it('garde le bouton quand le flag est absent (API plus ancienne)', () => {
     mockAuth.mockReturnValue({
       isAuthenticated: true,
       user: { email: 'a@b.com', emailVerified: false },
+    });
+
+    render(<EmailVerificationBanner />);
+
+    expect(screen.getByRole('button', { name: /Renvoyer/ })).toBeInTheDocument();
+  });
+
+  it('renvoie le lien de confirmation au clic', async () => {
+    mockAuth.mockReturnValue({
+      isAuthenticated: true,
+      user: { email: 'a@b.com', emailVerified: false, emailDeliveryEnabled: true },
     });
     mockedResend.mockResolvedValue({ message: 'Email de confirmation envoyé' });
 
@@ -76,7 +102,7 @@ describe('EmailVerificationBanner', () => {
   it("affiche l'erreur renvoyée par l'API si l'envoi échoue", async () => {
     mockAuth.mockReturnValue({
       isAuthenticated: true,
-      user: { email: 'a@b.com', emailVerified: false },
+      user: { email: 'a@b.com', emailVerified: false, emailDeliveryEnabled: true },
     });
     mockedResend.mockRejectedValue({
       response: { data: { message: 'Trop de tentatives' } },
