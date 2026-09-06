@@ -33,7 +33,7 @@ import {
 import { useAuth } from '../../../hooks/useAuth';
 import AuthPromptCard from '../../../components/AuthPromptCard';
 import CostOfLivingTab from '../components/CostOfLivingTab';
-import { ISO2_TO_ISO3, getLocale, getCurrentLocale } from '../../../data/supportedCountries';
+import { ISO2_TO_ISO3, getCurrentLocale, getLocale } from '../../../data/supportedCountries';
 import { getCityId } from '../cityId';
 import { useCountryName, useCountryNameIn } from '../../../hooks/useCountryName';
 
@@ -44,7 +44,7 @@ export function DestinationDetailPage() {
   const { isAuthenticated } = useAuth();
   const { t, i18n } = useTranslation();
   const dateLocale = getLocale(i18n.language);
-  const locale = i18n.language === 'fr' ? 'fr-FR' : 'en-US';
+  const locale = getLocale(i18n.language);
   const [activeTab, setActiveTab] = useState<
     'overview' | 'cities' | 'cost-of-living' | 'opportunities' | 'forum' | 'resources'
   >('overview');
@@ -513,7 +513,7 @@ export function DestinationDetailPage() {
                                 {getArticleTranslation(article.id, 'title', t)}
                               </h4>
                               <div className="flex items-center gap-3 text-xs text-gray-500">
-                                <span>{new Date(article.date).toLocaleDateString(i18n.language === 'fr' ? 'fr-FR' : 'en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
+                                <span>{new Date(article.date).toLocaleDateString(getLocale(i18n.language), { year: 'numeric', month: 'short', day: 'numeric' })}</span>
                                 <span className="flex items-center gap-1">
                                   <Clock className="w-3 h-3" />
                                   {article.readTime} min

@@ -9,6 +9,7 @@ import {
 } from '../../../data/blog-data';
 import Breadcrumbs from '../../../components/Breadcrumbs';
 import { renderInlineLinks } from '../renderInlineLinks';
+import { getLocale } from '../../../data/supportedCountries';
 
 export default function BlogArticlePage() {
   const { id } = useParams<{ id: string }>();
@@ -30,7 +31,7 @@ export default function BlogArticlePage() {
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
-    return date.toLocaleDateString(i18n.language === 'fr' ? 'fr-FR' : 'en-US', {
+    return date.toLocaleDateString(getLocale(i18n.language), {
       year: 'numeric',
       month: 'long',
       day: 'numeric',

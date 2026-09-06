@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import Widget from './Widget';
 import { useTranslation } from 'react-i18next';
 import type { WidgetSize } from '../hooks/useDashboardPreferences';
+import { getLang } from '../../../data/supportedCountries';
 
 interface WeatherWidgetProps {
   countryName: string;
@@ -30,7 +31,7 @@ export default function WeatherWidget({
 }: WeatherWidgetProps) {
   const { t, i18n } = useTranslation()
   const location = cityName || countryName;
-  const weatherLang = i18n.language === 'fr' ? 'fr' : 'en';
+  const weatherLang = getLang(i18n.language);
 
   const { data: weather, isLoading: loading, isError: error } = useQuery({
     queryKey: ['weather', location, weatherLang],

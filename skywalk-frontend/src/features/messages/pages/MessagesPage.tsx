@@ -12,6 +12,7 @@ import {
   pmKeys,
 } from '../../../hooks/usePrivateMessages';
 import { userReportApi } from '../../../api/user-report';
+import { getLocale } from '../../../data/supportedCountries';
 
 /**
  * Où engager une conversation. Les points d'entrée existent (fiche expert,
@@ -103,7 +104,7 @@ export default function MessagesPage() {
   }, [thread.length, selectedId]);
 
   const fmtTime = (d: string) =>
-    new Date(d).toLocaleString(i18n.language === 'en' ? 'en-GB' : 'fr-FR', {
+    new Date(d).toLocaleString(getLocale(i18n.language), {
       day: '2-digit',
       month: '2-digit',
       hour: '2-digit',

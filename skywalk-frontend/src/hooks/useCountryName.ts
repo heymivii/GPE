@@ -10,18 +10,38 @@ const normalize = (s: string) => s.toLowerCase().replace(/[^a-z]/g, '');
  * Sert de repli quand resolveCountry ne trouve rien : le registre des pays
  * n'est peuplé que des pays ACTIFS, or un expert peut être rattaché à un pays
  * archivé — son pays s'affichait alors en anglais.
+ *
+ * Le bundle doit être demandé avec la langue RÉSOLUE. Le détecteur de navigateur
+ * renseigne `i18n.language` avec l'étiquette complète (« fr-FR »), alors que les
+ * ressources sont enregistrées sous « fr » : `getResourceBundle('fr-FR', …)`
+ * renvoyait undefined, la table restait vide et le repli ne se déclenchait
+ * jamais. La page d'accueil annonçait ainsi « nos destinations : France, Japan »
+ * en pleine interface française, le Japon étant archivé donc absent du registre.
  */
 function useCountryKeys(): Map<string, string> {
   // i18n peut être absent (mocks de test partiels) : ce repli est un confort
   // d'affichage, il ne doit jamais faire planter une page.
-  const { i18n } = useTranslation() as { i18n?: { language?: string; getResourceBundle?: (l: string, ns: string) => unknown } };
-  const language = i18n?.language;
+  const { i18n } = useTranslation() as {
+    i18n?: {
+      language?: string;
+      resolvedLanguage?: string;
+      getResourceBundle?: (l: string, ns: string) => unknown;
+    };
+  };
+  const language = i18n?.resolvedLanguage ?? i18n?.language;
   return useMemo(() => {
     const map = new Map<string, string>();
     try {
-      const bundle = i18n?.getResourceBundle?.(language ?? 'fr', 'translation') as
-        | { countries?: Record<string, string> }
-        | undefined;
+      // « fr-FR » puis « fr » : selon la configuration, l'une ou l'autre porte
+      // les ressources — on retient la première qui donne un bloc `countries`.
+      const candidates = [language, language?.split('-')[0], 'fr'].filter(
+        (l): l is string => !!l,
+      );
+      let bundle: { countries?: Record<string, string> } | undefined;
+      for (const candidate of candidates) {
+        bundle = i18n?.getResourceBundle?.(candidate, 'translation') as typeof bundle;
+        if (bundle?.countries) break;
+      }
       for (const key of Object.keys(bundle?.countries ?? {})) {
         map.set(normalize(key), `countries.${key}`);
       }

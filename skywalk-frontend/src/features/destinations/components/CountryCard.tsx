@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import type { CountryDestination } from '../types';
 import { getArticlesCountByCountry } from '../../../data/blog-data';
 import { useCountryName, useCountryNameIn } from '../../../hooks/useCountryName';
+import { getLocale } from '../../../data/supportedCountries';
 
 interface CountryCardProps {
   country: CountryDestination;
@@ -21,7 +22,7 @@ export function CountryCard({ country }: CountryCardProps) {
   const fmtCompact = (n: number): string => {
     if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1).replace(/\.0$/, '')}M`;
     if (n >= 1_000) return `${(n / 1_000).toFixed(n >= 10_000 ? 0 : 1).replace(/\.0$/, '')}k`;
-    return n.toLocaleString(i18n.language === 'fr' ? 'fr-FR' : 'en-US');
+    return n.toLocaleString(getLocale(i18n.language));
   };
 
   const countryName = useCountryName();

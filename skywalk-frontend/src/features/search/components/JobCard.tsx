@@ -1,6 +1,7 @@
 import { MapPin, Calendar, ExternalLink, Building2, Banknote } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { SearchResult } from '../types';
+import { getLocale } from '../../../data/supportedCountries';
 
 interface JobCardProps {
   job: SearchResult;
@@ -13,7 +14,7 @@ export default function JobCard({ job, viewMode }: JobCardProps) {
   const formatSalary = (price?: number, currency?: string, period?: 'month' | 'year') => {
     if (!price) return t('searchPage.job.salaryNotSpecified');
     
-    const locale = i18n.language === 'fr' ? 'fr-FR' : 'en-US';
+    const locale = getLocale(i18n.language);
     const periodLabel = period === 'month'
       ? t('searchPage.job.perMonth')
       : t('searchPage.job.perYear');

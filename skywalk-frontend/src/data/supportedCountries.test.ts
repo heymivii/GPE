@@ -9,6 +9,7 @@ import {
   COUNTRY_CITY_MAP,
   getCountryMapping,
   getLocale,
+  getLang,
   getCurrentLocale,
 } from './supportedCountries';
 
@@ -60,6 +61,31 @@ describe('getLocale', () => {
   it('maps anything else to en-US', () => {
     expect(getLocale('en')).toBe('en-US');
     expect(getLocale('de')).toBe('en-US');
+  });
+
+  // `i18n.language` porte l'étiquette du détecteur de navigateur (« fr-FR »),
+  // pas le code court. Comparée à « fr », elle basculait sur la branche
+  // anglaise : les dates du blog s'affichaient « February 5, 2026 » en pleine
+  // interface française.
+  it('accepte une étiquette régionale', () => {
+    expect(getLocale('fr-FR')).toBe('fr-FR');
+    expect(getLocale('fr-CA')).toBe('fr-FR');
+    expect(getLocale('en-GB')).toBe('en-US');
+    expect(getLocale('FR-fr')).toBe('fr-FR');
+  });
+
+  it('retombe sur l’anglais faute de langue', () => {
+    expect(getLocale(undefined)).toBe('en-US');
+    expect(getLocale('')).toBe('en-US');
+  });
+});
+
+describe('getLang', () => {
+  it('extrait le sous-tag de langue', () => {
+    expect(getLang('fr')).toBe('fr');
+    expect(getLang('fr-FR')).toBe('fr');
+    expect(getLang('en-GB')).toBe('en');
+    expect(getLang(undefined)).toBe('en');
   });
 });
 

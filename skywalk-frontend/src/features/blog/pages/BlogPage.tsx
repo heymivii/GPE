@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Clock, ArrowRight, Search, BookOpen } from 'lucide-react';
 import { PageHeader } from '../../../components/PageHeader';
+import { getLocale } from '../../../data/supportedCountries';
 import {
   BLOG_ARTICLES,
   BLOG_CATEGORIES,
@@ -40,7 +41,7 @@ export default function BlogPage() {
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
-    return date.toLocaleDateString(i18n.language === 'fr' ? 'fr-FR' : 'en-US', {
+    return date.toLocaleDateString(getLocale(i18n.language), {
       year: 'numeric',
       month: 'long',
       day: 'numeric',

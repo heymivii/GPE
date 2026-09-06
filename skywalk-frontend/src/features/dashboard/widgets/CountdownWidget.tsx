@@ -6,6 +6,7 @@ import Widget from './Widget';
 import type { WidgetSize } from '../hooks/useDashboardPreferences';
 import { useChecklistProgress, getStepDeadline, filterStepsForProject } from '../hooks/useChecklistProgress';
 import { personalizeFilter } from '../hooks/personalize';
+import { getLocale } from '../../../data/supportedCountries';
 
 interface Props {
   projectId: number;
@@ -98,7 +99,7 @@ export default function CountdownWidget({
   );
 
   const fmtDate = (d: Date) =>
-    d.toLocaleDateString(i18n.language === 'en' ? 'en-GB' : 'fr-FR', {
+    d.toLocaleDateString(getLocale(i18n.language), {
       day: 'numeric',
       month: 'short',
     });
@@ -142,7 +143,7 @@ export default function CountdownWidget({
                 <p className="text-xs text-gray-500 mt-1">
                   {t('dashboard.personalized.widgets.countdown.until', {
                     date: new Date(departureDate).toLocaleDateString(
-                      i18n.language === 'en' ? 'en-GB' : 'fr-FR',
+                      getLocale(i18n.language),
                       { day: 'numeric', month: 'long', year: 'numeric' },
                     ),
                     defaultValue: 'avant votre départ · {{date}}',

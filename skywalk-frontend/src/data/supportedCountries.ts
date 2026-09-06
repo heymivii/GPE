@@ -54,8 +54,21 @@ export function getCountryMapping(countrySlug: string | undefined | null) {
     return COUNTRY_CITY_MAP[key] || DEFAULT_MAPPING;
 }
 
-export function getLocale(lang: string): string {
-    return lang === 'fr' ? 'fr-FR' : 'en-US';
+/**
+ * Sous-tag de langue, à partir de n'importe quelle étiquette BCP-47.
+ *
+ * `i18n.language` porte l'étiquette complète fournie par le détecteur de
+ * navigateur (« fr-FR », « en-GB »), pas le code court sous lequel les
+ * ressources sont enregistrées. Comparer `language === 'fr'` échouait donc
+ * silencieusement et basculait sur la branche anglaise : les dates du blog
+ * s'affichaient « February 5, 2026 » en pleine interface française.
+ */
+export function getLang(lang?: string | null): 'fr' | 'en' {
+    return (lang ?? '').split('-')[0].toLowerCase() === 'fr' ? 'fr' : 'en';
+}
+
+export function getLocale(lang?: string | null): string {
+    return getLang(lang) === 'fr' ? 'fr-FR' : 'en-US';
 }
 
 export function getCurrentLocale(): string {

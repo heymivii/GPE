@@ -7,6 +7,7 @@ import { notificationsApi, type AppNotification } from '../../api/notifications'
 import { buddyContactApi, type BuddyContactRequest } from '../../api/buddy-contact';
 import { pmKeys } from '../../hooks/usePrivateMessages';
 import { useAuth } from '../../hooks/useAuth';
+import { getLocale } from '../../data/supportedCountries';
 
 /**
  * Cloche de notifications de l'utilisateur (barre principale, thème clair).
@@ -118,7 +119,7 @@ export default function NotificationBell() {
   }, [open]);
 
   const formatDate = (d: string) =>
-    new Date(d).toLocaleString(i18n.language === 'en' ? 'en-GB' : 'fr-FR', {
+    new Date(d).toLocaleString(getLocale(i18n.language), {
       day: '2-digit',
       month: '2-digit',
       hour: '2-digit',

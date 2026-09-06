@@ -6,6 +6,7 @@ import { MessagesSquare, ArrowRight, Plus, Loader2, MessageCircle } from 'lucide
 import Widget from './Widget';
 import type { WidgetSize } from '../hooks/useDashboardPreferences';
 import { forumTopicsApi } from '../../../api/forum-topics';
+import { getLocale } from '../../../data/supportedCountries';
 
 interface Props {
   countryId?: number;
@@ -40,7 +41,7 @@ export default function DestinationForumWidget({
   }, [topics, countryId]);
 
   const fmtDate = (d: string) =>
-    new Date(d).toLocaleDateString(i18n.language === 'en' ? 'en-GB' : 'fr-FR', {
+    new Date(d).toLocaleDateString(getLocale(i18n.language), {
       day: 'numeric',
       month: 'short',
     });

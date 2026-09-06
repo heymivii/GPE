@@ -76,7 +76,8 @@
     "remove": "Remove",
     "cancel": "Cancel",
     "back": "Back",
-    "save": "Save"
+    "save": "Save",
+    "retry": "Try again"
   },
   "services": {
     "citySelector": {
@@ -572,7 +573,10 @@
       "useSearchEngine": "Use our search engine to find resources, offers and information specific to {{title}}.",
       "goToSearch": "Go to search",
       "viewRecent": "View most recent",
-      "viewPopular": "View most popular"
+      "viewPopular": "View most popular",
+      "comingSoon": {
+        "title": "Coming soon"
+      }
     },
     "countrySelector": {
       "destination": "Destination",
@@ -1044,6 +1048,18 @@
           "answer": "We provide detailed guides on visas, work permits, health insurance, bank account opening and all the key steps for each country."
         }
       }
+    },
+    "experts": {
+      "badge": "Verified experts",
+      "title": "In doubt? Talk to someone who has done it",
+      "text": "Experts vetted by our team answer your questions by private message: paperwork, housing, work, schooling.",
+      "cta": "See the experts",
+      "promise": {
+        "verified": "Profiles vetted one by one by our team",
+        "private": "Private messaging, straight from their profile",
+        "topics": "Paperwork, housing, work, schooling",
+        "countries": "On the ground, across our destinations: {{countries}}"
+      }
     }
   },
   "destinations": {
@@ -1063,7 +1079,8 @@
     "card": {
       "members": "Members",
       "jobs": "Job offers"
-    }
+    },
+    "mapHint": "Click a highlighted destination to explore it — or switch to list view to compare the stats."
   },
   "forum": {
     "title": "SkyWalk Support Forum",
@@ -1150,7 +1167,10 @@
       "submitError": "Error",
       "cancel": "Cancel",
       "publish": "Publish topic",
-      "publishing": "Publishing..."
+      "publishing": "Publishing...",
+      "countryLabel": "Related country",
+      "countryHelp": "Linking a country lets us count discussions per destination.",
+      "noCountry": "— No country —"
     },
     "comingSoon": "Feature coming soon!",
     "postDetail": {
@@ -1221,7 +1241,8 @@
         "topicDeleted": "Topic deleted",
         "messageDeleted": "Message deleted by moderator"
       },
-      "delete": "Delete"
+      "delete": "Delete",
+      "messageAuthor": "Message the author"
     },
     "editTopic": {
       "loading": "Loading topic...",
@@ -1253,7 +1274,8 @@
       "follow": "Follow",
       "following": "Following",
       "unfollow": "Unfollow"
-    }
+    },
+    "filterByCountry": "Filter by country"
   },
   "comparison": {
     "title": "Comparison Tool",
@@ -1333,7 +1355,14 @@
       "inflowsForeignPop": "Foreign population inflows",
       "outflowsForeignPop": "Foreign population outflows",
       "asylumSeekers": "Asylum seekers",
-      "nationalityAcquisitions": "Nationality acquisitions"
+      "nationalityAcquisitions": "Nationality acquisitions",
+      "gdpPerCapita": "GDP per capita",
+      "healthCareIndex": "Healthcare",
+      "loanAffordability": "Loan affordability index",
+      "mortgagePctIncome": "Mortgage / income",
+      "populationGrowth": "Population growth",
+      "qualityOfLifeIndex": "Quality of life index",
+      "safetyIndex": "Safety"
     },
     "oecdSource": "Source: OECD – International Migration Database",
     "premiumAccess": {
@@ -1417,6 +1446,11 @@
         "JP": "Temperate with four distinct seasons, subtropical in the south",
         "US": "Highly variable by region: humid continental, subtropical, arid, Mediterranean"
       }
+    },
+    "clearAll": "Clear all",
+    "error": {
+      "title": "Could not load the data",
+      "message": "Something went wrong. Try again in a moment."
     }
   },
   "dashboard": {
@@ -1939,8 +1973,15 @@
         "toCountryRequired": "Destination country is required",
         "sameCountry": "Destination country must be different from departure country",
         "departureYearRequired": "Departure year is required",
-        "departureYearRange": "Year must be between {{min}} and {{max}}"
-      }
+        "departureYearRange": "Year must be between {{min}} and {{max}}",
+        "departureDateRequired": "The departure date is required",
+        "departureDatePast": "The departure date must be in the future",
+        "nationalityRequired": "Your nationality is required"
+      },
+      "departureDate": "Planned departure date",
+      "departureDateHelper": "An exact date switches on the countdown and the deadlines.",
+      "nationality": "Your nationality",
+      "nationalityHelper": "Determines your visa / residence permit steps."
     },
     "profile": {
       "title": "Your personal profile",
@@ -1963,7 +2004,11 @@
         "statusRequired": "Current status is required",
         "travelPartyRequired": "Please indicate who you're traveling with",
         "languageLevelRequired": "Language level is required"
-      }
+      },
+      "hasChildren": "Are children coming with you?",
+      "hasChildrenHelper": "Adds school / daycare steps to your plan.",
+      "hasJobOffer": "Do you already have a job offer there?",
+      "hasJobOfferHelper": "Points you to the work visa rather than the job search."
     },
     "objective": {
       "title": "Purpose of your move",
@@ -2037,7 +2082,9 @@
       "savingLabel": "Saving...",
       "subtitleEdit": "Review your information before saving your changes",
       "readyTitleEdit": "Your changes are ready",
-      "readyDescEdit": "Saving will update your project and its personalized recommendations."
+      "readyDescEdit": "Saving will update your project and its personalized recommendations.",
+      "departureDate": "Departure date",
+      "nationality": "Nationality"
     },
     "authGate": {
       "title": "Save your project to continue",
@@ -2054,7 +2101,8 @@
     "nav": {
       "next": "Next",
       "back": "Back",
-      "goToDashboard": "Go to my dashboard"
+      "goToDashboard": "Go to my dashboard",
+      "skip": "Skip for now"
     },
     "layout": {
       "dashboard": "Dashboard",
@@ -2159,7 +2207,10 @@
     "updateSuccess": "Project updated successfully!",
     "updateError": "Error updating the project",
     "deleteSuccess": "Project deleted successfully!",
-    "deleteError": "Error deleting the project"
+    "deleteError": "Error deleting the project",
+    "card": {
+      "menu": "Project options"
+    }
   },
   "welcome": {
     "badge": "Welcome to Skywalk",
@@ -2395,7 +2446,8 @@
     "cancelledInfoTitle": "Project cancelled",
     "cancelledDate": "Cancellation date",
     "cancelledReasonInfo": "Reason",
-    "cancelledDetailsInfo": "Details"
+    "cancelledDetailsInfo": "Details",
+    "back": "Back to my projects"
   },
   "projectRecommendations": {
     "title": "Personalized Recommendations",
@@ -3668,7 +3720,9 @@
       "allCountries": "All countries",
       "empty": "No verified expert for this filter yet.",
       "reviews": "{{count}} reviews",
-      "noRating": "No reviews yet"
+      "noRating": "No reviews yet",
+      "sourcingTitle": "Where do our experts come from?",
+      "sourcingText": "They are professionals who applied and submitted supporting evidence (a diploma, registration with a professional body, a certification). Our team reviews every application before granting the badge — and can withdraw it."
     },
     "admin": {
       "title": "Expert verification",
@@ -3703,7 +3757,11 @@
     "send": "Send a message",
     "report": "Report this member",
     "reported": "Member reported",
-    "member": "Member"
+    "member": "Member",
+    "buddyAbout": "About:",
+    "emptyFiltered": "No conversation matches this filter.",
+    "noneYet": "You have no conversations yet.",
+    "startHint": "Message a verified expert from their profile, or a member from the forum."
   },
   "cityDetail": {
     "notFound": "City not found",
@@ -3758,5 +3816,24 @@
     "australia": "in Australia",
     "japan": "in Japan",
     "mali": "in Mali"
+  },
+  "notFound": {
+    "title": "This page does not exist",
+    "subtitle": "The link may be out of date, or the address contains a typo.",
+    "errorTitle": "Something went wrong",
+    "errorSubtitle": "The page could not be displayed. Try again, or start from one of the entries below.",
+    "links": {
+      "destinations": "Explore destinations",
+      "search": "Search for information",
+      "forum": "Ask a question on the forum"
+    },
+    "home": "Back to home"
+  },
+  "worldMap": {
+    "title": "Where can you go with SkyWalk?",
+    "clickToExplore": "Available — click to explore",
+    "comingSoon": "Soon",
+    "notYet": "Coming soon",
+    "territoryNoData": "No data for this territory yet"
   }
 }
