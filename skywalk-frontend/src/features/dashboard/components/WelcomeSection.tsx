@@ -23,7 +23,7 @@ export default function WelcomeSection({
             </div>
             <h1 className="text-5xl font-bold text-gray-900 mb-6 leading-tight font-outfit tracking-tight">
               {t('welcome.title')} <br/>
-              <span className="text-gray-400 font-light">{t('welcome.titleHighlight')}</span>
+              <span className="text-gray-500 font-light">{t('welcome.titleHighlight')}</span>
             </h1>
             <p className="text-lg text-gray-500 mb-10 leading-relaxed font-light max-w-lg">
               {t('welcome.description')}

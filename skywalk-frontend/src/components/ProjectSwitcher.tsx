@@ -55,14 +55,14 @@ export default function ProjectSwitcher() {
         className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-sm font-medium text-gray-700 transition-colors max-w-[220px]"
         title={t('nav.activeProject', { defaultValue: 'Projet actif' })}
       >
-        <Plane className="w-4 h-4 text-[#5EA3C0] flex-shrink-0" />
+        <Plane className="w-4 h-4 text-brand-ink flex-shrink-0" />
         <span className="truncate">{label(active)}</span>
         <ChevronDown className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
       </button>
 
       {open && (
         <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 z-50 overflow-hidden">
-          <p className="px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-gray-400 border-b border-gray-50">
+          <p className="px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-gray-500 border-b border-gray-50">
             {t('nav.activeProject', { defaultValue: 'Projet actif' })}
           </p>
           <div className="max-h-72 overflow-y-auto py-1">
@@ -72,7 +72,7 @@ export default function ProjectSwitcher() {
                 type="button"
                 onClick={() => choose(p.idProject)}
                 className={`w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-left hover:bg-gray-50 transition-colors ${
-                  p.idProject === active?.idProject ? 'text-[#5EA3C0] font-semibold' : 'text-gray-700'
+                  p.idProject === active?.idProject ? 'text-brand-ink font-semibold' : 'text-gray-700'
                 }`}
               >
                 <Plane className="w-4 h-4 flex-shrink-0" />

@@ -183,11 +183,11 @@ export default function ForumPage() {
         <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
           <div className="relative w-full sm:max-w-md group">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <Search className="h-5 w-5 text-gray-400 group-focus-within:text-[#5EA3C0] transition-colors" />
+              <Search className="h-5 w-5 text-gray-400 group-focus-within:text-brand-ink transition-colors" />
             </div>
             <input
               type="text"
-              className="block w-full pl-11 pr-4 py-3 bg-gray-50 border-none rounded-2xl text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-[#5EA3C0]/20 focus:bg-white transition-all"
+              className="block w-full pl-11 pr-4 py-3 bg-gray-50 border-none rounded-2xl text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-brand/20 focus:bg-white transition-all"
               placeholder={t('forum.search')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -282,7 +282,7 @@ export default function ForumPage() {
                 {selectedCategory && (
                   <button
                     onClick={() => setSelectedCategory('')}
-                    className="flex items-center gap-1 text-sm text-[#5EA3C0] hover:text-[#4A8299]"
+                    className="flex items-center gap-1 text-sm text-brand-ink hover:text-brand-ink-hover"
                   >
                     <X className="w-4 h-4" />
                     {t('forum.reset')}
@@ -296,11 +296,11 @@ export default function ForumPage() {
                     onClick={() => handleCategoryClick(category.id)}
                     className={`flex items-center gap-3 p-4 rounded-lg border-2 transition-all text-left ${
                       selectedCategory === category.id
-                        ? 'border-[#5EA3C0] bg-[#5EA3C0]/5 shadow-sm'
+                        ? 'border-brand bg-brand-ink/5 shadow-sm'
                         : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                     }`}
                   >
-                    <category.icon className="w-6 h-6 text-[#5EA3C0] flex-shrink-0" />
+                    <category.icon className="w-6 h-6 text-brand-ink flex-shrink-0" />
                     <div className="flex-1 min-w-0">
                       <div className="font-semibold text-gray-900 text-sm truncate">
                         {category.name}
@@ -355,7 +355,7 @@ export default function ForumPage() {
                       setShowFollowed(false)
                       setSelectedCountry(null)
                     }}
-                    className="flex items-center gap-1 text-sm text-[#5EA3C0] hover:text-[#4A8299] font-medium"
+                    className="flex items-center gap-1 text-sm text-brand-ink hover:text-brand-ink-hover font-medium"
                   >
                     <X className="w-4 h-4" />
                     {t('forum.reset')}
@@ -365,7 +365,7 @@ export default function ForumPage() {
 
               {isLoading && (
                 <div className="p-12 text-center">
-                  <Loader2 className="w-8 h-8 animate-spin text-[#5EA3C0] mx-auto mb-3" />
+                  <Loader2 className="w-8 h-8 animate-spin text-brand-ink mx-auto mb-3" />
                   <p className="text-gray-600">{t('forum.loading')}</p>
                 </div>
               )}
@@ -384,7 +384,7 @@ export default function ForumPage() {
                   <p className="text-gray-600 mb-2">{t('forum.noTopics')}</p>
                   <Link
                     to="/forum/new"
-                    className="text-[#5EA3C0] hover:text-[#4A8299] text-sm font-medium"
+                    className="text-brand-ink hover:text-brand-ink-hover text-sm font-medium"
                   >
                     {t('forum.createFirstTopic')}
                   </Link>
@@ -404,7 +404,7 @@ export default function ForumPage() {
                         <div className="flex items-start gap-4">
                           {(() => {
                             const CatIcon = categoryInfo?.icon ?? categoryIcon(topic.category);
-                            return <CatIcon className="w-7 h-7 text-[#5EA3C0] flex-shrink-0 mt-0.5" />;
+                            return <CatIcon className="w-7 h-7 text-brand-ink flex-shrink-0 mt-0.5" />;
                           })()}
                           
                           <div className="flex-1 min-w-0">
@@ -456,7 +456,7 @@ export default function ForumPage() {
                 <div className="p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-600">{t('forum.stats.myTopics')}</span>
-                    <span className="font-bold text-[#5EA3C0]">{myTopics.length}</span>
+                    <span className="font-bold text-brand-ink">{myTopics.length}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-600">{t('forum.stats.totalReplies')}</span>
@@ -497,7 +497,7 @@ export default function ForumPage() {
                       onClick={() => { setShowMyTopics(!showMyTopics); setShowFollowed(false) }}
                       className={`flex items-center gap-2 p-3 w-full text-sm rounded-lg transition-colors ${
                         showMyTopics
-                          ? 'bg-[#5EA3C0]/10 text-[#5EA3C0] font-medium'
+                          ? 'bg-brand-ink/10 text-brand-ink font-medium'
                           : 'text-gray-700 hover:bg-gray-50'
                       }`}
                     >
@@ -509,7 +509,7 @@ export default function ForumPage() {
                       onClick={() => { setShowFollowed(!showFollowed); setShowMyTopics(false) }}
                       className={`flex items-center gap-2 p-3 w-full text-sm rounded-lg transition-colors ${
                         showFollowed
-                          ? 'bg-[#5EA3C0]/10 text-[#5EA3C0] font-medium'
+                          ? 'bg-brand-ink/10 text-brand-ink font-medium'
                           : 'text-gray-700 hover:bg-gray-50'
                       }`}
                     >
@@ -589,7 +589,7 @@ export default function ForumPage() {
                   {selectedCountry && (
                     <button
                       onClick={() => setSelectedCountry(null)}
-                      className="flex items-center gap-1 text-xs text-[#5EA3C0] hover:text-[#4A8299]"
+                      className="flex items-center gap-1 text-xs text-brand-ink hover:text-brand-ink-hover"
                     >
                       <X className="w-3 h-3" />
                       {t('forum.reset')}

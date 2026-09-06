@@ -47,7 +47,7 @@ export default function TrustBadge({
       <ShieldCheck className="w-3.5 h-3.5 flex-shrink-0 text-emerald-600" />
       <span className="font-medium">Source officielle vérifiée</span>
       {host && (
-        <span className="text-gray-400 truncate max-w-[140px]">· {host}</span>
+        <span className="text-gray-500 truncate max-w-[140px]">· {host}</span>
       )}
     </>
   );

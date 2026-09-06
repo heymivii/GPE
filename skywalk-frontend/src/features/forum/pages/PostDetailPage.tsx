@@ -423,7 +423,7 @@ export default function PostDetailPage() {
 
         <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
           <div className="flex items-start gap-4 mb-4">
-            <CatIcon className="w-9 h-9 text-[#5EA3C0] flex-shrink-0" />
+            <CatIcon className="w-9 h-9 text-brand-ink flex-shrink-0" />
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
                 <span className={`px-3 py-1 rounded-full text-sm font-medium ${catColor}`}>
@@ -467,8 +467,8 @@ export default function PostDetailPage() {
                 aria-pressed={isFollowing}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-60 ${
                   isFollowing
-                    ? 'bg-[#5EA3C0]/10 text-[#5EA3C0] border border-[#5EA3C0]/30'
-                    : 'bg-[#5EA3C0] text-white hover:bg-[#4891b0]'
+                    ? 'bg-brand-ink/10 text-brand-ink border border-brand/30'
+                    : 'bg-brand-ink text-white hover:bg-brand-ink-hover'
                 }`}
                 title={isFollowing ? t('forum.follow.unfollow') : t('forum.follow.follow')}
               >
@@ -483,7 +483,7 @@ export default function PostDetailPage() {
               {user && (
                 <button
                   onClick={() => openReportModal(undefined, topicId)}
-                  className="p-2 text-gray-400 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-colors"
+                  className="p-2 text-gray-500 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-colors"
                   title={t('forum.postDetail.reportTopic')}
                 >
                   <Flag className="w-4 h-4" />
@@ -522,7 +522,7 @@ export default function PostDetailPage() {
                         name: topic.user?.fullName || `#${topic.user?.idUser}`,
                       })
                     }
-                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                    className="p-2 text-gray-500 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                     title="Signaler ce membre"
                   >
                     <ShieldAlert className="w-4 h-4" />
@@ -647,7 +647,7 @@ export default function PostDetailPage() {
                         {user && !isOwner && (
                           <button
                             onClick={() => openReportModal(message.message_id)}
-                            className="p-1.5 text-gray-400 hover:text-orange-500 hover:bg-orange-50 rounded transition-colors"
+                            className="p-1.5 text-gray-500 hover:text-orange-500 hover:bg-orange-50 rounded transition-colors"
                             title={t('forum.postDetail.reportMessage')}
                           >
                             <Flag className="w-4 h-4" />
@@ -815,7 +815,7 @@ export default function PostDetailPage() {
         ) : (
           <div className="bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200 rounded-xl p-8 text-center">
             <div className="max-w-md mx-auto">
-              <div className="w-16 h-16 bg-[#5EA3C0] rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-brand-ink rounded-full flex items-center justify-center mx-auto mb-4">
                 <MessageCircle className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">{t('forum.postDetail.joinConversation')}</h3>
@@ -825,13 +825,13 @@ export default function PostDetailPage() {
               <div className="flex gap-3 justify-center">
                 <Link
                   to="/auth/register"
-                  className="px-6 py-3 bg-[#5EA3C0] text-white font-semibold rounded-full hover:bg-[#4d8a9d] transition-colors"
+                  className="px-6 py-3 bg-brand-ink text-white font-semibold rounded-full hover:bg-brand-ink-hover transition-colors"
                 >
                   {t('forum.postDetail.createAccount')}
                 </Link>
                 <Link
                   to="/auth/login"
-                  className="px-6 py-3 bg-white text-[#5EA3C0] font-semibold rounded-full border-2 border-[#5EA3C0] hover:bg-blue-50 transition-colors"
+                  className="px-6 py-3 bg-white text-brand-ink font-semibold rounded-full border-2 border-brand hover:bg-blue-50 transition-colors"
                 >
                   {t('forum.postDetail.login')}
                 </Link>

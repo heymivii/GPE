@@ -151,7 +151,7 @@ function ToolContainer({ title, description, tools, activeToolId, onToolChange, 
             <tool.icon className={`w-4 h-4 ${activeToolId === tool.id ? 'text-white' : 'text-gray-400 group-hover:text-gray-600'}`} />
             <span className="flex-1 text-left">{tool.label}</span>
             {tool.comingSoon && (
-              <span className="text-[10px] font-bold px-1.5 py-0.5 bg-gray-100 text-gray-500 rounded border border-gray-200">
+              <span className="text-[10px] font-bold px-1.5 py-0.5 bg-gray-100 text-gray-600 rounded border border-gray-200">
                 {t('common.comingSoon')}
               </span>
             )}
@@ -330,11 +330,11 @@ function RentCalculatorTool({ countryName }: { countryName?: string }) {
             <span className="text-4xl font-bold text-gray-900 tracking-tight">
               {budget != null && budget > 0 ? budget.toLocaleString(getCurrentLocale()) : '---'}
             </span>
-            <span className="text-xl font-medium text-gray-400">{displaySymbol}</span>
+            <span className="text-xl font-medium text-gray-500">{displaySymbol}</span>
           </div>
-          <p className="text-sm text-gray-400">{t('services.tools.rentCalculator.maxPerMonth')}</p>
+          <p className="text-sm text-gray-500">{t('services.tools.rentCalculator.maxPerMonth')}</p>
           {showConversion && budget != null && budget > 0 && (
-            <p className="text-xs text-gray-400 mt-2">
+            <p className="text-xs text-gray-500 mt-2">
               {t('services.tools.rentCalculator.converted', { from: inputCurrency, to: displayCurrency })}
             </p>
           )}

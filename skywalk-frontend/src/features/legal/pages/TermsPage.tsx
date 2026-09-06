@@ -76,7 +76,7 @@ export default function TermsPage() {
         <p>
           Ces conditions peuvent être modifiées. En cas de changement substantiel, les membres sont
           informés. Pour toute question :{' '}
-          <a href="mailto:contact@skywalk.com" className="font-medium text-[#5EA3C0] hover:underline">
+          <a href="mailto:contact@skywalk.com" className="font-medium text-brand-ink hover:underline">
             contact@skywalk.com
           </a>
           .

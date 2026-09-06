@@ -254,7 +254,7 @@ export default function VisaStats({ countryName }: VisaStatsProps) {
                     <div className="flex-1 min-w-0 overflow-hidden">
                       <h3 className="font-semibold text-gray-900 break-words">{t(`visa.steps.${step.title}`)}</h3>
                       <p className="text-sm text-gray-500 mt-0.5 break-words">{t(`visa.steps.${step.description}`)}</p>
-                      <span className="inline-flex items-center gap-1 mt-1 text-xs text-gray-400"><Clock className="w-3 h-3" /> {t(`visa.timelines.${step.timeline}`)}</span>
+                      <span className="inline-flex items-center gap-1 mt-1 text-xs text-gray-500"><Clock className="w-3 h-3" /> {t(`visa.timelines.${step.timeline}`)}</span>
                     </div>
                     <ChevronDown className={`w-4 h-4 text-gray-400 mt-3 flex-shrink-0 transition-transform ${expandedStep === i ? 'rotate-180' : ''}`} />
                   </button>
@@ -392,7 +392,7 @@ export default function VisaStats({ countryName }: VisaStatsProps) {
                   ) : (
                     <Circle className="w-5 h-5 text-gray-300 flex-shrink-0" />
                   )}
-                  <span className={`text-sm ${checked ? 'text-gray-400 line-through' : 'text-gray-700'}`}>
+                  <span className={`text-sm ${checked ? 'text-gray-500 line-through' : 'text-gray-700'}`}>
                     {t(`visa.checklistItems.${item.label}`)}
                   </span>
                 </button>
@@ -423,7 +423,7 @@ export default function VisaStats({ countryName }: VisaStatsProps) {
                   <span className="text-sm font-semibold text-white block">
                     {t('visa.goToProjectChecklist')}
                   </span>
-                  <span className="text-xs text-gray-400">
+                  <span className="text-xs text-gray-500">
                     {t('visa.projectChecklistHint', { count: projectsForCountry.length })}
                   </span>
                 </div>
@@ -538,7 +538,7 @@ function VisaGeneralOverview() {
           </div>
           <div>
             <h2 className="text-xl font-bold">{g('heroTitle')}</h2>
-            <p className="text-gray-400 text-sm">{g('heroSubtitle')}</p>
+            <p className="text-gray-500 text-sm">{g('heroSubtitle')}</p>
           </div>
         </div>
         <p className="text-gray-300 text-sm leading-relaxed mt-4">
@@ -700,7 +700,7 @@ function VisaGeneralOverview() {
       <section className="bg-gray-900 rounded-2xl p-8 text-white text-center">
         <Shield className="w-10 h-10 mx-auto mb-4 text-gray-400" />
         <h3 className="text-lg font-bold mb-2">{g('ctaTitle')}</h3>
-        <p className="text-sm text-gray-400 mb-4 max-w-lg mx-auto">{g('ctaDesc')}</p>
+        <p className="text-sm text-gray-500 mb-4 max-w-lg mx-auto">{g('ctaDesc')}</p>
       </section>
     </div>
   );

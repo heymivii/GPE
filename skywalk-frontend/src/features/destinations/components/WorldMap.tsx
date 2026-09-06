@@ -183,14 +183,14 @@ export default function WorldMap() {
   };
 
   return (
-    <div className="relative rounded-3xl border border-gray-100 bg-gradient-to-b from-[#5EA3C0]/10 via-white to-white overflow-hidden">
+    <div className="relative rounded-3xl border border-gray-100 bg-gradient-to-b from-brand/10 via-white to-white overflow-hidden">
       <div className="px-6 pt-5 flex flex-wrap items-baseline justify-between gap-2">
         <h2 className="text-lg font-bold text-gray-900">
           {t('worldMap.title', { defaultValue: 'Où peut-on partir avec SkyWalk ?' })}
         </h2>
         <div className="flex items-center gap-4 text-xs text-gray-500">
           <span className="inline-flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#5EA3C0]" />
+            <span className="w-2.5 h-2.5 rounded-full bg-brand-ink" />
             {t('worldMap.available', { defaultValue: 'Disponible' })} ({SUPPORTED_COUNTRIES.length})
           </span>
           <span className="inline-flex items-center gap-1.5">
@@ -317,13 +317,13 @@ export default function WorldMap() {
                 )}
               </p>
               {hover.territory ? (
-                <p className="text-[11px] text-gray-400 whitespace-nowrap">
+                <p className="text-[11px] text-gray-500 whitespace-nowrap">
                   {t('worldMap.territoryNoData', {
                     defaultValue: 'Pas encore de données pour ce territoire',
                   })}
                 </p>
               ) : (
-                <p className="text-[11px] font-medium text-[#5EA3C0] whitespace-nowrap">
+                <p className="text-[11px] font-medium text-brand-ink whitespace-nowrap">
                   {t('worldMap.clickToExplore', { defaultValue: 'Disponible — cliquer pour explorer' })}
                 </p>
               )}
@@ -331,7 +331,7 @@ export default function WorldMap() {
           ) : (
             <>
               <p className="text-sm font-medium text-gray-700 whitespace-nowrap">{hover.name}</p>
-              <p className="text-[11px] text-gray-400 whitespace-nowrap">
+              <p className="text-[11px] text-gray-500 whitespace-nowrap">
                 {t('worldMap.notYet', { defaultValue: 'Bientôt disponible' })}
               </p>
             </>

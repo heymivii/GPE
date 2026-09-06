@@ -149,6 +149,7 @@ export default function ProjectDetailPage() {
               <button
                 onClick={() => navigate('/projects')}
                 className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-500"
+                aria-label={t('projectDetail.back', { defaultValue: 'Retour à mes projets' })}
               >
                 <ArrowLeft className="w-6 h-6" />
               </button>

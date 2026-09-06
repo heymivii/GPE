@@ -86,7 +86,7 @@ export default function WeatherWidget({
           <p className="text-sm text-gray-500">
             {t('dashboard.personalized.widgets.weather.error.title')}
           </p>
-          <p className="text-xs text-gray-400 mt-1">
+          <p className="text-xs text-gray-500 mt-1">
             {t('dashboard.personalized.widgets.weather.error.message')}
           </p>
         </div>
@@ -154,7 +154,7 @@ export default function WeatherWidget({
           </div>
         </div>
 
-        <p className="text-xs text-gray-400 text-center">
+        <p className="text-xs text-gray-500 text-center">
           {t('dashboard.personalized.widgets.weather.updated')}
         </p>
       </div>

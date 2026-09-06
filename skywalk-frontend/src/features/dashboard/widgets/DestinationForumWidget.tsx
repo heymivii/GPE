@@ -56,7 +56,7 @@ export default function DestinationForumWidget({
       currentSize={currentSize}
     >
       {isLoading ? (
-        <div className="flex justify-center py-6 text-gray-400 flex-grow">
+        <div className="flex justify-center py-6 text-gray-500 flex-grow">
           <Loader2 className="w-5 h-5 animate-spin" />
         </div>
       ) : countryTopics.length === 0 ? (
@@ -70,7 +70,7 @@ export default function DestinationForumWidget({
           </p>
           <Link
             to="/forum/new"
-            className="inline-flex items-center gap-1 text-xs font-medium text-[#5EA3C0] hover:underline"
+            className="inline-flex items-center gap-1 text-xs font-medium text-brand-ink hover:underline"
           >
             <Plus className="w-3.5 h-3.5" />
             {t('dashboard.personalized.widgets.destinationForum.start', { defaultValue: 'Lancer une discussion' })}
@@ -88,7 +88,7 @@ export default function DestinationForumWidget({
                   <MessageCircle className="w-4 h-4 text-gray-300 mt-0.5 flex-shrink-0" />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-gray-800 truncate">{tp.title}</p>
-                    <p className="text-[11px] text-gray-400">
+                    <p className="text-[11px] text-gray-500">
                       {fmtDate(tp.created_at)}
                       {tp.views_count ? ` · ${tp.views_count} vues` : ''}
                     </p>
@@ -100,7 +100,7 @@ export default function DestinationForumWidget({
 
           <Link
             to="/forum"
-            className="mt-auto pt-3 inline-flex items-center gap-1 text-xs font-medium text-[#5EA3C0] hover:underline"
+            className="mt-auto pt-3 inline-flex items-center gap-1 text-xs font-medium text-brand-ink hover:underline"
           >
             {t('dashboard.personalized.widgets.destinationForum.seeAll', { defaultValue: 'Voir tout le forum' })}
             <ArrowRight className="w-3.5 h-3.5" />

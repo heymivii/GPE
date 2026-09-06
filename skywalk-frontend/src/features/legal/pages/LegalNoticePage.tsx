@@ -15,7 +15,7 @@ export default function LegalNoticePage() {
           Adresse : <ToFill>à compléter</ToFill>, Paris, France
           <br />
           Contact :{' '}
-          <a href="mailto:contact@skywalk.com" className="font-medium text-[#5EA3C0] hover:underline">
+          <a href="mailto:contact@skywalk.com" className="font-medium text-brand-ink hover:underline">
             contact@skywalk.com
           </a>{' '}
           — +33 6 58 28 63 80
@@ -65,7 +65,7 @@ export default function LegalNoticePage() {
         <p>
           Un contenu vous semble illicite ou erroné ? Signalez-le depuis le bouton prévu sur chaque
           message du forum, ou écrivez à{' '}
-          <a href="mailto:contact@skywalk.com" className="font-medium text-[#5EA3C0] hover:underline">
+          <a href="mailto:contact@skywalk.com" className="font-medium text-brand-ink hover:underline">
             contact@skywalk.com
           </a>
           .

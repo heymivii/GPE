@@ -214,7 +214,7 @@ export default function GlobalSearchModal({ isOpen, onClose }: Props) {
               value={query}
               onChange={(e) => handleChange(e.target.value)}
               placeholder={t('globalSearch.placeholder')}
-              className="flex-1 bg-transparent text-base text-gray-900 placeholder:text-gray-400 outline-none"
+              className="flex-1 bg-transparent text-base text-gray-900 placeholder:text-gray-500 outline-none"
             />
             {isLoading && (
               <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
@@ -238,7 +238,7 @@ export default function GlobalSearchModal({ isOpen, onClose }: Props) {
           >
             {!query && (
               <div className="p-4">
-                <p className="mb-3 text-xs font-medium uppercase tracking-wider text-gray-400">
+                <p className="mb-3 text-xs font-medium uppercase tracking-wider text-gray-500">
                   {t('globalSearch.quickActions')}
                 </p>
                 <div className="space-y-1">
@@ -290,7 +290,7 @@ export default function GlobalSearchModal({ isOpen, onClose }: Props) {
                 <div key={cat} className="border-b border-gray-50 last:border-none">
                   <div className="flex items-center gap-2 px-4 pt-3 pb-1">
                     <CatIcon className={`h-3.5 w-3.5 ${meta.color.split(' ')[0]}`} />
-                    <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-500">
                       {t(meta.labelKey)}
                     </span>
                     <span className="text-[10px] text-gray-300">
@@ -312,7 +312,7 @@ export default function GlobalSearchModal({ isOpen, onClose }: Props) {
             })}
           </div>
 
-          <div className="flex items-center justify-between border-t border-gray-100 px-4 py-2.5 text-[11px] text-gray-400">
+          <div className="flex items-center justify-between border-t border-gray-100 px-4 py-2.5 text-[11px] text-gray-500">
             <div className="flex items-center gap-3">
               <span className="flex items-center gap-1">
                 <kbd className="rounded border border-gray-200 bg-gray-50 px-1.5 py-0.5 text-[10px]">↑↓</kbd>

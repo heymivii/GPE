@@ -228,9 +228,9 @@ describe('RegisterForm', () => {
       renderForm();
       const user = userEvent.setup();
       await user.type(screen.getByPlaceholderText('auth.register.password'), 'alllowercase');
-      expect(screen.getByText('A')).toHaveClass('text-gray-400'); // no uppercase
-      expect(screen.getByText('0')).toHaveClass('text-gray-400'); // no digit
-      expect(screen.getByText('!')).toHaveClass('text-gray-400'); // no special char
+      expect(screen.getByText('A')).toHaveClass('text-gray-500'); // no uppercase
+      expect(screen.getByText('0')).toHaveClass('text-gray-500'); // no digit
+      expect(screen.getByText('!')).toHaveClass('text-gray-500'); // no special char
     });
   });
 });

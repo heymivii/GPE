@@ -82,7 +82,7 @@ export default function AdminLayout() {
       {/* Mobile Header */}
       <header className="md:hidden flex items-center justify-between px-4 py-4 bg-slate-900 text-white shadow-md z-30 flex-shrink-0">
         <div className="flex items-center gap-2">
-          <ShieldAlert className="w-6 h-6 text-[#5EA3C0]" />
+          <ShieldAlert className="w-6 h-6 text-brand-ink" />
           <span className="font-semibold text-lg tracking-wider">Console Admin</span>
         </div>
         <button
@@ -102,23 +102,23 @@ export default function AdminLayout() {
         <div className="flex-1 flex flex-col overflow-y-auto min-h-0">
           {/* Logo Section */}
           <div className="p-6 flex items-center gap-3 border-b border-slate-800 flex-shrink-0">
-            <div className="bg-[#5EA3C0]/15 p-2 rounded-lg">
-              <ShieldAlert className="w-6 h-6 text-[#5EA3C0]" />
+            <div className="bg-brand-ink/15 p-2 rounded-lg">
+              <ShieldAlert className="w-6 h-6 text-brand-ink" />
             </div>
             <div>
-              <h1 className="font-bold text-white tracking-wide text-lg">SkyWalk</h1>
-              <p className="text-[10px] text-gray-400 uppercase tracking-widest font-semibold">Console d'Admin</p>
+              <span className="font-bold text-white tracking-wide text-lg">SkyWalk</span>
+              <p className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold">Console d'Admin</p>
             </div>
           </div>
 
           {/* User Profile Summary + review notifications */}
           <div className="px-6 py-4 flex items-center gap-3 bg-slate-950/40 border-b border-slate-800 flex-shrink-0">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#5EA3C0] to-[#4891b0] text-white flex items-center justify-center font-bold text-sm">
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-brand to-brand-deep text-white flex items-center justify-center font-bold text-sm">
               {user?.fullName?.charAt(0).toUpperCase() || 'A'}
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-sm font-semibold text-white truncate">{user?.fullName}</p>
-              <p className="text-[10px] text-gray-400 truncate">{user?.email}</p>
+              <p className="text-[10px] text-gray-500 truncate">{user?.email}</p>
             </div>
             <NotificationBell />
           </div>
@@ -135,7 +135,7 @@ export default function AdminLayout() {
                   onClick={() => setMobileMenuOpen(false)}
                   className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
                     active
-                      ? 'bg-[#5EA3C0] text-white shadow-md shadow-[#5EA3C0]/20'
+                      ? 'bg-brand-ink text-white shadow-md shadow-brand/20'
                       : 'hover:bg-slate-800 hover:text-white'
                   }`}
                 >

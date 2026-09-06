@@ -85,7 +85,7 @@ export default function LoginForm() {
 
         <Link 
           to="/auth/pwdForgot" 
-          className="text-sm text-[#5EA3C0] hover:text-[#4a8ca0] transition-colors"
+          className="text-sm text-brand-ink hover:text-brand-ink-hover transition-colors"
         >
           {t("auth.login.forgotPassword")}
         </Link>

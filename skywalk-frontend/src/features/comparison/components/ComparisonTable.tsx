@@ -287,7 +287,7 @@ export default function ComparisonTable({ countries, isAuthenticated = true, all
 
       <div className="hidden sm:block sticky top-16 md:top-20 z-20 bg-white/95 backdrop-blur-xl border-b border-gray-200/80 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] py-4 sm:py-6 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 transition-all overflow-x-auto">
         <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr] lg:grid-cols-[200px_1fr] gap-4 sm:gap-8 max-w-7xl mx-auto items-end min-w-0 px-4 sm:px-8">
-          <div className="hidden sm:block pb-2 text-xs font-bold text-gray-400 uppercase tracking-widest">
+          <div className="hidden sm:block pb-2 text-xs font-bold text-gray-500 uppercase tracking-widest">
             {t('comparison.tableHeader')}
           </div>
           <div className={`grid gap-4 sm:gap-8 ${colClass}`}>
@@ -326,7 +326,7 @@ export default function ComparisonTable({ countries, isAuthenticated = true, all
 
       <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-8">
         <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
-          <div className="p-1.5 sm:p-2 bg-white rounded-lg text-[#5EA3C0] shadow-sm border border-gray-100">
+          <div className="p-1.5 sm:p-2 bg-white rounded-lg text-brand-ink shadow-sm border border-gray-100">
             <Zap className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
           <h3 className="text-base sm:text-lg font-bold text-gray-900">{t('comparison.sections.overview')}</h3>
@@ -543,7 +543,7 @@ export default function ComparisonTable({ countries, isAuthenticated = true, all
                 />
 
                 <div className="px-4 sm:px-8 py-3 bg-gray-50/50 border-t border-gray-100">
-                  <p className="text-[10px] sm:text-xs text-gray-400 flex items-center gap-1.5">
+                  <p className="text-[10px] sm:text-xs text-gray-500 flex items-center gap-1.5">
                     <Home className="w-3.5 h-3.5" />
                     {t('comparison.numbeoPropertySource', { defaultValue: 'Source : Numbeo (property investment) — indicateurs au niveau pays.' })}
                   </p>
@@ -585,7 +585,7 @@ export default function ComparisonTable({ countries, isAuthenticated = true, all
                   highlightBest="highest" colClass={colClass} colors={RADAR_COLORS}
                 />
                 <div className="px-4 sm:px-8 py-3 bg-gray-50/50 border-t border-gray-100">
-                  <p className="text-[10px] sm:text-xs text-gray-400 flex items-center gap-1.5">
+                  <p className="text-[10px] sm:text-xs text-gray-500 flex items-center gap-1.5">
                     <Activity className="w-3.5 h-3.5" />
                     {t('comparison.numbeoQolSource', { defaultValue: 'Source : Numbeo (quality of life) — indices au niveau pays.' })}
                   </p>
@@ -699,7 +699,7 @@ export default function ComparisonTable({ countries, isAuthenticated = true, all
                 />
 
                 <div className="px-4 sm:px-8 py-3 bg-gray-50/50 border-t border-gray-100">
-                  <p className="text-[10px] sm:text-xs text-gray-400 flex items-center gap-1.5">
+                  <p className="text-[10px] sm:text-xs text-gray-500 flex items-center gap-1.5">
                     <Users className="w-3.5 h-3.5" />
                     {t('comparison.oecdSource')}
                   </p>
@@ -732,11 +732,11 @@ function PremiumGate() {
   const { t } = useTranslation()
   return (
     <div className="relative overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-2xl shadow-gray-900/5 mt-8">
-      <div className="absolute -top-24 -right-24 w-96 h-96 bg-[#5EA3C0]/10 rounded-full blur-3xl opacity-50" />
+      <div className="absolute -top-24 -right-24 w-96 h-96 bg-brand-ink/10 rounded-full blur-3xl opacity-50" />
       <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-gray-50 rounded-full blur-3xl opacity-50" />
 
       <div className="relative p-8 md:p-12 text-center">
-        <div className="inline-flex items-center justify-center w-20 h-20 mb-8 rounded-3xl bg-[#5EA3C0] text-white shadow-lg shadow-[#5EA3C0]/30 transform rotate-3 hover:rotate-6 transition-transform duration-300">
+        <div className="inline-flex items-center justify-center w-20 h-20 mb-8 rounded-3xl bg-brand-ink text-white shadow-lg shadow-brand/30 transform rotate-3 hover:rotate-6 transition-transform duration-300">
           <Lock className="w-10 h-10" />
         </div>
 
@@ -756,7 +756,7 @@ function PremiumGate() {
             t('comparison.premiumAccess.benefits.unlimited', { max: 5 })
           ].map((benefit, index) => (
             <div key={index} className="flex items-center gap-4 p-4 rounded-2xl bg-white border border-gray-100 shadow-sm">
-              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#5EA3C0]/10 text-[#5EA3C0] flex items-center justify-center">
+              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-brand-ink/10 text-brand-ink flex items-center justify-center">
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
@@ -775,13 +775,13 @@ function PremiumGate() {
           </Link>
           <Link
             to="/auth/login"
-            className="w-full sm:w-auto px-8 py-4 bg-white text-gray-900 rounded-xl font-bold border border-gray-200 hover:bg-gray-50 transition-all hover:border-[#5EA3C0] hover:text-[#5EA3C0]"
+            className="w-full sm:w-auto px-8 py-4 bg-white text-gray-900 rounded-xl font-bold border border-gray-200 hover:bg-gray-50 transition-all hover:border-brand hover:text-brand-ink"
           >
             {t('comparison.premiumAccess.login')}
           </Link>
         </div>
 
-        <p className="mt-8 text-sm font-medium text-gray-400">
+        <p className="mt-8 text-sm font-medium text-gray-500">
           {t('comparison.premiumAccess.footer')}
         </p>
       </div>

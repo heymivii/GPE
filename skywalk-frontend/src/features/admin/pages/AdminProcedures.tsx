@@ -223,7 +223,7 @@ export default function AdminProcedures() {
           </button>
           <button
             onClick={openCreateModal}
-            className="flex items-center gap-2 bg-[#5EA3C0] hover:bg-[#4891b0] text-white px-4 py-2 rounded-lg font-semibold text-sm transition-colors shadow-sm"
+            className="flex items-center gap-2 bg-brand-ink hover:bg-brand-ink-hover text-white px-4 py-2 rounded-lg font-semibold text-sm transition-colors shadow-sm"
           >
             <Plus className="w-4 h-4" />
             Ajouter une démarche
@@ -242,7 +242,7 @@ export default function AdminProcedures() {
             <select
               value={selectedCountryId || ''}
               onChange={(e) => setSelectedCountryId(parseInt(e.target.value, 10))}
-              className="bg-gray-50 border border-gray-200 rounded-lg text-sm font-semibold text-gray-800 px-3 py-2 outline-none focus:border-[#5EA3C0] focus:ring-1 focus:ring-[#5EA3C0]"
+              className="bg-gray-50 border border-gray-200 rounded-lg text-sm font-semibold text-gray-800 px-3 py-2 outline-none focus:border-brand focus:ring-1 focus:ring-brand"
             >
               {countries.map((c: any) => (
                 <option key={c.idCountry} value={c.idCountry}>
@@ -252,7 +252,7 @@ export default function AdminProcedures() {
             </select>
           )}
         </div>
-        <span className="text-xs text-gray-400 font-medium">
+        <span className="text-xs text-gray-500 font-medium">
           {filteredProcedures.length} étape(s) configurée(s) pour ce pays.
         </span>
       </div>
@@ -298,7 +298,7 @@ export default function AdminProcedures() {
       {/* Procedures Table */}
       {proceduresLoading ? (
         <div className="flex items-center justify-center min-h-[40vh]">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#5EA3C0]"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand"></div>
         </div>
       ) : (
         <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
@@ -350,7 +350,7 @@ export default function AdminProcedures() {
                         <button
                           onClick={() => openEditModal(proc)}
                           disabled={isPending}
-                          className="p-1.5 hover:bg-gray-100 text-gray-600 hover:text-[#5EA3C0] rounded-lg transition-colors"
+                          className="p-1.5 hover:bg-gray-100 text-gray-600 hover:text-brand-ink rounded-lg transition-colors"
                           title="Modifier"
                         >
                           <Edit2 className="w-4 h-4" />
@@ -370,7 +370,7 @@ export default function AdminProcedures() {
 
                 {filteredProcedures.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="py-12 text-center text-gray-400">
+                    <td colSpan={6} className="py-12 text-center text-gray-500">
                       Aucune démarche configurée pour ce pays. Cliquez sur "Ajouter une démarche" pour commencer.
                     </td>
                   </tr>
@@ -390,7 +390,7 @@ export default function AdminProcedures() {
               <h2 className="text-lg font-bold text-gray-900">
                 {editingProcedure ? 'Modifier la démarche' : 'Ajouter une démarche'}
               </h2>
-              <button onClick={closeModal} className="p-1.5 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-200 transition-colors">
+              <button onClick={closeModal} className="p-1.5 text-gray-500 hover:text-gray-600 rounded-lg hover:bg-gray-200 transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -406,7 +406,7 @@ export default function AdminProcedures() {
                   value={procedureType}
                   onChange={(e) => setProcedureType(e.target.value)}
                   placeholder="Ex: Demander le numéro de sécurité sociale"
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:bg-white focus:border-[#5EA3C0] focus:ring-1 focus:ring-[#5EA3C0]"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:bg-white focus:border-brand focus:ring-1 focus:ring-brand"
                 />
               </div>
 
@@ -418,7 +418,7 @@ export default function AdminProcedures() {
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:bg-white focus:border-[#5EA3C0]"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:bg-white focus:border-brand"
                   >
                     <option value="visa">Visa</option>
                     <option value="pre-departure">Avant départ</option>
@@ -441,7 +441,7 @@ export default function AdminProcedures() {
                     min={1}
                     value={stepOrder}
                     onChange={(e) => setStepOrder(parseInt(e.target.value, 10))}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:bg-white focus:border-[#5EA3C0]"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:bg-white focus:border-brand"
                   />
                 </div>
 
@@ -454,7 +454,7 @@ export default function AdminProcedures() {
                     min={0}
                     value={averageDelayDays}
                     onChange={(e) => setAverageDelayDays(parseInt(e.target.value, 10))}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:bg-white focus:border-[#5EA3C0]"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:bg-white focus:border-brand"
                   />
                 </div>
               </div>
@@ -467,7 +467,7 @@ export default function AdminProcedures() {
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Expliquez brièvement l'objet de cette démarche administrative..."
                   rows={4}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:bg-white focus:border-[#5EA3C0] focus:ring-1 focus:ring-[#5EA3C0] resize-none"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:bg-white focus:border-brand focus:ring-1 focus:ring-brand resize-none"
                 />
               </div>
 
@@ -483,7 +483,7 @@ export default function AdminProcedures() {
                 <button
                   type="submit"
                   disabled={isPending}
-                  className="px-5 py-2.5 bg-[#5EA3C0] hover:bg-[#4891b0] text-white text-sm font-bold rounded-xl transition-colors shadow-sm flex items-center gap-1.5"
+                  className="px-5 py-2.5 bg-brand-ink hover:bg-brand-ink-hover text-white text-sm font-bold rounded-xl transition-colors shadow-sm flex items-center gap-1.5"
                 >
                   {isPending && <RefreshCw className="w-3.5 h-3.5 animate-spin" />}
                   Sauvegarder

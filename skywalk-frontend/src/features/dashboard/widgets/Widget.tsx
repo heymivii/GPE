@@ -77,7 +77,9 @@ export default function Widget({
           <div className="relative">
             <button
               onClick={() => setShowMenu(!showMenu)}
-              className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-50"
+              className="text-gray-500 hover:text-gray-600 p-1 rounded-full hover:bg-gray-50"
+              aria-expanded={showMenu}
+              aria-label={`Options — ${title}`}
             >
               <MoreHorizontal className="w-5 h-5" />
             </button>
@@ -111,7 +113,7 @@ export default function Widget({
                 {onResize && (
                   <>
                     <div className="border-t border-gray-100 my-1" />
-                    <p className="px-4 py-1.5 text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    <p className="px-4 py-1.5 text-xs font-medium text-gray-500 uppercase tracking-wider">
                       {t('dashboard.personalized.widgets.menu.resize')}
                     </p>
                     <div className="px-3 pb-2 flex gap-1.5">

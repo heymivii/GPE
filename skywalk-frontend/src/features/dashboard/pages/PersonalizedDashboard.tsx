@@ -470,7 +470,7 @@ export default function PersonalizedDashboard() {
               </svg>
             </div>
             <div className="min-w-0">
-              <p className="text-[11px] text-gray-400 uppercase tracking-wide">{t('dashboard.personalized.stats.projectStatus.label')}</p>
+              <p className="text-[11px] text-gray-500 uppercase tracking-wide">{t('dashboard.personalized.stats.projectStatus.label')}</p>
               <div className="flex items-center gap-2">
                 <p className="text-sm font-bold text-gray-900 truncate">
                   {activeProject?.projectStatus === 'planning' && t('dashboard.personalized.stats.projectStatus.planning')}
@@ -498,7 +498,7 @@ export default function PersonalizedDashboard() {
               </svg>
             </div>
             <div className="min-w-0">
-              <p className="text-[11px] text-gray-400 uppercase tracking-wide">{t('dashboard.personalized.stats.departureDate.label')}</p>
+              <p className="text-[11px] text-gray-500 uppercase tracking-wide">{t('dashboard.personalized.stats.departureDate.label')}</p>
               <div className="flex items-center gap-2">
                 <p className="text-sm font-bold text-gray-900 truncate">
                   {activeProject?.expectedDepartureDate
@@ -523,7 +523,7 @@ export default function PersonalizedDashboard() {
               </svg>
             </div>
             <div className="min-w-0">
-              <p className="text-[11px] text-gray-400 uppercase tracking-wide">{t('dashboard.personalized.stats.housingBudget.label')}</p>
+              <p className="text-[11px] text-gray-500 uppercase tracking-wide">{t('dashboard.personalized.stats.housingBudget.label')}</p>
               <p className="text-sm font-bold text-gray-900 truncate">
                 {activeProject?.housingBudget
                   ? `${Number(activeProject.housingBudget).toLocaleString()} ${originCountryData?.currency || 'EUR'}`
@@ -539,7 +539,7 @@ export default function PersonalizedDashboard() {
               </svg>
             </div>
             <div className="min-w-0">
-              <p className="text-[11px] text-gray-400 uppercase tracking-wide">{t('dashboard.personalized.stats.duration.label')}</p>
+              <p className="text-[11px] text-gray-500 uppercase tracking-wide">{t('dashboard.personalized.stats.duration.label')}</p>
               <p className="text-sm font-bold text-gray-900 truncate">
                 {activeProject?.expectedDuration
                   ? (() => {
@@ -628,7 +628,7 @@ export default function PersonalizedDashboard() {
               </div>
               <button
                 onClick={() => setShowAddWidget(false)}
-                className="p-2 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+                className="p-2 rounded-full hover:bg-gray-100 text-gray-500 hover:text-gray-600 transition-colors"
               >
                 <X className="w-6 h-6" />
               </button>
@@ -688,7 +688,7 @@ export default function PersonalizedDashboard() {
                             </span>
                           )}
                         </div>
-                        <p className={`text-sm leading-relaxed ${isAdded ? 'text-gray-400' : 'text-gray-500'}`}>
+                        <p className={`text-sm leading-relaxed ${isAdded ? 'text-gray-500' : 'text-gray-500'}`}>
                           {widget.description}
                         </p>
 

@@ -88,7 +88,7 @@ export default function SearchBar({ initialQuery = '', onSearch, placeholder }: 
             <button
               type="button"
               onClick={clearQuery}
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-600"
             >
               <X className="w-5 h-5" />
             </button>

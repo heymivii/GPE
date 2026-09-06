@@ -117,7 +117,7 @@ export default function HealthStats({ countryName, cityName }: HealthStatsProps)
         <div className="flex flex-col items-center justify-center py-16 text-center">
           <AlertCircle className="w-10 h-10 text-red-400 mb-3" />
           <p className="text-gray-600">{t('services.stats.common.errorLoad', { service: t('services.categories.sante.title'), city: mapping.displayName })}</p>
-          <p className="text-sm text-gray-400 mt-1">{t('services.stats.common.retryLater')}</p>
+          <p className="text-sm text-gray-500 mt-1">{t('services.stats.common.retryLater')}</p>
         </div>
       </section>
     );
@@ -145,7 +145,7 @@ export default function HealthStats({ countryName, cityName }: HealthStatsProps)
         {fp(value)}{suffix}
       </p>
       {!same && value != null && value > 0 && (
-        <p className="text-xs text-gray-400 mt-0.5">{formatNumber(value, 0)} {localCur}{suffix}</p>
+        <p className="text-xs text-gray-500 mt-0.5">{formatNumber(value, 0)} {localCur}{suffix}</p>
       )}
     </>
   );
@@ -321,7 +321,7 @@ export default function HealthStats({ countryName, cityName }: HealthStatsProps)
           )}
           {' '}{t('services.stats.health.insuranceCostsNote')}
           {data.currency.lastUpdated && (
-            <span className="text-gray-400"> — {t('services.stats.common.lastUpdated')} {new Date(data.currency.lastUpdated).toLocaleDateString(getCurrentLocale())}</span>
+            <span className="text-gray-500"> — {t('services.stats.common.lastUpdated')} {new Date(data.currency.lastUpdated).toLocaleDateString(getCurrentLocale())}</span>
           )}
         </p>
       </div>
@@ -343,7 +343,7 @@ function PriceRow({ label, value, suffix, localCur, bold }: {
         <span className={`text-sm text-gray-900 ${bold ? 'font-bold text-base' : 'font-semibold'}`}>
           {formatPrice(value, localCur)}{suffix}
           {!same && value != null && value > 0 && (
-            <span className="text-gray-400 text-xs font-normal ml-1.5">
+            <span className="text-gray-500 text-xs font-normal ml-1.5">
               ({formatNumber(value, 0)} {localCur})
             </span>
           )}

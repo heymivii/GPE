@@ -27,8 +27,8 @@ export default function ServicesIndexPage() {
                   className="relative block bg-gray-50 rounded-2xl border border-gray-200 p-8 opacity-60 cursor-default select-none"
                 >
                   <div className="absolute top-4 right-4 flex items-center gap-1.5 px-3 py-1 bg-gray-200 rounded-full">
-                    <Lock className="w-3 h-3 text-gray-500" />
-                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+                    <Lock className="w-3 h-3 text-gray-600" />
+                    <span className="text-[10px] font-bold text-gray-600 uppercase tracking-wider">
                       {t('services.indexPage.comingSoon', 'À venir')}
                     </span>
                   </div>
@@ -39,11 +39,11 @@ export default function ServicesIndexPage() {
                     </div>
                   </div>
 
-                  <h3 className="text-xl font-bold text-gray-400 mb-3">
+                  <h3 className="text-xl font-bold text-gray-500 mb-3">
                     {service.title}
                   </h3>
 
-                  <p className="text-gray-400 leading-relaxed mb-4 line-clamp-3">
+                  <p className="text-gray-500 leading-relaxed mb-4 line-clamp-3">
                     {service.description}
                   </p>
                 </div>
@@ -54,18 +54,18 @@ export default function ServicesIndexPage() {
               <Link 
                 key={service.id} 
                 to={`/services/${service.id}`}
-                className="group block bg-white rounded-2xl border border-gray-200 p-8 hover:border-[#5EA3C0] transition-all duration-300"
+                className="group block bg-white rounded-2xl border border-gray-200 p-8 hover:border-brand transition-all duration-300"
               >
                 <div className="flex items-start justify-between mb-6">
-                  <div className="w-14 h-14 rounded-xl bg-[#5EA3C0]/10 flex items-center justify-center group-hover:bg-[#5EA3C0] transition-colors duration-300">
-                    <Icon className="w-7 h-7 text-[#5EA3C0] group-hover:text-white transition-colors duration-300" strokeWidth={1.5} />
+                  <div className="w-14 h-14 rounded-xl bg-brand-ink/10 flex items-center justify-center group-hover:bg-brand-ink transition-colors duration-300">
+                    <Icon className="w-7 h-7 text-brand-ink group-hover:text-white transition-colors duration-300" strokeWidth={1.5} />
                   </div>
-                  <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-[#5EA3C0]/10 transition-colors">
-                    <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-[#5EA3C0] transition-colors" />
+                  <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-brand-ink/10 transition-colors">
+                    <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-brand-ink transition-colors" />
                   </div>
                 </div>
                 
-                <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-[#5EA3C0] transition-colors">
+                <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-brand-ink transition-colors">
                   {service.title}
                 </h3>
                 
@@ -73,7 +73,7 @@ export default function ServicesIndexPage() {
                   {service.description}
                 </p>
 
-                <div className="flex items-center text-sm font-medium text-[#5EA3C0] opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
+                <div className="flex items-center text-sm font-medium text-brand-ink opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
                   {t('services.indexPage.learnMore')}
                 </div>
               </Link>

@@ -220,11 +220,11 @@ export default function RegisterForm() {
                 {t("auth.register.strength")} <span className="font-medium">{getStrengthText()}</span>
               </p>
               <div className="flex gap-1 text-xs">
-                <span className={passwordStrength.checks.length ? "text-green-600" : "text-gray-400"}>8+</span>
-                <span className={passwordStrength.checks.uppercase ? "text-green-600" : "text-gray-400"}>A</span>
-                <span className={passwordStrength.checks.lowercase ? "text-green-600" : "text-gray-400"}>a</span>
-                <span className={passwordStrength.checks.number ? "text-green-600" : "text-gray-400"}>0</span>
-                <span className={passwordStrength.checks.special ? "text-green-600" : "text-gray-400"}>!</span>
+                <span className={passwordStrength.checks.length ? "text-green-600" : "text-gray-500"}>8+</span>
+                <span className={passwordStrength.checks.uppercase ? "text-green-600" : "text-gray-500"}>A</span>
+                <span className={passwordStrength.checks.lowercase ? "text-green-600" : "text-gray-500"}>a</span>
+                <span className={passwordStrength.checks.number ? "text-green-600" : "text-gray-500"}>0</span>
+                <span className={passwordStrength.checks.special ? "text-green-600" : "text-gray-500"}>!</span>
               </div>
             </div>
           </div>
@@ -251,11 +251,11 @@ export default function RegisterForm() {
         />
         <span className="text-sm text-gray-700">
           {t("auth.register.terms")}{" "}
-          <Link to="/terms" className="text-[#5EA3C0] hover:underline" target="_blank">
+          <Link to="/terms" className="text-brand-ink hover:underline" target="_blank">
             {t("auth.register.termsOfUse")}
           </Link>{" "}
           {t("auth.register.and")}{" "}
-          <Link to="/privacy" className="text-[#5EA3C0] hover:underline" target="_blank">
+          <Link to="/privacy" className="text-brand-ink hover:underline" target="_blank">
             {t("auth.register.privacyPolicy")}
           </Link>
         </span>

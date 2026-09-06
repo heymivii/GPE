@@ -176,7 +176,7 @@ export default function AdminModeration() {
         </div>
         <div className="flex items-center justify-between mt-2 flex-wrap gap-4">
           <h1 className="text-3xl font-bold text-gray-900 tracking-tight flex items-center gap-2">
-            <ShieldAlert className="w-7 h-7 text-[#5EA3C0]" />
+            <ShieldAlert className="w-7 h-7 text-brand-ink" />
             Modération Forum
           </h1>
           <div className="text-sm text-gray-500">
@@ -200,7 +200,7 @@ export default function AdminModeration() {
               onClick={() => setTab(tItem.id)}
               className={`flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-colors ${
                 active
-                  ? 'border-[#5EA3C0] text-[#5EA3C0]'
+                  ? 'border-brand text-brand-ink'
                   : 'border-transparent text-gray-500 hover:text-gray-800'
               }`}
             >
@@ -208,7 +208,7 @@ export default function AdminModeration() {
               {tItem.label}
               <span
                 className={`text-xs px-1.5 py-0.5 rounded-full ${
-                  active ? 'bg-[#5EA3C0]/10 text-[#5EA3C0]' : 'bg-gray-100 text-gray-500'
+                  active ? 'bg-brand-ink/10 text-brand-ink' : 'bg-gray-100 text-gray-500'
                 }`}
               >
                 {tItem.count}
@@ -228,7 +228,7 @@ export default function AdminModeration() {
                 value={newWord}
                 onChange={(e) => setNewWord(e.target.value)}
                 placeholder="Nouveau mot ou expression…"
-                className="flex-1 min-w-[200px] px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-[#5EA3C0]/20 focus:border-[#5EA3C0]"
+                className="flex-1 min-w-[200px] px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-brand/20 focus:border-brand"
               />
               <select
                 value={newSeverity}
@@ -244,7 +244,7 @@ export default function AdminModeration() {
               <button
                 type="submit"
                 disabled={createMutation.isPending || !newWord.trim()}
-                className="flex items-center gap-2 bg-[#5EA3C0] hover:bg-[#4891b0] text-white px-5 py-2 rounded-xl font-semibold text-sm transition-all shadow-md hover:shadow-lg disabled:opacity-50"
+                className="flex items-center gap-2 bg-brand-ink hover:bg-brand-ink-hover text-white px-5 py-2 rounded-xl font-semibold text-sm transition-all shadow-md hover:shadow-lg disabled:opacity-50"
               >
                 <Plus className="w-4 h-4" /> Ajouter
               </button>
@@ -290,7 +290,7 @@ export default function AdminModeration() {
                 <option value="active">Actifs</option>
                 <option value="inactive">Inactifs</option>
               </select>
-              <span className="text-xs text-gray-400 ml-auto whitespace-nowrap">
+              <span className="text-xs text-gray-500 ml-auto whitespace-nowrap">
                 {filtered.length} résultat{filtered.length > 1 ? 's' : ''}
               </span>
             </div>
@@ -298,11 +298,11 @@ export default function AdminModeration() {
 
           {/* Tableau */}
           {wordsLoading ? (
-            <div className="flex items-center justify-center py-20 text-gray-400">
+            <div className="flex items-center justify-center py-20 text-gray-500">
               <Loader2 className="w-6 h-6 animate-spin" />
             </div>
           ) : filtered.length === 0 ? (
-            <p className="text-sm text-gray-400 text-center py-16">Aucun mot ne correspond.</p>
+            <p className="text-sm text-gray-500 text-center py-16">Aucun mot ne correspond.</p>
           ) : (
             <>
               <table className="w-full text-sm">
@@ -358,7 +358,7 @@ export default function AdminModeration() {
                       <td className="px-4 py-2.5 text-right">
                         <button
                           onClick={() => removeMutation.mutate(w.idForbiddenWord)}
-                          className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                           title="Supprimer"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -403,11 +403,11 @@ export default function AdminModeration() {
             Utilisateurs ayant déclenché au moins un avertissement (mot interdit à la publication).
           </p>
           {usersLoading ? (
-            <div className="flex items-center justify-center py-16 text-gray-400">
+            <div className="flex items-center justify-center py-16 text-gray-500">
               <Loader2 className="w-6 h-6 animate-spin" />
             </div>
           ) : flaggedUsers.length === 0 ? (
-            <p className="text-sm text-gray-400 py-10 text-center">Aucun utilisateur signalé.</p>
+            <p className="text-sm text-gray-500 py-10 text-center">Aucun utilisateur signalé.</p>
           ) : (
             <div className="divide-y divide-gray-100">
               {flaggedUsers.map((u) => {
@@ -425,7 +425,7 @@ export default function AdminModeration() {
                       )}
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-gray-800 truncate">{displayName(u)}</p>
-                        <p className="text-xs text-gray-400 truncate">{u.email}</p>
+                        <p className="text-xs text-gray-500 truncate">{u.email}</p>
                       </div>
                       <span className="text-xs font-semibold px-2 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200 whitespace-nowrap">
                         {u.warningCount} avert.
@@ -434,7 +434,7 @@ export default function AdminModeration() {
                     {open && (
                       <div className="mt-2 ml-7 space-y-1.5">
                         {userWarnings.length === 0 ? (
-                          <p className="text-xs text-gray-400">Chargement…</p>
+                          <p className="text-xs text-gray-500">Chargement…</p>
                         ) : (
                           userWarnings.map((warn) => (
                             <div
@@ -442,7 +442,7 @@ export default function AdminModeration() {
                               className="text-xs text-gray-600 bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 flex items-center justify-between gap-3"
                             >
                               <span className="truncate">{warn.reason}</span>
-                              <span className="text-gray-400 whitespace-nowrap">
+                              <span className="text-gray-500 whitespace-nowrap">
                                 {new Date(warn.createdAt).toLocaleDateString('fr-FR')}
                               </span>
                             </div>
@@ -465,11 +465,11 @@ export default function AdminModeration() {
             Membres signalés par d'autres utilisateurs (en attente de traitement).
           </p>
           {reportsLoading ? (
-            <div className="flex items-center justify-center py-16 text-gray-400">
+            <div className="flex items-center justify-center py-16 text-gray-500">
               <Loader2 className="w-6 h-6 animate-spin" />
             </div>
           ) : userReports.length === 0 ? (
-            <p className="text-sm text-gray-400 py-10 text-center">Aucun signalement en attente.</p>
+            <p className="text-sm text-gray-500 py-10 text-center">Aucun signalement en attente.</p>
           ) : (
             <div className="space-y-2">
               {userReports.map((r) => (
@@ -480,7 +480,7 @@ export default function AdminModeration() {
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-gray-800">
                       {displayName(r.reportedUser)}{' '}
-                      <span className="text-xs font-normal text-gray-400">
+                      <span className="text-xs font-normal text-gray-500">
                         signalé par {displayName(r.reporter)}
                       </span>
                     </p>

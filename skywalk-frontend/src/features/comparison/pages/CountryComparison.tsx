@@ -120,7 +120,7 @@ export default function CountryComparison() {
             </p>
             <button
               onClick={() => refetch()}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-[#5EA3C0] hover:bg-[#4891b0] text-white rounded-lg text-sm font-semibold transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-brand-ink hover:bg-brand-ink-hover text-white rounded-lg text-sm font-semibold transition-colors"
             >
               <RotateCcw className="w-4 h-4" />
               {t('common.retry', { defaultValue: 'Réessayer' })}
@@ -141,11 +141,11 @@ export default function CountryComparison() {
           <div className="inline-flex items-center gap-3 bg-white px-4 py-2 rounded-full border border-gray-200 shadow-sm">
             <span className="text-sm font-medium text-gray-600">{t('comparison.selection')}</span>
             <div className="flex items-center gap-1">
-              <span className={`text-lg font-bold ${selectedCountries.length === maxCountries ? 'text-amber-600' : 'text-[#5EA3C0]'}`}>
+              <span className={`text-lg font-bold ${selectedCountries.length === maxCountries ? 'text-amber-600' : 'text-brand-ink'}`}>
                 {selectedCountries.length}
               </span>
-              <span className="text-gray-400">/</span>
-              <span className="text-gray-400">{maxCountries}</span>
+              <span className="text-gray-500">/</span>
+              <span className="text-gray-500">{maxCountries}</span>
             </div>
           </div>
           {selectedCountries.length > 0 && (
@@ -163,17 +163,17 @@ export default function CountryComparison() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         <div className="mb-8">
           {!isAuthenticated && selectedCountries.length >= 2 && (
-            <div className="mb-6 p-4 bg-[#5EA3C0]/10 border border-[#5EA3C0]/20 rounded-xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
-              <div className="p-2 bg-[#5EA3C0]/20 rounded-lg text-[#5EA3C0]">
+            <div className="mb-6 p-4 bg-brand-ink/10 border border-brand/20 rounded-xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
+              <div className="p-2 bg-brand-ink/20 rounded-lg text-brand-ink">
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
               <div>
-                <h4 className="font-semibold text-[#4A8299]">{t('comparison.limitReached.title')}</h4>
-                <p className="text-sm text-[#4A8299] mt-1">
+                <h4 className="font-semibold text-brand-ink-hover">{t('comparison.limitReached.title')}</h4>
+                <p className="text-sm text-brand-ink-hover mt-1">
                   {t('comparison.limitReached.message', { count: selectedCountries.length })}{' '}
-                  <Link to="/auth/register" className="underline font-medium hover:text-[#3A6A7C]">
+                  <Link to="/auth/register" className="underline font-medium hover:text-brand-ink-hover">
                     {t('comparison.limitReached.cta')}
                   </Link>{' '}
                   {t('comparison.limitReached.ctaSuffix', { max: 5 })}
@@ -202,7 +202,7 @@ export default function CountryComparison() {
           <div className="mt-8 sm:mt-12 border-2 border-dashed border-gray-200 rounded-2xl sm:rounded-3xl p-6 sm:p-12 text-center bg-white/50">
             <div className="max-w-md mx-auto">
               <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6 relative">
-                <div className="absolute inset-0 bg-[#5EA3C0]/20 rounded-full animate-ping opacity-20"></div>
+                <div className="absolute inset-0 bg-brand-ink/20 rounded-full animate-ping opacity-20"></div>
                 <svg className="w-10 h-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
                 </svg>

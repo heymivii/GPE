@@ -41,7 +41,7 @@ function EngineCountriesConfig() {
   return (
     <details className="rounded-2xl border border-gray-150 bg-white shadow-sm">
       <summary className="cursor-pointer select-none px-6 py-4 text-sm font-bold text-gray-800 flex items-center gap-2">
-        <Settings2 className="w-4 h-4 text-[#5EA3C0]" />
+        <Settings2 className="w-4 h-4 text-brand-ink" />
         Pays gérés par le moteur ({countries.filter((c) => c.govLinkEnabled).length}/{countries.length} activés)
       </summary>
       <div className="px-6 pb-5 space-y-3">
@@ -60,7 +60,7 @@ function EngineCountriesConfig() {
                   onChange={(e) =>
                     setDraft((d) => ({ ...d, [c.idCountry]: { ...row, enabled: e.target.checked } }))
                   }
-                  className="w-4 h-4 accent-[#5EA3C0]"
+                  className="w-4 h-4 accent-brand"
                 />
                 {c.countryName}
               </label>
@@ -69,13 +69,13 @@ function EngineCountriesConfig() {
                 onChange={(e) => setDraft((d) => ({ ...d, [c.idCountry]: { ...row, domains: e.target.value } }))}
                 rows={2}
                 placeholder={'gouv.fr\nservice-public.fr'}
-                className="flex-1 min-w-[220px] px-3 py-1.5 border border-gray-200 rounded-lg text-xs text-gray-900 font-mono resize-y focus:outline-none focus:border-[#5EA3C0]"
+                className="flex-1 min-w-[220px] px-3 py-1.5 border border-gray-200 rounded-lg text-xs text-gray-900 font-mono resize-y focus:outline-none focus:border-brand"
               />
               <button
                 type="button"
                 onClick={() => saveMutation.mutate({ id: c.idCountry, enabled: row.enabled, domains: row.domains })}
                 disabled={saveMutation.isPending}
-                className="px-3 py-1.5 bg-[#5EA3C0] hover:bg-[#4891b0] text-white rounded-lg text-xs font-semibold transition-colors disabled:opacity-50"
+                className="px-3 py-1.5 bg-brand-ink hover:bg-brand-ink-hover text-white rounded-lg text-xs font-semibold transition-colors disabled:opacity-50"
               >
                 Enregistrer
               </button>
@@ -311,7 +311,7 @@ export default function AdminGovLinks() {
         <div className="flex items-center justify-between mt-2 flex-wrap gap-4">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 tracking-tight flex items-center gap-2">
-              <Link2 className="w-7 h-7 text-[#5EA3C0]" />
+              <Link2 className="w-7 h-7 text-brand-ink" />
               Liens Gouvernementaux
             </h1>
             <p className="text-gray-500 mt-0.5">
@@ -356,7 +356,7 @@ export default function AdminGovLinks() {
           type="button"
           onClick={() => setTab('links')}
           className={`px-4 py-2.5 text-sm font-semibold rounded-t-lg transition-colors border-b-2 -mb-px ${
-            tab === 'links' ? 'border-[#5EA3C0] text-[#5EA3C0] bg-white' : 'border-transparent text-gray-500 hover:text-gray-800'
+            tab === 'links' ? 'border-brand text-brand-ink bg-white' : 'border-transparent text-gray-500 hover:text-gray-800'
           }`}
         >
           Liens officiels
@@ -365,7 +365,7 @@ export default function AdminGovLinks() {
           type="button"
           onClick={() => setTab('runs')}
           className={`px-4 py-2.5 text-sm font-semibold rounded-t-lg transition-colors border-b-2 -mb-px flex items-center gap-2 ${
-            tab === 'runs' ? 'border-[#5EA3C0] text-[#5EA3C0] bg-white' : 'border-transparent text-gray-500 hover:text-gray-800'
+            tab === 'runs' ? 'border-brand text-brand-ink bg-white' : 'border-transparent text-gray-500 hover:text-gray-800'
           }`}
         >
           Génération par pays
@@ -379,9 +379,9 @@ export default function AdminGovLinks() {
       {/* Generation Panel */}
       <div className="bg-white rounded-2xl border border-gray-150 shadow-sm p-6 space-y-4">
         <h2 className="text-base font-bold text-gray-800 flex items-center gap-2">
-          <RefreshCw className="w-4 h-4 text-[#5EA3C0]" />
+          <RefreshCw className="w-4 h-4 text-brand-ink" />
           Générer / Mettre à jour un lien
-          <span className="text-xs font-normal text-gray-400">(~10-30 s, résultat mis en cache)</span>
+          <span className="text-xs font-normal text-gray-500">(~10-30 s, résultat mis en cache)</span>
         </h2>
 
         <div className="flex flex-wrap items-end gap-4">
@@ -391,7 +391,7 @@ export default function AdminGovLinks() {
               value={genCountry}
               onChange={(e) => setGenCountry(e.target.value)}
               disabled={generateMutation.isPending}
-              className="px-3.5 py-2 border border-gray-200 bg-white rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900 min-w-[160px] disabled:opacity-60"
+              className="px-3.5 py-2 border border-gray-200 bg-white rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900 min-w-[160px] disabled:opacity-60"
             >
               {countries.map((c) => (
                 <option key={c.code} value={c.code}>
@@ -407,7 +407,7 @@ export default function AdminGovLinks() {
               value={genCategory}
               onChange={(e) => setGenCategory(e.target.value as Category)}
               disabled={generateMutation.isPending}
-              className="px-3.5 py-2 border border-gray-200 bg-white rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900 min-w-[160px] disabled:opacity-60"
+              className="px-3.5 py-2 border border-gray-200 bg-white rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900 min-w-[160px] disabled:opacity-60"
             >
               {CATEGORIES.map((cat) => (
                 <option key={cat} value={cat}>{cat}</option>
@@ -419,7 +419,7 @@ export default function AdminGovLinks() {
             type="button"
             onClick={handleGenerate}
             disabled={generateMutation.isPending}
-            className="flex items-center gap-2 bg-[#5EA3C0] hover:bg-[#4891b0] text-white px-5 py-2.5 rounded-xl font-semibold text-sm transition-all shadow-md hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 bg-brand-ink hover:bg-brand-ink-hover text-white px-5 py-2.5 rounded-xl font-semibold text-sm transition-all shadow-md hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {generateMutation.isPending && activeGenKey === `${genCountry}__${genCategory}` ? (
               <>
@@ -458,7 +458,7 @@ export default function AdminGovLinks() {
                 setActiveRunCountry(e.target.value);
                 setActiveRunId(null);
               }}
-              className="px-3.5 py-2 border border-gray-200 bg-white rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900 min-w-[220px]"
+              className="px-3.5 py-2 border border-gray-200 bg-white rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900 min-w-[220px]"
             >
               {countries.map((c) => (
                 <option key={c.code} value={c.code}>
@@ -476,7 +476,7 @@ export default function AdminGovLinks() {
                 ? 'Un run est déjà en cours pour ce pays — attendez la fin'
                 : undefined
             }
-            className="flex items-center gap-2 bg-[#5EA3C0] hover:bg-[#4891b0] text-white px-5 py-2.5 rounded-xl font-semibold text-sm transition-all shadow-sm hover:shadow-md disabled:opacity-60 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 bg-brand-ink hover:bg-brand-ink-hover text-white px-5 py-2.5 rounded-xl font-semibold text-sm transition-all shadow-sm hover:shadow-md disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {generateCountryMutation.isPending ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -485,7 +485,7 @@ export default function AdminGovLinks() {
             )}
             Générer pour {activeRunCountry}
           </button>
-          <span className="text-xs text-gray-400 pb-2.5">
+          <span className="text-xs text-gray-500 pb-2.5">
             Le dernier run du pays sélectionné s'affiche automatiquement ci-dessous.
           </span>
         </div>
@@ -493,7 +493,7 @@ export default function AdminGovLinks() {
         {/* Run status + progress */}
         {latestRunLoading && !displayRun ? (
           <div className="flex items-center gap-2 text-sm text-gray-500">
-            <Loader2 className="w-4 h-4 animate-spin text-[#5EA3C0]" />
+            <Loader2 className="w-4 h-4 animate-spin text-brand-ink" />
             Chargement du dernier run…
           </div>
         ) : displayRun ? (
@@ -502,7 +502,7 @@ export default function AdminGovLinks() {
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div className="flex items-center gap-3 text-sm text-gray-700">
                 <span className="font-semibold">Run #{displayRun.id}</span>
-                <span className="text-gray-400">·</span>
+                <span className="text-gray-500">·</span>
                 <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold ${
                   displayRun.status === 'running'
                     ? 'bg-blue-100 text-blue-700'
@@ -536,7 +536,7 @@ export default function AdminGovLinks() {
               </div>
               <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
                 <div
-                  className="h-2 rounded-full bg-[#5EA3C0] transition-all duration-500"
+                  className="h-2 rounded-full bg-brand-ink transition-all duration-500"
                   style={{ width: `${runPct}%` }}
                 />
               </div>
@@ -573,14 +573,14 @@ export default function AdminGovLinks() {
                               href={r.url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1 text-[#5EA3C0] hover:text-[#4891b0] hover:underline font-medium truncate"
+                              className="inline-flex items-center gap-1 text-brand-ink hover:text-brand-ink-hover hover:underline font-medium truncate"
                               title={r.url}
                             >
                               <ExternalLink className="w-3.5 h-3.5 flex-shrink-0" />
                               <span className="truncate max-w-[200px] block">{r.url}</span>
                             </a>
                           ) : (
-                            <span className="text-gray-400">—</span>
+                            <span className="text-gray-500">—</span>
                           )}
                         </td>
                         <td className="px-4 py-3 text-gray-700 tabular-nums">
@@ -634,7 +634,7 @@ export default function AdminGovLinks() {
           <select
             value={filterCountry}
             onChange={(e) => setFilterCountry(e.target.value)}
-            className="px-3.5 py-2 border border-gray-200 bg-white rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900 min-w-[200px]"
+            className="px-3.5 py-2 border border-gray-200 bg-white rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900 min-w-[200px]"
           >
             <option value="all">Tous les pays</option>
             {countries.map((c) => (
@@ -643,13 +643,13 @@ export default function AdminGovLinks() {
               </option>
             ))}
           </select>
-          <span className="text-xs text-gray-400">{filteredLinks.length} lien(s)</span>
+          <span className="text-xs text-gray-500">{filteredLinks.length} lien(s)</span>
         </div>
 
         {/* Table body */}
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-20 space-y-3">
-            <Loader2 className="w-10 h-10 animate-spin text-[#5EA3C0]" />
+            <Loader2 className="w-10 h-10 animate-spin text-brand-ink" />
             <span className="text-sm text-gray-500 font-medium">Chargement des liens…</span>
           </div>
         ) : isError ? (
@@ -699,7 +699,7 @@ export default function AdminGovLinks() {
                           href={link.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-[#5EA3C0] hover:text-[#4891b0] hover:underline font-medium truncate"
+                          className="inline-flex items-center gap-1 text-brand-ink hover:text-brand-ink-hover hover:underline font-medium truncate"
                           title={link.url}
                         >
                           <ExternalLink className="w-3.5 h-3.5 flex-shrink-0" />

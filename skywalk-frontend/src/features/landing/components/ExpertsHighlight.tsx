@@ -61,10 +61,10 @@ export default function ExpertsHighlight() {
 
   return (
     <section className="px-4 sm:px-8 w-full max-w-7xl mx-auto py-8">
-      <div className="rounded-3xl border border-[#5EA3C0]/20 bg-gradient-to-br from-[#5EA3C0]/10 to-white p-8 sm:p-10">
+      <div className="rounded-3xl border border-brand/20 bg-gradient-to-br from-brand/10 to-white p-8 sm:p-10">
         <div className="flex flex-col lg:flex-row items-center gap-8">
           <div className="flex-1">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#5EA3C0]/30 bg-white px-3 py-1 text-xs font-bold text-[#4891b0]">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-brand/30 bg-white px-3 py-1 text-xs font-bold text-brand-ink-hover">
               <BadgeCheck className="h-4 w-4" />
               {t('landing.experts.badge', { defaultValue: 'Experts vérifiés' })}
             </div>
@@ -81,7 +81,7 @@ export default function ExpertsHighlight() {
             </p>
             <Link
               to="/experts"
-              className="group mt-5 inline-flex items-center gap-2 rounded-xl bg-[#5EA3C0] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#4891b0]"
+              className="group mt-5 inline-flex items-center gap-2 rounded-xl bg-brand-ink px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-ink-hover"
             >
               {t('landing.experts.cta', { defaultValue: 'Voir les experts' })}
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -92,9 +92,9 @@ export default function ExpertsHighlight() {
             {promises.map(({ icon: Icon, text }) => (
               <div
                 key={text}
-                className="flex items-start gap-3 rounded-xl border border-[#5EA3C0]/15 bg-white px-4 py-3 shadow-sm"
+                className="flex items-start gap-3 rounded-xl border border-brand/15 bg-white px-4 py-3 shadow-sm"
               >
-                <Icon className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#5EA3C0]" />
+                <Icon className="mt-0.5 h-4 w-4 flex-shrink-0 text-brand-ink" />
                 <p className="text-sm leading-relaxed text-gray-700">{text}</p>
               </div>
             ))}

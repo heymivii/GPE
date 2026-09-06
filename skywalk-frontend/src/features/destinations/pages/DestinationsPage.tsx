@@ -118,7 +118,7 @@ export function DestinationsPage() {
           >
             <WorldMap />
           </Suspense>
-          <p className="mt-4 text-center text-sm text-gray-400">
+          <p className="mt-4 text-center text-sm text-gray-500">
             {t('destinations.mapHint', {
               defaultValue: 'Clique une destination en couleur pour l’explorer — ou passe en vue liste pour comparer les stats.',
             })}

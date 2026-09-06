@@ -128,7 +128,7 @@ export function TransportCostTool({ countryName }: { countryName?: string }) {
           <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 text-center">
             <p className="text-xs text-gray-500 mb-2">{t('services.tools.transportCost.publicPass')}</p>
             <p className="text-2xl font-bold text-gray-900">{fp(publicTransportCost)}</p>
-            <p className="text-xs text-gray-400 mt-1">/ {t('services.stats.common.perMonth')}</p>
+            <p className="text-xs text-gray-500 mt-1">/ {t('services.stats.common.perMonth')}</p>
           </div>
         )}
 
@@ -138,7 +138,7 @@ export function TransportCostTool({ countryName }: { countryName?: string }) {
             <span className="text-xl font-bold text-gray-900">{fp(monthlyCost)}</span>
           </div>
           {transportType === 'car' && (
-            <p className="text-[10px] text-gray-400 mt-2 text-right">
+            <p className="text-[10px] text-gray-500 mt-2 text-right">
               {t('services.tools.transportCost.info')}
             </p>
           )}

@@ -84,7 +84,7 @@ export default function NavBar() {
   const linkClass = (path: string) =>
     `text-sm font-medium transition-colors ${
       isActive(path)
-        ? 'text-[#5EA3C0]'
+        ? 'text-brand-ink'
         : 'text-gray-600 hover:text-gray-900'
     }`;
 
@@ -129,7 +129,7 @@ export default function NavBar() {
                     <button 
                       className={`flex items-center gap-1 text-sm font-medium transition-colors ${
                         isActive('/destinations') || isActive('/comparison') || isActive('/search')
-                          ? 'text-[#5EA3C0]'
+                          ? 'text-brand-ink'
                           : 'text-gray-600 hover:text-gray-900'
                       }`}
                       onClick={() => setExploreOpen(!exploreOpen)}
@@ -141,23 +141,23 @@ export default function NavBar() {
                     {exploreOpen && (
                       <div className="absolute left-0 mt-3 w-56 bg-white border border-gray-200 rounded-xl shadow-lg z-50 py-2 animate-in fade-in slide-in-from-top-1">
                         <Link to="/destinations" onClick={() => setExploreOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-gray-700 text-sm">
-                          <MapPin className="w-4 h-4 text-[#5EA3C0]" />
+                          <MapPin className="w-4 h-4 text-brand-ink" />
                           {t('nav.destinations')}
                         </Link>
                         <Link to="/comparison" onClick={() => setExploreOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-gray-700 text-sm">
-                          <BarChart3 className="w-4 h-4 text-[#5EA3C0]" />
+                          <BarChart3 className="w-4 h-4 text-brand-ink" />
                           {t('nav.comparison')}
                         </Link>
                         <Link to="/services" onClick={() => setExploreOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-gray-700 text-sm">
-                          <Briefcase className="w-4 h-4 text-[#5EA3C0]" />
+                          <Briefcase className="w-4 h-4 text-brand-ink" />
                           {t('nav.services')}
                         </Link>
                         <Link to="/search" onClick={() => setExploreOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-gray-700 text-sm">
-                          <Compass className="w-4 h-4 text-[#5EA3C0]" />
+                          <Compass className="w-4 h-4 text-brand-ink" />
                           {t('nav.search')}
                         </Link>
                         <Link to="/blog" onClick={() => setExploreOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-gray-700 text-sm">
-                          <BookOpen className="w-4 h-4 text-[#5EA3C0]" />
+                          <BookOpen className="w-4 h-4 text-brand-ink" />
                           {t('nav.blog')}
                         </Link>
                       </div>
@@ -188,7 +188,7 @@ export default function NavBar() {
               >
                 <Search className="w-4 h-4" />
                 <span className="hidden md:inline">{t('globalSearch.trigger')}</span>
-                <kbd className="hidden md:inline-flex items-center gap-0.5 rounded border border-gray-200 bg-white px-1.5 py-0.5 text-[10px] font-medium text-gray-400">
+                <kbd className="hidden md:inline-flex items-center gap-0.5 rounded border border-gray-200 bg-white px-1.5 py-0.5 text-[10px] font-medium text-gray-500">
                   ⌘K
                 </kbd>
               </button>
@@ -222,7 +222,7 @@ export default function NavBar() {
                           key={lang.code}
                           onClick={() => handleLanguageChange(lang.code)}
                           className={`flex items-center gap-2 w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 ${
-                            currentLang.code === lang.code ? 'text-[#5EA3C0] font-medium' : 'text-gray-700'
+                            currentLang.code === lang.code ? 'text-brand-ink font-medium' : 'text-gray-700'
                           }`}
                         >
                           <span>{lang.flag}</span>
@@ -255,7 +255,7 @@ export default function NavBar() {
                   className="flex items-center gap-2 px-3 py-1.5 border border-gray-200 rounded-full bg-white hover:bg-gray-50 transition-colors"
                   onClick={() => setUserMenuOpen((v) => !v)}
                 >
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#5EA3C0] to-[#4891b0] text-white flex items-center justify-center font-semibold text-sm">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand to-brand-deep text-white flex items-center justify-center font-semibold text-sm">
                     {getInitials(user.fullName) || <User className="w-4 h-4" />}
                   </div>
                   <span className="text-sm text-gray-700 font-medium hidden md:inline max-w-[120px] truncate">{user.fullName}</span>
@@ -337,7 +337,7 @@ export default function NavBar() {
             ) : (
               <div className="hidden sm:flex items-center gap-3">
                 <Link to="/auth/login" className="text-sm text-gray-600 hover:text-gray-900 font-medium px-3 py-2">{t('nav.login')}</Link>
-                <Link to="/auth/register" className="text-sm bg-[#5EA3C0] text-white px-5 py-2 rounded-full font-semibold hover:bg-[#4891b0] transition-colors">{t('nav.register')}</Link>
+                <Link to="/auth/register" className="text-sm bg-brand-ink text-white px-5 py-2 rounded-full font-semibold hover:bg-brand-ink-hover transition-colors">{t('nav.register')}</Link>
               </div>
             )}
 
@@ -387,7 +387,7 @@ export default function NavBar() {
                   onClick={() => { handleLanguageChange(lang.code); setMobileOpen(false); }}
                   className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-colors ${
                     currentLang.code === lang.code
-                      ? 'bg-[#5EA3C0]/10 text-[#5EA3C0] border border-[#5EA3C0]/30'
+                      ? 'bg-brand-ink/10 text-brand-ink border border-brand/30'
                       : 'bg-gray-50 text-gray-600 border border-gray-200 hover:bg-gray-100'
                   }`}
                 >
@@ -401,7 +401,7 @@ export default function NavBar() {
               {isAuthenticated && user ? (
                 <div className="space-y-1">
                   <Link to="/profile" className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-gray-700 text-sm">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#5EA3C0] to-[#4891b0] text-white flex items-center justify-center font-semibold text-sm">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand to-brand-deep text-white flex items-center justify-center font-semibold text-sm">
                       {getInitials(user.fullName) || <User className="w-4 h-4" />}
                     </div>
                     <div>
@@ -438,7 +438,7 @@ export default function NavBar() {
               ) : (
                 <div className="flex gap-3">
                   <Link to="/auth/login" className="flex-1 text-center px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg font-medium text-sm hover:bg-gray-50">{t('nav.login')}</Link>
-                  <Link to="/auth/register" className="flex-1 text-center px-4 py-2.5 bg-[#5EA3C0] text-white rounded-lg font-semibold text-sm hover:bg-[#4891b0]">{t('nav.register')}</Link>
+                  <Link to="/auth/register" className="flex-1 text-center px-4 py-2.5 bg-brand-ink text-white rounded-lg font-semibold text-sm hover:bg-brand-ink-hover">{t('nav.register')}</Link>
                 </div>
               )}
             </div>
@@ -457,7 +457,7 @@ function MobileLink({ to, label, active }: { to: string; label: string; active: 
       to={to}
       className={`block px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
         active
-          ? 'bg-[#5EA3C0]/10 text-[#5EA3C0]'
+          ? 'bg-brand-ink/10 text-brand-ink'
           : 'text-gray-700 hover:bg-gray-50'
       }`}
     >

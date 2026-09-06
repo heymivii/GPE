@@ -202,7 +202,7 @@ export default function AdminSearchHints() {
         <div className="flex items-center justify-between mt-2 flex-wrap gap-4">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 tracking-tight flex items-center gap-2">
-              <BookMarked className="w-7 h-7 text-[#5EA3C0]" />
+              <BookMarked className="w-7 h-7 text-brand-ink" />
               Carnet de recherche
             </h1>
             <p className="text-gray-500 mt-0.5">
@@ -223,7 +223,7 @@ export default function AdminSearchHints() {
             <button
               type="button"
               onClick={openCreate}
-              className="flex items-center gap-2 bg-[#5EA3C0] hover:bg-[#4891b0] text-white px-5 py-2.5 rounded-xl font-semibold text-sm transition-all shadow-md hover:shadow-lg"
+              className="flex items-center gap-2 bg-brand-ink hover:bg-brand-ink-hover text-white px-5 py-2.5 rounded-xl font-semibold text-sm transition-all shadow-md hover:shadow-lg"
             >
               <Plus className="w-4 h-4" />
               Nouvelle fiche
@@ -246,7 +246,7 @@ export default function AdminSearchHints() {
             <button
               onClick={() => setFilterCountry('all')}
               className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors ${
-                filterCountry === 'all' ? 'bg-[#5EA3C0] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                filterCountry === 'all' ? 'bg-brand-ink text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
               Tous
@@ -256,7 +256,7 @@ export default function AdminSearchHints() {
                 key={c.code}
                 onClick={() => setFilterCountry(c.code)}
                 className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors ${
-                  filterCountry === c.code ? 'bg-[#5EA3C0] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  filterCountry === c.code ? 'bg-brand-ink text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
                 {'flag' in c ? `${c.flag} ` : ''}{c.code}
@@ -268,7 +268,7 @@ export default function AdminSearchHints() {
         {/* Table body */}
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-20 space-y-3">
-            <Loader2 className="w-10 h-10 animate-spin text-[#5EA3C0]" />
+            <Loader2 className="w-10 h-10 animate-spin text-brand-ink" />
             <span className="text-sm text-gray-500 font-medium">Chargement du carnet…</span>
           </div>
         ) : isError ? (
@@ -373,13 +373,13 @@ export default function AdminSearchHints() {
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl my-8 animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
               <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                <BookMarked className="w-5 h-5 text-[#5EA3C0]" />
+                <BookMarked className="w-5 h-5 text-brand-ink" />
                 {formMode === 'create' ? 'Nouvelle fiche' : `Éditer ${form.countryCode}/${form.category}`}
               </h2>
               <button
                 type="button"
                 onClick={() => setFormOpen(false)}
-                className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700 transition-colors"
+                className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors"
                 aria-label="Fermer"
               >
                 <X className="w-5 h-5" />
@@ -395,7 +395,7 @@ export default function AdminSearchHints() {
                     value={form.countryCode}
                     onChange={(e) => set({ countryCode: e.target.value })}
                     disabled={formMode === 'edit'}
-                    className="px-3.5 py-2 border border-gray-200 bg-white rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900 disabled:opacity-60 disabled:bg-gray-50"
+                    className="px-3.5 py-2 border border-gray-200 bg-white rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900 disabled:opacity-60 disabled:bg-gray-50"
                   >
                     {countryList.map((c) => (
                       <option key={c.code} value={c.code}>
@@ -410,7 +410,7 @@ export default function AdminSearchHints() {
                     value={form.category}
                     onChange={(e) => set({ category: e.target.value })}
                     disabled={formMode === 'edit'}
-                    className="px-3.5 py-2 border border-gray-200 bg-white rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900 disabled:opacity-60 disabled:bg-gray-50"
+                    className="px-3.5 py-2 border border-gray-200 bg-white rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900 disabled:opacity-60 disabled:bg-gray-50"
                   >
                     {CATEGORIES.map((cat) => (
                       <option key={cat} value={cat}>{cat}</option>
@@ -425,7 +425,7 @@ export default function AdminSearchHints() {
                 <select
                   value={form.queryLang}
                   onChange={(e) => set({ queryLang: e.target.value })}
-                  className="px-3.5 py-2 border border-gray-200 bg-white rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900"
+                  className="px-3.5 py-2 border border-gray-200 bg-white rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900"
                 >
                   {LANGS.map((l) => (
                     <option key={l.code} value={l.code}>{l.label}</option>
@@ -441,9 +441,9 @@ export default function AdminSearchHints() {
                   value={form.keywords}
                   onChange={(e) => set({ keywords: e.target.value })}
                   placeholder="visa long séjour VLS-TS demande"
-                  className="px-3.5 py-2 border border-gray-200 bg-white rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900"
+                  className="px-3.5 py-2 border border-gray-200 bg-white rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900"
                 />
-                <span className="text-xs text-gray-400">Combinés à chaque domaine + à la requête ouverte.</span>
+                <span className="text-xs text-gray-500">Combinés à chaque domaine + à la requête ouverte.</span>
               </div>
 
               {/* Official domains */}
@@ -454,9 +454,9 @@ export default function AdminSearchHints() {
                   onChange={(e) => set({ officialDomains: e.target.value })}
                   rows={3}
                   placeholder={'france-visas.gouv.fr\nservice-public.fr'}
-                  className="px-3.5 py-2 border border-gray-200 bg-white rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900 font-mono resize-y"
+                  className="px-3.5 py-2 border border-gray-200 bg-white rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900 font-mono resize-y"
                 />
-                <span className="text-xs text-gray-400">Une requête <code>site:&lt;domaine&gt;</code> est générée par domaine.</span>
+                <span className="text-xs text-gray-500">Une requête <code>site:&lt;domaine&gt;</code> est générée par domaine.</span>
               </div>
 
               {/* Exclude terms */}
@@ -467,9 +467,9 @@ export default function AdminSearchHints() {
                   onChange={(e) => set({ excludeTerms: e.target.value })}
                   rows={2}
                   placeholder={'expatriation des français\nquitter la france'}
-                  className="px-3.5 py-2 border border-gray-200 bg-white rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900 resize-y"
+                  className="px-3.5 py-2 border border-gray-200 bg-white rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900 resize-y"
                 />
-                <span className="text-xs text-gray-400">Ajoutés comme <code>-terme</code> (locutions entre guillemets) à chaque requête.</span>
+                <span className="text-xs text-gray-500">Ajoutés comme <code>-terme</code> (locutions entre guillemets) à chaque requête.</span>
               </div>
 
               {/* Pinned URL */}
@@ -483,9 +483,9 @@ export default function AdminSearchHints() {
                   value={form.pinnedUrl}
                   onChange={(e) => set({ pinnedUrl: e.target.value })}
                   placeholder="https://france-visas.gouv.fr/…"
-                  className="px-3.5 py-2 border border-gray-200 bg-white rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900"
+                  className="px-3.5 py-2 border border-gray-200 bg-white rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900"
                 />
-                <span className="text-xs text-gray-400">Si renseignée, court-circuite la recherche. Laisser vide pour utiliser domaines + mots-clés.</span>
+                <span className="text-xs text-gray-500">Si renseignée, court-circuite la recherche. Laisser vide pour utiliser domaines + mots-clés.</span>
               </div>
             </div>
 
@@ -501,7 +501,7 @@ export default function AdminSearchHints() {
                 type="button"
                 onClick={handleSubmit}
                 disabled={saving}
-                className="flex items-center gap-2 bg-[#5EA3C0] hover:bg-[#4891b0] text-white px-5 py-2.5 rounded-xl font-semibold text-sm transition-all shadow-md hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 bg-brand-ink hover:bg-brand-ink-hover text-white px-5 py-2.5 rounded-xl font-semibold text-sm transition-all shadow-md hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
                 {formMode === 'create' ? 'Créer la fiche' : 'Enregistrer'}

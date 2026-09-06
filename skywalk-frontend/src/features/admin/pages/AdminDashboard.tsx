@@ -114,7 +114,7 @@ function Donut({
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <span className="text-xl font-black text-gray-900">{total}</span>
-          <span className="text-[9px] text-gray-400 font-semibold uppercase tracking-wide">Total</span>
+          <span className="text-[9px] text-gray-500 font-semibold uppercase tracking-wide">Total</span>
         </div>
       </div>
       {/* Légende */}
@@ -185,14 +185,14 @@ export default function AdminDashboard() {
 
   if (isLoading) return (
     <div className="flex items-center justify-center min-h-[60vh]">
-      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#5EA3C0]" />
+      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-brand" />
     </div>
   );
 
   if (error || !stats) return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 text-center">
       <p className="text-gray-500">Impossible de charger les données.</p>
-      <button onClick={() => refetch()} className="px-5 py-2 bg-[#5EA3C0] text-white rounded-lg text-sm font-semibold">Réessayer</button>
+      <button onClick={() => refetch()} className="px-5 py-2 bg-brand-ink text-white rounded-lg text-sm font-semibold">Réessayer</button>
     </div>
   );
 
@@ -271,8 +271,8 @@ export default function AdminDashboard() {
               onClick={() => setActiveTab(tab.id as any)}
               className={`flex items-center gap-2 px-5 py-3 border-b-2 font-bold text-xs uppercase tracking-wider transition-all whitespace-nowrap ${
                 isActive
-                  ? 'border-[#5EA3C0] text-[#5EA3C0]'
-                  : 'border-transparent text-gray-400 hover:text-gray-650 hover:border-gray-200'
+                  ? 'border-brand text-brand-ink'
+                  : 'border-transparent text-gray-500 hover:text-gray-650 hover:border-gray-200'
               }`}
             >
               <Icon className="w-4 h-4" />
@@ -299,7 +299,7 @@ export default function AdminDashboard() {
                   </div>
                   <p className="text-3xl font-black text-gray-900 leading-none mb-1">{k.value.toLocaleString('fr-FR')}</p>
                   <div className="flex items-center justify-between">
-                    <p className="text-xs text-gray-400 flex items-center gap-1">
+                    <p className="text-xs text-gray-500 flex items-center gap-1">
                       <ArrowUpRight className="w-3 h-3" style={{ color: k.color }} />
                       {k.sub}
                     </p>
@@ -316,9 +316,9 @@ export default function AdminDashboard() {
               <div className="flex items-center justify-between px-6 py-4 border-b border-gray-50">
                 <div>
                   <h2 className="text-sm font-bold text-gray-900">Derniers projets créés</h2>
-                  <p className="text-xs text-gray-400 mt-0.5">Projets d'expatriation récemment soumis</p>
+                  <p className="text-xs text-gray-500 mt-0.5">Projets d'expatriation récemment soumis</p>
                 </div>
-                <span className="text-[10px] font-bold text-gray-400 bg-gray-50 px-2.5 py-1 rounded-full border border-gray-100">
+                <span className="text-[10px] font-bold text-gray-500 bg-gray-50 px-2.5 py-1 rounded-full border border-gray-100">
                   {recentProjects.length} projets
                 </span>
               </div>
@@ -347,7 +347,7 @@ export default function AdminDashboard() {
                               {formatObjective(project.objective)}
                             </p>
                             <div className="flex items-center gap-2 mt-0.5">
-                              <span className="text-xs text-gray-400">{authorName}</span>
+                              <span className="text-xs text-gray-500">{authorName}</span>
                               {project.destinationCountry && (
                                 <span className="flex items-center gap-1 text-[10px] font-semibold text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded-full">
                                   <MapPin className="w-2.5 h-2.5" />
@@ -367,7 +367,7 @@ export default function AdminDashboard() {
                               {badge.label}
                             </span>
                             {project.expectedDepartureDate && (
-                              <span className="flex items-center gap-1 text-[10px] text-gray-400">
+                              <span className="flex items-center gap-1 text-[10px] text-gray-500">
                                 <Clock className="w-2.5 h-2.5" />
                                 {new Date(project.expectedDepartureDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}
                               </span>
@@ -380,7 +380,7 @@ export default function AdminDashboard() {
 
                   {totalPages > 1 && (
                     <div className="flex items-center justify-between px-6 py-3 border-t border-gray-50 bg-gray-50/50">
-                      <span className="text-xs text-gray-400">
+                      <span className="text-xs text-gray-500">
                         Page {projectsPage + 1} / {totalPages}
                       </span>
                       <div className="flex items-center gap-2">
@@ -417,7 +417,7 @@ export default function AdminDashboard() {
                   <MapPin className="w-4 h-4 text-gray-400" />
                   <h2 className="text-sm font-bold text-gray-900">Destinations souhaitées</h2>
                 </div>
-                <p className="text-xs text-gray-400 mb-4">Pays cibles des projets</p>
+                <p className="text-xs text-gray-500 mb-4">Pays cibles des projets</p>
                 {destinations.length > 0
                   ? <Donut segments={destinations} total={destTotal} colors={DEST_COLORS} />
                   : <p className="text-xs text-gray-300 text-center py-4">Aucune donnée</p>
@@ -429,7 +429,7 @@ export default function AdminDashboard() {
                   <Plane className="w-4 h-4 text-gray-400" />
                   <h2 className="text-sm font-bold text-gray-900">Types de voyage</h2>
                 </div>
-                <p className="text-xs text-gray-400 mb-4">Répartition par motif d'expatriation</p>
+                <p className="text-xs text-gray-500 mb-4">Répartition par motif d'expatriation</p>
                 {travelTypes.length > 0
                   ? <Donut segments={travelTypes} total={travelTotal} colors={TRAVEL_COLORS} />
                   : <p className="text-xs text-gray-300 text-center py-4">Aucune donnée</p>
@@ -441,7 +441,7 @@ export default function AdminDashboard() {
                   <Target className="w-4 h-4 text-gray-400" />
                   <h2 className="text-sm font-bold text-gray-900">Objectifs</h2>
                 </div>
-                <p className="text-xs text-gray-400 mb-4">Progression trimestrielle</p>
+                <p className="text-xs text-gray-500 mb-4">Progression trimestrielle</p>
                 <div className="space-y-4">
                   {goals.map((g) => {
                     const pct = Math.min(100, Math.round((g.current / g.target) * 100));
@@ -449,7 +449,7 @@ export default function AdminDashboard() {
                       <div key={g.label}>
                         <div className="flex justify-between text-xs mb-1.5">
                           <span className="font-semibold text-gray-700">{g.label}</span>
-                          <span className="text-gray-400">{g.current}/{g.target}</span>
+                          <span className="text-gray-500">{g.current}/{g.target}</span>
                         </div>
                         <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
                           <div className="h-full rounded-full transition-all duration-700" style={{ width: `${pct}%`, backgroundColor: g.color }} />
@@ -467,7 +467,7 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-50">
               <div>
                 <h2 className="text-sm font-bold text-gray-900">Activité Forum</h2>
-                <p className="text-xs text-gray-400 mt-0.5">Derniers sujets publiés sur la communauté</p>
+                <p className="text-xs text-gray-500 mt-0.5">Derniers sujets publiés sur la communauté</p>
               </div>
               <span className="flex items-center gap-1.5 text-[10px] font-bold text-green-600 bg-green-50 px-2.5 py-1 rounded-full border border-green-100">
                 <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
@@ -492,15 +492,15 @@ export default function AdminDashboard() {
                         {initials}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-gray-800 truncate group-hover:text-[#5EA3C0] transition-colors">{topic.title}</p>
-                        <p className="text-xs text-gray-400 mt-0.5">{name}</p>
+                        <p className="text-sm font-semibold text-gray-800 truncate group-hover:text-brand-ink transition-colors">{topic.title}</p>
+                        <p className="text-xs text-gray-500 mt-0.5">{name}</p>
                       </div>
                       {topic.country && (
                         <span className="text-[10px] font-semibold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full hidden sm:block">
                           {topic.country.countryName}
                         </span>
                       )}
-                      <span className="text-xs text-gray-400 flex-shrink-0">
+                      <span className="text-xs text-gray-500 flex-shrink-0">
                         {new Date(topic.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
                       </span>
                     </button>
@@ -523,7 +523,7 @@ export default function AdminDashboard() {
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <div>
               <h2 className="text-lg font-bold text-gray-900">Historique d'activité des Administrateurs</h2>
-              <p className="text-xs text-gray-400">Consultez les actions et modifications effectuées par chaque administrateur sur les données du site.</p>
+              <p className="text-xs text-gray-500">Consultez les actions et modifications effectuées par chaque administrateur sur les données du site.</p>
             </div>
             
             {/* Global History Button */}
@@ -544,11 +544,11 @@ export default function AdminDashboard() {
           {logs.length > 0 && (
             <div className="bg-slate-50 border border-slate-100 p-4 rounded-xl flex items-center justify-between gap-4 flex-wrap">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-full bg-[#5EA3C0]/10 flex items-center justify-center text-[#5EA3C0]">
+                <div className="w-9 h-9 rounded-full bg-brand-ink/10 flex items-center justify-center text-brand-ink">
                   <RefreshCw className="w-4 h-4 animate-pulse" />
                 </div>
                 <div>
-                  <span className="text-[10px] text-gray-400 uppercase font-extrabold tracking-wider">Dernière modification sur le site</span>
+                  <span className="text-[10px] text-gray-500 uppercase font-extrabold tracking-wider">Dernière modification sur le site</span>
                   <p className="text-xs text-gray-750 font-medium mt-0.5">
                     {logs[0].user ? (
                       <span className="font-semibold text-gray-900">
@@ -586,16 +586,16 @@ export default function AdminDashboard() {
 
           {adminsLoading ? (
             <div className="flex flex-col items-center justify-center py-12 space-y-2">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#5EA3C0]" />
-              <p className="text-xs text-gray-400">Chargement de la liste des administrateurs...</p>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand" />
+              <p className="text-xs text-gray-500">Chargement de la liste des administrateurs...</p>
             </div>
           ) : allAdmins.length === 0 ? (
-            <p className="text-center py-12 text-gray-400 text-sm italic">Aucun administrateur trouvé.</p>
+            <p className="text-center py-12 text-gray-500 text-sm italic">Aucun administrateur trouvé.</p>
           ) : (
             <div className="overflow-x-auto border border-gray-100 rounded-xl">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-gray-50/50 border-b border-gray-100 text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                  <tr className="bg-gray-50/50 border-b border-gray-100 text-[10px] font-bold text-gray-500 uppercase tracking-wider">
                     <th className="py-3 px-4">Administrateur</th>
                     <th className="py-3 px-4">Email</th>
                     <th className="py-3 px-4">Dernière connexion</th>
@@ -612,7 +612,7 @@ export default function AdminDashboard() {
                       <tr key={admin.idUser} className="hover:bg-gray-50/45 transition-colors">
                         <td className="py-3 px-4 font-semibold text-gray-900">
                           <div className="flex items-center gap-2.5">
-                            <div className="w-7 h-7 rounded-full bg-[#5EA3C0]/10 text-[#5EA3C0] text-[10px] font-bold flex items-center justify-center">
+                            <div className="w-7 h-7 rounded-full bg-brand-ink/10 text-brand-ink text-[10px] font-bold flex items-center justify-center">
                               {initials}
                             </div>
                             <span>
@@ -646,7 +646,7 @@ export default function AdminDashboard() {
                               setSelectedAdminId(admin.idUser);
                               setDrawerSearch('');
                             }}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#5EA3C0]/10 hover:bg-[#5EA3C0]/20 text-[#5EA3C0] font-semibold text-xs rounded-lg transition-colors cursor-pointer"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand-ink/10 hover:bg-brand-ink/20 text-brand-ink font-semibold text-xs rounded-lg transition-colors cursor-pointer"
                           >
                             <Eye className="w-3.5 h-3.5" />
                             Voir les modifications
@@ -736,7 +736,7 @@ export default function AdminDashboard() {
                     placeholder="Filtrer par entité, action, ou mot-clé..."
                     value={drawerSearch}
                     onChange={(e) => setDrawerSearch(e.target.value)}
-                    className="w-full pl-9 pr-4 py-2 border border-gray-250 bg-gray-50/50 rounded-xl text-xs focus:outline-none focus:border-[#5EA3C0]"
+                    className="w-full pl-9 pr-4 py-2 border border-gray-250 bg-gray-50/50 rounded-xl text-xs focus:outline-none focus:border-brand"
                   />
                 </div>
 
@@ -765,10 +765,10 @@ export default function AdminDashboard() {
 
                     if (drawerFilteredLogs.length === 0) {
                       return (
-                        <div className="text-center py-12 text-gray-400 flex flex-col items-center justify-center gap-2">
+                        <div className="text-center py-12 text-gray-500 flex flex-col items-center justify-center gap-2">
                           <Clock className="w-8 h-8 text-gray-350" />
                           <p className="text-xs font-semibold">Aucune modification correspondante</p>
-                          <p className="text-[10px] text-gray-400">Essayez d'ajuster votre filtre ou recherche.</p>
+                          <p className="text-[10px] text-gray-500">Essayez d'ajuster votre filtre ou recherche.</p>
                         </div>
                       );
                     }
@@ -818,7 +818,7 @@ export default function AdminDashboard() {
                                   <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
                                     {translatedEntity}
                                   </span>
-                                  <span className="text-[10px] text-gray-400 ml-auto">{logDate}</span>
+                                  <span className="text-[10px] text-gray-500 ml-auto">{logDate}</span>
                                 </div>
 
                                 <p className="text-xs text-gray-850 font-medium leading-normal whitespace-pre-line">
@@ -968,7 +968,7 @@ function TopicModerationModal({ topicId, onClose, queryClient }: TopicModeration
     return (
       <div className="fixed inset-0 bg-black/45 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl p-6 flex flex-col items-center justify-center max-w-lg w-full">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#5EA3C0] mb-2" />
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand mb-2" />
           <p className="text-sm text-gray-500">Chargement du sujet...</p>
         </div>
       </div>
@@ -980,7 +980,7 @@ function TopicModerationModal({ topicId, onClose, queryClient }: TopicModeration
       <div className="fixed inset-0 bg-black/45 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl p-6 flex flex-col items-center justify-center max-w-lg w-full gap-3">
           <p className="text-gray-500">Erreur lors du chargement du sujet.</p>
-          <button onClick={onClose} className="px-4 py-2 bg-[#5EA3C0] text-white rounded-lg text-sm">Fermer</button>
+          <button onClick={onClose} className="px-4 py-2 bg-brand-ink text-white rounded-lg text-sm">Fermer</button>
         </div>
       </div>
     );
@@ -1035,7 +1035,7 @@ function TopicModerationModal({ topicId, onClose, queryClient }: TopicModeration
 
           {/* Action Panel */}
           <div className="flex flex-wrap items-center gap-3 bg-white p-3 rounded-xl border border-gray-150">
-            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider mr-1">Actions Sujet :</span>
+            <span className="text-xs font-bold text-gray-500 uppercase tracking-wider mr-1">Actions Sujet :</span>
             <button
               onClick={handlePin}
               disabled={pinMutation.isPending}
@@ -1088,14 +1088,14 @@ function TopicModerationModal({ topicId, onClose, queryClient }: TopicModeration
               onChange={(e) => setReplyText(e.target.value)}
               placeholder="Saisissez votre réponse en tant qu'administrateur..."
               rows={3}
-              className="w-full text-sm border border-gray-200 rounded-lg p-2.5 focus:outline-none focus:ring-1 focus:ring-[#5EA3C0] focus:border-[#5EA3C0] bg-white resize-none"
+              className="w-full text-sm border border-gray-200 rounded-lg p-2.5 focus:outline-none focus:ring-1 focus:ring-brand focus:border-brand bg-white resize-none"
               disabled={createMessageMutation.isPending}
             />
             <div className="flex justify-end">
               <button
                 type="submit"
                 disabled={createMessageMutation.isPending || !replyText.trim()}
-                className="px-4 py-2 bg-[#5EA3C0] hover:bg-[#4d8ca7] text-white text-xs font-bold rounded-lg transition-colors disabled:opacity-50"
+                className="px-4 py-2 bg-brand-ink hover:bg-brand-ink-hover text-white text-xs font-bold rounded-lg transition-colors disabled:opacity-50"
               >
                 {createMessageMutation.isPending ? 'Envoi...' : 'Répondre'}
               </button>
@@ -1115,17 +1115,17 @@ function TopicModerationModal({ topicId, onClose, queryClient }: TopicModeration
                   return (
                     <div key={msg.message_id} className="p-4 bg-white border border-gray-100 rounded-xl space-y-2 hover:shadow-sm transition-shadow">
                       <div className="flex items-center justify-between">
-                        <span className={`text-xs font-bold ${isAdmin ? 'text-[#5EA3C0] bg-[#5EA3C0]/10 px-2 py-0.5 rounded-full border border-[#5EA3C0]/20' : 'text-gray-800'}`}>
+                        <span className={`text-xs font-bold ${isAdmin ? 'text-brand-ink bg-brand-ink/10 px-2 py-0.5 rounded-full border border-brand/20' : 'text-gray-800'}`}>
                           {msgAuthor}
                         </span>
                         <div className="flex items-center gap-2">
-                          <span className="text-[10px] text-gray-400">
+                          <span className="text-[10px] text-gray-500">
                             {new Date(msg.sent_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
                           </span>
                           <button
                             onClick={() => handleDeleteMessage(msg.message_id)}
                             disabled={deleteMessageMutation.isPending}
-                            className="p-1 hover:bg-red-50 text-gray-400 hover:text-red-650 rounded transition-colors"
+                            className="p-1 hover:bg-red-50 text-gray-500 hover:text-red-650 rounded transition-colors"
                             title="Supprimer le message"
                           >
                             <Trash className="w-3.5 h-3.5 text-red-500" />
@@ -1138,7 +1138,7 @@ function TopicModerationModal({ topicId, onClose, queryClient }: TopicModeration
                 })}
               </div>
             ) : (
-              <p className="text-center py-6 text-gray-400 text-xs italic">Aucun message dans ce sujet.</p>
+              <p className="text-center py-6 text-gray-500 text-xs italic">Aucun message dans ce sujet.</p>
             )}
           </div>
         </div>

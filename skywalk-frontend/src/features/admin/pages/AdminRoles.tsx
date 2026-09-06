@@ -62,7 +62,7 @@ export default function AdminRoles() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight flex items-center gap-2">
-            <Users className="w-6 h-6 text-[#5EA3C0]" />
+            <Users className="w-6 h-6 text-brand-ink" />
             Gestion des rôles
           </h1>
           <p className="text-sm text-gray-500 mt-0.5">
@@ -84,9 +84,9 @@ export default function AdminRoles() {
         <div className="flex items-center justify-between gap-4 flex-wrap">
           <div>
             <h2 className="text-sm font-bold text-gray-900 flex items-center gap-1.5">
-              <Shield className="w-4 h-4 text-[#5EA3C0]" /> Utilisateurs enregistrés
+              <Shield className="w-4 h-4 text-brand-ink" /> Utilisateurs enregistrés
             </h2>
-            <p className="text-[11px] text-gray-400">Total : {filteredUsers.length} comptes correspondants</p>
+            <p className="text-[11px] text-gray-500">Total : {filteredUsers.length} comptes correspondants</p>
           </div>
           {/* Search Input */}
           <div className="relative w-full sm:w-72">
@@ -96,23 +96,23 @@ export default function AdminRoles() {
               placeholder="Rechercher par nom ou email..."
               value={usersSearch}
               onChange={(e) => setUsersSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 border border-gray-250 bg-gray-50/50 rounded-xl text-xs focus:outline-none focus:border-[#5EA3C0]"
+              className="w-full pl-9 pr-4 py-2 border border-gray-250 bg-gray-50/50 rounded-xl text-xs focus:outline-none focus:border-brand"
             />
           </div>
         </div>
 
         {usersLoading ? (
           <div className="flex flex-col items-center justify-center py-12 space-y-2">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#5EA3C0]" />
-            <p className="text-xs text-gray-400">Chargement de la liste des utilisateurs...</p>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand" />
+            <p className="text-xs text-gray-500">Chargement de la liste des utilisateurs...</p>
           </div>
         ) : filteredUsers.length === 0 ? (
-          <p className="text-center py-12 text-gray-400 text-sm italic">Aucun utilisateur trouvé.</p>
+          <p className="text-center py-12 text-gray-500 text-sm italic">Aucun utilisateur trouvé.</p>
         ) : (
           <div className="overflow-x-auto border border-gray-100 rounded-xl">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-gray-50/50 border-b border-gray-100 text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                <tr className="bg-gray-50/50 border-b border-gray-100 text-[10px] font-bold text-gray-500 uppercase tracking-wider">
                   <th className="py-3 px-4">Utilisateur</th>
                   <th className="py-3 px-4">Email</th>
                   <th className="py-3 px-4">Date d'inscription</th>
@@ -145,20 +145,20 @@ export default function AdminRoles() {
                         </div>
                       </td>
                       <td className="py-3 px-4 font-medium">{u.email}</td>
-                      <td className="py-3 px-4 text-gray-400">
+                      <td className="py-3 px-4 text-gray-500">
                         {new Date(u.createdAt).toLocaleDateString('fr-FR')}
                       </td>
-                      <td className="py-3 px-4 text-gray-400">
+                      <td className="py-3 px-4 text-gray-500">
                         {u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleString('fr-FR') : 'Jamais connecté'}
                       </td>
                       <td className="py-3 px-4 text-right">
                         <div className="inline-flex items-center gap-2">
-                          {isSaving && <RefreshCw className="w-3 h-3 animate-spin text-[#5EA3C0]" />}
+                          {isSaving && <RefreshCw className="w-3 h-3 animate-spin text-brand-ink" />}
                           <select
                             value={u.roles}
                             onChange={(e) => updateRoleMutation.mutate({ userId: u.idUser, role: e.target.value })}
                             disabled={isSelf || isSaving}
-                            className={`bg-white border border-gray-250 rounded-lg text-xs font-semibold px-2 py-1 focus:border-[#5EA3C0] focus:ring-1 focus:ring-[#5EA3C0] ${
+                            className={`bg-white border border-gray-250 rounded-lg text-xs font-semibold px-2 py-1 focus:border-brand focus:ring-1 focus:ring-brand ${
                               u.roles === 'admin' ? 'text-amber-700 bg-amber-50/50' : 'text-gray-700'
                             }`}
                           >

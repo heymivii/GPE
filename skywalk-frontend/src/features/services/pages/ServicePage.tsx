@@ -115,7 +115,7 @@ export default function ServicePage() {
 
               {displayMode === 'with-project' && (
                 <div>
-                  <div className="inline-flex items-center px-3 py-1 rounded-full bg-[#5EA3C0]/10 text-[#5EA3C0] text-xs font-bold mb-3 uppercase tracking-wider">
+                  <div className="inline-flex items-center px-3 py-1 rounded-full bg-brand-ink/10 text-brand-ink text-xs font-bold mb-3 uppercase tracking-wider">
                     {t('services.servicePage.modes.personalized.badge')}
                   </div>
                   <h3 className="text-lg font-bold text-gray-900 mb-1">

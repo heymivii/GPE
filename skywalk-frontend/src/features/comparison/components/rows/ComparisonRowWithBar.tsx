@@ -75,13 +75,13 @@ export function ComparisonRowWithBar({
                             </div>
                             <div className="mt-1 sm:mt-0">
                                 <div className={`text-sm sm:text-base flex items-center justify-between p-2 sm:p-2 rounded-lg ${index === bestIndex
-                                    ? 'bg-[#5EA3C0]/10 text-gray-900 font-semibold ring-1 ring-[#5EA3C0]/20'
+                                    ? 'bg-brand-ink/10 text-gray-900 font-semibold ring-1 ring-brand/20'
                                     : 'text-gray-700 bg-gray-50 sm:bg-transparent'
                                     }`}>
                                     <span className="break-words font-medium sm:font-normal">{value.display}</span>
                                     {index === bestIndex && (
                                         <div
-                                            className="flex-shrink-0 w-6 h-6 bg-[#5EA3C0]/20 text-[#5EA3C0] rounded-full flex items-center justify-center ml-2"
+                                            className="flex-shrink-0 w-6 h-6 bg-brand-ink/20 text-brand-ink rounded-full flex items-center justify-center ml-2"
                                             title={t('comparison.bestOption')}
                                         >
                                             <Trophy className="w-3.5 h-3.5" />

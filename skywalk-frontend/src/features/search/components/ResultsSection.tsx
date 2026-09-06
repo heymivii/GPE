@@ -13,7 +13,7 @@ interface ResultsSectionProps {
 }
 
 const categoryColors: Record<string, string> = {
-  emploi: 'bg-[#5EA3C0]/10 text-[#5EA3C0]',
+  emploi: 'bg-brand-ink/10 text-brand-ink',
   logement: 'bg-green-100 text-green-800',
   transport: 'bg-purple-100 text-purple-800',
   administration: 'bg-orange-100 text-orange-800',
@@ -114,13 +114,13 @@ function ResultCard({ result, viewMode }: { result: SearchResult; viewMode: 'gri
               <div className="flex items-center gap-2">
                 <button
                   onClick={handleFavorite}
-                  className={`p-2 rounded-full ${isFavorited ? 'text-red-500' : 'text-gray-400 hover:text-red-500'}`}
+                  className={`p-2 rounded-full ${isFavorited ? 'text-red-500' : 'text-gray-500 hover:text-red-500'}`}
                 >
                   <Heart className={`w-5 h-5 ${isFavorited ? 'fill-current' : ''}`} />
                 </button>
                 <button
                   onClick={handleShare}
-                  className="p-2 rounded-full text-gray-400 hover:text-[#5EA3C0]"
+                  className="p-2 rounded-full text-gray-500 hover:text-brand-ink"
                 >
                   <Share2 className="w-5 h-5" />
                 </button>
@@ -207,7 +207,7 @@ function ResultCard({ result, viewMode }: { result: SearchResult; viewMode: 'gri
           <div className="flex items-center gap-2">
             <button
               onClick={handleShare}
-              className="p-1 text-gray-400 hover:text-[#5EA3C0]"
+              className="p-1 text-gray-500 hover:text-brand-ink"
             >
               <Share2 className="w-4 h-4" />
             </button>

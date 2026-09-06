@@ -40,13 +40,13 @@ describe('AdminLayout', () => {
   it('highlights the nav link matching the current route', () => {
     renderLayout('/admin/countries');
     const link = screen.getByText('Gestion Pays').closest('a');
-    expect(link).toHaveClass('bg-[#5EA3C0]');
+    expect(link).toHaveClass('bg-brand-ink');
   });
 
   it('does not highlight a non-matching nav link', () => {
     renderLayout('/admin/countries');
     const link = screen.getByText('Gestion des Rôles').closest('a');
-    expect(link).not.toHaveClass('bg-[#5EA3C0]');
+    expect(link).not.toHaveClass('bg-brand-ink');
   });
 
   it('toggles the mobile menu open and closed', () => {

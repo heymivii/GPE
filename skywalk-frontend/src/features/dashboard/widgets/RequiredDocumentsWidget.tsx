@@ -57,13 +57,13 @@ export default function RequiredDocumentsWidget({
       currentSize={currentSize}
     >
       {!projectId ? (
-        <p className="text-sm text-gray-400 text-center py-6 flex-grow">
+        <p className="text-sm text-gray-500 text-center py-6 flex-grow">
           {t('dashboard.personalized.widgets.requiredDocuments.noProject', {
             defaultValue: 'Sélectionnez un projet pour suivre vos documents.',
           })}
         </p>
       ) : isLoading ? (
-        <div className="flex justify-center py-6 text-gray-400 flex-grow">
+        <div className="flex justify-center py-6 text-gray-500 flex-grow">
           <Loader2 className="w-5 h-5 animate-spin" />
         </div>
       ) : (
@@ -96,7 +96,7 @@ export default function RequiredDocumentsWidget({
 
           <Link
             to="/documents"
-            className="mt-auto pt-3 inline-flex items-center gap-1 text-xs font-medium text-[#5EA3C0] hover:underline"
+            className="mt-auto pt-3 inline-flex items-center gap-1 text-xs font-medium text-brand-ink hover:underline"
           >
             {doneCount < KEY_DOCS.length
               ? t('dashboard.personalized.widgets.requiredDocuments.add', { defaultValue: 'Ajouter des documents' })

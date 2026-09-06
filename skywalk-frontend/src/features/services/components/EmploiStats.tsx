@@ -116,7 +116,7 @@ export default function EmploiStats({ countryName, cityName }: EmploiStatsProps)
             {t('services.stats.emploi.title', { city: displayName })}
           </h2>
           {adzunaCode && (
-            <span className="text-xs text-gray-400 flex items-center gap-1">
+            <span className="text-xs text-gray-500 flex items-center gap-1">
               <Globe className="w-3 h-3" /> {t('services.stats.emploi.realTimeData')}
             </span>
           )}
@@ -167,7 +167,7 @@ export default function EmploiStats({ countryName, cityName }: EmploiStatsProps)
               : staticData ? `${formatNumber(staticData.avgSalaryNet)}€` : '—'}
           </p>
           {!same && realSalaryAvg != null && realSalaryAvg > 0 && (
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-gray-500">
               {formatNumber(Math.round(realSalaryAvg))} {localCur}/{t('services.stats.emploi.perMonth', 'mo')}
             </p>
           )}
@@ -175,7 +175,7 @@ export default function EmploiStats({ countryName, cityName }: EmploiStatsProps)
             <p className="text-xs text-gray-500">{t('services.stats.emploi.netPerMonth')}</p>
           )}
           {realSalaryMin != null && realSalaryMax != null && (
-            <p className="text-[10px] text-gray-400 mt-1">
+            <p className="text-[10px] text-gray-500 mt-1">
               min {formatPrice(realSalaryMin, localCur)} — max {formatPrice(realSalaryMax, localCur)}
             </p>
           )}
@@ -219,7 +219,7 @@ export default function EmploiStats({ countryName, cityName }: EmploiStatsProps)
           <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
             <Briefcase className="w-5 h-5 text-blue-600" />
             {t('services.stats.emploi.recentOffers')}
-            <span className="text-xs font-normal text-gray-400 ml-auto">{t('services.stats.emploi.totalOffers', { count: String(formatCompact(totalJobs)) } as Record<string, string>)}</span>
+            <span className="text-xs font-normal text-gray-500 ml-auto">{t('services.stats.emploi.totalOffers', { count: String(formatCompact(totalJobs)) } as Record<string, string>)}</span>
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {sampleJobs.map((job: AdzunaJobDto) => (
@@ -240,7 +240,7 @@ export default function EmploiStats({ countryName, cityName }: EmploiStatsProps)
                   <Building2 className="w-3.5 h-3.5" />
                   {job.company}
                 </p>
-                <p className="text-xs text-gray-400 flex items-center gap-1 mb-2">
+                <p className="text-xs text-gray-500 flex items-center gap-1 mb-2">
                   <MapPin className="w-3 h-3" />
                   {job.location.displayName}
                 </p>
@@ -250,7 +250,7 @@ export default function EmploiStats({ countryName, cityName }: EmploiStatsProps)
                   </p>
                 )}
                 <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-50">
-                  <span className="text-[10px] text-gray-400">{timeAgo(job.created_at)}</span>
+                  <span className="text-[10px] text-gray-500">{timeAgo(job.created_at)}</span>
                   <div className="flex gap-1">
                     {job.remote && (
                       <span className="text-[10px] bg-green-50 text-green-600 px-1.5 py-0.5 rounded font-medium">Remote</span>
@@ -332,7 +332,7 @@ export default function EmploiStats({ countryName, cityName }: EmploiStatsProps)
                 >
                   <div>
                     <span className="text-sm font-medium text-gray-900 group-hover:text-blue-700 transition-colors">{p.name}</span>
-                    <span className="text-xs text-gray-400 ml-2">{t(p.typeKey)}</span>
+                    <span className="text-xs text-gray-500 ml-2">{t(p.typeKey)}</span>
                   </div>
                   <ExternalLink className="w-3.5 h-3.5 text-gray-300 group-hover:text-blue-500" />
                 </a>

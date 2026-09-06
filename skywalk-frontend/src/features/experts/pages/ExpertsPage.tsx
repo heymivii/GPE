@@ -63,7 +63,7 @@ export default function ExpertsPage() {
         <section className="rounded-2xl border border-gray-200 bg-white p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-5">
           <div className="flex-1">
             <h2 className="flex items-center gap-2 font-bold text-gray-900">
-              <ShieldCheck className="w-5 h-5 text-[#5EA3C0]" />
+              <ShieldCheck className="w-5 h-5 text-brand-ink" />
               {t('experts.page.sourcingTitle', { defaultValue: "D'où viennent nos experts ?" })}
             </h2>
             <p className="text-sm text-gray-600 mt-1.5 leading-relaxed">
@@ -78,7 +78,7 @@ export default function ExpertsPage() {
             className={`inline-flex items-center justify-center gap-2 flex-shrink-0 px-5 py-2.5 rounded-xl font-semibold text-sm transition-colors ${
               myPending
                 ? 'bg-amber-100 text-amber-900 hover:bg-amber-200'
-                : 'bg-[#5EA3C0] hover:bg-[#4891b0] text-white'
+                : 'bg-brand-ink hover:bg-brand-ink-hover text-white'
             }`}
           >
             {myPending ? (
@@ -105,13 +105,13 @@ export default function ExpertsPage() {
               placeholder={t('experts.page.searchPlaceholder', {
                 defaultValue: 'Rechercher un expert…',
               })}
-              className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:border-[#5EA3C0] outline-none"
+              className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:border-brand outline-none"
             />
           </div>
           <select
             value={countryId ?? ''}
             onChange={(e) => setCountryId(e.target.value ? Number(e.target.value) : undefined)}
-            className="px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:border-[#5EA3C0] outline-none"
+            className="px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:border-brand outline-none"
           >
             <option value="">
               {t('experts.page.allCountries', { defaultValue: 'Tous les pays' })}
@@ -126,7 +126,7 @@ export default function ExpertsPage() {
 
         {/* Liste */}
         {isLoading ? (
-          <div className="flex justify-center py-16 text-gray-400">
+          <div className="flex justify-center py-16 text-gray-500">
             <Loader2 className="w-6 h-6 animate-spin" />
           </div>
         ) : filtered.length === 0 ? (
@@ -146,7 +146,7 @@ export default function ExpertsPage() {
                 className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex flex-col"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#5EA3C0] to-[#4891b0] text-white flex items-center justify-center font-semibold">
+                  <div className="w-11 h-11 rounded-full bg-gradient-to-br from-brand to-brand-deep text-white flex items-center justify-center font-semibold">
                     {e.fullName?.charAt(0).toUpperCase() || 'E'}
                   </div>
                   <div className="min-w-0">
@@ -182,14 +182,14 @@ export default function ExpertsPage() {
                       </span>
                     </>
                   ) : (
-                    <span className="text-xs text-gray-400">
+                    <span className="text-xs text-gray-500">
                       {t('experts.page.noRating', { defaultValue: 'Pas encore d’avis' })}
                     </span>
                   )}
                 </div>
 
                 {e.expertCountry && (
-                  <p className="mt-2 inline-flex items-center gap-1 text-xs text-[#5EA3C0] font-medium">
+                  <p className="mt-2 inline-flex items-center gap-1 text-xs text-brand-ink font-medium">
                     <MapPin className="w-3.5 h-3.5" />
                     {countryName(e.expertCountry.countryName)}
                   </p>
@@ -205,7 +205,7 @@ export default function ExpertsPage() {
                 {user && e.idUser !== currentUserId && (
                   <Link
                     to={`/messages?to=${e.idUser}&name=${encodeURIComponent(e.fullName)}`}
-                    className="mt-auto pt-3 inline-flex items-center justify-center gap-1.5 text-sm font-medium text-white bg-[#5EA3C0] hover:bg-[#4891b0] rounded-lg py-2 transition-colors"
+                    className="mt-auto pt-3 inline-flex items-center justify-center gap-1.5 text-sm font-medium text-white bg-brand-ink hover:bg-brand-ink-hover rounded-lg py-2 transition-colors"
                   >
                     <Mail className="w-4 h-4" />
                     {t('messages.send', { defaultValue: 'Envoyer un message' })}

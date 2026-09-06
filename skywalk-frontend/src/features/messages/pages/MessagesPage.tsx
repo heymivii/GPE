@@ -32,7 +32,7 @@ function StartConversationLinks() {
       <div className="flex flex-wrap items-center justify-center gap-2">
         <Link
           to="/experts"
-          className="inline-flex items-center gap-1.5 rounded-lg bg-[#5EA3C0] px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-[#4891b0]"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-brand-ink px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-brand-ink-hover"
         >
           <BadgeCheck className="h-3.5 w-3.5" />
           {t('messages.findExpert', { defaultValue: 'Trouver un expert' })}
@@ -168,7 +168,7 @@ export default function MessagesPage() {
                     onClick={() => setFilter(id)}
                     className={`text-[11px] font-semibold px-2 py-1 rounded-md transition-colors ${
                       filter === id
-                        ? 'bg-[#5EA3C0]/10 text-[#4A8BA0]'
+                        ? 'bg-brand-ink/10 text-brand-ink-hover'
                         : 'text-gray-500 hover:bg-gray-100'
                     }`}
                   >
@@ -178,7 +178,7 @@ export default function MessagesPage() {
               </div>
             </div>
             {convLoading ? (
-              <div className="flex justify-center py-10 text-gray-400">
+              <div className="flex justify-center py-10 text-gray-500">
                 <Loader2 className="w-5 h-5 animate-spin" />
               </div>
             ) : visibleConversations.length === 0 ? (
@@ -186,7 +186,7 @@ export default function MessagesPage() {
               // une conversation. « Aucune conversation. » était un cul-de-sac :
               // on indique désormais les deux endroits d'où l'on écrit.
               <div className="px-4 py-8 text-center">
-                <p className="text-sm text-gray-400">
+                <p className="text-sm text-gray-500">
                   {filter === 'all'
                     ? t('messages.empty', { defaultValue: 'Aucune conversation.' })
                     : t('messages.emptyFiltered', {
@@ -202,7 +202,7 @@ export default function MessagesPage() {
                     <button
                       onClick={() => select(c.userId)}
                       className={`w-full text-left px-4 py-3 hover:bg-gray-50 flex items-start gap-2 ${
-                        selectedId === c.userId ? 'bg-[#5EA3C0]/5' : ''
+                        selectedId === c.userId ? 'bg-brand-ink/5' : ''
                       }`}
                     >
                       <div className="w-9 h-9 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center font-semibold flex-shrink-0">
@@ -241,7 +241,7 @@ export default function MessagesPage() {
                             </span>
                           )}
                         </div>
-                        <p className="text-xs text-gray-400 truncate">{c.lastMessage}</p>
+                        <p className="text-xs text-gray-500 truncate">{c.lastMessage}</p>
                       </div>
                     </button>
                   </li>
@@ -255,7 +255,7 @@ export default function MessagesPage() {
               minimale de la colonne 1fr et fait déborder la grille hors de la carte. */}
           <section className={`flex-col min-w-0 ${selectedId ? 'flex' : 'hidden sm:flex'}`}>
             {!selectedId ? (
-              <div className="flex-1 flex flex-col items-center justify-center text-center text-gray-400 gap-2 p-8">
+              <div className="flex-1 flex flex-col items-center justify-center text-center text-gray-500 gap-2 p-8">
                 <MessagesSquare className="w-10 h-10 text-gray-300" />
                 <p className="text-sm">
                   {conversations.length === 0
@@ -306,7 +306,7 @@ export default function MessagesPage() {
                         const prefix =
                           countries.length === 1 ? `${t('messages.buddyAbout', { defaultValue: 'À propos de :' })} ${countries[0]} — ` : `${t('messages.buddyAbout', { defaultValue: 'À propos de :' })} `;
                         return (
-                          <p className="text-[11px] text-gray-400 truncate" title={prefix + full}>
+                          <p className="text-[11px] text-gray-500 truncate" title={prefix + full}>
                             {prefix}
                             {topics.slice(0, 3).map(fmt).join(' · ')}
                             {topics.length > 3 && ` +${topics.length - 3}`}
@@ -317,7 +317,7 @@ export default function MessagesPage() {
                   </div>
                   <button
                     onClick={reportMember}
-                    className="p-1.5 text-gray-400 hover:text-orange-500 hover:bg-orange-50 rounded-lg"
+                    className="p-1.5 text-gray-500 hover:text-orange-500 hover:bg-orange-50 rounded-lg"
                     title={t('messages.report', { defaultValue: 'Signaler ce membre' })}
                   >
                     <Flag className="w-4 h-4" />
@@ -326,11 +326,11 @@ export default function MessagesPage() {
 
                 <div ref={threadScrollRef} className="flex-1 overflow-y-auto p-4 space-y-2 bg-gray-50/50 max-h-[50vh]">
                   {threadLoading ? (
-                    <div className="flex justify-center py-8 text-gray-400">
+                    <div className="flex justify-center py-8 text-gray-500">
                       <Loader2 className="w-5 h-5 animate-spin" />
                     </div>
                   ) : thread.length === 0 ? (
-                    <p className="text-center text-sm text-gray-400 py-8">
+                    <p className="text-center text-sm text-gray-500 py-8">
                       {t('messages.startConversation', {
                         defaultValue: 'Écrivez le premier message.',
                       })}
@@ -344,7 +344,7 @@ export default function MessagesPage() {
                         <div
                           className={`max-w-[75%] rounded-2xl px-3.5 py-2 text-sm ${
                             m.mine
-                              ? 'bg-[#5EA3C0] text-white rounded-br-sm'
+                              ? 'bg-brand-ink text-white rounded-br-sm'
                               : 'bg-white border border-gray-100 text-gray-800 rounded-bl-sm'
                           }`}
                         >
@@ -370,12 +370,12 @@ export default function MessagesPage() {
                     }}
                     rows={1}
                     placeholder={t('messages.placeholder', { defaultValue: 'Votre message…' })}
-                    className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:border-[#5EA3C0] outline-none resize-none max-h-32"
+                    className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:border-brand outline-none resize-none max-h-32"
                   />
                   <button
                     onClick={handleSend}
                     disabled={!draft.trim() || sendMutation.isPending}
-                    className="p-2.5 bg-[#5EA3C0] text-white rounded-lg hover:bg-[#4891b0] disabled:opacity-50 transition-colors"
+                    className="p-2.5 bg-brand-ink text-white rounded-lg hover:bg-brand-ink-hover disabled:opacity-50 transition-colors"
                     aria-label={t('messages.send', { defaultValue: 'Envoyer' })}
                   >
                     {sendMutation.isPending ? (

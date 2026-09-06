@@ -233,7 +233,7 @@ export default function NewPostPage() {
                   }`}
                 >
                   <div className="flex items-center gap-2">
-                    <category.icon className="w-5 h-5 text-[#5EA3C0]" />
+                    <category.icon className="w-5 h-5 text-brand-ink" />
                     <span className="font-medium">{t(`forum.categories.${category.id}.name`)}</span>
                   </div>
                 </button>
@@ -245,7 +245,7 @@ export default function NewPostPage() {
             <label className="block text-sm font-medium text-gray-900 mb-2">
               <Globe className="w-4 h-4 inline mr-1.5 text-blue-500" />
               {t('forum.newTopic.countryLabel', 'Pays concerné')}
-              <span className="text-gray-400 text-xs ml-2">{t('forum.newTopic.optional', '(optionnel)')}</span>
+              <span className="text-gray-500 text-xs ml-2">{t('forum.newTopic.optional', '(optionnel)')}</span>
             </label>
             <p className="text-sm text-gray-500 mb-3">
               {t('forum.newTopic.countryHelp', 'Associer un pays permet de comptabiliser les discussions par destination.')}

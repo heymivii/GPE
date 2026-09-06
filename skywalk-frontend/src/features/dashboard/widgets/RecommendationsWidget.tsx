@@ -79,7 +79,7 @@ export default function RecommendationsWidget({
           <div className="text-center text-gray-500 py-8">
             <Sparkles className="w-10 h-10 mx-auto mb-3 text-gray-300" />
             <p className="text-sm font-medium text-gray-600 mb-1">{t('projectRecommendations.title')}</p>
-            <p className="text-xs text-gray-400">{t('projectRecommendations.subtitle')}</p>
+            <p className="text-xs text-gray-500">{t('projectRecommendations.subtitle')}</p>
           </div>
         ) : (
           <>
@@ -105,7 +105,7 @@ export default function RecommendationsWidget({
               <div className="bg-gray-900 rounded-xl p-4 text-white">
                 <div className="flex items-center gap-2 mb-3">
                   <Shield className="w-4 h-4 text-gray-400" />
-                  <h4 className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">
+                  <h4 className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
                     {t('projectRecommendations.recommendedVisa')}
                   </h4>
                   <span className={`ml-auto text-[10px] px-2 py-0.5 rounded-full font-medium ${
@@ -126,7 +126,7 @@ export default function RecommendationsWidget({
                   </span>
                 </div>
 
-                <p className="text-gray-400 text-xs mb-3 leading-relaxed">
+                <p className="text-gray-500 text-xs mb-3 leading-relaxed">
                   {t(recommendations.visa.reason, { country: country?.countryName })}
                 </p>
 
@@ -173,7 +173,7 @@ export default function RecommendationsWidget({
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-gray-900 truncate">{t(step.title)}</p>
-                        <p className="text-[11px] text-gray-400 truncate flex items-center gap-1">
+                        <p className="text-[11px] text-gray-500 truncate flex items-center gap-1">
                           <Clock className="w-3 h-3" /> {t(step.timeline)}
                         </p>
                       </div>

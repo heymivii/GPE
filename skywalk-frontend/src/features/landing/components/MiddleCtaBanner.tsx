@@ -17,7 +17,7 @@ export default function MiddleCtaBanner() {
                 <h2 className="text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight font-outfit text-white mb-6">
                     {t('landing.ctaBanner.title')}
                 </h2>
-                <p className="text-xl sm:text-2xl text-[#86868b] max-w-3xl mb-12 font-medium">
+                <p className="text-xl sm:text-2xl text-ink-muted max-w-3xl mb-12 font-medium">
                     {t('landing.ctaBanner.description')}
                 </p>
 

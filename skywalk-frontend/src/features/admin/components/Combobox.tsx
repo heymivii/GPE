@@ -109,7 +109,7 @@ export default function Combobox({
         onFocus={() => setOpen(true)}
         onKeyDown={onKeyDown}
         placeholder={placeholder}
-        className="w-full px-3.5 py-2 pr-9 border border-gray-200 rounded-lg focus:outline-none focus:border-[#5EA3C0] focus:ring-1 focus:ring-[#5EA3C0] text-sm text-gray-900 disabled:bg-gray-50 disabled:cursor-not-allowed"
+        className="w-full px-3.5 py-2 pr-9 border border-gray-200 rounded-lg focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand text-sm text-gray-900 disabled:bg-gray-50 disabled:cursor-not-allowed"
       />
       <ChevronDown
         className={`absolute right-3 top-[1.15rem] -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none transition-transform ${open ? 'rotate-180' : ''}`}
@@ -133,14 +133,14 @@ export default function Combobox({
                 select(option);
               }}
               className={`px-3.5 py-2 text-sm cursor-pointer ${
-                i === highlight ? 'bg-[#5EA3C0] text-white' : 'text-gray-700'
+                i === highlight ? 'bg-brand-ink text-white' : 'text-gray-700'
               }`}
             >
               {option}
             </li>
           ))}
           {total > results.length && (
-            <li className="px-3.5 py-2 text-xs text-gray-400 italic border-t border-gray-100">
+            <li className="px-3.5 py-2 text-xs text-gray-500 italic border-t border-gray-100">
               {total - results.length} autres… affine ta recherche
             </li>
           )}
@@ -148,7 +148,7 @@ export default function Combobox({
       )}
 
       {open && !disabled && value.trim() !== '' && results.length === 0 && (
-        <div className="absolute z-50 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg px-3.5 py-2 text-sm text-gray-400 italic">
+        <div className="absolute z-50 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg px-3.5 py-2 text-sm text-gray-500 italic">
           Aucune correspondance — « {value.trim()} » sera créée telle quelle.
         </div>
       )}

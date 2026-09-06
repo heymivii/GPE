@@ -6,7 +6,8 @@ import ProjectsPage from './ProjectsPage';
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: string, opts?: any) => (opts?.id != null ? `${key}(${opts.id})` : key),
+    t: (key: string, opts?: any) =>
+      opts?.id != null ? `${key}(${opts.id})` : (opts?.defaultValue ?? key),
     i18n: { language: 'fr' },
   }),
 }));
@@ -103,7 +104,7 @@ describe('ProjectsPage', () => {
     mockGetAllProjects.mockResolvedValue([project()]);
     renderPage();
     await screen.findByText('France');
-    fireEvent.click(screen.getByRole('button', { name: '' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Options du projet' }));
     fireEvent.click(screen.getByText('projectsPage.viewDetails'));
     expect(mockNavigate).toHaveBeenCalledWith('/projects/1');
   });
@@ -112,7 +113,7 @@ describe('ProjectsPage', () => {
     mockGetAllProjects.mockResolvedValue([project()]);
     renderPage();
     await screen.findByText('France');
-    fireEvent.click(screen.getByRole('button', { name: '' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Options du projet' }));
     fireEvent.click(screen.getByText('projectsPage.edit'));
     expect(mockNavigate).toHaveBeenCalledWith('/onboarding/1');
   });
@@ -121,7 +122,7 @@ describe('ProjectsPage', () => {
     mockGetAllProjects.mockResolvedValue([project()]);
     renderPage();
     await screen.findByText('France');
-    fireEvent.click(screen.getByRole('button', { name: '' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Options du projet' }));
     fireEvent.click(screen.getByText('projectsPage.delete'));
     expect(screen.getByText('projectsPage.deleteTitle')).toBeInTheDocument();
 
@@ -139,7 +140,7 @@ describe('ProjectsPage', () => {
     mockGetAllProjects.mockResolvedValue([project()]);
     renderPage();
     await screen.findByText('France');
-    fireEvent.click(screen.getByRole('button', { name: '' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Options du projet' }));
     fireEvent.click(screen.getByText('projectsPage.delete'));
     fireEvent.click(screen.getByText('projectsPage.cancel'));
     expect(screen.queryByText('projectsPage.deleteTitle')).not.toBeInTheDocument();

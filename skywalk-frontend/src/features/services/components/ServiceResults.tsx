@@ -40,7 +40,7 @@ export default function ServiceResults({ category, title }: ServiceResultsProps)
             </>
           ) : (
             <>
-              <h3 className="text-xl font-semibold text-gray-400 mb-3">
+              <h3 className="text-xl font-semibold text-gray-500 mb-3">
                 {t('services.serviceResults.comingSoon.title', 'Bientôt disponible')}
               </h3>
               <p className="text-gray-500 mb-6">
@@ -48,7 +48,7 @@ export default function ServiceResults({ category, title }: ServiceResultsProps)
               </p>
               <button
                 disabled
-                className="inline-flex items-center space-x-2 px-6 py-3 bg-gray-100 text-gray-400 rounded-lg cursor-not-allowed font-medium border border-gray-200"
+                className="inline-flex items-center space-x-2 px-6 py-3 bg-gray-100 text-gray-500 rounded-lg cursor-not-allowed font-medium border border-gray-200"
               >
                 <span>{t('services.serviceResults.comingSoon.button', 'Recherche indisponible')}</span>
               </button>

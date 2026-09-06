@@ -42,7 +42,7 @@ export default function PopularDestinations() {
           
           <Link 
             to="/destinations" 
-            className="inline-flex items-center gap-2 px-6 py-2.5 bg-blue-50 text-[#5EA3C0] font-bold rounded-full hover:bg-blue-100 transition-colors whitespace-nowrap"
+            className="inline-flex items-center gap-2 px-6 py-2.5 bg-blue-50 text-brand-ink font-bold rounded-full hover:bg-blue-100 transition-colors whitespace-nowrap"
           >
             {t('popularDestinations.viewAll')}
             <ArrowRight className="w-4 h-4" />

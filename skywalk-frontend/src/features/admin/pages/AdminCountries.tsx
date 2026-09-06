@@ -559,7 +559,7 @@ export default function AdminCountries() {
           <div className="flex items-center gap-2 text-xs text-gray-500 font-semibold tracking-wide uppercase">
             <span>Admin</span>
             <ChevronRight className="w-3 h-3" />
-            <button onClick={() => setViewingCountry(null)} className="hover:text-[#5EA3C0] transition-colors">
+            <button onClick={() => setViewingCountry(null)} className="hover:text-brand-ink transition-colors">
               Gestion des Pays
             </button>
             <ChevronRight className="w-3 h-3" />
@@ -596,7 +596,7 @@ export default function AdminCountries() {
                 type="button"
                 onClick={handleSaveCountry}
                 disabled={updateMutation.isPending}
-                className="flex items-center gap-2 bg-[#5EA3C0] hover:bg-[#4891b0] text-white px-5 py-2.5 rounded-xl font-semibold text-sm transition-all shadow-md hover:shadow-lg disabled:opacity-50"
+                className="flex items-center gap-2 bg-brand-ink hover:bg-brand-ink-hover text-white px-5 py-2.5 rounded-xl font-semibold text-sm transition-all shadow-md hover:shadow-lg disabled:opacity-50"
               >
                 {updateMutation.isPending ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -614,7 +614,7 @@ export default function AdminCountries() {
           {/* Left Column: Country Info */}
           <div className="bg-white p-6 rounded-2xl border border-gray-150 shadow-sm space-y-6">
             <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2 border-b border-gray-100 pb-3">
-              <Globe className="w-5 h-5 text-[#5EA3C0]" />
+              <Globe className="w-5 h-5 text-brand-ink" />
               Détails du pays
             </h3>
             <div className="space-y-4">
@@ -627,7 +627,7 @@ export default function AdminCountries() {
                   required
                   value={editCountryName}
                   onChange={(e) => setEditCountryName(e.target.value)}
-                  className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900 font-semibold"
+                  className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900 font-semibold"
                 />
               </div>
               <div>
@@ -639,7 +639,7 @@ export default function AdminCountries() {
                   maxLength={2}
                   value={editIsoCode}
                   onChange={(e) => setEditIsoCode(e.target.value.toUpperCase())}
-                  className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900 uppercase font-semibold"
+                  className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900 uppercase font-semibold"
                   placeholder="ex. FR, CA..."
                 />
               </div>
@@ -651,7 +651,7 @@ export default function AdminCountries() {
                   required
                   value={editContinentId}
                   onChange={(e) => setEditContinentId(Number(e.target.value))}
-                  className="w-full px-3.5 py-2 border border-gray-200 bg-white rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900"
+                  className="w-full px-3.5 py-2 border border-gray-200 bg-white rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900"
                 >
                   <option value="" disabled>-- Sélectionner un continent --</option>
                   {continents.map((cont) => (
@@ -684,8 +684,8 @@ export default function AdminCountries() {
                     onClick={() => setActiveTab(tab.id as any)}
                     className={`flex items-center gap-2 px-5 py-3 border-b-2 font-bold text-xs uppercase tracking-wider transition-all whitespace-nowrap ${
                       isActive
-                        ? 'border-[#5EA3C0] text-[#5EA3C0]'
-                        : 'border-transparent text-gray-400 hover:text-gray-650 hover:border-gray-200'
+                        ? 'border-brand text-brand-ink'
+                        : 'border-transparent text-gray-500 hover:text-gray-650 hover:border-gray-200'
                     }`}
                   >
                     <Icon className="w-4 h-4" />
@@ -700,13 +700,13 @@ export default function AdminCountries() {
               <div className="bg-white p-6 rounded-2xl border border-gray-150 shadow-sm space-y-6 animate-in fade-in duration-200">
                 <div className="flex items-center justify-between border-b border-gray-100 pb-3 flex-wrap gap-4">
                   <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                    <Settings className="w-5 h-5 text-[#5EA3C0]" />
+                    <Settings className="w-5 h-5 text-brand-ink" />
                     Démarches Administratives (Services)
                   </h3>
                   <button
                     type="button"
                     onClick={openAddProcModal}
-                    className="flex items-center gap-2 bg-[#5EA3C0]/10 hover:bg-[#5EA3C0]/20 text-[#5EA3C0] px-4 py-2 rounded-xl font-bold text-xs transition-colors"
+                    className="flex items-center gap-2 bg-brand-ink/10 hover:bg-brand-ink/20 text-brand-ink px-4 py-2 rounded-xl font-bold text-xs transition-colors"
                   >
                     <Plus className="w-4 h-4" />
                     Ajouter une démarche
@@ -715,14 +715,14 @@ export default function AdminCountries() {
 
                 {proceduresLoading ? (
                   <div className="flex flex-col items-center justify-center py-12 space-y-3">
-                    <Loader2 className="w-10 h-10 animate-spin text-[#5EA3C0]" />
+                    <Loader2 className="w-10 h-10 animate-spin text-brand-ink" />
                     <span className="text-sm text-gray-500 font-medium">Chargement des démarches...</span>
                   </div>
                 ) : procedures.length === 0 ? (
-                  <div className="text-center py-12 text-gray-400">
+                  <div className="text-center py-12 text-gray-500">
                     <Briefcase className="w-12 h-12 mx-auto mb-3 text-gray-305" />
                     <p className="font-semibold text-gray-655">Aucune démarche enregistrée</p>
-                    <p className="text-xs text-gray-400 mt-1">
+                    <p className="text-xs text-gray-500 mt-1">
                       Ajoutez la première démarche administrative requise pour s'installer dans ce pays.
                     </p>
                   </div>
@@ -738,7 +738,7 @@ export default function AdminCountries() {
                                 Étape {proc.stepOrder || '?'}
                               </span>
                               {proc.category && (
-                                <span className="px-2 py-0.5 bg-[#5EA3C0]/10 text-[#5EA3C0] text-[10px] font-bold rounded uppercase tracking-wider border border-[#5EA3C0]/20">
+                                <span className="px-2 py-0.5 bg-brand-ink/10 text-brand-ink text-[10px] font-bold rounded uppercase tracking-wider border border-brand/20">
                                   {proc.category}
                                 </span>
                               )}
@@ -759,7 +759,7 @@ export default function AdminCountries() {
                             <button
                               type="button"
                               onClick={() => openEditProcModal(proc)}
-                              className="p-1.5 hover:bg-gray-100 text-gray-500 hover:text-[#5EA3C0] rounded-lg transition-colors"
+                              className="p-1.5 hover:bg-gray-100 text-gray-500 hover:text-brand-ink rounded-lg transition-colors"
                               title="Modifier la démarche"
                             >
                               <Edit2 className="w-3.5 h-3.5" />
@@ -785,7 +785,7 @@ export default function AdminCountries() {
               <div className="bg-white p-6 rounded-2xl border border-gray-150 shadow-sm space-y-6 animate-in fade-in duration-200">
                 <div className="flex items-center justify-between border-b border-gray-100 pb-3 flex-wrap gap-4">
                   <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                    <Coins className="w-5 h-5 text-[#5EA3C0]" />
+                    <Coins className="w-5 h-5 text-brand-ink" />
                     Coût de la vie par ville
                   </h3>
                   <span className="text-xs text-gray-450 font-semibold uppercase tracking-wider">
@@ -795,14 +795,14 @@ export default function AdminCountries() {
 
                 {countryCitiesLoading ? (
                   <div className="flex flex-col items-center justify-center py-12 space-y-3">
-                    <Loader2 className="w-10 h-10 animate-spin text-[#5EA3C0]" />
+                    <Loader2 className="w-10 h-10 animate-spin text-brand-ink" />
                     <span className="text-sm text-gray-500 font-medium">Chargement des villes...</span>
                   </div>
                 ) : countryCities.length === 0 ? (
-                  <div className="text-center py-12 text-gray-400">
+                  <div className="text-center py-12 text-gray-500">
                     <Building2 className="w-12 h-12 mx-auto mb-3 text-gray-305" />
                     <p className="font-semibold text-gray-655">Aucune ville enregistrée pour ce pays</p>
-                    <p className="text-xs text-gray-400 mt-1">
+                    <p className="text-xs text-gray-500 mt-1">
                       Rendez-vous dans la section "Gestion des Villes" pour ajouter des villes à ce pays.
                     </p>
                   </div>
@@ -812,9 +812,9 @@ export default function AdminCountries() {
                       <div
                         key={city.idCity}
                         onClick={() => setSelectedCostCity(city)}
-                        className={`p-4 border rounded-xl cursor-pointer transition-all hover:border-[#5EA3C0] hover:shadow-md ${
+                        className={`p-4 border rounded-xl cursor-pointer transition-all hover:border-brand hover:shadow-md ${
                           selectedCostCity?.idCity === city.idCity
-                            ? 'border-[#5EA3C0] bg-[#5EA3C0]/5 shadow-sm'
+                            ? 'border-brand bg-brand-ink/5 shadow-sm'
                             : 'border-gray-150 bg-gray-50/25'
                         }`}
                       >
@@ -828,7 +828,7 @@ export default function AdminCountries() {
                                 </span>
                               )}
                             </h4>
-                            <p className="text-xs text-gray-400 mt-0.5">
+                            <p className="text-xs text-gray-500 mt-0.5">
                               Population : {city.population ? city.population.toLocaleString() : 'Inconnue'}
                             </p>
                           </div>
@@ -844,13 +844,13 @@ export default function AdminCountries() {
                   <div className="border-t border-gray-100 pt-6 space-y-6 animate-in slide-in-from-top duration-200">
                     <div className="flex items-center justify-between">
                       <h4 className="font-bold text-gray-900 text-base flex items-center gap-2">
-                        <Building2 className="w-5 h-5 text-[#5EA3C0]" />
+                        <Building2 className="w-5 h-5 text-brand-ink" />
                         Détails du coût de la vie : {selectedCostCity.name}
                       </h4>
                       <button
                         type="button"
                         onClick={() => setSelectedCostCity(null)}
-                        className="text-xs text-gray-400 hover:text-gray-600 font-semibold"
+                        className="text-xs text-gray-500 hover:text-gray-600 font-semibold"
                       >
                         Fermer l'aperçu
                       </button>
@@ -858,22 +858,22 @@ export default function AdminCountries() {
 
                     {cityCostOfLivingLoading ? (
                       <div className="flex justify-center items-center py-6">
-                        <Loader2 className="w-6 h-6 animate-spin text-[#5EA3C0]" />
+                        <Loader2 className="w-6 h-6 animate-spin text-brand-ink" />
                       </div>
                     ) : !cityCostOfLiving || !cityCostOfLiving.summary ? (
                       <div className="bg-gray-50 p-6 rounded-xl border border-gray-150 text-center text-gray-500 text-sm">
                         <Coins className="w-8 h-8 mx-auto mb-2 text-gray-300" />
                         <p className="font-semibold">Aucune donnée détaillée pour cette ville.</p>
-                        <p className="text-xs text-gray-400 mt-0.5">
+                        <p className="text-xs text-gray-500 mt-0.5">
                           Les données n'ont pas encore été initialisées.
                         </p>
                       </div>
                     ) : (
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {/* Budget & Salary Summary */}
-                        <div className="bg-[#5EA3C0]/5 p-5 rounded-xl border border-[#5EA3C0]/10 flex flex-col justify-between">
+                        <div className="bg-brand-ink/5 p-5 rounded-xl border border-brand/10 flex flex-col justify-between">
                           <div>
-                            <span className="text-xs font-bold uppercase tracking-wider text-[#5EA3C0]">Budget & Salaire</span>
+                            <span className="text-xs font-bold uppercase tracking-wider text-brand-ink">Budget & Salaire</span>
                             <div className="mt-3 space-y-2">
                               <div>
                                 <span className="text-xs text-gray-500 block">Budget mensuel moyen</span>
@@ -1100,7 +1100,7 @@ export default function AdminCountries() {
               <div className="bg-white p-6 rounded-2xl border border-gray-150 shadow-sm space-y-6 animate-in fade-in duration-200">
                 <div className="flex items-center justify-between border-b border-gray-100 pb-3 flex-wrap gap-4">
                   <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                    <TrendingUp className="w-5 h-5 text-[#5EA3C0]" />
+                    <TrendingUp className="w-5 h-5 text-brand-ink" />
                     Opportunités d'emploi (Adzuna)
                   </h3>
                   {viewingCountry.isoCode && (
@@ -1116,14 +1116,14 @@ export default function AdminCountries() {
                   </div>
                 ) : jobsLoading ? (
                   <div className="flex flex-col items-center justify-center py-12 space-y-3">
-                    <Loader2 className="w-10 h-10 animate-spin text-[#5EA3C0]" />
+                    <Loader2 className="w-10 h-10 animate-spin text-brand-ink" />
                     <span className="text-sm text-gray-500 font-medium">Récupération des offres d'emploi en direct...</span>
                   </div>
                 ) : !jobsData || !jobsData.results || jobsData.results.length === 0 ? (
-                  <div className="text-center py-12 text-gray-400">
-                    <Briefcase className="w-12 h-12 mx-auto mb-3 text-[#5EA3C0]/60" />
+                  <div className="text-center py-12 text-gray-500">
+                    <Briefcase className="w-12 h-12 mx-auto mb-3 text-brand-ink/60" />
                     <p className="font-semibold text-gray-655">Aucune offre d'emploi active trouvée</p>
-                    <p className="text-xs text-gray-400 mt-1">
+                    <p className="text-xs text-gray-500 mt-1">
                       Aucun résultat renvoyé par l'API pour le code "{viewingCountry.isoCode}".
                     </p>
                   </div>
@@ -1131,14 +1131,14 @@ export default function AdminCountries() {
                   <div className="space-y-4">
                     <div className="flex justify-between items-center text-sm font-bold text-gray-600 bg-gray-50 p-3.5 rounded-xl border border-gray-100">
                       <span>Total des offres détectées :</span>
-                      <span className="text-[#5EA3C0] font-extrabold">{jobsData.total?.toLocaleString() || 0}</span>
+                      <span className="text-brand-ink font-extrabold">{jobsData.total?.toLocaleString() || 0}</span>
                     </div>
 
                     <div className="divide-y divide-gray-100">
                       {jobsData.results.map((job: any) => (
                         <div key={job.id} className="py-4 flex items-start justify-between gap-4 group">
                           <div className="space-y-1">
-                            <h4 className="font-bold text-gray-900 text-sm hover:text-[#5EA3C0] transition-colors">
+                            <h4 className="font-bold text-gray-900 text-sm hover:text-brand-ink transition-colors">
                               {job.title}
                             </h4>
                             <div className="flex items-center gap-3 text-xs text-gray-500 font-semibold">
@@ -1156,7 +1156,7 @@ export default function AdminCountries() {
                                 </>
                               )}
                             </div>
-                            <p className="text-gray-400 text-xs line-clamp-2 mt-1 max-w-2xl">
+                            <p className="text-gray-500 text-xs line-clamp-2 mt-1 max-w-2xl">
                               {(job.description || '').replace(/<[^>]*>/g, '')}
                             </p>
                           </div>
@@ -1164,7 +1164,7 @@ export default function AdminCountries() {
                             href={job.redirect_url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="p-2 border border-gray-200 bg-white hover:bg-gray-50 hover:text-[#5EA3C0] text-gray-500 rounded-xl transition-all shadow-sm"
+                            className="p-2 border border-gray-200 bg-white hover:bg-gray-50 hover:text-brand-ink text-gray-500 rounded-xl transition-all shadow-sm"
                             title="Voir l'offre sur Adzuna"
                           >
                             <ExternalLink className="w-4 h-4" />
@@ -1182,7 +1182,7 @@ export default function AdminCountries() {
               <div className="bg-white p-6 rounded-2xl border border-gray-150 shadow-sm space-y-6 animate-in fade-in duration-200">
                 <div className="flex items-center justify-between border-b border-gray-100 pb-3 flex-wrap gap-4">
                   <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                    <MessageSquare className="w-5 h-5 text-[#5EA3C0]" />
+                    <MessageSquare className="w-5 h-5 text-brand-ink" />
                     Modération du Forum
                   </h3>
                   <span className="text-xs text-gray-450 font-semibold uppercase tracking-wider">
@@ -1192,14 +1192,14 @@ export default function AdminCountries() {
 
                 {forumTopicsLoading ? (
                   <div className="flex flex-col items-center justify-center py-12 space-y-3">
-                    <Loader2 className="w-10 h-10 animate-spin text-[#5EA3C0]" />
+                    <Loader2 className="w-10 h-10 animate-spin text-brand-ink" />
                     <span className="text-sm text-gray-500 font-medium">Chargement des sujets du forum...</span>
                   </div>
                 ) : forumTopics.length === 0 ? (
-                  <div className="text-center py-12 text-gray-400">
+                  <div className="text-center py-12 text-gray-500">
                     <MessageSquare className="w-12 h-12 mx-auto mb-3 text-gray-300" />
                     <p className="font-semibold text-gray-655">Aucun sujet de forum pour ce pays</p>
-                    <p className="text-xs text-gray-400 mt-1">
+                    <p className="text-xs text-gray-500 mt-1">
                       Les sujets créés par les utilisateurs liés à ce pays apparaîtront ici.
                     </p>
                   </div>
@@ -1223,7 +1223,7 @@ export default function AdminCountries() {
                               </span>
                             )}
                           </div>
-                          <p className="text-gray-400 text-xs font-semibold">
+                          <p className="text-gray-500 text-xs font-semibold">
                             Par <span className="text-gray-655">{topic.user?.fullName || 'Anonymous'}</span> • {new Date(topic.created_at).toLocaleDateString()} • {topic.views_count} vue(s)
                           </p>
                         </div>
@@ -1280,13 +1280,13 @@ export default function AdminCountries() {
               <div className="bg-white p-6 rounded-2xl border border-gray-150 shadow-sm space-y-6 animate-in fade-in duration-200">
                 <div className="flex items-center justify-between border-b border-gray-100 pb-3 flex-wrap gap-4">
                   <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                    <FileText className="w-5 h-5 text-[#5EA3C0]" />
+                    <FileText className="w-5 h-5 text-brand-ink" />
                     Ressources utiles (liens, doc...)
                   </h3>
                   <button
                     type="button"
                     onClick={openAddResModal}
-                    className="flex items-center gap-2 bg-[#5EA3C0]/10 hover:bg-[#5EA3C0]/20 text-[#5EA3C0] px-4 py-2 rounded-xl font-bold text-xs transition-colors"
+                    className="flex items-center gap-2 bg-brand-ink/10 hover:bg-brand-ink/20 text-brand-ink px-4 py-2 rounded-xl font-bold text-xs transition-colors"
                   >
                     <Plus className="w-4 h-4" />
                     Ajouter une ressource
@@ -1295,14 +1295,14 @@ export default function AdminCountries() {
 
                 {resourcesLoading ? (
                   <div className="flex flex-col items-center justify-center py-12 space-y-3">
-                    <Loader2 className="w-10 h-10 animate-spin text-[#5EA3C0]" />
+                    <Loader2 className="w-10 h-10 animate-spin text-brand-ink" />
                     <span className="text-sm text-gray-500 font-medium">Chargement des ressources...</span>
                   </div>
                 ) : countryResources.length === 0 ? (
-                  <div className="text-center py-12 text-gray-400">
+                  <div className="text-center py-12 text-gray-500">
                     <FileText className="w-12 h-12 mx-auto mb-3 text-gray-300" />
                     <p className="font-semibold text-gray-655">Aucune ressource enregistrée</p>
-                    <p className="text-xs text-gray-400 mt-1">
+                    <p className="text-xs text-gray-500 mt-1">
                       Ajoutez des liens vers des sites web, guides PDF, ou vidéos utiles pour s'installer.
                     </p>
                   </div>
@@ -1312,7 +1312,7 @@ export default function AdminCountries() {
                       <div key={res.idResource} className="py-4 flex items-center justify-between gap-4 group">
                         <div className="space-y-1">
                           <div className="flex items-center gap-2.5 flex-wrap">
-                            <span className="px-2 py-0.5 bg-[#5EA3C0]/10 text-[#5EA3C0] text-[9px] font-extrabold rounded uppercase tracking-wider">
+                            <span className="px-2 py-0.5 bg-brand-ink/10 text-brand-ink text-[9px] font-extrabold rounded uppercase tracking-wider">
                               {res.resourceType || 'other'}
                             </span>
                             <h4 className="font-bold text-gray-900 text-sm">
@@ -1324,7 +1324,7 @@ export default function AdminCountries() {
                               href={res.url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-xs text-[#5EA3C0] hover:underline flex items-center gap-1 font-semibold"
+                              className="text-xs text-brand-ink hover:underline flex items-center gap-1 font-semibold"
                             >
                               <ExternalLink className="w-3 h-3" /> Ouvrir le lien
                             </a>
@@ -1334,7 +1334,7 @@ export default function AdminCountries() {
                           <button
                             type="button"
                             onClick={() => openEditResModal(res)}
-                            className="p-1.5 hover:bg-gray-100 text-gray-500 hover:text-[#5EA3C0] rounded-lg transition-colors"
+                            className="p-1.5 hover:bg-gray-100 text-gray-500 hover:text-brand-ink rounded-lg transition-colors"
                             title="Modifier"
                           >
                             <Edit2 className="w-3.5 h-3.5" />
@@ -1380,7 +1380,7 @@ export default function AdminCountries() {
                     value={procType}
                     onChange={(e) => setProcType(e.target.value)}
                     placeholder="ex. Demande de Visa VLS-TS"
-                    className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900"
+                    className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-brand text-sm text-gray-900"
                   />
                 </div>
 
@@ -1394,7 +1394,7 @@ export default function AdminCountries() {
                       value={procCategory}
                       onChange={(e) => setProcCategory(e.target.value)}
                       placeholder="ex. Visa"
-                      className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900"
+                      className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-brand text-sm text-gray-900"
                     />
                   </div>
 
@@ -1408,7 +1408,7 @@ export default function AdminCountries() {
                       value={procStepOrder}
                       onChange={(e) => setProcStepOrder(e.target.value)}
                       placeholder="ex. 1"
-                      className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900"
+                      className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-brand text-sm text-gray-900"
                     />
                   </div>
                 </div>
@@ -1423,7 +1423,7 @@ export default function AdminCountries() {
                     value={procAverageDelay}
                     onChange={(e) => setProcAverageDelay(e.target.value)}
                     placeholder="ex. 30"
-                    className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900"
+                    className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-brand text-sm text-gray-900"
                   />
                 </div>
 
@@ -1436,7 +1436,7 @@ export default function AdminCountries() {
                     onChange={(e) => setProcDescription(e.target.value)}
                     placeholder="Expliquer la procédure en détail..."
                     rows={4}
-                    className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900 resize-none"
+                    className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-brand text-sm text-gray-900 resize-none"
                   />
                 </div>
 
@@ -1451,7 +1451,7 @@ export default function AdminCountries() {
                   <button
                     type="submit"
                     disabled={createProcMutation.isPending || updateProcMutation.isPending}
-                    className="px-4 py-2 bg-[#5EA3C0] hover:bg-[#4891b0] text-white rounded-lg text-sm font-semibold transition-colors shadow-sm disabled:opacity-50"
+                    className="px-4 py-2 bg-brand-ink hover:bg-brand-ink-hover text-white rounded-lg text-sm font-semibold transition-colors shadow-sm disabled:opacity-50"
                   >
                     {(createProcMutation.isPending || updateProcMutation.isPending) ? 'Enregistrement...' : 'Enregistrer'}
                   </button>
@@ -1483,7 +1483,7 @@ export default function AdminCountries() {
           </button>
           <button
             onClick={openCreateModal}
-            className="flex items-center gap-2 bg-[#5EA3C0] hover:bg-[#4891b0] text-white px-4 py-2 rounded-lg font-semibold text-sm transition-colors shadow-sm"
+            className="flex items-center gap-2 bg-brand-ink hover:bg-brand-ink-hover text-white px-4 py-2 rounded-lg font-semibold text-sm transition-colors shadow-sm"
           >
             <Plus className="w-4 h-4" />
             Ajouter un pays
@@ -1501,7 +1501,7 @@ export default function AdminCountries() {
             placeholder="Rechercher par nom, code ISO..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 border border-gray-200 bg-gray-50/50 rounded-lg text-sm focus:outline-none focus:border-[#5EA3C0] focus:ring-1 focus:ring-[#5EA3C0]"
+            className="w-full pl-9 pr-4 py-2 border border-gray-200 bg-gray-50/50 rounded-lg text-sm focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand"
           />
         </div>
 
@@ -1512,7 +1512,7 @@ export default function AdminCountries() {
           <select
             value={selectedContinentFilter}
             onChange={(e) => setSelectedContinentFilter(e.target.value)}
-            className="bg-gray-50 border border-gray-200 rounded-lg text-sm font-semibold text-gray-800 px-3 py-1.5 outline-none focus:border-[#5EA3C0]"
+            className="bg-gray-50 border border-gray-200 rounded-lg text-sm font-semibold text-gray-800 px-3 py-1.5 outline-none focus:border-brand"
           >
             <option value="all">Tous les continents</option>
             {continents.map((cont) => (
@@ -1521,7 +1521,7 @@ export default function AdminCountries() {
               </option>
             ))}
           </select>
-          <span className="text-xs text-gray-400 ml-2 font-medium">
+          <span className="text-xs text-gray-500 ml-2 font-medium">
             {filteredCountries.length} résultat(s)
           </span>
         </div>
@@ -1530,7 +1530,7 @@ export default function AdminCountries() {
       {/* Countries Table */}
       {countriesLoading || continentsLoading ? (
         <div className="flex items-center justify-center min-h-[40vh]">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#5EA3C0]"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand"></div>
         </div>
       ) : (
         <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
@@ -1549,14 +1549,14 @@ export default function AdminCountries() {
               <tbody className="divide-y divide-gray-100 text-sm text-gray-650">
                 {filteredCountries.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="py-8 px-6 text-center text-gray-400 italic">
+                    <td colSpan={6} className="py-8 px-6 text-center text-gray-500 italic">
                       Aucun pays ne correspond aux critères.
                     </td>
                   </tr>
                 ) : (
                   filteredCountries.map((country) => (
                     <tr key={country.idCountry} className="hover:bg-gray-50/45 transition-colors">
-                      <td className="py-4 px-6 text-center font-semibold text-gray-400">
+                      <td className="py-4 px-6 text-center font-semibold text-gray-500">
                         {country.idCountry}
                       </td>
                       <td className="py-4 px-6 font-semibold text-gray-900">
@@ -1572,7 +1572,7 @@ export default function AdminCountries() {
                         )}
                       </td>
                       <td className="py-4 px-6 text-gray-650 font-medium">
-                        {country.continent?.name ? t(`comparison.data.continents.${country.continent.name}`, { defaultValue: country.continent.name }) : <span className="text-gray-400 italic">Inconnu</span>}
+                        {country.continent?.name ? t(`comparison.data.continents.${country.continent.name}`, { defaultValue: country.continent.name }) : <span className="text-gray-500 italic">Inconnu</span>}
                       </td>
                       <td className="py-4 px-6">
                         {country.status === 'pending_review' ? (
@@ -1593,7 +1593,7 @@ export default function AdminCountries() {
                           </span>
                         )}
                         {country.createdBy && (
-                          <p className="text-[10px] text-gray-400 mt-1">
+                          <p className="text-[10px] text-gray-500 mt-1">
                             Ajouté par {country.createdBy.firstName ?? '?'}
                             {country.reviewedBy && ` · vérifié par ${country.reviewedBy.firstName ?? '?'}`}
                           </p>
@@ -1604,7 +1604,7 @@ export default function AdminCountries() {
                           <button
                             onClick={() => setViewingCountry(country)}
                             disabled={isPending}
-                            className="p-1.5 hover:bg-gray-100 text-gray-650 hover:text-[#5EA3C0] rounded-lg transition-colors"
+                            className="p-1.5 hover:bg-gray-100 text-gray-650 hover:text-brand-ink rounded-lg transition-colors"
                             title="Voir la fiche"
                           >
                             <Eye className="w-4 h-4" />
@@ -1612,7 +1612,7 @@ export default function AdminCountries() {
                           <button
                             onClick={() => openEditModal(country)}
                             disabled={isPending}
-                            className="p-1.5 hover:bg-gray-100 text-gray-650 hover:text-[#5EA3C0] rounded-lg transition-colors"
+                            className="p-1.5 hover:bg-gray-100 text-gray-650 hover:text-brand-ink rounded-lg transition-colors"
                             title="Modifier"
                           >
                             <Edit2 className="w-4 h-4" />
@@ -1701,7 +1701,7 @@ export default function AdminCountries() {
                     if (match) setIsoCode(match.code);
                   }}
                   placeholder="Tape ou choisis un pays (ex. Canada)..."
-                  className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#5EA3C0] focus:ring-1 focus:ring-[#5EA3C0] text-sm text-gray-900"
+                  className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand text-sm text-gray-900"
                 />
                 <datalist id="rc-countries">
                   {availableCountries.map((c) => (
@@ -1720,7 +1720,7 @@ export default function AdminCountries() {
                   value={isoCode}
                   onChange={(e) => setIsoCode(e.target.value.toUpperCase())}
                   placeholder="ex. CA, FR..."
-                  className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#5EA3C0] focus:ring-1 focus:ring-[#5EA3C0] text-sm text-gray-900 uppercase"
+                  className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand text-sm text-gray-900 uppercase"
                 />
               </div>
 
@@ -1732,7 +1732,7 @@ export default function AdminCountries() {
                   required
                   value={continentId}
                   onChange={(e) => setContinentId(Number(e.target.value))}
-                  className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#5EA3C0] focus:ring-1 focus:ring-[#5EA3C0] text-sm text-gray-900"
+                  className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand text-sm text-gray-900"
                 >
                   <option value="" disabled>-- Sélectionner un continent --</option>
                   {continents.map((cont) => (
@@ -1750,10 +1750,10 @@ export default function AdminCountries() {
                     type="checkbox"
                     checked={selectableAsDestination}
                     onChange={(e) => setSelectableAsDestination(e.target.checked)}
-                    className="w-4 h-4 accent-[#5EA3C0]"
+                    className="w-4 h-4 accent-brand"
                   />
                   Sélectionnable comme destination de projet
-                  <span className="text-xs font-normal text-gray-400">(décoché : visible mais non choisissable)</span>
+                  <span className="text-xs font-normal text-gray-500">(décoché : visible mais non choisissable)</span>
                 </label>
               </div>
 
@@ -1768,7 +1768,7 @@ export default function AdminCountries() {
                 <button
                   type="submit"
                   disabled={isPending}
-                  className="px-4 py-2 bg-[#5EA3C0] hover:bg-[#4891b0] text-white rounded-lg text-sm font-semibold transition-colors shadow-sm disabled:opacity-50"
+                  className="px-4 py-2 bg-brand-ink hover:bg-brand-ink-hover text-white rounded-lg text-sm font-semibold transition-colors shadow-sm disabled:opacity-50"
                 >
                   {isPending ? 'Enregistrement...' : 'Enregistrer'}
                 </button>
@@ -1801,7 +1801,7 @@ export default function AdminCountries() {
                   value={resTitle}
                   onChange={(e) => setResTitle(e.target.value)}
                   placeholder="ex. Guide d'expatriation au Canada"
-                  className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-905"
+                  className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-brand text-sm text-gray-905"
                 />
               </div>
 
@@ -1814,7 +1814,7 @@ export default function AdminCountries() {
                   value={resUrl}
                   onChange={(e) => setResUrl(e.target.value)}
                   placeholder="ex. https://example.com/guide.pdf"
-                  className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-905"
+                  className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-brand text-sm text-gray-905"
                 />
               </div>
 
@@ -1825,7 +1825,7 @@ export default function AdminCountries() {
                 <select
                   value={resType}
                   onChange={(e) => setResType(e.target.value)}
-                  className="w-full px-3.5 py-2 border border-gray-200 bg-white rounded-lg focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-905"
+                  className="w-full px-3.5 py-2 border border-gray-200 bg-white rounded-lg focus:outline-none focus:border-brand text-sm text-gray-905"
                 >
                   <option value="article">Article</option>
                   <option value="video">Vidéo</option>
@@ -1848,7 +1848,7 @@ export default function AdminCountries() {
                 <button
                   type="submit"
                   disabled={createResourceMutation.isPending || updateResourceMutation.isPending}
-                  className="px-4 py-2 bg-[#5EA3C0] hover:bg-[#4891b0] text-white rounded-lg text-sm font-semibold transition-colors shadow-sm disabled:opacity-50"
+                  className="px-4 py-2 bg-brand-ink hover:bg-brand-ink-hover text-white rounded-lg text-sm font-semibold transition-colors shadow-sm disabled:opacity-50"
                 >
                   {(createResourceMutation.isPending || updateResourceMutation.isPending) ? 'Enregistrement...' : 'Enregistrer'}
                 </button>

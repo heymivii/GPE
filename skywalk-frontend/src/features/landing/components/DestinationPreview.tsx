@@ -52,7 +52,7 @@ export default function DestinationPreview() {
       <div className="rounded-3xl border border-gray-150 bg-white shadow-lg p-6 sm:p-8">
         <div className="flex flex-col sm:flex-row sm:items-end gap-4">
           <div className="flex-1">
-            <p className="text-xs font-bold uppercase tracking-wider text-[#5EA3C0]">
+            <p className="text-xs font-bold uppercase tracking-wider text-brand-ink">
               Aperçu gratuit — sans compte
             </p>
             <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mt-1 font-outfit">
@@ -67,7 +67,7 @@ export default function DestinationPreview() {
               id="preview-dest"
               value={code}
               onChange={(e) => setCode(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-white text-sm text-gray-900 focus:outline-none focus:border-[#5EA3C0] cursor-pointer"
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-white text-sm text-gray-900 focus:outline-none focus:border-brand cursor-pointer"
             >
               <option value="">Choisir une destination…</option>
               {selectable.map((c) => (
@@ -84,7 +84,7 @@ export default function DestinationPreview() {
           <div className="mt-6 border-t border-gray-100 pt-6 animate-in fade-in duration-300">
             {isFetching ? (
               <div className="flex items-center justify-center gap-2 py-6 text-gray-500 text-sm">
-                <Loader2 className="w-5 h-5 animate-spin text-[#5EA3C0]" />
+                <Loader2 className="w-5 h-5 animate-spin text-brand-ink" />
                 Analyse de {chosen?.name}…
               </div>
             ) : (
@@ -93,7 +93,7 @@ export default function DestinationPreview() {
                   <div className="grid grid-cols-3 gap-3">
                     {tiles.map(({ icon: Icon, label, value }) => (
                       <div key={label} className="rounded-2xl bg-gray-50 border border-gray-100 p-4 text-center">
-                        <Icon className="w-5 h-5 text-[#5EA3C0] mx-auto" />
+                        <Icon className="w-5 h-5 text-brand-ink mx-auto" />
                         <p className="text-2xl font-bold text-gray-900 mt-2 tabular-nums">
                           {value != null ? Math.round(value) : '—'}
                         </p>
@@ -115,14 +115,14 @@ export default function DestinationPreview() {
                   <button
                     type="button"
                     onClick={() => navigate(`/onboarding?to=${code}`)}
-                    className="inline-flex items-center justify-center gap-2 bg-[#5EA3C0] hover:bg-[#4891b0] text-white px-5 py-2.5 rounded-xl font-semibold text-sm transition-colors shadow-md hover:shadow-lg"
+                    className="inline-flex items-center justify-center gap-2 bg-brand-ink hover:bg-brand-ink-hover text-white px-5 py-2.5 rounded-xl font-semibold text-sm transition-colors shadow-md hover:shadow-lg"
                   >
                     Voir mon plan personnalisé
                     <ArrowRight className="w-4 h-4" />
                   </button>
                 </div>
 
-                <p className="text-[11px] text-gray-400 mt-2">
+                <p className="text-[11px] text-gray-500 mt-2">
                   Indices Numbeo (0-100, plus haut = mieux ; coût de la vie relatif). Source affichée dans votre plan.
                 </p>
               </>

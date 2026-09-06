@@ -52,7 +52,7 @@ export default function AboutPage() {
         </p>
         <p>
           Une question, une erreur repérée ?{' '}
-          <a href="mailto:contact@skywalk.com" className="font-medium text-[#5EA3C0] hover:underline">
+          <a href="mailto:contact@skywalk.com" className="font-medium text-brand-ink hover:underline">
             contact@skywalk.com
           </a>
         </p>

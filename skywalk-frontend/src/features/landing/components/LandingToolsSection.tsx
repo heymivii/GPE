@@ -43,7 +43,7 @@ export default function LandingToolsSection() {
           <h2 className="text-3xl sm:text-5xl font-semibold tracking-tight text-[#1d1d1f] mb-4 font-outfit">
             {t('landing.tools.title')}
           </h2>
-          <p className="text-lg sm:text-xl text-[#86868b] max-w-2xl mx-auto font-medium">
+          <p className="text-lg sm:text-xl text-ink-muted max-w-2xl mx-auto font-medium">
             {t('landing.tools.subtitle')}
           </p>
         </div>
@@ -66,7 +66,7 @@ export default function LandingToolsSection() {
                   {tool.title}
                 </h3>
 
-                <p className="text-[#86868b] leading-relaxed mb-8 flex-grow">
+                <p className="text-ink-muted leading-relaxed mb-8 flex-grow">
                   {tool.description}
                 </p>
 

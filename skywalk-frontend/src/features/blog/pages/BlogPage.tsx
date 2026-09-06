@@ -62,7 +62,7 @@ export default function BlogPage() {
               <Link
                 key={article.id}
                 to={`/blog/${article.id}`}
-                className={`group block rounded-2xl border border-gray-200 overflow-hidden hover:border-[#5EA3C0] transition-all duration-300 ${
+                className={`group block rounded-2xl border border-gray-200 overflow-hidden hover:border-brand transition-all duration-300 ${
                   idx === 0 ? 'md:col-span-2 md:row-span-2' : ''
                 }`}
               >
@@ -87,14 +87,14 @@ export default function BlogPage() {
                     {getArticleTranslation(article.id, 'excerpt', t)}
                   </p>
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3 text-xs text-gray-400">
+                    <div className="flex items-center gap-3 text-xs text-gray-500">
                       <span>{formatDate(article.date)}</span>
                       <span className="flex items-center gap-1">
                         <Clock className="w-3 h-3" />
                         {article.readTime} min
                       </span>
                     </div>
-                    <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-[#5EA3C0] transition-colors" />
+                    <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-brand-ink transition-colors" />
                   </div>
                 </div>
               </Link>
@@ -112,7 +112,7 @@ export default function BlogPage() {
               placeholder={t('blog.page.searchPlaceholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-[#5EA3C0]/30 focus:border-[#5EA3C0]"
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand"
             />
           </div>
 
@@ -154,7 +154,7 @@ export default function BlogPage() {
               <Link
                 key={article.id}
                 to={`/blog/${article.id}`}
-                className="group block rounded-2xl border border-gray-200 overflow-hidden hover:border-[#5EA3C0] transition-all duration-300"
+                className="group block rounded-2xl border border-gray-200 overflow-hidden hover:border-brand transition-all duration-300"
               >
                 <div className="relative h-48 overflow-hidden">
                   <img
@@ -167,21 +167,21 @@ export default function BlogPage() {
                   </span>
                 </div>
                 <div className="p-5">
-                  <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-[#5EA3C0] transition-colors line-clamp-2">
+                  <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-brand-ink transition-colors line-clamp-2">
                     {getArticleTranslation(article.id, 'title', t)}
                   </h3>
                   <p className="text-gray-500 text-sm line-clamp-2 mb-4">
                     {getArticleTranslation(article.id, 'excerpt', t)}
                   </p>
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3 text-xs text-gray-400">
+                    <div className="flex items-center gap-3 text-xs text-gray-500">
                       <span>{formatDate(article.date)}</span>
                       <span className="flex items-center gap-1">
                         <Clock className="w-3 h-3" />
                         {article.readTime} min
                       </span>
                     </div>
-                    <span className="text-sm font-medium text-[#5EA3C0] opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                    <span className="text-sm font-medium text-brand-ink opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
                       {t('blog.page.readMore')}
                       <ArrowRight className="w-3.5 h-3.5" />
                     </span>

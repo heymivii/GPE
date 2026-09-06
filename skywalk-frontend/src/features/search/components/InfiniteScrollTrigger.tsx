@@ -60,7 +60,7 @@ export default function InfiniteScrollTrigger({
           <span className="text-sm font-medium">{t('searchPage.loadingResults')}</span>
         </div>
       ) : (
-        <div className="text-gray-400 text-sm">
+        <div className="text-gray-500 text-sm">
           {t('searchPage.scrollForMore')}
         </div>
       )}

@@ -25,14 +25,14 @@ function PriceRow({ label, avg, min, max, localCur }: {
         <span className="font-semibold text-sm text-gray-900">
           {formatPrice(avg, localCur)}
           {!same && avg != null && avg > 0 && (
-            <span className="text-gray-400 text-xs font-normal ml-1.5">({formatNumber(avg)} {localCur})</span>
+            <span className="text-gray-500 text-xs font-normal ml-1.5">({formatNumber(avg)} {localCur})</span>
           )}
         </span>
       </div>
       {min != null && max != null && min !== 0 && max !== 0 && (
         <div className="flex justify-end gap-3 mt-0.5">
-          <span className="text-xs text-gray-400">min {formatPrice(min, localCur)}</span>
-          <span className="text-xs text-gray-400">max {formatPrice(max, localCur)}</span>
+          <span className="text-xs text-gray-500">min {formatPrice(min, localCur)}</span>
+          <span className="text-xs text-gray-500">max {formatPrice(max, localCur)}</span>
         </div>
       )}
     </div>
@@ -73,7 +73,7 @@ export default function LogementStats({ countryName, cityName }: LogementStatsPr
         <div className="flex flex-col items-center justify-center py-16 text-center">
           <AlertCircle className="w-10 h-10 text-red-400 mb-3" />
           <p className="text-gray-600">{t('services.stats.common.errorLoad', { service: t('services.categories.logement.title'), city: mapping.displayName })}</p>
-          <p className="text-sm text-gray-400 mt-1">{t('services.stats.common.retryLater')}</p>
+          <p className="text-sm text-gray-500 mt-1">{t('services.stats.common.retryLater')}</p>
         </div>
       </section>
     );
@@ -99,7 +99,7 @@ export default function LogementStats({ countryName, cityName }: LogementStatsPr
         {prefix}{fp(value)}
       </p>
       {!same && value != null && value > 0 && (
-        <p className="text-xs text-gray-400 mt-0.5">{prefix}{formatNumber(value)} {localCur}</p>
+        <p className="text-xs text-gray-500 mt-0.5">{prefix}{formatNumber(value)} {localCur}</p>
       )}
     </>
   );
@@ -134,7 +134,7 @@ export default function LogementStats({ countryName, cityName }: LogementStatsPr
           </div>
           <p className="text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">{t('services.stats.logement.rent1bedroom')}</p>
           <HeadlinePrice value={rent1BCenter} />
-          <p className="text-xs text-gray-400 mt-1">{t('services.stats.common.perMonth').replace('/', '')}</p>
+          <p className="text-xs text-gray-500 mt-1">{t('services.stats.common.perMonth').replace('/', '')}</p>
         </div>
 
         <div className="bg-white rounded-xl p-5 border border-gray-200 hover:border-purple-200 transition-all hover:shadow-sm">
@@ -144,7 +144,7 @@ export default function LogementStats({ countryName, cityName }: LogementStatsPr
           </div>
           <p className="text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">{t('services.stats.logement.rent1bedroom')}</p>
           <HeadlinePrice value={rent1BOutside} />
-          <p className="text-xs text-gray-400 mt-1">{t('services.stats.common.perMonth').replace('/', '')}</p>
+          <p className="text-xs text-gray-500 mt-1">{t('services.stats.common.perMonth').replace('/', '')}</p>
         </div>
 
         <div className="bg-white rounded-xl p-5 border border-gray-200 hover:border-emerald-200 transition-all hover:shadow-sm">
@@ -153,7 +153,7 @@ export default function LogementStats({ countryName, cityName }: LogementStatsPr
           </div>
           <p className="text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">{t('services.stats.logement.rent3bedrooms')}</p>
           <HeadlinePrice value={rent3BCenter} />
-          <p className="text-xs text-gray-400 mt-1">{t('services.stats.logement.centerCity')}</p>
+          <p className="text-xs text-gray-500 mt-1">{t('services.stats.logement.centerCity')}</p>
         </div>
 
         <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-5 border border-gray-200 hover:border-orange-200 transition-all hover:shadow-sm">
@@ -162,7 +162,7 @@ export default function LogementStats({ countryName, cityName }: LogementStatsPr
           </div>
           <p className="text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">{t('services.stats.logement.utilities')}</p>
           <HeadlinePrice value={utilitiesAvg} prefix="~" />
-          <p className="text-xs text-gray-400 mt-1">{t('services.stats.logement.utilitiesDesc')}</p>
+          <p className="text-xs text-gray-500 mt-1">{t('services.stats.logement.utilitiesDesc')}</p>
         </div>
       </div>
 
@@ -221,7 +221,7 @@ export default function LogementStats({ countryName, cityName }: LogementStatsPr
           )}
           {' '}{t('services.stats.common.pricesIndicativeNeighborhood')}
           {data.currency.lastUpdated && (
-            <span className="text-gray-400"> — {t('services.stats.common.lastUpdated')} {new Date(data.currency.lastUpdated).toLocaleDateString(getCurrentLocale())}</span>
+            <span className="text-gray-500"> — {t('services.stats.common.lastUpdated')} {new Date(data.currency.lastUpdated).toLocaleDateString(getCurrentLocale())}</span>
           )}
         </p>
       </div>

@@ -108,26 +108,26 @@ export default function ExpertApplicationPage() {
         {/* D'où viennent les experts — la question posée en recette. */}
         <section className="rounded-2xl border border-gray-200 bg-white p-6">
           <h2 className="flex items-center gap-2 font-bold text-gray-900">
-            <ShieldCheck className="w-5 h-5 text-[#5EA3C0]" />
+            <ShieldCheck className="w-5 h-5 text-brand-ink" />
             Comment un expert est vérifié
           </h2>
           <ol className="mt-4 space-y-3 text-sm text-gray-600">
             <li className="flex gap-3">
-              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[#5EA3C0]/10 text-[#5EA3C0] font-semibold text-xs flex items-center justify-center">
+              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-brand-ink/10 text-brand-ink font-semibold text-xs flex items-center justify-center">
                 1
               </span>
               Le professionnel dépose sa candidature avec une pièce justificative
               (diplôme, attestation d'inscription à un ordre, certification).
             </li>
             <li className="flex gap-3">
-              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[#5EA3C0]/10 text-[#5EA3C0] font-semibold text-xs flex items-center justify-center">
+              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-brand-ink/10 text-brand-ink font-semibold text-xs flex items-center justify-center">
                 2
               </span>
               Notre équipe contrôle la pièce et le parcours déclaré. Le fichier est
               chiffré et n'est jamais rendu public.
             </li>
             <li className="flex gap-3">
-              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[#5EA3C0]/10 text-[#5EA3C0] font-semibold text-xs flex items-center justify-center">
+              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-brand-ink/10 text-brand-ink font-semibold text-xs flex items-center justify-center">
                 3
               </span>
               Une fois validé, le profil apparaît dans « Experts vérifiés » avec son
@@ -138,7 +138,7 @@ export default function ExpertApplicationPage() {
 
         {loadingMine ? (
           <div className="flex justify-center py-10">
-            <Loader2 className="w-6 h-6 animate-spin text-[#5EA3C0]" />
+            <Loader2 className="w-6 h-6 animate-spin text-brand-ink" />
           </div>
         ) : pending ? (
           <section className="rounded-2xl border-2 border-amber-200 bg-amber-50 p-6">
@@ -239,7 +239,7 @@ export default function ExpertApplicationPage() {
                   onChange={(e) => setExpertTitle(e.target.value)}
                   maxLength={120}
                   placeholder="Ex : Avocate en droit de l'immigration"
-                  className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:border-[#5EA3C0] outline-none"
+                  className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:border-brand outline-none"
                   required
                 />
               </div>
@@ -252,7 +252,7 @@ export default function ExpertApplicationPage() {
                   id="countryId"
                   value={countryId}
                   onChange={(e) => setCountryId(e.target.value)}
-                  className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm bg-white focus:border-[#5EA3C0] outline-none"
+                  className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm bg-white focus:border-brand outline-none"
                 >
                   <option value="">Aucun pays en particulier</option>
                   {countries.map((c: any) => (
@@ -274,7 +274,7 @@ export default function ExpertApplicationPage() {
                   rows={6}
                   maxLength={4000}
                   placeholder="Formation, années d'expérience, types d'accompagnement proposés…"
-                  className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:border-[#5EA3C0] outline-none resize-y"
+                  className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:border-brand outline-none resize-y"
                   required
                 />
                 <p className={`text-xs mt-1 ${motivationTooShort ? 'text-gray-500' : 'text-emerald-600'}`}>
@@ -288,7 +288,7 @@ export default function ExpertApplicationPage() {
                 </span>
                 <label
                   htmlFor="diploma"
-                  className="flex flex-col items-center justify-center gap-2 w-full py-6 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-[#5EA3C0] hover:bg-[#5EA3C0]/5 transition-colors"
+                  className="flex flex-col items-center justify-center gap-2 w-full py-6 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-brand hover:bg-brand-ink/5 transition-colors"
                 >
                   <FileUp className="w-6 h-6 text-gray-400" />
                   <span className="text-sm text-gray-600">
@@ -312,7 +312,7 @@ export default function ExpertApplicationPage() {
               <button
                 type="submit"
                 disabled={!canSubmit}
-                className="w-full inline-flex items-center justify-center gap-2 bg-[#5EA3C0] hover:bg-[#4891b0] disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-3 rounded-xl font-semibold text-sm transition-colors"
+                className="w-full inline-flex items-center justify-center gap-2 bg-brand-ink hover:bg-brand-ink-hover disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-3 rounded-xl font-semibold text-sm transition-colors"
               >
                 {submit.isPending ? (
                   <>

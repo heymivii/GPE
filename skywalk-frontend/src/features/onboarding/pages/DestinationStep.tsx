@@ -256,7 +256,7 @@ export default function DestinationStep({ data, isEditMode, onNext, onBack }: De
             value={formData.departureDate || ''}
             min={todayIso}
             onChange={(e) => handleFieldChange('departureDate')(e.target.value)}
-            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:border-[#5EA3C0] focus:ring-1 focus:ring-[#5EA3C0] text-sm text-gray-900"
+            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand text-sm text-gray-900"
             aria-describedby={errors.departureDate ? 'departureDate-error' : 'departureDate-helper'}
           />
         </FormField>

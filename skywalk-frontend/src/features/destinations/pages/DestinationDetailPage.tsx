@@ -161,7 +161,7 @@ export function DestinationDetailPage() {
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id)}
                       className={`px-6 py-4 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${activeTab === tab.id
-                        ? 'border-[#5EA3C0] text-[#5EA3C0]'
+                        ? 'border-brand text-brand-ink'
                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
                         }`}
                     >
@@ -191,7 +191,7 @@ export function DestinationDetailPage() {
                           t('services.destinationDetail.highlights.healthcareSystem')
                         ].map((highlight: string, index: number) => (
                           <div key={index} className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg">
-                            <CheckCircle2 className="w-5 h-5 text-[#5EA3C0] mt-0.5" />
+                            <CheckCircle2 className="w-5 h-5 text-brand-ink mt-0.5" />
                             <span className="text-gray-700">{highlight}</span>
                           </div>
                         ))}
@@ -229,7 +229,7 @@ export function DestinationDetailPage() {
                               <p className="text-gray-600 text-sm line-clamp-2 mb-4">
                                 {city.description || t('services.destinationDetail.discoverCity', { city: city.name })}
                               </p>
-                              <span className="text-[#5EA3C0] font-medium text-sm flex items-center group-hover:underline">
+                              <span className="text-brand-ink font-medium text-sm flex items-center group-hover:underline">
                                 {t('services.destinationDetail.viewCity')} <ArrowRight className="w-4 h-4 ml-1" />
                               </span>
                             </div>
@@ -284,15 +284,15 @@ export function DestinationDetailPage() {
                               href={job.redirect_url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="block bg-gray-50 hover:bg-blue-50 border border-gray-100 hover:border-[#5EA3C0]/30 rounded-xl p-4 transition-all group"
+                              className="block bg-gray-50 hover:bg-blue-50 border border-gray-100 hover:border-brand/30 rounded-xl p-4 transition-all group"
                             >
                               <div className="flex items-start justify-between gap-3">
                                 <div className="flex-1 min-w-0">
-                                  <h4 className="font-semibold text-gray-900 group-hover:text-[#5EA3C0] transition-colors truncate">
+                                  <h4 className="font-semibold text-gray-900 group-hover:text-brand-ink transition-colors truncate">
                                     {job.title}
                                   </h4>
                                   <p className="text-sm text-gray-600 mt-1">{job.company}</p>
-                                  <div className="flex items-center gap-4 mt-2 text-xs text-gray-400">
+                                  <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
                                     <span className="flex items-center gap-1">
                                       <MapPin className="w-3.5 h-3.5" />
                                       {job.location?.displayName || job.location?.city}
@@ -311,7 +311,7 @@ export function DestinationDetailPage() {
                                     </span>
                                   </div>
                                 </div>
-                                <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-[#5EA3C0] flex-shrink-0 mt-1 transition-colors" />
+                                <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-brand-ink flex-shrink-0 mt-1 transition-colors" />
                               </div>
                             </a>
                           ))}
@@ -320,7 +320,7 @@ export function DestinationDetailPage() {
                         <div className="pt-4 border-t border-gray-100 text-center">
                           <Link
                             to={`/search?country=${countryCode}`}
-                            className="inline-flex items-center gap-2 px-6 py-3 bg-[#5EA3C0] text-white font-medium rounded-xl hover:bg-[#4d8a9d] transition-colors"
+                            className="inline-flex items-center gap-2 px-6 py-3 bg-brand-ink text-white font-medium rounded-xl hover:bg-brand-ink-hover transition-colors"
                           >
                             {t('services.destinationDetail.viewAllOffers', { count: jobsData.total })}
                             <ArrowRight className="w-4 h-4" />
@@ -333,7 +333,7 @@ export function DestinationDetailPage() {
                         <p className="text-gray-500 mb-4">{t('services.destinationDetail.noOffers')}</p>
                         <Link
                           to={`/search?country=${countryCode}`}
-                          className="inline-flex items-center gap-2 text-[#5EA3C0] font-medium hover:underline"
+                          className="inline-flex items-center gap-2 text-brand-ink font-medium hover:underline"
                         >
                           {t('services.destinationDetail.searchOffers')} <ArrowRight className="w-4 h-4" />
                         </Link>
@@ -371,7 +371,7 @@ export function DestinationDetailPage() {
                             <Link
                               key={topic.topic_id}
                               to={`/forum/post/${topic.topic_id}`}
-                              className="block bg-gray-50 hover:bg-blue-50 border border-gray-100 hover:border-[#5EA3C0]/30 rounded-xl p-4 transition-all group"
+                              className="block bg-gray-50 hover:bg-blue-50 border border-gray-100 hover:border-brand/30 rounded-xl p-4 transition-all group"
                             >
                               <div className="flex items-start justify-between gap-3">
                                 <div className="flex-1 min-w-0">
@@ -394,10 +394,10 @@ export function DestinationDetailPage() {
                                       <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">{t('services.destinationDetail.pinned')}</span>
                                     )}
                                   </div>
-                                  <h4 className="font-semibold text-gray-900 group-hover:text-[#5EA3C0] transition-colors">
+                                  <h4 className="font-semibold text-gray-900 group-hover:text-brand-ink transition-colors">
                                     {topic.title}
                                   </h4>
-                                  <div className="flex items-center gap-4 mt-2 text-xs text-gray-400">
+                                  <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
                                     <span className="flex items-center gap-1">
                                       <User className="w-3.5 h-3.5" />
                                       {topic.user?.fullName || t('services.destinationDetail.anonymous')}
@@ -420,7 +420,7 @@ export function DestinationDetailPage() {
                                     )}
                                   </div>
                                 </div>
-                                <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-[#5EA3C0] flex-shrink-0 mt-1 transition-colors" />
+                                <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-brand-ink flex-shrink-0 mt-1 transition-colors" />
                               </div>
                             </Link>
                           ))}
@@ -429,7 +429,7 @@ export function DestinationDetailPage() {
                         <div className="pt-4 border-t border-gray-100 text-center">
                           <Link
                             to={`/forum?country=${country.isoCode}`}
-                            className="inline-flex items-center gap-2 px-6 py-3 bg-[#5EA3C0] text-white font-medium rounded-xl hover:bg-[#4d8a9d] transition-colors"
+                            className="inline-flex items-center gap-2 px-6 py-3 bg-brand-ink text-white font-medium rounded-xl hover:bg-brand-ink-hover transition-colors"
                           >
                             {t('services.destinationDetail.viewAllTopics', { count: country.stats?.forumTopicsCount || 0 })}
                             <ArrowRight className="w-4 h-4" />
@@ -442,7 +442,7 @@ export function DestinationDetailPage() {
                         <p className="text-gray-500 mb-4">{t('services.destinationDetail.noTopics', { country: localizedCountry(country.countryName) })}</p>
                         <Link
                           to={`/forum?country=${country.isoCode}`}
-                          className="inline-flex items-center gap-2 text-[#5EA3C0] font-medium hover:underline"
+                          className="inline-flex items-center gap-2 text-brand-ink font-medium hover:underline"
                         >
                           {t('services.destinationDetail.accessForum')} <ArrowRight className="w-4 h-4" />
                         </Link>
@@ -479,7 +479,7 @@ export function DestinationDetailPage() {
                         <p className="text-gray-500 mb-4">{t('services.destinationDetail.noResources', { country: localizedCountry(country.countryName) })}</p>
                         <Link
                           to="/blog"
-                          className="inline-flex items-center gap-2 text-[#5EA3C0] font-medium hover:underline"
+                          className="inline-flex items-center gap-2 text-brand-ink font-medium hover:underline"
                         >
                           {t('services.destinationDetail.viewAllBlog')} <ArrowRight className="w-4 h-4" />
                         </Link>
@@ -496,7 +496,7 @@ export function DestinationDetailPage() {
                           <Link
                             key={article.id}
                             to={`/blog/${article.id}`}
-                            className="group flex gap-4 p-4 rounded-xl border border-gray-200 hover:border-[#5EA3C0] transition-all duration-300"
+                            className="group flex gap-4 p-4 rounded-xl border border-gray-200 hover:border-brand transition-all duration-300"
                           >
                             <div className="relative w-28 h-20 flex-shrink-0 rounded-lg overflow-hidden">
                               <img
@@ -509,10 +509,10 @@ export function DestinationDetailPage() {
                               <span className="inline-block px-2 py-0.5 bg-gray-100 text-xs font-medium text-gray-600 rounded-full mb-1.5">
                                 {getCategoryTranslation(article.category, t)}
                               </span>
-                              <h4 className="text-sm font-semibold text-gray-900 group-hover:text-[#5EA3C0] transition-colors line-clamp-2 mb-1">
+                              <h4 className="text-sm font-semibold text-gray-900 group-hover:text-brand-ink transition-colors line-clamp-2 mb-1">
                                 {getArticleTranslation(article.id, 'title', t)}
                               </h4>
-                              <div className="flex items-center gap-3 text-xs text-gray-400">
+                              <div className="flex items-center gap-3 text-xs text-gray-500">
                                 <span>{new Date(article.date).toLocaleDateString(i18n.language === 'fr' ? 'fr-FR' : 'en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
                                 <span className="flex items-center gap-1">
                                   <Clock className="w-3 h-3" />
@@ -520,14 +520,14 @@ export function DestinationDetailPage() {
                                 </span>
                               </div>
                             </div>
-                            <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-[#5EA3C0] transition-colors flex-shrink-0 mt-2" />
+                            <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-brand-ink transition-colors flex-shrink-0 mt-2" />
                           </Link>
                         ))}
                       </div>
                       <div className="text-center mt-6">
                         <Link
                           to="/blog"
-                          className="inline-flex items-center gap-2 text-[#5EA3C0] font-medium hover:underline"
+                          className="inline-flex items-center gap-2 text-brand-ink font-medium hover:underline"
                         >
                           {t('services.destinationDetail.viewAllBlog')} <ArrowRight className="w-4 h-4" />
                         </Link>
@@ -573,7 +573,7 @@ export function DestinationDetailPage() {
               isAuthenticated ? (
               <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                 <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-6 flex items-center gap-2">
-                  <Globe className="w-4 h-4 text-[#5EA3C0]" />
+                  <Globe className="w-4 h-4 text-brand-ink" />
                   {t('services.destinationDetail.migrationStats.title')}
                 </h3>
                 <div className="space-y-5">
@@ -587,7 +587,7 @@ export function DestinationDetailPage() {
                         <span className="text-2xl font-bold text-gray-900">
                           {migrationData.stocksForeignPop.value.toLocaleString(dateLocale)}
                         </span>
-                        <span className="text-xs text-gray-400">({migrationData.stocksForeignPop.year})</span>
+                        <span className="text-xs text-gray-500">({migrationData.stocksForeignPop.year})</span>
                       </div>
                     </div>
                   )}
@@ -602,7 +602,7 @@ export function DestinationDetailPage() {
                         <span className="text-lg font-semibold text-gray-900">
                           +{migrationData.inflowsForeignPop.value.toLocaleString(dateLocale)}
                         </span>
-                        <span className="text-xs text-gray-400">({migrationData.inflowsForeignPop.year})</span>
+                        <span className="text-xs text-gray-500">({migrationData.inflowsForeignPop.year})</span>
                       </div>
                     </div>
                   )}
@@ -617,7 +617,7 @@ export function DestinationDetailPage() {
                         <span className="text-lg font-semibold text-gray-900">
                           -{migrationData.outflowsForeignPop.value.toLocaleString(dateLocale)}
                         </span>
-                        <span className="text-xs text-gray-400">({migrationData.outflowsForeignPop.year})</span>
+                        <span className="text-xs text-gray-500">({migrationData.outflowsForeignPop.year})</span>
                       </div>
                     </div>
                   )}
@@ -632,7 +632,7 @@ export function DestinationDetailPage() {
                         <span className="text-lg font-semibold text-gray-900">
                           {migrationData.asylumSeekers.value.toLocaleString(dateLocale)}
                         </span>
-                        <span className="text-xs text-gray-400">({migrationData.asylumSeekers.year})</span>
+                        <span className="text-xs text-gray-500">({migrationData.asylumSeekers.year})</span>
                       </div>
                     </div>
                   )}
@@ -647,20 +647,20 @@ export function DestinationDetailPage() {
                         <span className="text-lg font-semibold text-gray-900">
                           {migrationData.nationalityAcquisitions.value.toLocaleString(dateLocale)}
                         </span>
-                        <span className="text-xs text-gray-400">({migrationData.nationalityAcquisitions.year})</span>
+                        <span className="text-xs text-gray-500">({migrationData.nationalityAcquisitions.year})</span>
                       </div>
                     </div>
                   )}
                 </div>
 
-                <p className="mt-4 pt-3 border-t border-gray-100 text-[10px] text-gray-400">
+                <p className="mt-4 pt-3 border-t border-gray-100 text-[10px] text-gray-500">
                   {t('services.destinationDetail.migrationStats.source')}
                 </p>
               </div>
               ) : (
               <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 text-center">
                 <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4 flex items-center gap-2">
-                  <Globe className="w-4 h-4 text-[#5EA3C0]" />
+                  <Globe className="w-4 h-4 text-brand-ink" />
                   {t('services.destinationDetail.migrationStats.title')}
                 </h3>
                 <div className="py-4">
@@ -695,21 +695,21 @@ export function DestinationDetailPage() {
               />
             )}
 
-            <div className="bg-[#5EA3C0] rounded-xl shadow-sm p-6 text-white">
+            <div className="bg-brand-ink rounded-xl shadow-sm p-6 text-white">
               <h3 className="font-bold text-lg mb-4">{t('services.destinationDetail.readyToGo')}</h3>
-              <p className="text-blue-50 text-sm mb-6">
+              <p className="text-white/95 text-sm mb-6">
                 {t('services.destinationDetail.startProject', { country: countryIn(country.countryName) })}
               </p>
               <div className="space-y-3">
                 <Link
                   to={`/search?country=${country.isoCode}`}
-                  className="block w-full py-3 px-4 bg-white text-[#5EA3C0] text-center font-medium rounded-lg hover:bg-blue-50 transition-colors"
+                  className="block w-full py-3 px-4 bg-white text-brand-ink text-center font-medium rounded-lg hover:bg-blue-50 transition-colors"
                 >
                   {t('services.destinationDetail.findJob')}
                 </Link>
                 <Link
                   to={`/forum?country=${country.isoCode}`}
-                  className="block w-full py-3 px-4 bg-[#4a8aa3] text-white text-center font-medium rounded-lg hover:bg-[#3d758a] transition-colors"
+                  className="block w-full py-3 px-4 bg-brand-ink-hover text-white text-center font-medium rounded-lg hover:bg-brand-ink-hover transition-colors"
                 >
                   {t('services.destinationDetail.discussOnForum')}
                 </Link>

@@ -122,7 +122,7 @@ export default function CountdownWidget({
           </p>
           <Link
             to={`/onboarding/${projectId}`}
-            className="text-xs font-medium text-[#5EA3C0] hover:underline"
+            className="text-xs font-medium text-brand-ink hover:underline"
           >
             {t('dashboard.personalized.widgets.countdown.addDate', { defaultValue: 'Ajouter une date' })}
           </Link>
@@ -161,7 +161,7 @@ export default function CountdownWidget({
           {/* Prochaines échéances */}
           {upcoming.length > 0 && (
             <div className="mt-3 pt-3 border-t border-gray-50 space-y-1.5">
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-500">
                 {t('dashboard.personalized.widgets.countdown.nextDeadlines', {
                   defaultValue: 'Prochaines échéances',
                 })}
@@ -174,13 +174,13 @@ export default function CountdownWidget({
                         ? 'bg-red-500'
                         : s.deadline.isUrgent
                           ? 'bg-amber-500'
-                          : 'bg-[#5EA3C0]'
+                          : 'bg-brand-ink'
                     }`}
                   />
                   <span className="flex-1 min-w-0 truncate text-gray-700">{s.title}</span>
                   <span
                     className={`text-xs flex-shrink-0 flex items-center gap-1 ${
-                      s.deadline.isLate ? 'text-red-600 font-medium' : 'text-gray-400'
+                      s.deadline.isLate ? 'text-red-600 font-medium' : 'text-gray-500'
                     }`}
                   >
                     {s.deadline.isLate && <AlertTriangle className="w-3 h-3" />}
@@ -211,7 +211,7 @@ export default function CountdownWidget({
 
           <Link
             to={`/projects/${projectId}/checklist`}
-            className="mt-auto pt-3 inline-flex items-center gap-1 text-xs font-medium text-[#5EA3C0] hover:underline"
+            className="mt-auto pt-3 inline-flex items-center gap-1 text-xs font-medium text-brand-ink hover:underline"
           >
             {t('dashboard.personalized.widgets.countdown.seeChecklist', { defaultValue: 'Voir ma checklist' })}
             <ArrowRight className="w-3.5 h-3.5" />

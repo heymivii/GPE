@@ -46,7 +46,7 @@ export default function TransportStats({ countryName, cityName }: TransportStats
         <div className="flex flex-col items-center justify-center py-16 text-center">
           <AlertCircle className="w-10 h-10 text-red-400 mb-3" />
           <p className="text-gray-600">{t('services.stats.common.errorLoad', { service: t('services.categories.transport.title'), city: mapping.displayName })}</p>
-          <p className="text-sm text-gray-400 mt-1">{t('services.stats.common.retryLater')}</p>
+          <p className="text-sm text-gray-500 mt-1">{t('services.stats.common.retryLater')}</p>
         </div>
       </section>
     );
@@ -75,7 +75,7 @@ export default function TransportStats({ countryName, cityName }: TransportStats
         {prefix}{fp(value)}{suffix}
       </p>
       {!same && value != null && value > 0 && (
-        <p className="text-xs text-gray-400 mt-0.5">{prefix}{formatNumber(value, 2)} {localCur}{suffix}</p>
+        <p className="text-xs text-gray-500 mt-0.5">{prefix}{formatNumber(value, 2)} {localCur}{suffix}</p>
       )}
     </>
   );
@@ -134,7 +134,7 @@ export default function TransportStats({ countryName, cityName }: TransportStats
           </div>
           <p className="text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">{t('services.stats.transport.monthlyFuelBudget')}</p>
           <HeadlinePrice value={monthlyFuelCost} prefix="~" />
-          <p className="text-xs text-gray-400 mt-1">{t('services.stats.transport.fuelEstimate')}</p>
+          <p className="text-xs text-gray-500 mt-1">{t('services.stats.transport.fuelEstimate')}</p>
         </div>
       </div>
 
@@ -209,7 +209,7 @@ export default function TransportStats({ countryName, cityName }: TransportStats
           )}
           {' '}{t('services.stats.common.pricesIndicative')}
           {data.currency.lastUpdated && (
-            <span className="text-gray-400"> — {t('services.stats.common.lastUpdated')} {new Date(data.currency.lastUpdated).toLocaleDateString(getCurrentLocale())}</span>
+            <span className="text-gray-500"> — {t('services.stats.common.lastUpdated')} {new Date(data.currency.lastUpdated).toLocaleDateString(getCurrentLocale())}</span>
           )}
         </p>
       </div>
@@ -230,14 +230,14 @@ function PriceRow({ label, avg, min, max, localCur }: {
         <span className="font-semibold text-sm text-gray-900">
           {formatPrice(avg, localCur)}
           {!same && avg != null && avg > 0 && (
-            <span className="text-gray-400 text-xs font-normal ml-1.5">({formatNumber(avg, 2)} {localCur})</span>
+            <span className="text-gray-500 text-xs font-normal ml-1.5">({formatNumber(avg, 2)} {localCur})</span>
           )}
         </span>
       </div>
       {min != null && max != null && min !== 0 && max !== 0 && (
         <div className="flex justify-end gap-3 mt-0.5">
-          <span className="text-xs text-gray-400">min {formatPrice(min, localCur)}</span>
-          <span className="text-xs text-gray-400">max {formatPrice(max, localCur)}</span>
+          <span className="text-xs text-gray-500">min {formatPrice(min, localCur)}</span>
+          <span className="text-xs text-gray-500">max {formatPrice(max, localCur)}</span>
         </div>
       )}
     </div>

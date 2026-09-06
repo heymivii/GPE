@@ -27,7 +27,7 @@ export default function VisaChecker() {
 
   return (
     <div className="bg-white rounded-3xl border border-gray-100 shadow-xl p-6 sm:p-8">
-      <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#5EA3C0] mb-2">
+      <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-brand-ink mb-2">
         <BadgeCheck className="w-4 h-4" />
         {t('landing.visaChecker.eyebrow')}
       </div>
@@ -43,7 +43,7 @@ export default function VisaChecker() {
           <select
             value={nationality}
             onChange={(e) => setNationality(e.target.value)}
-            className="w-full px-3 py-2.5 border border-gray-300 rounded-xl text-sm bg-white focus:border-[#5EA3C0] focus:ring-2 focus:ring-[#5EA3C0]/20"
+            className="w-full px-3 py-2.5 border border-gray-300 rounded-xl text-sm bg-white focus:border-brand focus:ring-2 focus:ring-brand/20"
           >
             {NATIONALITY_OPTIONS.map((n) => (
               <option key={n.value} value={n.value}>
@@ -59,7 +59,7 @@ export default function VisaChecker() {
           <select
             value={destination}
             onChange={(e) => setDestination(e.target.value)}
-            className="w-full px-3 py-2.5 border border-gray-300 rounded-xl text-sm bg-white focus:border-[#5EA3C0] focus:ring-2 focus:ring-[#5EA3C0]/20"
+            className="w-full px-3 py-2.5 border border-gray-300 rounded-xl text-sm bg-white focus:border-brand focus:ring-2 focus:ring-brand/20"
           >
             {destinations.map((d) => (
               <option key={d.code} value={d.code}>
@@ -93,11 +93,11 @@ export default function VisaChecker() {
         </div>
       )}
 
-      <p className="text-[11px] text-gray-400 mt-2">{t('landing.visaChecker.disclaimer')}</p>
+      <p className="text-[11px] text-gray-500 mt-2">{t('landing.visaChecker.disclaimer')}</p>
 
       <Link
         to={`/onboarding?to=${destination}`}
-        className="mt-4 w-full flex items-center justify-center gap-2 bg-[#5EA3C0] hover:bg-[#4891b0] text-white px-6 py-3.5 rounded-full font-semibold text-sm transition-colors"
+        className="mt-4 w-full flex items-center justify-center gap-2 bg-brand-ink hover:bg-brand-ink-hover text-white px-6 py-3.5 rounded-full font-semibold text-sm transition-colors"
       >
         {t('landing.visaChecker.cta')}
         <ArrowRight className="w-4 h-4" />

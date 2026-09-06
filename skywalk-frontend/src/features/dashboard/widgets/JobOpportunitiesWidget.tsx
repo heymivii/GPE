@@ -272,7 +272,7 @@ export default function JobOpportunitiesWidget({
                     </p>
                     <p className="text-xs text-gray-500 mt-0.5">{job.company}</p>
                     <div className="flex items-center gap-2 mt-1">
-                      <span className="text-xs text-gray-400 flex items-center gap-1">
+                      <span className="text-xs text-gray-500 flex items-center gap-1">
                         <MapPin className="w-3 h-3" />
                         {job.location?.displayName || job.location?.city || '—'}
                       </span>

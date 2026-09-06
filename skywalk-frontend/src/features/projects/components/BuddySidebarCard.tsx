@@ -114,10 +114,10 @@ export default function BuddySidebarCard({
               <p className="text-xs text-gray-700 font-medium truncate">
                 {row.firstname}
                 {row.originCountry && (
-                  <span className="text-gray-400 font-normal"> – {row.originCountry}</span>
+                  <span className="text-gray-500 font-normal"> – {row.originCountry}</span>
                 )}
               </p>
-              <p className="text-[11px] text-gray-400 truncate">
+              <p className="text-[11px] text-gray-500 truncate">
                 {row.stepTitle}
                 {row.stepCount > 1 && ` +${row.stepCount - 1}`} · {getDaysAgo(row.completedAt)}
               </p>
@@ -136,7 +136,7 @@ export default function BuddySidebarCard({
       {rows.length > PREVIEW_COUNT && (
         <button
           onClick={() => setExpanded((v) => !v)}
-          className="mt-3 w-full text-center text-xs font-semibold text-[#5EA3C0] hover:text-[#4891b0]"
+          className="mt-3 w-full text-center text-xs font-semibold text-brand-ink hover:text-brand-ink-hover"
         >
           {expanded ? 'Réduire' : `Voir les ${rows.length} buddies`}
         </button>

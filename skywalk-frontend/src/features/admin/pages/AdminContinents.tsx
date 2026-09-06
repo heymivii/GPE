@@ -125,7 +125,7 @@ export default function AdminContinents() {
           </button>
           <button
             onClick={openCreateModal}
-            className="flex items-center gap-2 bg-[#5EA3C0] hover:bg-[#4891b0] text-white px-4 py-2 rounded-lg font-semibold text-sm transition-colors shadow-sm"
+            className="flex items-center gap-2 bg-brand-ink hover:bg-brand-ink-hover text-white px-4 py-2 rounded-lg font-semibold text-sm transition-colors shadow-sm"
           >
             <Plus className="w-4 h-4" />
             Ajouter un continent
@@ -136,7 +136,7 @@ export default function AdminContinents() {
       {/* Continents Table */}
       {isLoading ? (
         <div className="flex items-center justify-center min-h-[40vh]">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#5EA3C0]"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand"></div>
         </div>
       ) : (
         <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
@@ -153,14 +153,14 @@ export default function AdminContinents() {
               <tbody className="divide-y divide-gray-100 text-sm text-gray-650">
                 {continents.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="py-8 px-6 text-center text-gray-400 italic">
+                    <td colSpan={4} className="py-8 px-6 text-center text-gray-500 italic">
                       Aucun continent configuré.
                     </td>
                   </tr>
                 ) : (
                   continents.map((continent) => (
                     <tr key={continent.idContinent} className="hover:bg-gray-50/45 transition-colors">
-                      <td className="py-4 px-6 text-center font-semibold text-gray-400">
+                      <td className="py-4 px-6 text-center font-semibold text-gray-500">
                         {continent.idContinent}
                       </td>
                       <td className="py-4 px-6 font-semibold text-gray-900">
@@ -180,7 +180,7 @@ export default function AdminContinents() {
                           <button
                             onClick={() => openEditModal(continent)}
                             disabled={isPending}
-                            className="p-1.5 hover:bg-gray-100 text-gray-600 hover:text-[#5EA3C0] rounded-lg transition-colors"
+                            className="p-1.5 hover:bg-gray-100 text-gray-600 hover:text-brand-ink rounded-lg transition-colors"
                             title="Modifier"
                           >
                             <Edit2 className="w-4 h-4" />
@@ -227,7 +227,7 @@ export default function AdminContinents() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="ex. Europe, Amérique du Nord..."
-                  className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#5EA3C0] focus:ring-1 focus:ring-[#5EA3C0] text-sm text-gray-900"
+                  className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand text-sm text-gray-900"
                 />
               </div>
 
@@ -241,7 +241,7 @@ export default function AdminContinents() {
                   value={isoCode}
                   onChange={(e) => setIsoCode(e.target.value.toUpperCase())}
                   placeholder="ex. EU, NA, AS..."
-                  className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#5EA3C0] focus:ring-1 focus:ring-[#5EA3C0] text-sm text-gray-900 uppercase"
+                  className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand text-sm text-gray-900 uppercase"
                 />
               </div>
 
@@ -256,7 +256,7 @@ export default function AdminContinents() {
                 <button
                   type="submit"
                   disabled={isPending}
-                  className="px-4 py-2 bg-[#5EA3C0] hover:bg-[#4891b0] text-white rounded-lg text-sm font-semibold transition-colors shadow-sm disabled:opacity-50"
+                  className="px-4 py-2 bg-brand-ink hover:bg-brand-ink-hover text-white rounded-lg text-sm font-semibold transition-colors shadow-sm disabled:opacity-50"
                 >
                   {isPending ? 'Enregistrement...' : 'Enregistrer'}
                 </button>

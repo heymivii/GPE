@@ -647,7 +647,7 @@ export default function AdminCities() {
           <div className="flex items-center gap-2 text-xs text-gray-500 font-semibold tracking-wide uppercase">
             <span>Admin</span>
             <ChevronRight className="w-3 h-3" />
-            <button onClick={() => setViewingCity(null)} className="hover:text-[#5EA3C0] transition-colors">
+            <button onClick={() => setViewingCity(null)} className="hover:text-brand-ink transition-colors">
               Gestion des Villes
             </button>
             <ChevronRight className="w-3 h-3" />
@@ -691,7 +691,7 @@ export default function AdminCities() {
                 type="button"
                 onClick={handleSaveDetails}
                 disabled={updateMutation.isPending || saveCostMutation.isPending}
-                className="flex items-center gap-2 bg-[#5EA3C0] hover:bg-[#4891b0] text-white px-5 py-2.5 rounded-xl font-semibold text-sm transition-all shadow-md hover:shadow-lg disabled:opacity-50"
+                className="flex items-center gap-2 bg-brand-ink hover:bg-brand-ink-hover text-white px-5 py-2.5 rounded-xl font-semibold text-sm transition-all shadow-md hover:shadow-lg disabled:opacity-50"
               >
                 {(updateMutation.isPending || saveCostMutation.isPending) ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -709,7 +709,7 @@ export default function AdminCities() {
           {/* Left Column: City Basic Info */}
           <div className="bg-white p-6 rounded-2xl border border-gray-150 shadow-sm space-y-6">
             <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2 border-b border-gray-100 pb-3">
-              <Globe2 className="w-5 h-5 text-[#5EA3C0]" />
+              <Globe2 className="w-5 h-5 text-brand-ink" />
               Informations de la ville
             </h3>
 
@@ -720,7 +720,7 @@ export default function AdminCities() {
                   <img src={editImageUrl} alt={editName} className="w-full h-full object-cover" />
                 </div>
               ) : (
-                <div className="h-48 w-full rounded-xl bg-gray-50 border border-dashed border-gray-200 flex items-center justify-center text-gray-400 text-sm">
+                <div className="h-48 w-full rounded-xl bg-gray-50 border border-dashed border-gray-200 flex items-center justify-center text-gray-500 text-sm">
                   Pas d'image configurée
                 </div>
               )}
@@ -732,7 +732,7 @@ export default function AdminCities() {
                   type="url"
                   value={editImageUrl}
                   onChange={(e) => setEditImageUrl(e.target.value)}
-                  className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900"
+                  className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900"
                   placeholder="https://images.unsplash.com/..."
                 />
               </div>
@@ -748,7 +748,7 @@ export default function AdminCities() {
                   required
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900"
+                  className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900"
                 />
               </div>
 
@@ -760,7 +760,7 @@ export default function AdminCities() {
                   required
                   value={editCountryId}
                   onChange={(e) => setEditCountryId(Number(e.target.value))}
-                  className="w-full px-3.5 py-2 border border-gray-200 bg-white rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900"
+                  className="w-full px-3.5 py-2 border border-gray-200 bg-white rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900"
                 >
                   <option value="" disabled>-- Sélectionner un pays --</option>
                   {countries.map((c) => (
@@ -781,7 +781,7 @@ export default function AdminCities() {
                     step="0.00000001"
                     value={editLatitude}
                     onChange={(e) => setEditLatitude(e.target.value)}
-                    className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900"
+                    className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900"
                   />
                 </div>
                 <div>
@@ -793,7 +793,7 @@ export default function AdminCities() {
                     step="0.00000001"
                     value={editLongitude}
                     onChange={(e) => setEditLongitude(e.target.value)}
-                    className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900"
+                    className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900"
                   />
                 </div>
               </div>
@@ -807,7 +807,7 @@ export default function AdminCities() {
                   min={0}
                   value={editPopulation}
                   onChange={(e) => setEditPopulation(e.target.value)}
-                  className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900"
+                  className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900"
                 />
               </div>
 
@@ -819,7 +819,7 @@ export default function AdminCities() {
                   type="text"
                   value={editTimezone}
                   onChange={(e) => setEditTimezone(e.target.value)}
-                  className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900"
+                  className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900"
                 />
               </div>
 
@@ -829,7 +829,7 @@ export default function AdminCities() {
                     type="checkbox"
                     checked={editIsCapital}
                     onChange={(e) => setEditIsCapital(e.target.checked)}
-                    className="rounded text-[#5EA3C0] focus:ring-[#5EA3C0] w-4.5 h-4.5 border-gray-300"
+                    className="rounded text-brand-ink focus:ring-brand w-4.5 h-4.5 border-gray-300"
                   />
                   <span className="text-sm font-bold uppercase tracking-wider text-gray-550">Est la capitale ?</span>
                 </label>
@@ -890,14 +890,14 @@ export default function AdminCities() {
 
             {costOfLivingLoading ? (
               <div className="bg-white p-12 rounded-2xl border border-gray-150 shadow-sm flex flex-col items-center justify-center min-h-[400px] space-y-3">
-                <Loader2 className="w-10 h-10 animate-spin text-[#5EA3C0]" />
+                <Loader2 className="w-10 h-10 animate-spin text-brand-ink" />
                 <span className="text-sm text-gray-500 font-medium">Chargement des données du coût de la vie...</span>
               </div>
             ) : (!costOfLiving && !editCostData) ? (
               <div className="bg-white p-12 rounded-2xl border border-gray-150 shadow-sm text-center min-h-[400px] flex flex-col items-center justify-center">
                 <Coins className="w-16 h-16 mx-auto mb-4 text-gray-300" />
                 <h3 className="text-xl font-bold text-gray-800">Aucune donnée de coût de la vie trouvée</h3>
-                <p className="text-sm text-gray-400 mt-2 max-w-md mx-auto">
+                <p className="text-sm text-gray-500 mt-2 max-w-md mx-auto">
                   Les données pour cette ville ne sont pas encore disponibles dans le cache. Vous pouvez en initialiser de nouvelles manuellement pour les renseigner.
                 </p>
                 <button
@@ -906,7 +906,7 @@ export default function AdminCities() {
                     const countryName = countries.find(c => c.idCountry === Number(editCountryId))?.countryName || '';
                     setEditCostData(createBlankCostOfLiving(editName, countryName));
                   }}
-                  className="mt-6 px-5 py-2.5 bg-[#5EA3C0] hover:bg-[#4891b0] text-white rounded-xl font-semibold text-sm transition-colors shadow-md"
+                  className="mt-6 px-5 py-2.5 bg-brand-ink hover:bg-brand-ink-hover text-white rounded-xl font-semibold text-sm transition-colors shadow-md"
                 >
                   Créer et renseigner les données
                 </button>
@@ -915,7 +915,7 @@ export default function AdminCities() {
               <div className="bg-white p-6 rounded-2xl border border-gray-150 shadow-sm space-y-8">
                 <div className="flex items-center justify-between border-b border-gray-100 pb-3">
                   <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                    <Coins className="w-5 h-5 text-[#5EA3C0]" />
+                    <Coins className="w-5 h-5 text-brand-ink" />
                     Coût de la vie
                   </h3>
                   <span className="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded-full font-semibold">
@@ -933,7 +933,7 @@ export default function AdminCities() {
                       maxLength={3}
                       value={editCostData?.currency?.code ?? 'EUR'}
                       onChange={(e) => handleCostFieldChange(['currency', 'code'], e.target.value.toUpperCase())}
-                      className="w-full px-3.5 py-2 border border-gray-200 bg-white rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900 font-semibold"
+                      className="w-full px-3.5 py-2 border border-gray-200 bg-white rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900 font-semibold"
                     />
                   </div>
                   <div>
@@ -947,9 +947,9 @@ export default function AdminCities() {
                         value={editCostData?.summary?.averageSalary || ''}
                         placeholder="0"
                         onChange={(e) => handleCostFieldChange(['summary', 'averageSalary'], e.target.value === '' ? 0 : parseFloat(e.target.value))}
-                        className="w-full px-3.5 py-2 border border-gray-200 bg-white rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900 font-semibold pr-12"
+                        className="w-full px-3.5 py-2 border border-gray-200 bg-white rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900 font-semibold pr-12"
                       />
-                      <span className="absolute right-3.5 top-2.5 text-xs text-gray-400 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
+                      <span className="absolute right-3.5 top-2.5 text-xs text-gray-500 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
                     </div>
                   </div>
                   <div className="md:col-span-2 grid grid-cols-3 gap-4">
@@ -964,9 +964,9 @@ export default function AdminCities() {
                           value={editCostData?.summary?.monthlyBudget?.avg || ''}
                           placeholder="0"
                           onChange={(e) => handleCostFieldChange(['summary', 'monthlyBudget', 'avg'], e.target.value === '' ? 0 : parseFloat(e.target.value))}
-                          className="w-full px-3.5 py-2 border border-gray-200 bg-white rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900 font-semibold pr-12"
+                          className="w-full px-3.5 py-2 border border-gray-200 bg-white rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900 font-semibold pr-12"
                         />
-                        <span className="absolute right-3.5 top-2.5 text-xs text-gray-400 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
+                        <span className="absolute right-3.5 top-2.5 text-xs text-gray-500 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
                       </div>
                     </div>
                     <div>
@@ -980,9 +980,9 @@ export default function AdminCities() {
                           value={editCostData?.summary?.monthlyBudget?.min || ''}
                           placeholder="0"
                           onChange={(e) => handleCostFieldChange(['summary', 'monthlyBudget', 'min'], e.target.value === '' ? 0 : parseFloat(e.target.value))}
-                          className="w-full px-3.5 py-2 border border-gray-200 bg-white rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900 font-semibold pr-12"
+                          className="w-full px-3.5 py-2 border border-gray-200 bg-white rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900 font-semibold pr-12"
                         />
-                        <span className="absolute right-3.5 top-2.5 text-xs text-gray-400 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
+                        <span className="absolute right-3.5 top-2.5 text-xs text-gray-500 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
                       </div>
                     </div>
                     <div>
@@ -996,9 +996,9 @@ export default function AdminCities() {
                           value={editCostData?.summary?.monthlyBudget?.max || ''}
                           placeholder="0"
                           onChange={(e) => handleCostFieldChange(['summary', 'monthlyBudget', 'max'], e.target.value === '' ? 0 : parseFloat(e.target.value))}
-                          className="w-full px-3.5 py-2 border border-gray-200 bg-white rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900 font-semibold pr-12"
+                          className="w-full px-3.5 py-2 border border-gray-200 bg-white rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900 font-semibold pr-12"
                         />
-                        <span className="absolute right-3.5 top-2.5 text-xs text-gray-400 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
+                        <span className="absolute right-3.5 top-2.5 text-xs text-gray-500 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
                       </div>
                     </div>
                   </div>
@@ -1008,7 +1008,7 @@ export default function AdminCities() {
                   {/* Category: Housing */}
                   <div className="border border-gray-150 rounded-2xl overflow-hidden shadow-sm">
                     <div className="bg-gray-50 px-5 py-3 border-b border-gray-150 flex items-center gap-2">
-                      <Building2 className="w-5 h-5 text-[#5EA3C0]" />
+                      <Building2 className="w-5 h-5 text-brand-ink" />
                       <span className="text-sm font-bold uppercase tracking-wider text-gray-700">Logement & Loyers</span>
                     </div>
                     <div className="p-5 space-y-4">
@@ -1024,9 +1024,9 @@ export default function AdminCities() {
                               value={editCostData?.categories?.housing?.rent?.oneBedroom?.cityCenter?.avg || ''}
                               placeholder="0"
                               onChange={(e) => handleCostFieldChange(['categories', 'housing', 'rent', 'oneBedroom', 'cityCenter', 'avg'], e.target.value === '' ? 0 : parseFloat(e.target.value))}
-                              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900 pr-12"
+                              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900 pr-12"
                             />
-                            <span className="absolute right-3.5 top-2 text-xs text-gray-400 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
+                            <span className="absolute right-3.5 top-2 text-xs text-gray-500 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
                           </div>
                         </div>
                         <div>
@@ -1040,9 +1040,9 @@ export default function AdminCities() {
                               value={editCostData?.categories?.housing?.rent?.oneBedroom?.outsideCenter?.avg || ''}
                               placeholder="0"
                               onChange={(e) => handleCostFieldChange(['categories', 'housing', 'rent', 'oneBedroom', 'outsideCenter', 'avg'], e.target.value === '' ? 0 : parseFloat(e.target.value))}
-                              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900 pr-12"
+                              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900 pr-12"
                             />
-                            <span className="absolute right-3.5 top-2 text-xs text-gray-400 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
+                            <span className="absolute right-3.5 top-2 text-xs text-gray-500 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
                           </div>
                         </div>
                         <div className="md:col-span-2">
@@ -1056,9 +1056,9 @@ export default function AdminCities() {
                               value={editCostData?.categories?.housing?.rent?.threeBedroom?.cityCenter?.avg || ''}
                               placeholder="0"
                               onChange={(e) => handleCostFieldChange(['categories', 'housing', 'rent', 'threeBedroom', 'cityCenter', 'avg'], e.target.value === '' ? 0 : parseFloat(e.target.value))}
-                              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900 pr-12"
+                              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900 pr-12"
                             />
-                            <span className="absolute right-3.5 top-2 text-xs text-gray-400 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
+                            <span className="absolute right-3.5 top-2 text-xs text-gray-500 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
                           </div>
                         </div>
                       </div>
@@ -1068,7 +1068,7 @@ export default function AdminCities() {
                   {/* Category: Food / Restaurants */}
                   <div className="border border-gray-150 rounded-2xl overflow-hidden shadow-sm">
                     <div className="bg-gray-50 px-5 py-3 border-b border-gray-150 flex items-center gap-2">
-                      <Utensils className="w-5 h-5 text-[#5EA3C0]" />
+                      <Utensils className="w-5 h-5 text-brand-ink" />
                       <span className="text-sm font-bold uppercase tracking-wider text-gray-700">Restauration & Alimentation</span>
                     </div>
                     <div className="p-5 space-y-4">
@@ -1085,9 +1085,9 @@ export default function AdminCities() {
                               value={editCostData?.categories?.restaurants?.inexpensiveMeal?.avg || ''}
                               placeholder="0"
                               onChange={(e) => handleCostFieldChange(['categories', 'restaurants', 'inexpensiveMeal', 'avg'], e.target.value === '' ? 0 : parseFloat(e.target.value))}
-                              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900 pr-12"
+                              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900 pr-12"
                             />
-                            <span className="absolute right-3.5 top-2 text-xs text-gray-400 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
+                            <span className="absolute right-3.5 top-2 text-xs text-gray-500 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
                           </div>
                         </div>
                         <div>
@@ -1102,9 +1102,9 @@ export default function AdminCities() {
                               value={editCostData?.categories?.restaurants?.mcMeal?.avg || ''}
                               placeholder="0"
                               onChange={(e) => handleCostFieldChange(['categories', 'restaurants', 'mcMeal', 'avg'], e.target.value === '' ? 0 : parseFloat(e.target.value))}
-                              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900 pr-12"
+                              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900 pr-12"
                             />
-                            <span className="absolute right-3.5 top-2 text-xs text-gray-400 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
+                            <span className="absolute right-3.5 top-2 text-xs text-gray-500 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
                           </div>
                         </div>
                         <div>
@@ -1119,9 +1119,9 @@ export default function AdminCities() {
                               value={editCostData?.categories?.restaurants?.cappuccino?.avg || ''}
                               placeholder="0"
                               onChange={(e) => handleCostFieldChange(['categories', 'restaurants', 'cappuccino', 'avg'], e.target.value === '' ? 0 : parseFloat(e.target.value))}
-                              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900 pr-12"
+                              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900 pr-12"
                             />
-                            <span className="absolute right-3.5 top-2 text-xs text-gray-400 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
+                            <span className="absolute right-3.5 top-2 text-xs text-gray-500 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
                           </div>
                         </div>
                       </div>
@@ -1131,7 +1131,7 @@ export default function AdminCities() {
                   {/* Category: Transportation / Utilities */}
                   <div className="border border-gray-150 rounded-2xl overflow-hidden shadow-sm">
                     <div className="bg-gray-50 px-5 py-3 border-b border-gray-150 flex items-center gap-2">
-                      <Car className="w-5 h-5 text-[#5EA3C0]" />
+                      <Car className="w-5 h-5 text-brand-ink" />
                       <span className="text-sm font-bold uppercase tracking-wider text-gray-700">Transports & Services</span>
                     </div>
                     <div className="p-5 space-y-4">
@@ -1148,9 +1148,9 @@ export default function AdminCities() {
                               value={editCostData?.categories?.transportation?.publicTransport?.oneWayTicket?.avg || ''}
                               placeholder="0"
                               onChange={(e) => handleCostFieldChange(['categories', 'transportation', 'publicTransport', 'oneWayTicket', 'avg'], e.target.value === '' ? 0 : parseFloat(e.target.value))}
-                              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900 pr-12"
+                              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900 pr-12"
                             />
-                            <span className="absolute right-3.5 top-2 text-xs text-gray-400 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
+                            <span className="absolute right-3.5 top-2 text-xs text-gray-500 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
                           </div>
                         </div>
                         <div>
@@ -1164,9 +1164,9 @@ export default function AdminCities() {
                               value={editCostData?.categories?.transportation?.publicTransport?.monthlyPass?.avg || ''}
                               placeholder="0"
                               onChange={(e) => handleCostFieldChange(['categories', 'transportation', 'publicTransport', 'monthlyPass', 'avg'], e.target.value === '' ? 0 : parseFloat(e.target.value))}
-                              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900 pr-12"
+                              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900 pr-12"
                             />
-                            <span className="absolute right-3.5 top-2 text-xs text-gray-400 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
+                            <span className="absolute right-3.5 top-2 text-xs text-gray-500 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
                           </div>
                         </div>
                         <div>
@@ -1180,9 +1180,9 @@ export default function AdminCities() {
                               value={editCostData?.categories?.utilities?.basic85m2?.avg || ''}
                               placeholder="0"
                               onChange={(e) => handleCostFieldChange(['categories', 'utilities', 'basic85m2', 'avg'], e.target.value === '' ? 0 : parseFloat(e.target.value))}
-                              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900 pr-12"
+                              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900 pr-12"
                             />
-                            <span className="absolute right-3.5 top-2 text-xs text-gray-400 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
+                            <span className="absolute right-3.5 top-2 text-xs text-gray-500 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
                           </div>
                         </div>
                         <div>
@@ -1196,9 +1196,9 @@ export default function AdminCities() {
                               value={editCostData?.categories?.utilities?.internet?.avg || ''}
                               placeholder="0"
                               onChange={(e) => handleCostFieldChange(['categories', 'utilities', 'internet', 'avg'], e.target.value === '' ? 0 : parseFloat(e.target.value))}
-                              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900 pr-12"
+                              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900 pr-12"
                             />
-                            <span className="absolute right-3.5 top-2 text-xs text-gray-400 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
+                            <span className="absolute right-3.5 top-2 text-xs text-gray-500 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
                           </div>
                         </div>
                       </div>
@@ -1208,7 +1208,7 @@ export default function AdminCities() {
                   {/* Category: Supermarket / Markets */}
                   <div className="border border-gray-150 rounded-2xl overflow-hidden shadow-sm">
                     <div className="bg-gray-50 px-5 py-3 border-b border-gray-150 flex items-center gap-2">
-                      <ShoppingBag className="w-5 h-5 text-[#5EA3C0]" />
+                      <ShoppingBag className="w-5 h-5 text-brand-ink" />
                       <span className="text-sm font-bold uppercase tracking-wider text-gray-700">Supermarché (Aliments de base)</span>
                     </div>
                     <div className="p-5 space-y-4">
@@ -1225,9 +1225,9 @@ export default function AdminCities() {
                               value={editCostData?.categories?.food?.markets?.milk1L?.avg || ''}
                               placeholder="0"
                               onChange={(e) => handleCostFieldChange(['categories', 'food', 'markets', 'milk1L', 'avg'], e.target.value === '' ? 0 : parseFloat(e.target.value))}
-                              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900 pr-12"
+                              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900 pr-12"
                             />
-                            <span className="absolute right-3.5 top-2 text-xs text-gray-400 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
+                            <span className="absolute right-3.5 top-2 text-xs text-gray-500 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
                           </div>
                         </div>
                         <div>
@@ -1242,9 +1242,9 @@ export default function AdminCities() {
                               value={editCostData?.categories?.food?.markets?.bread500g?.avg || ''}
                               placeholder="0"
                               onChange={(e) => handleCostFieldChange(['categories', 'food', 'markets', 'bread500g', 'avg'], e.target.value === '' ? 0 : parseFloat(e.target.value))}
-                              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900 pr-12"
+                              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900 pr-12"
                             />
-                            <span className="absolute right-3.5 top-2 text-xs text-gray-400 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
+                            <span className="absolute right-3.5 top-2 text-xs text-gray-500 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
                           </div>
                         </div>
                         <div>
@@ -1258,9 +1258,9 @@ export default function AdminCities() {
                               value={editCostData?.categories?.food?.markets?.eggs12?.avg || ''}
                               placeholder="0"
                               onChange={(e) => handleCostFieldChange(['categories', 'food', 'markets', 'eggs12', 'avg'], e.target.value === '' ? 0 : parseFloat(e.target.value))}
-                              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900 pr-12"
+                              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900 pr-12"
                             />
-                            <span className="absolute right-3.5 top-2 text-xs text-gray-400 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
+                            <span className="absolute right-3.5 top-2 text-xs text-gray-500 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
                           </div>
                         </div>
                         <div>
@@ -1275,9 +1275,9 @@ export default function AdminCities() {
                               value={editCostData?.categories?.food?.markets?.chicken1kg?.avg || ''}
                               placeholder="0"
                               onChange={(e) => handleCostFieldChange(['categories', 'food', 'markets', 'chicken1kg', 'avg'], e.target.value === '' ? 0 : parseFloat(e.target.value))}
-                              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900 pr-12"
+                              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900 pr-12"
                             />
-                            <span className="absolute right-3.5 top-2 text-xs text-gray-400 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
+                            <span className="absolute right-3.5 top-2 text-xs text-gray-500 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
                           </div>
                         </div>
                         <div>
@@ -1292,9 +1292,9 @@ export default function AdminCities() {
                               value={editCostData?.categories?.food?.markets?.beef1kg?.avg || ''}
                               placeholder="0"
                               onChange={(e) => handleCostFieldChange(['categories', 'food', 'markets', 'beef1kg', 'avg'], e.target.value === '' ? 0 : parseFloat(e.target.value))}
-                              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900 pr-12"
+                              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900 pr-12"
                             />
-                            <span className="absolute right-3.5 top-2 text-xs text-gray-400 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
+                            <span className="absolute right-3.5 top-2 text-xs text-gray-500 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
                           </div>
                         </div>
                       </div>
@@ -1304,7 +1304,7 @@ export default function AdminCities() {
                   {/* Category: Clothing */}
                   <div className="border border-gray-150 rounded-2xl overflow-hidden shadow-sm">
                     <div className="bg-gray-50 px-5 py-3 border-b border-gray-150 flex items-center gap-2">
-                      <Shirt className="w-5 h-5 text-[#5EA3C0]" />
+                      <Shirt className="w-5 h-5 text-brand-ink" />
                       <span className="text-sm font-bold uppercase tracking-wider text-gray-700">Habillement & Vêtements</span>
                     </div>
                     <div className="p-5 space-y-4">
@@ -1320,9 +1320,9 @@ export default function AdminCities() {
                               value={editCostData?.categories?.clothing?.jeans?.avg || ''}
                               placeholder="0"
                               onChange={(e) => handleCostFieldChange(['categories', 'clothing', 'jeans', 'avg'], e.target.value === '' ? 0 : parseFloat(e.target.value))}
-                              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900 pr-12"
+                              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900 pr-12"
                             />
-                            <span className="absolute right-3.5 top-2 text-xs text-gray-400 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
+                            <span className="absolute right-3.5 top-2 text-xs text-gray-500 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
                           </div>
                         </div>
                         <div>
@@ -1336,9 +1336,9 @@ export default function AdminCities() {
                               value={editCostData?.categories?.clothing?.summerDress?.avg || ''}
                               placeholder="0"
                               onChange={(e) => handleCostFieldChange(['categories', 'clothing', 'summerDress', 'avg'], e.target.value === '' ? 0 : parseFloat(e.target.value))}
-                              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900 pr-12"
+                              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900 pr-12"
                             />
-                            <span className="absolute right-3.5 top-2 text-xs text-gray-400 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
+                            <span className="absolute right-3.5 top-2 text-xs text-gray-500 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
                           </div>
                         </div>
                         <div>
@@ -1352,9 +1352,9 @@ export default function AdminCities() {
                               value={editCostData?.categories?.clothing?.runningShoes?.avg || ''}
                               placeholder="0"
                               onChange={(e) => handleCostFieldChange(['categories', 'clothing', 'runningShoes', 'avg'], e.target.value === '' ? 0 : parseFloat(e.target.value))}
-                              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900 pr-12"
+                              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900 pr-12"
                             />
-                            <span className="absolute right-3.5 top-2 text-xs text-gray-400 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
+                            <span className="absolute right-3.5 top-2 text-xs text-gray-500 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
                           </div>
                         </div>
                       </div>
@@ -1364,7 +1364,7 @@ export default function AdminCities() {
                   {/* Category: Childcare */}
                   <div className="border border-gray-150 rounded-2xl overflow-hidden shadow-sm">
                     <div className="bg-gray-50 px-5 py-3 border-b border-gray-150 flex items-center gap-2">
-                      <Baby className="w-5 h-5 text-[#5EA3C0]" />
+                      <Baby className="w-5 h-5 text-brand-ink" />
                       <span className="text-sm font-bold uppercase tracking-wider text-gray-700">Garde d'enfants & Éducation</span>
                     </div>
                     <div className="p-5 space-y-4">
@@ -1380,9 +1380,9 @@ export default function AdminCities() {
                               value={editCostData?.categories?.childcare?.preschool?.avg || ''}
                               placeholder="0"
                               onChange={(e) => handleCostFieldChange(['categories', 'childcare', 'preschool', 'avg'], e.target.value === '' ? 0 : parseFloat(e.target.value))}
-                              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900 pr-12"
+                              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900 pr-12"
                             />
-                            <span className="absolute right-3.5 top-2 text-xs text-gray-400 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
+                            <span className="absolute right-3.5 top-2 text-xs text-gray-500 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
                           </div>
                         </div>
                         <div>
@@ -1396,9 +1396,9 @@ export default function AdminCities() {
                               value={editCostData?.categories?.childcare?.primarySchool?.avg || ''}
                               placeholder="0"
                               onChange={(e) => handleCostFieldChange(['categories', 'childcare', 'primarySchool', 'avg'], e.target.value === '' ? 0 : parseFloat(e.target.value))}
-                              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900 pr-12"
+                              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900 pr-12"
                             />
-                            <span className="absolute right-3.5 top-2 text-xs text-gray-400 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
+                            <span className="absolute right-3.5 top-2 text-xs text-gray-500 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
                           </div>
                         </div>
                       </div>
@@ -1408,7 +1408,7 @@ export default function AdminCities() {
                   {/* Category: Sports & Leisure */}
                   <div className="border border-gray-150 rounded-2xl overflow-hidden shadow-sm">
                     <div className="bg-gray-50 px-5 py-3 border-b border-gray-150 flex items-center gap-2">
-                      <Activity className="w-5 h-5 text-[#5EA3C0]" />
+                      <Activity className="w-5 h-5 text-brand-ink" />
                       <span className="text-sm font-bold uppercase tracking-wider text-gray-700">Sport, Loisirs & Culture</span>
                     </div>
                     <div className="p-5 space-y-4">
@@ -1424,9 +1424,9 @@ export default function AdminCities() {
                               value={editCostData?.categories?.sports?.gym?.avg || ''}
                               placeholder="0"
                               onChange={(e) => handleCostFieldChange(['categories', 'sports', 'gym', 'avg'], e.target.value === '' ? 0 : parseFloat(e.target.value))}
-                              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900 pr-12"
+                              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900 pr-12"
                             />
-                            <span className="absolute right-3.5 top-2 text-xs text-gray-400 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
+                            <span className="absolute right-3.5 top-2 text-xs text-gray-500 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
                           </div>
                         </div>
                         <div>
@@ -1441,9 +1441,9 @@ export default function AdminCities() {
                               value={editCostData?.categories?.sports?.cinema?.avg || ''}
                               placeholder="0"
                               onChange={(e) => handleCostFieldChange(['categories', 'sports', 'cinema', 'avg'], e.target.value === '' ? 0 : parseFloat(e.target.value))}
-                              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900 pr-12"
+                              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-brand text-sm text-gray-900 pr-12"
                             />
-                            <span className="absolute right-3.5 top-2 text-xs text-gray-400 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
+                            <span className="absolute right-3.5 top-2 text-xs text-gray-500 font-bold">{editCostData?.currency?.code ?? 'EUR'}</span>
                           </div>
                         </div>
                       </div>
@@ -1477,7 +1477,7 @@ export default function AdminCities() {
           </button>
           <button
             onClick={openCreateModal}
-            className="flex items-center gap-2 bg-[#5EA3C0] hover:bg-[#4891b0] text-white px-4 py-2 rounded-lg font-semibold text-sm transition-colors shadow-sm"
+            className="flex items-center gap-2 bg-brand-ink hover:bg-brand-ink-hover text-white px-4 py-2 rounded-lg font-semibold text-sm transition-colors shadow-sm"
           >
             <Plus className="w-4 h-4" />
             Ajouter une ville
@@ -1495,7 +1495,7 @@ export default function AdminCities() {
             placeholder="Rechercher par nom de ville..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 border border-gray-200 bg-gray-50/50 rounded-lg text-sm focus:outline-none focus:border-[#5EA3C0] focus:ring-1 focus:ring-[#5EA3C0]"
+            className="w-full pl-9 pr-4 py-2 border border-gray-200 bg-gray-50/50 rounded-lg text-sm focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand"
           />
         </div>
 
@@ -1506,7 +1506,7 @@ export default function AdminCities() {
           <select
             value={selectedCountryFilter}
             onChange={(e) => setSelectedCountryFilter(e.target.value)}
-            className="bg-gray-50 border border-gray-200 rounded-lg text-sm font-semibold text-gray-800 px-3 py-1.5 outline-none focus:border-[#5EA3C0]"
+            className="bg-gray-50 border border-gray-200 rounded-lg text-sm font-semibold text-gray-800 px-3 py-1.5 outline-none focus:border-brand"
           >
             <option value="all">Tous les pays</option>
             {countries.map((c) => (
@@ -1515,7 +1515,7 @@ export default function AdminCities() {
               </option>
             ))}
           </select>
-          <span className="text-xs text-gray-400 ml-2 font-medium">
+          <span className="text-xs text-gray-500 ml-2 font-medium">
             {visibleCities.length} résultat(s)
           </span>
         </div>
@@ -1527,7 +1527,7 @@ export default function AdminCities() {
           onClick={() => setCityListTab('active')}
           className={`px-4 py-2 rounded-xl text-sm font-semibold transition-colors ${
             cityListTab === 'active'
-              ? 'bg-[#5EA3C0] text-white shadow-sm'
+              ? 'bg-brand-ink text-white shadow-sm'
               : 'text-gray-600 hover:bg-gray-50'
           }`}
         >
@@ -1549,7 +1549,7 @@ export default function AdminCities() {
       {/* Cities Table */}
       {citiesLoading || countriesLoading ? (
         <div className="flex items-center justify-center min-h-[40vh]">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#5EA3C0]"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand"></div>
         </div>
       ) : (
         <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
@@ -1570,7 +1570,7 @@ export default function AdminCities() {
               <tbody className="divide-y divide-gray-100 text-sm text-gray-650">
                 {visibleCities.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="py-8 px-6 text-center text-gray-400 italic">
+                    <td colSpan={8} className="py-8 px-6 text-center text-gray-500 italic">
                       {cityListTab === 'trash'
                         ? 'La corbeille est vide.'
                         : 'Aucune ville ne correspond aux critères.'}
@@ -1579,7 +1579,7 @@ export default function AdminCities() {
                 ) : (
                   visibleCities.map((city) => (
                     <tr key={city.idCity} className="hover:bg-gray-50/45 transition-colors">
-                      <td className="py-4 px-6 text-center font-semibold text-gray-400">
+                      <td className="py-4 px-6 text-center font-semibold text-gray-500">
                         {city.idCity}
                       </td>
                       <td className="py-4 px-6 font-semibold text-gray-900">
@@ -1595,7 +1595,7 @@ export default function AdminCities() {
                         </div>
                       </td>
                       <td className="py-4 px-6 text-gray-650 font-medium">
-                        {city.country?.countryName ? t(getCountryTranslationKey(city.country.countryName), { defaultValue: city.country.countryName }) : <span className="text-gray-400 italic">Inconnu</span>}
+                        {city.country?.countryName ? t(getCountryTranslationKey(city.country.countryName), { defaultValue: city.country.countryName }) : <span className="text-gray-500 italic">Inconnu</span>}
                       </td>
                       <td className="py-4 px-6 text-gray-800 font-medium">
                         {city.population ? city.population.toLocaleString('fr-FR') : <span className="text-gray-300 italic text-xs">Non renseignée</span>}
@@ -1613,7 +1613,7 @@ export default function AdminCities() {
                             Oui
                           </span>
                         ) : (
-                          <span className="text-gray-400 text-xs">Non</span>
+                          <span className="text-gray-500 text-xs">Non</span>
                         )}
                       </td>
                       <td className="py-4 px-6">
@@ -1639,7 +1639,7 @@ export default function AdminCities() {
                           </span>
                         )}
                         {(city.createdBy || city.assignedTo) && (
-                          <p className="text-[10px] text-gray-400 mt-1">
+                          <p className="text-[10px] text-gray-500 mt-1">
                             {city.createdBy && `Ajouté par ${city.createdBy.firstName ?? '?'}`}
                             {city.assignedTo && ` · assignée à ${city.assignedTo.firstName ?? '?'}`}
                             {city.reviewedBy && ` · vérifiée par ${city.reviewedBy.firstName ?? '?'}`}
@@ -1651,7 +1651,7 @@ export default function AdminCities() {
                           <button
                             onClick={() => setViewingCity(city)}
                             disabled={isPending}
-                            className="p-1.5 hover:bg-gray-100 text-gray-650 hover:text-[#5EA3C0] rounded-lg transition-colors"
+                            className="p-1.5 hover:bg-gray-100 text-gray-650 hover:text-brand-ink rounded-lg transition-colors"
                             title="Voir la fiche"
                           >
                             <Eye className="w-4 h-4" />
@@ -1683,7 +1683,7 @@ export default function AdminCities() {
                           <button
                             onClick={() => openEditModal(city)}
                             disabled={isPending}
-                            className="p-1.5 hover:bg-gray-100 text-gray-650 hover:text-[#5EA3C0] rounded-lg transition-colors"
+                            className="p-1.5 hover:bg-gray-100 text-gray-650 hover:text-brand-ink rounded-lg transition-colors"
                             title="Modifier"
                           >
                             <Edit2 className="w-4 h-4" />
@@ -1822,7 +1822,7 @@ export default function AdminCities() {
                     required
                     value={countryId}
                     onChange={(e) => setCountryId(Number(e.target.value))}
-                    className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900 bg-white"
+                    className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-brand text-sm text-gray-900 bg-white"
                   >
                     <option value="" disabled>-- Sélectionner un pays --</option>
                     {countries.map((c) => (
@@ -1841,7 +1841,7 @@ export default function AdminCities() {
                     <select
                       value={assignedToId}
                       onChange={(e) => setAssignedToId(e.target.value ? Number(e.target.value) : '')}
-                      className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900 bg-white"
+                      className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-brand text-sm text-gray-900 bg-white"
                     >
                       <option value="">— Aucun (tous les admins notifiés) —</option>
                       {admins.map((a: { idUser: number; firstName?: string; lastName?: string; email?: string }) => (
@@ -1850,7 +1850,7 @@ export default function AdminCities() {
                         </option>
                       ))}
                     </select>
-                    <p className="text-[11px] text-gray-400 mt-1">
+                    <p className="text-[11px] text-gray-500 mt-1">
                       L'assigné vérifie puis marque « vérification faite » — vous validez ensuite la publication.
                     </p>
                   </div>
@@ -1865,7 +1865,7 @@ export default function AdminCities() {
                     value={timezone}
                     onChange={(e) => setTimezone(e.target.value)}
                     placeholder="ex. America/Toronto, Asia/Tokyo..."
-                    className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900"
+                    className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-brand text-sm text-gray-900"
                   />
                 </div>
 
@@ -1879,7 +1879,7 @@ export default function AdminCities() {
                     value={latitude}
                     onChange={(e) => setLatitude(e.target.value)}
                     placeholder="ex. 45.5017"
-                    className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900"
+                    className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-brand text-sm text-gray-900"
                   />
                 </div>
 
@@ -1893,7 +1893,7 @@ export default function AdminCities() {
                     value={longitude}
                     onChange={(e) => setLongitude(e.target.value)}
                     placeholder="ex. -73.5673"
-                    className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900"
+                    className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-brand text-sm text-gray-900"
                   />
                 </div>
 
@@ -1907,7 +1907,7 @@ export default function AdminCities() {
                     value={population}
                     onChange={(e) => setPopulation(e.target.value)}
                     placeholder="ex. 1780000"
-                    className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900"
+                    className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-brand text-sm text-gray-900"
                   />
                 </div>
 
@@ -1917,7 +1917,7 @@ export default function AdminCities() {
                       type="checkbox"
                       checked={isCapital}
                       onChange={(e) => setIsCapital(e.target.checked)}
-                      className="rounded text-[#5EA3C0] focus:ring-[#5EA3C0] w-4 h-4 border-gray-300"
+                      className="rounded text-brand-ink focus:ring-brand w-4 h-4 border-gray-300"
                     />
                     <span className="text-xs font-bold uppercase tracking-wider text-gray-500">Est la capitale ?</span>
                   </label>
@@ -1932,7 +1932,7 @@ export default function AdminCities() {
                     value={imageUrl}
                     onChange={(e) => setImageUrl(e.target.value)}
                     placeholder="ex. https://images.unsplash.com/photo-..."
-                    className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#5EA3C0] text-sm text-gray-900"
+                    className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-brand text-sm text-gray-900"
                   />
                 </div>
               </div>
@@ -1948,7 +1948,7 @@ export default function AdminCities() {
                 <button
                   type="submit"
                   disabled={isPending}
-                  className="px-4 py-2 bg-[#5EA3C0] hover:bg-[#4891b0] text-white rounded-lg text-sm font-semibold transition-colors shadow-sm disabled:opacity-50"
+                  className="px-4 py-2 bg-brand-ink hover:bg-brand-ink-hover text-white rounded-lg text-sm font-semibold transition-colors shadow-sm disabled:opacity-50"
                 >
                   {isPending ? 'Enregistrement...' : 'Enregistrer'}
                 </button>
@@ -1996,9 +1996,9 @@ export default function AdminCities() {
                   value={colSlug}
                   onChange={(e) => setColSlug(e.target.value)}
                   placeholder="ex. Paris, New-York, Ajaccio-France"
-                  className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#5EA3C0] focus:ring-1 focus:ring-[#5EA3C0] text-sm text-gray-900 font-mono"
+                  className="w-full px-3.5 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand text-sm text-gray-900 font-mono"
                 />
-                <p className="text-xs text-gray-400 mt-1.5 leading-relaxed">
+                <p className="text-xs text-gray-500 mt-1.5 leading-relaxed">
                   Pour les villes secondaires, Numbeo ajoute le pays au slug (ex.{' '}
                   <span className="font-mono text-gray-600">Ajaccio-France</span>). Vérifie la page avant :
                 </p>
@@ -2006,7 +2006,7 @@ export default function AdminCities() {
                   href={`https://www.numbeo.com/cost-of-living/in/${encodeURIComponent(colSlug.trim())}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs font-mono text-[#5EA3C0] hover:underline break-all"
+                  className="text-xs font-mono text-brand-ink hover:underline break-all"
                 >
                   numbeo.com/cost-of-living/in/{colSlug.trim() || '…'}
                 </a>

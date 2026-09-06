@@ -45,8 +45,8 @@ function PriceRowRange({ label, avg, min, max, currency, locale = 'fr' }: { labe
       </div>
       {min != null && max != null && min !== 0 && max !== 0 && (
         <div className="flex justify-end gap-3 mt-0.5">
-          <span className="text-xs text-gray-400">min {fmtPrice(min, locale, 2)}</span>
-          <span className="text-xs text-gray-400">max {fmtPrice(max, locale, 2)}</span>
+          <span className="text-xs text-gray-500">min {fmtPrice(min, locale, 2)}</span>
+          <span className="text-xs text-gray-500">max {fmtPrice(max, locale, 2)}</span>
         </div>
       )}
     </div>
@@ -97,10 +97,10 @@ function renderCategory(categoryId: string, col: CostOfLivingData, cur: string, 
           </div>
           <div className="mt-3 p-3 bg-green-50 rounded-lg">
             <p className="text-xs text-gray-500">{t('costOfLivingTab.salary.monthlyBudget')}</p>
-            <p className="text-lg font-bold text-green-700">{fmtPrice(col.summary?.monthlyBudget?.avg, locale)} {cur}<span className="text-xs font-normal text-gray-400"> {t('costOfLivingTab.salary.perMonth')}</span></p>
+            <p className="text-lg font-bold text-green-700">{fmtPrice(col.summary?.monthlyBudget?.avg, locale)} {cur}<span className="text-xs font-normal text-gray-500"> {t('costOfLivingTab.salary.perMonth')}</span></p>
             <div className="flex gap-4 mt-1">
-              <span className="text-xs text-gray-400">{t('costOfLivingTab.salary.min')} {fmtPrice(col.summary?.monthlyBudget?.min, locale)} {cur}</span>
-              <span className="text-xs text-gray-400">{t('costOfLivingTab.salary.max')} {fmtPrice(col.summary?.monthlyBudget?.max, locale)} {cur}</span>
+              <span className="text-xs text-gray-500">{t('costOfLivingTab.salary.min')} {fmtPrice(col.summary?.monthlyBudget?.min, locale)} {cur}</span>
+              <span className="text-xs text-gray-500">{t('costOfLivingTab.salary.max')} {fmtPrice(col.summary?.monthlyBudget?.max, locale)} {cur}</span>
             </div>
           </div>
         </div>
@@ -109,12 +109,12 @@ function renderCategory(categoryId: string, col: CostOfLivingData, cur: string, 
     case 'housing':
       return (
         <div className="space-y-1">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">{t('costOfLivingTab.housing.rental')}</p>
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">{t('costOfLivingTab.housing.rental')}</p>
           <PriceRowRange label={t('costOfLivingTab.housing.oneBedCityCenter')} avg={cats.housing?.rent?.oneBedroom?.cityCenter?.avg} min={cats.housing?.rent?.oneBedroom?.cityCenter?.min} max={cats.housing?.rent?.oneBedroom?.cityCenter?.max} currency={cur} locale={locale} />
           <PriceRowRange label={t('costOfLivingTab.housing.oneBedOutside')} avg={cats.housing?.rent?.oneBedroom?.outsideCenter?.avg} min={cats.housing?.rent?.oneBedroom?.outsideCenter?.min} max={cats.housing?.rent?.oneBedroom?.outsideCenter?.max} currency={cur} locale={locale} />
           <PriceRowRange label={t('costOfLivingTab.housing.threeBedCityCenter')} avg={cats.housing?.rent?.threeBedroom?.cityCenter?.avg} min={cats.housing?.rent?.threeBedroom?.cityCenter?.min} max={cats.housing?.rent?.threeBedroom?.cityCenter?.max} currency={cur} locale={locale} />
           <PriceRowRange label={t('costOfLivingTab.housing.threeBedOutside')} avg={cats.housing?.rent?.threeBedroom?.outsideCenter?.avg} min={cats.housing?.rent?.threeBedroom?.outsideCenter?.min} max={cats.housing?.rent?.threeBedroom?.outsideCenter?.max} currency={cur} locale={locale} />
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 mt-4">{t('costOfLivingTab.housing.buy')}</p>
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 mt-4">{t('costOfLivingTab.housing.buy')}</p>
           <PriceRowRange label={t('costOfLivingTab.housing.cityCenter')} avg={cats.housing?.buy?.pricePerSqm?.cityCenter?.avg} min={cats.housing?.buy?.pricePerSqm?.cityCenter?.min} max={cats.housing?.buy?.pricePerSqm?.cityCenter?.max} currency={cur} locale={locale} />
           <PriceRowRange label={t('costOfLivingTab.housing.outsideCenter')} avg={cats.housing?.buy?.pricePerSqm?.outsideCenter?.avg} min={cats.housing?.buy?.pricePerSqm?.outsideCenter?.min} max={cats.housing?.buy?.pricePerSqm?.outsideCenter?.max} currency={cur} locale={locale} />
         </div>
@@ -135,7 +135,7 @@ function renderCategory(categoryId: string, col: CostOfLivingData, cur: string, 
 
     case 'food': {
       const markets = cats.food?.markets;
-      if (!markets) return <p className="text-gray-400 text-sm">{t('costOfLivingTab.foodNoData')}</p>;
+      if (!markets) return <p className="text-gray-500 text-sm">{t('costOfLivingTab.foodNoData')}</p>;
       return (
         <div className="space-y-1">
           {MARKET_KEYS.map((key) => {
@@ -150,14 +150,14 @@ function renderCategory(categoryId: string, col: CostOfLivingData, cur: string, 
     case 'transportation':
       return (
         <div className="space-y-1">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">{t('costOfLivingTab.transportation.publicTransport')}</p>
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">{t('costOfLivingTab.transportation.publicTransport')}</p>
           <PriceRowRange label={t('costOfLivingTab.transportation.monthlyPass')} avg={cats.transportation?.publicTransport?.monthlyPass?.avg} min={cats.transportation?.publicTransport?.monthlyPass?.min} max={cats.transportation?.publicTransport?.monthlyPass?.max} currency={cur} locale={locale} />
           <PriceRowRange label={t('costOfLivingTab.transportation.oneWayTicket')} avg={cats.transportation?.publicTransport?.oneWayTicket?.avg} min={cats.transportation?.publicTransport?.oneWayTicket?.min} max={cats.transportation?.publicTransport?.oneWayTicket?.max} currency={cur} locale={locale} />
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 mt-4">{t('costOfLivingTab.transportation.taxi')}</p>
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 mt-4">{t('costOfLivingTab.transportation.taxi')}</p>
           <PriceRowRange label={t('costOfLivingTab.transportation.taxiStart')} avg={cats.transportation?.taxi?.start?.avg} min={cats.transportation?.taxi?.start?.min} max={cats.transportation?.taxi?.start?.max} currency={cur} locale={locale} />
           <PriceRowRange label={t('costOfLivingTab.transportation.perKm')} avg={cats.transportation?.taxi?.per1km?.avg} min={cats.transportation?.taxi?.per1km?.min} max={cats.transportation?.taxi?.per1km?.max} currency={cur} locale={locale} />
           <PriceRowRange label={t('costOfLivingTab.transportation.waitingHour')} avg={cats.transportation?.taxi?.waitingHour?.avg} min={cats.transportation?.taxi?.waitingHour?.min} max={cats.transportation?.taxi?.waitingHour?.max} currency={cur} locale={locale} />
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 mt-4">{t('costOfLivingTab.transportation.personal')}</p>
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 mt-4">{t('costOfLivingTab.transportation.personal')}</p>
           <PriceRowRange label={t('costOfLivingTab.transportation.gasoline')} avg={cats.transportation?.personal?.gasoline1L?.avg} min={cats.transportation?.personal?.gasoline1L?.min} max={cats.transportation?.personal?.gasoline1L?.max} currency={cur} locale={locale} />
           <PriceRowRange label={t('costOfLivingTab.transportation.newCar')} avg={cats.transportation?.personal?.newCar?.avg} min={cats.transportation?.personal?.newCar?.min} max={cats.transportation?.personal?.newCar?.max} currency={cur} locale={locale} />
         </div>
@@ -239,9 +239,9 @@ export default function CostOfLivingTab({ cities, countryCurrency, averageHousin
   return (
     <div className="space-y-6">
       {averageHousing && (
-        <div className="bg-gradient-to-r from-[#5EA3C0]/10 to-[#5EA3C0]/5 rounded-xl p-5 border border-[#5EA3C0]/20">
+        <div className="bg-gradient-to-r from-brand/10 to-brand/5 rounded-xl p-5 border border-brand/20">
           <div className="flex items-center gap-3 mb-1">
-            <DollarSign className="w-5 h-5 text-[#5EA3C0]" />
+            <DollarSign className="w-5 h-5 text-brand-ink" />
             <h3 className="font-bold text-gray-900">{t('costOfLivingTab.nationalSummary')}</h3>
           </div>
           <p className="text-gray-600 text-sm">

@@ -39,7 +39,7 @@ export default function NewsletterCTA() {
                 <h2 className="text-3xl sm:text-5xl font-semibold tracking-tight font-outfit text-[#1d1d1f] mb-4">
                     {t('landing.newsletter.title')}
                 </h2>
-                <p className="text-[#86868b] text-lg sm:text-xl mb-12 max-w-2xl mx-auto font-medium">
+                <p className="text-ink-muted text-lg sm:text-xl mb-12 max-w-2xl mx-auto font-medium">
                     {t('landing.newsletter.description')}
                 </p>
 
@@ -48,7 +48,7 @@ export default function NewsletterCTA() {
                         <CheckCircle2 className="w-12 h-12 text-[#1d1d1f]" strokeWidth={1.5} />
                         <div className="space-y-1">
                             <p className="text-[#1d1d1f] font-semibold text-lg">{t('landing.newsletter.successTitle')}</p>
-                            <p className="text-[#86868b]">{t('landing.newsletter.successDescription')}</p>
+                            <p className="text-ink-muted">{t('landing.newsletter.successDescription')}</p>
                         </div>
                     </div>
                 ) : (

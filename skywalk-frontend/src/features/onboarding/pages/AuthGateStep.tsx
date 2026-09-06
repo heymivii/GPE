@@ -24,8 +24,8 @@ export default function AuthGateStep({ age, onBack }: AuthGateStepProps) {
   return (
     <div className="max-w-2xl mx-auto text-center py-8">
       <div className="mb-8 flex justify-center">
-        <div className="w-20 h-20 bg-[#5EA3C0]/10 rounded-full flex items-center justify-center">
-          <Lock className="w-10 h-10 text-[#5EA3C0]" />
+        <div className="w-20 h-20 bg-brand-ink/10 rounded-full flex items-center justify-center">
+          <Lock className="w-10 h-10 text-brand-ink" />
         </div>
       </div>
 
@@ -42,7 +42,7 @@ export default function AuthGateStep({ age, onBack }: AuthGateStepProps) {
         <div className="grid gap-4">
           {benefits.map((benefit, index) => (
             <div key={index} className="flex items-start gap-3">
-              <CheckCircle className="w-5 h-5 text-[#5EA3C0] flex-shrink-0 mt-0.5" />
+              <CheckCircle className="w-5 h-5 text-brand-ink flex-shrink-0 mt-0.5" />
               <span className="text-gray-700">{benefit}</span>
             </div>
           ))}

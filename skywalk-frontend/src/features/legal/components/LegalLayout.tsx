@@ -32,7 +32,7 @@ export default function LegalLayout({
           <h1 className="font-outfit text-3xl font-bold text-gray-900">{title}</h1>
           {intro && <p className="mt-2 leading-relaxed text-gray-500">{intro}</p>}
           {updatedAt && (
-            <p className="mt-3 text-xs text-gray-400">Dernière mise à jour : {updatedAt}</p>
+            <p className="mt-3 text-xs text-gray-500">Dernière mise à jour : {updatedAt}</p>
           )}
         </div>
       </div>

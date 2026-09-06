@@ -84,7 +84,7 @@ function StepLinks({ category, countryCode }: { category: string; countryCode?: 
           target="_blank"
           rel="noopener noreferrer"
           onClick={(e) => e.stopPropagation()}
-          className="text-[10px] text-gray-400 hover:text-gray-600 flex items-center gap-0.5"
+          className="text-[10px] text-gray-500 hover:text-gray-600 flex items-center gap-0.5"
         >
           {link.label} <ExternalLink className="w-2.5 h-2.5" />
         </a>
@@ -140,6 +140,8 @@ function ChecklistItemCard({
       >
         <button
           className="mt-0.5 flex-shrink-0"
+          aria-pressed={item.completed}
+          aria-label={`${item.completed ? 'Marquer comme à faire' : 'Marquer comme terminée'} : ${item.title}`}
           onClick={(e) => { e.stopPropagation(); onToggleItem(item.id); }}
         >
           {item.completed ? (
@@ -151,7 +153,7 @@ function ChecklistItemCard({
 
         <div className="flex-1 min-w-0">
           <p className={`text-sm font-medium ${
-            item.completed ? 'text-gray-400 line-through' : 'text-gray-900'
+            item.completed ? 'text-gray-500 line-through' : 'text-gray-900'
           }`}>
             {item.title}
           </p>
@@ -161,7 +163,7 @@ function ChecklistItemCard({
               {t(CATEGORY_LABELS[item.category] || item.category)}
             </span>
             {substepsTotal > 0 && (
-              <span className="text-[11px] text-gray-400">
+              <span className="text-[11px] text-gray-500">
                 {substepsDone}/{substepsTotal}
               </span>
             )}
@@ -219,11 +221,11 @@ function ChecklistItemCard({
               </span>
               <div className="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-x-3 gap-y-1">
                 <span className={`text-xs leading-relaxed ${
-                  substep.completed ? 'text-gray-400 line-through' : 'text-gray-600'
+                  substep.completed ? 'text-gray-500 line-through' : 'text-gray-600'
                 }`}>
                   {substep.label}
                   {substep.isOptional && (
-                    <span className="ml-1 text-gray-400 italic">
+                    <span className="ml-1 text-gray-500 italic">
                       ({t('dashboard.personalized.widgets.checklist.optional')})
                     </span>
                   )}
@@ -532,7 +534,7 @@ export default function ChecklistWidget({
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div
-                  className="bg-[#5EA3C0] h-2 rounded-full transition-all duration-500"
+                  className="bg-brand-ink h-2 rounded-full transition-all duration-500"
                   style={{ width: `${pct(phase.arrivalDone, phase.arrivalTotal)}%` }}
                 />
               </div>
@@ -587,7 +589,7 @@ export default function ChecklistWidget({
           {/* Avant le départ */}
           {remainingBefore.length > 0 && (
             <div className="space-y-1.5">
-              <p className="inline-flex items-center gap-1 text-[10px] font-semibold text-gray-400 uppercase tracking-wide">
+              <p className="inline-flex items-center gap-1 text-[10px] font-semibold text-gray-500 uppercase tracking-wide">
                 <Plane className="w-3 h-3" /> {t(`${CK}.beforeDeparture`)}
               </p>
               {remainingBefore.map((item) => (
@@ -609,7 +611,7 @@ export default function ChecklistWidget({
           {/* À l'arrivée */}
           {remainingArrival.length > 0 && (
             <div className="space-y-1.5">
-              <p className="inline-flex items-center gap-1 text-[10px] font-semibold text-gray-400 uppercase tracking-wide">
+              <p className="inline-flex items-center gap-1 text-[10px] font-semibold text-gray-500 uppercase tracking-wide">
                 <Home className="w-3 h-3" /> {t(`${CK}.onArrival`)}
               </p>
               {remainingArrival.map((item) => (
@@ -634,7 +636,7 @@ export default function ChecklistWidget({
         {isLocked && project?.idProject && (
           <Link
             to={`/projects/${project.idProject}/checklist`}
-            className="flex flex-col items-center gap-0.5 w-full py-4 rounded-xl border-2 border-dashed border-[#5EA3C0]/40 bg-[#5EA3C0]/5 text-center hover:bg-[#5EA3C0]/10 transition-colors"
+            className="flex flex-col items-center gap-0.5 w-full py-4 rounded-xl border-2 border-dashed border-brand/40 bg-brand-ink/5 text-center hover:bg-brand-ink/10 transition-colors"
           >
             <span className="text-2xl">🔒</span>
             <span className="text-sm font-semibold text-gray-800">Débloquez votre plan complet</span>

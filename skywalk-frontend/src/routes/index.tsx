@@ -7,7 +7,6 @@ import MainLayout from '../layouts/MainLayout';
 import PasswordForgotPage from '../features/auth/pages/PasswordForgotPage';
 import ResetPasswordPage from '../features/auth/pages/ResetPasswordPage';
 import VerifyEmailPage from '../features/auth/pages/VerifyEmailPage';
-import FormPage from '../features/forms/pages/FormPage';
 import DashboardPage from '../features/dashboard/pages/dashboard';
 import PersonalizedDashboard from '../features/dashboard/pages/PersonalizedDashboard';
 import OnboardingFlow from '../features/onboarding/pages/OnboardingFlow';
@@ -54,6 +53,7 @@ import AdminModeration from '../features/admin/pages/AdminModeration';
 import AdminExperts from '../features/admin/pages/AdminExperts';
 import ExpertsPage from '../features/experts/pages/ExpertsPage';
 import ExpertApplicationPage from '../features/experts/pages/ExpertApplicationPage';
+import NotFoundPage from '../features/errors/pages/NotFoundPage';
 
 export const router = createBrowserRouter([
   {
@@ -132,13 +132,6 @@ export const router = createBrowserRouter([
     element: <ProtectedRoute />,
     children: [
       {
-        path: '/forms',
-        element: <MainLayout />,
-        children: [
-          { index: true, element: <FormPage /> },
-        ],
-      },
-      {
         path: '/experts/apply',
         element: <MainLayout />,
         children: [
@@ -216,5 +209,19 @@ export const router = createBrowserRouter([
         ],
       },
     ],
+  },
+
+  /*
+   * Filet de sécurité : sans cette entrée, toute URL inconnue tombait sur
+   * l'écran de secours de React Router, rédigé pour le développeur.
+   */
+  {
+    path: '*',
+    element: <MainLayout />,
+    // Route enfant en `path: '*'` et non `index` : sous une route splat, le
+    // segment restant n'est jamais vide, donc l'index ne s'apparie pas — le
+    // gabarit s'affichait sans son contenu.
+    children: [{ path: '*', element: <NotFoundPage /> }],
+    errorElement: <NotFoundPage />,
   },
 ]);

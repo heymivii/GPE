@@ -91,17 +91,17 @@ export default function Dropdown() {
       <div className="relative w-full">
         <div
           className={`flex items-center space-x-4 p-4 border rounded-xl cursor-pointer transition-all duration-200 ${isHighlighted
-            ? 'border-[#5EA3C0]/30 bg-[#5EA3C0]/5'
+            ? 'border-brand/30 bg-brand-ink/5'
             : 'border-gray-200 hover:border-gray-300'
-            } ${activeField === field ? 'ring-2 ring-[#5EA3C0] ring-opacity-50' : ''}`}
+            } ${activeField === field ? 'ring-2 ring-brand ring-opacity-50' : ''}`}
           onClick={() => handleFieldClick(field)}
         >
           <div className="flex-shrink-0">
-            <Icon className={`w-6 h-6 ${isHighlighted ? 'text-[#5EA3C0]' : 'text-gray-700'}`} />
+            <Icon className={`w-6 h-6 ${isHighlighted ? 'text-brand-ink' : 'text-gray-700'}`} />
           </div>
           <div className="flex-1">
             <div className="text-sm text-gray-500">{label}</div>
-            <div className={`text-base font-medium ${isEmpty ? 'text-gray-400' : isHighlighted ? 'text-[#5EA3C0]' : 'text-gray-900'}`}>
+            <div className={`text-base font-medium ${isEmpty ? 'text-gray-400' : isHighlighted ? 'text-brand-ink' : 'text-gray-900'}`}>
               {isEmpty ? t('common.select') : displayValue}
             </div>
           </div>
@@ -131,7 +131,7 @@ export default function Dropdown() {
                   >
                     {option.label}
                     {option.disabled && (
-                      <span className="ml-2 text-xs text-gray-400 italic">
+                      <span className="ml-2 text-xs text-gray-500 italic">
                         {t('common.comingSoon')}
                       </span>
                     )}

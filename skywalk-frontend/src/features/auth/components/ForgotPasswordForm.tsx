@@ -46,7 +46,7 @@ export default function ForgotPasswordForm() {
             {t("auth.forgotPassword.notReceived")}{" "}
             <button 
               onClick={() => setIsSuccess(false)} 
-              className="text-[#5EA3C0] hover:underline"
+              className="text-brand-ink hover:underline"
             >
               {t("auth.forgotPassword.retry")}
             </button>
@@ -96,7 +96,7 @@ export default function ForgotPasswordForm() {
       </button>
 
       <div className="text-center">
-        <Link to="/auth/login" className="text-sm text-[#5EA3C0] hover:underline">
+        <Link to="/auth/login" className="text-sm text-brand-ink hover:underline">
           {t("auth.forgotPassword.backToLogin")}
         </Link>
       </div>

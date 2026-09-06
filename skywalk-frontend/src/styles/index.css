@@ -1,5 +1,31 @@
 @import "tailwindcss";
 
+/*
+ * Palette de marque SkyWalk.
+ *
+ * Le bleu historique #5EA3C0 n'offre que 2,81:1 sur blanc — sous le seuil AA
+ * (4,5:1). Le ratio étant symétrique, il échouait dans les deux sens : en
+ * texte sur fond blanc ET en aplat de bouton sous du texte blanc. On ne peut
+ * donc pas s'en tirer en inversant fond et texte : la couleur elle-même doit
+ * changer là où elle porte du texte.
+ *
+ *   --color-brand           identité visuelle : bordures, anneaux, dégradés,
+ *                           aplats décoratifs — rien qui porte du texte ;
+ *   --color-brand-ink       texte et boutons pleins (4,64:1 sur blanc) ;
+ *   --color-brand-ink-hover survol (6,06:1).
+ *
+ * Ces jetons remplacent aussi les neuf bleus de survol quasi identiques
+ * (#4891b0, #4A8299, #4d8a9d, #4d8ca7, #4a8ca0, #4a8aa3, #4A8BA0, #3d758a,
+ * #3A6A7C) qui coexistaient pour le même rôle d'un écran à l'autre.
+ */
+@theme {
+  --color-brand: #5EA3C0;
+  --color-brand-ink: #3F7C94;
+  --color-brand-ink-hover: #33697F;
+  --color-brand-deep: #4891b0;
+  --color-ink-muted: #6E6E73;
+}
+
 
 :root {
     --font-outfit: "Outfit", sans-serif;

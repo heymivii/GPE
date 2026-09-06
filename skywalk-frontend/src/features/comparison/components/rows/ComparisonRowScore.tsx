@@ -55,7 +55,7 @@ export function ComparisonRowScore({
                                 {value ? (
                                     <ScoreBadge score={value} />
                                 ) : (
-                                    <span className="text-gray-400 text-sm">{t('comparison.fields.notSpecified')}</span>
+                                    <span className="text-gray-500 text-sm">{t('comparison.fields.notSpecified')}</span>
                                 )}
                             </div>
                         </div>

@@ -21,7 +21,7 @@ export default function AuthPromptCard({
   return (
     <div className="bg-gradient-to-br from-blue-50 to-white border-2 border-blue-200 rounded-2xl p-6 shadow-sm">
       <div className="flex items-start gap-4 mb-4">
-        <div className="p-3 bg-[#5EA3C0] rounded-xl">
+        <div className="p-3 bg-brand-ink rounded-xl">
           <Icon className="w-6 h-6 text-white" />
         </div>
         <div className="flex-1">
@@ -43,7 +43,7 @@ export default function AuthPromptCard({
 
       <Link
         to={ctaLink}
-        className="block w-full text-center px-6 py-3 bg-[#5EA3C0] text-white font-semibold rounded-full hover:bg-[#4d8a9d] transition-colors"
+        className="block w-full text-center px-6 py-3 bg-brand-ink text-white font-semibold rounded-full hover:bg-brand-ink-hover transition-colors"
       >
         {ctaText}
       </Link>

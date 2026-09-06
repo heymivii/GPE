@@ -52,7 +52,7 @@ function typeVisual(notifType: string) {
     case 'alert':
       return { Icon: AlertTriangle, cls: 'bg-amber-50 text-amber-600' };
     default:
-      return { Icon: Info, cls: 'bg-[#5EA3C0]/10 text-[#5EA3C0]' };
+      return { Icon: Info, cls: 'bg-brand-ink/10 text-brand-ink' };
   }
 }
 
@@ -164,7 +164,7 @@ export default function NotificationBell() {
                 type="button"
                 onClick={() => markAllMutation.mutate()}
                 disabled={markAllMutation.isPending}
-                className="inline-flex items-center gap-1 text-xs font-medium text-[#5EA3C0] hover:text-[#4891b0] disabled:opacity-50 transition-colors"
+                className="inline-flex items-center gap-1 text-xs font-medium text-brand-ink hover:text-brand-ink-hover disabled:opacity-50 transition-colors"
               >
                 <CheckCheck className="w-3.5 h-3.5" />
                 {t('notifications.markAllRead', { defaultValue: 'Mark all read' })}
@@ -174,12 +174,12 @@ export default function NotificationBell() {
 
           <div className="max-h-96 overflow-y-auto divide-y divide-gray-50">
             {pendingRequests.map((req) => (
-              <div key={`buddy-req-${req.id}`} className="px-4 py-3 bg-[#5EA3C0]/5">
+              <div key={`buddy-req-${req.id}`} className="px-4 py-3 bg-brand-ink/5">
                 <p className="text-xs text-gray-700">
                   <span className="font-semibold">{req.sender.firstName}</span> souhaite vous
                   contacter à propos de « {req.procedure.procedureType} »
                 </p>
-                <p className="text-[10px] text-gray-400 mt-0.5">{daysAgo(req.createdAt)}</p>
+                <p className="text-[10px] text-gray-500 mt-0.5">{daysAgo(req.createdAt)}</p>
                 <div className="flex gap-2 mt-2">
                   <button
                     type="button"
@@ -202,7 +202,7 @@ export default function NotificationBell() {
             ))}
 
             {regularNotifications.length === 0 && pendingRequests.length === 0 ? (
-              <p className="px-4 py-10 text-center text-sm text-gray-400">
+              <p className="px-4 py-10 text-center text-sm text-gray-500">
                 {t('notifications.empty', { defaultValue: 'No notifications.' })}
               </p>
             ) : (
@@ -214,7 +214,7 @@ export default function NotificationBell() {
                     key={n.idNotification}
                     onClick={() => handleClick(n)}
                     className={`px-4 py-3 flex items-start gap-2.5 transition-colors ${
-                      n.isRead ? 'opacity-60' : 'bg-[#5EA3C0]/5'
+                      n.isRead ? 'opacity-60' : 'bg-brand-ink/5'
                     } ${clickable ? 'cursor-pointer hover:bg-gray-50' : ''}`}
                   >
                     <span className={`mt-0.5 p-1.5 rounded-lg flex-shrink-0 ${cls}`}>
@@ -222,7 +222,7 @@ export default function NotificationBell() {
                     </span>
                     <div className="flex-1 min-w-0">
                       <p className="text-xs text-gray-800 leading-snug">{n.message}</p>
-                      <p className="text-[10px] text-gray-400 mt-1">{formatDate(n.sentAt)}</p>
+                      <p className="text-[10px] text-gray-500 mt-1">{formatDate(n.sentAt)}</p>
                     </div>
                     {clickable && (
                       <ChevronRight className="w-4 h-4 text-gray-300 flex-shrink-0 mt-1" />
@@ -234,7 +234,7 @@ export default function NotificationBell() {
                           e.stopPropagation();
                           markReadMutation.mutate(n.idNotification);
                         }}
-                        className="p-1 rounded hover:bg-gray-100 text-gray-400 hover:text-green-600 transition-colors flex-shrink-0"
+                        className="p-1 rounded hover:bg-gray-100 text-gray-500 hover:text-green-600 transition-colors flex-shrink-0"
                         title={t('notifications.markRead', { defaultValue: 'Mark as read' })}
                       >
                         <Check className="w-3.5 h-3.5" />

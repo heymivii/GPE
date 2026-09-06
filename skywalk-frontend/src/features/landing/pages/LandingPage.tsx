@@ -63,7 +63,7 @@ export default function LandingPage() {
 
           <div className="flex-1 w-full lg:w-1/2">
             <div className="flex flex-col gap-4 sm:gap-5">
-              <p className="font-outfit font-bold text-3xl sm:text-4xl md:text-6xl lg:text-7xl">{t('landing.hero.title')}</p>
+              <h1 className="font-outfit font-bold text-3xl sm:text-4xl md:text-6xl lg:text-7xl">{t('landing.hero.title')}</h1>
               <p className="font-light text-base sm:text-lg">{t('landing.hero.subtitle')}
                 <br /> {t('landing.hero.subtitle2')}
               </p>
@@ -71,7 +71,7 @@ export default function LandingPage() {
               <div className="mt-5 sm:mt-7">
                 <Link
                   to={isAuthenticated ? "/onboarding" : "/auth/register?redirect=/onboarding"}
-                  className="inline-flex items-center text-white bg-[#5EA3C0] border-none rounded-full pl-6 sm:pl-12 pr-14 sm:pr-20 py-4 sm:py-5 text-sm sm:text-base relative hover:bg-[#4d8a9d] transition-colors"
+                  className="inline-flex items-center text-white bg-brand-ink border-none rounded-full pl-6 sm:pl-12 pr-14 sm:pr-20 py-4 sm:py-5 text-sm sm:text-base relative hover:bg-brand-ink-hover transition-colors"
                 >
                   {t('landing.hero.cta')}
                   <div className="text-black bg-white absolute right-1 top-1/2 transform -translate-y-1/2 rounded-full p-3 sm:p-4">
@@ -84,17 +84,17 @@ export default function LandingPage() {
             <div className="mt-12 sm:mt-20 flex items-center justify-between w-full max-w-2xl">
               <div className="flex-1 flex flex-col min-w-0">
                 <span className="text-2xl sm:text-4xl font-semibold tracking-tight whitespace-nowrap text-[#1d1d1f]">{destinationCount || '—'}</span>
-                <span className="text-[#86868b] text-xs sm:text-sm font-medium mt-1 break-words">{t('landing.hero.stats.destinations', { defaultValue: 'Destinations covered' })}</span>
+                <span className="text-ink-muted text-xs sm:text-sm font-medium mt-1 break-words">{t('landing.hero.stats.destinations', { defaultValue: 'Destinations covered' })}</span>
               </div>
               <div className="h-10 sm:h-12 w-px bg-gray-200 mx-2 sm:mx-8" />
               <div className="flex-1 flex flex-col min-w-0">
                 <span className="text-2xl sm:text-4xl font-semibold tracking-tight whitespace-nowrap text-[#1d1d1f]">100%</span>
-                <span className="text-[#86868b] text-xs sm:text-sm font-medium mt-1 break-words">{t('landing.hero.stats.officialSources', { defaultValue: 'Official sources' })}</span>
+                <span className="text-ink-muted text-xs sm:text-sm font-medium mt-1 break-words">{t('landing.hero.stats.officialSources', { defaultValue: 'Official sources' })}</span>
               </div>
               <div className="h-10 sm:h-12 w-px bg-gray-200 mx-2 sm:mx-8" />
               <div className="flex-1 flex flex-col min-w-0">
                 <span className="text-2xl sm:text-4xl font-semibold tracking-tight whitespace-nowrap text-[#1d1d1f]">0€</span>
-                <span className="text-[#86868b] text-xs sm:text-sm font-medium mt-1 break-words">{t('landing.hero.stats.freeToExplore', { defaultValue: 'To explore' })}</span>
+                <span className="text-ink-muted text-xs sm:text-sm font-medium mt-1 break-words">{t('landing.hero.stats.freeToExplore', { defaultValue: 'To explore' })}</span>
               </div>
             </div>
           </div>
@@ -127,7 +127,7 @@ export default function LandingPage() {
           </div>
           <Link
             to="/destinations"
-            className="inline-flex items-center gap-2 px-6 py-2.5 bg-blue-50 text-[#5EA3C0] font-bold rounded-full hover:bg-blue-100 transition-colors whitespace-nowrap"
+            className="inline-flex items-center gap-2 px-6 py-2.5 bg-blue-50 text-brand-ink font-bold rounded-full hover:bg-blue-100 transition-colors whitespace-nowrap"
           >
             {t('landing.destinations.viewAll')}
             <ArrowRightIcon className="w-4 h-4" />

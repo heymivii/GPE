@@ -139,6 +139,6 @@ describe('NavBar', () => {
   it('highlights the active nav link', () => {
     setup();
     renderNav('/destinations');
-    expect(screen.getByText('nav.destinations')).toHaveClass('text-[#5EA3C0]');
+    expect(screen.getByText('nav.destinations')).toHaveClass('text-brand-ink');
   });
 });

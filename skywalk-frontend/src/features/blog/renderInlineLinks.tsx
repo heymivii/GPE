@@ -27,7 +27,7 @@ export function renderInlineLinks(text: string): ReactNode[] {
         href={match[2]}
         target="_blank"
         rel="noopener noreferrer"
-        className="font-medium text-[#5EA3C0] underline underline-offset-2 hover:text-[#4891b0]"
+        className="font-medium text-brand-ink underline underline-offset-2 hover:text-brand-ink-hover"
       >
         {match[1]}
       </a>,

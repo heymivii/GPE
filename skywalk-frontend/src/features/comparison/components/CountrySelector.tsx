@@ -90,7 +90,7 @@ export default function CountrySelector({
           {selectedCountriesData.map((country) => (
             <div
               key={country.uniqueId}
-              className="flex items-center gap-2 sm:gap-3 bg-white border border-[#5EA3C0]/30 rounded-xl sm:rounded-2xl px-3 sm:px-4 py-2 sm:py-3 shadow-sm"
+              className="flex items-center gap-2 sm:gap-3 bg-white border border-brand/30 rounded-xl sm:rounded-2xl px-3 sm:px-4 py-2 sm:py-3 shadow-sm"
             >
               <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl overflow-hidden flex-shrink-0 shadow-sm">
                 {country.flagUrl ? (
@@ -105,13 +105,13 @@ export default function CountrySelector({
                 <span className="block font-semibold text-sm sm:text-base text-gray-900 truncate">
                   {getCountryName(country)}
                 </span>
-                <span className="hidden sm:block text-xs text-gray-400">
+                <span className="hidden sm:block text-xs text-gray-500">
                   {t(`comparison.data.continents.${country.continent}`, { defaultValue: country.continent || '' })}
                 </span>
               </div>
               <button
                 onClick={() => onCountryToggle(country.uniqueId!)}
-                className="p-1 rounded-full hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors flex-shrink-0"
+                className="p-1 rounded-full hover:bg-red-50 text-gray-500 hover:text-red-500 transition-colors flex-shrink-0"
                 aria-label={t('common.remove')}
               >
                 <X className="w-4 h-4" />
@@ -128,7 +128,7 @@ export default function CountrySelector({
               setIsDropdownOpen(!isDropdownOpen)
               setTimeout(() => inputRef.current?.focus(), 100)
             }}
-            className="w-full flex items-center gap-3 px-4 py-3 sm:py-4 bg-white border-2 border-dashed border-gray-300 rounded-xl sm:rounded-2xl hover:border-[#5EA3C0] hover:bg-[#5EA3C0]/5 transition-all text-gray-500 hover:text-[#5EA3C0]"
+            className="w-full flex items-center gap-3 px-4 py-3 sm:py-4 bg-white border-2 border-dashed border-gray-300 rounded-xl sm:rounded-2xl hover:border-brand hover:bg-brand-ink/5 transition-all text-gray-500 hover:text-brand-ink"
           >
             <Plus className="w-5 h-5 flex-shrink-0" />
             <span className="text-sm sm:text-base font-medium">
@@ -194,7 +194,7 @@ export default function CountrySelector({
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       placeholder={t('comparison.searchCountry', { defaultValue: 'Rechercher un pays...' })}
-                      className="w-full pl-9 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#5EA3C0] focus:border-transparent"
+                      className="w-full pl-9 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
                     />
                   </div>
                 </div>
@@ -257,14 +257,14 @@ export default function CountrySelector({
                           <span className="block font-medium text-sm text-gray-900 truncate">
                             {country.isCity ? country.countryName : (selectedParentId ? t('comparison.entireCountry', { defaultValue: 'Tout le pays' }) : getCountryName(country))}
                           </span>
-                          <span className="text-xs text-gray-400">
+                          <span className="text-xs text-gray-500">
                             {country.isCity ? getCountryName(parentCountry || countries.find(c => c.idCountry === country.parentId && !c.isCity)!) : t(`comparison.data.continents.${country.continent}`, { defaultValue: country.continent || '' })}
                           </span>
                         </div>
                       </button>
                     ))
                   ) : (
-                    <div className="px-4 py-8 text-center text-sm text-gray-400">
+                    <div className="px-4 py-8 text-center text-sm text-gray-500">
                       {t('comparison.noCountryFound', { defaultValue: 'Aucune destination trouvée' })}
                     </div>
                   )}

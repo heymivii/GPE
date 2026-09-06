@@ -30,7 +30,7 @@ export default function HowItWorks() {
               <div className={`w-14 h-14 rounded-2xl ${step.color} flex items-center justify-center mb-6 relative z-10 bg-white ring-4 ring-gray-50`}>
                 <step.icon className="w-6 h-6" />
               </div>
-              <span className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">
+              <span className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
                 {t('landing.howItWorks.stepLabel', { number: index + 1 })}
               </span>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">

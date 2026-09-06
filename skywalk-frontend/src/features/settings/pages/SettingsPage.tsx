@@ -94,7 +94,7 @@ export default function SettingsPage() {
                   onClick={() => changeLanguage(lang.code)}
                   className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
                     currentLang === lang.code
-                      ? 'bg-[#5EA3C0]/10 text-[#5EA3C0] border-[#5EA3C0]/30'
+                      ? 'bg-brand-ink/10 text-brand-ink border-brand/30'
                       : 'border-gray-200 text-gray-600 hover:bg-gray-50'
                   }`}
                 >
@@ -112,7 +112,7 @@ export default function SettingsPage() {
             {t('settings.account', { defaultValue: 'Compte' })}
           </h2>
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#5EA3C0] to-[#4891b0] text-white flex items-center justify-center font-semibold">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-brand to-brand-deep text-white flex items-center justify-center font-semibold">
               {user?.fullName?.charAt(0).toUpperCase() || 'U'}
             </div>
             <div className="min-w-0">
@@ -122,7 +122,7 @@ export default function SettingsPage() {
           </div>
           <Link
             to="/profile"
-            className="inline-flex items-center gap-1 mt-4 text-sm font-medium text-[#5EA3C0] hover:underline"
+            className="inline-flex items-center gap-1 mt-4 text-sm font-medium text-brand-ink hover:underline"
           >
             <UserIcon className="w-4 h-4" />
             {t('settings.viewProfile', { defaultValue: 'Modifier mon profil' })}
@@ -148,19 +148,19 @@ export default function SettingsPage() {
                 onChange={(e) => setExpertTitle(e.target.value)}
                 maxLength={120}
                 placeholder={t('experts.admin.titlePlaceholder', { defaultValue: 'Titre' })}
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:border-[#5EA3C0] outline-none"
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:border-brand outline-none"
               />
               <textarea
                 value={expertBio}
                 onChange={(e) => setExpertBio(e.target.value)}
                 rows={3}
                 placeholder={t('experts.admin.bioPlaceholder', { defaultValue: 'Bio' })}
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:border-[#5EA3C0] outline-none resize-none"
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:border-brand outline-none resize-none"
               />
               <button
                 onClick={() => expertMutation.mutate()}
                 disabled={expertMutation.isPending}
-                className="px-4 py-2 text-sm font-semibold text-white bg-[#5EA3C0] rounded-lg hover:bg-[#4891b0] disabled:opacity-50"
+                className="px-4 py-2 text-sm font-semibold text-white bg-brand-ink rounded-lg hover:bg-brand-ink-hover disabled:opacity-50"
               >
                 {t('common.save', { defaultValue: 'Enregistrer' })}
               </button>

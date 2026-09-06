@@ -75,23 +75,23 @@ export function CountryCard({ country }: CountryCardProps) {
         <div className="grid grid-cols-2 gap-3 mt-auto pt-4 border-t border-gray-50">
           <div className="flex items-center text-gray-600">
             <Users className="w-4 h-4 mr-2 text-blue-500 flex-shrink-0" />
-            <span className="text-sm"><span className="font-semibold">{fmtCompact(stats.memberCount)}</span> <span className="text-gray-400">{t('destinationsPage.card.projects')}</span></span>
+            <span className="text-sm"><span className="font-semibold">{fmtCompact(stats.memberCount)}</span> <span className="text-gray-500">{t('destinationsPage.card.projects')}</span></span>
           </div>
           {/* Pays hors couverture Adzuna : on masque le compteur plutôt que d'afficher
               « 0 emplois », qui se lisait comme une absence d'offres (retour de recette). */}
           {stats.jobOffersCount !== null && (
             <div className="flex items-center text-gray-600">
               <Briefcase className="w-4 h-4 mr-2 text-green-500 flex-shrink-0" />
-              <span className="text-sm"><span className="font-semibold">{fmtCompact(stats.jobOffersCount)}</span> <span className="text-gray-400">{t('destinationsPage.card.jobs')}</span></span>
+              <span className="text-sm"><span className="font-semibold">{fmtCompact(stats.jobOffersCount)}</span> <span className="text-gray-500">{t('destinationsPage.card.jobs')}</span></span>
             </div>
           )}
           <div className="flex items-center text-gray-600">
             <MessageSquare className="w-4 h-4 mr-2 text-purple-500 flex-shrink-0" />
-            <span className="text-sm"><span className="font-semibold">{fmtCompact(stats.forumTopicsCount)}</span> <span className="text-gray-400">{t('destinationsPage.card.topics')}</span></span>
+            <span className="text-sm"><span className="font-semibold">{fmtCompact(stats.forumTopicsCount)}</span> <span className="text-gray-500">{t('destinationsPage.card.topics')}</span></span>
           </div>
           <div className="flex items-center text-gray-600">
             <BookOpen className="w-4 h-4 mr-2 text-orange-500 flex-shrink-0" />
-            <span className="text-sm"><span className="font-semibold">{blogCount}</span> <span className="text-gray-400">{t('destinationsPage.card.resources')}</span></span>
+            <span className="text-sm"><span className="font-semibold">{blogCount}</span> <span className="text-gray-500">{t('destinationsPage.card.resources')}</span></span>
           </div>
         </div>
       </div>

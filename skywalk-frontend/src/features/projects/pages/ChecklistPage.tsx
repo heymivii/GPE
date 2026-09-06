@@ -81,7 +81,7 @@ function StepLinks({ category, countryCode }: { category: string; countryCode?: 
             <Link
               to={links!.serviceLink}
               onClick={(e) => e.stopPropagation()}
-              className="text-xs text-[#5EA3C0] hover:text-[#4891b0] hover:underline flex items-center gap-1"
+              className="text-xs text-brand-ink hover:text-brand-ink-hover hover:underline flex items-center gap-1"
             >
               Voir le service <ArrowRight className="w-3 h-3" />
             </Link>
@@ -93,7 +93,7 @@ function StepLinks({ category, countryCode }: { category: string; countryCode?: 
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="text-xs text-gray-400 hover:text-gray-600 flex items-center gap-1"
+              className="text-xs text-gray-500 hover:text-gray-600 flex items-center gap-1"
             >
               {link.label} <ExternalLink className="w-3 h-3" />
             </a>
@@ -154,6 +154,8 @@ function ChecklistItemRow({
       >
         <button
           className="mt-0.5 flex-shrink-0"
+          aria-pressed={item.completed}
+          aria-label={`${item.completed ? 'Marquer comme à faire' : 'Marquer comme terminée'} : ${item.title}`}
           onClick={(e) => { e.stopPropagation(); onToggleItem(item.id); }}
         >
           {item.completed ? (
@@ -165,7 +167,7 @@ function ChecklistItemRow({
 
         <div className="flex-1 min-w-0">
           <p className={`text-sm font-medium ${
-            item.completed ? 'text-gray-400 line-through' : 'text-gray-900'
+            item.completed ? 'text-gray-500 line-through' : 'text-gray-900'
           }`}>
             {item.title}
           </p>
@@ -176,7 +178,7 @@ function ChecklistItemRow({
             </span>
             {item.sourceUrl && <TrustBadge url={item.sourceUrl} />}
             {substepsTotal > 0 && (
-              <span className="text-[11px] text-gray-400">
+              <span className="text-[11px] text-gray-500">
                 {substepsDone}/{substepsTotal} tâches
               </span>
             )}
@@ -225,6 +227,8 @@ function ChecklistItemRow({
           <button
             onClick={(e) => { e.stopPropagation(); onToggleExpand(item.id); }}
             className="flex-shrink-0 p-1 rounded-md hover:bg-gray-200 transition-colors"
+            aria-expanded={isExpanded}
+            aria-label="Afficher les sous-étapes"
           >
             {isExpanded
               ? <ChevronDown className="w-4 h-4 text-gray-400" />
@@ -249,7 +253,7 @@ function ChecklistItemRow({
                 : <Circle className="w-3.5 h-3.5 text-gray-300 flex-shrink-0 mt-0.5" />
               }
               <div className="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-x-3 gap-y-1">
-                <span className={`text-xs ${substep.completed ? 'text-gray-400 line-through' : 'text-gray-600'}`}>
+                <span className={`text-xs ${substep.completed ? 'text-gray-500 line-through' : 'text-gray-600'}`}>
                   {substep.label}
                 </span>
                 <SubstepLinks links={substep.links} />
@@ -607,7 +611,7 @@ export default function ChecklistPage() {
           {/* ── Sidebar : où j'en suis / à faire maintenant ── */}
           <aside className="min-w-0 lg:sticky lg:top-6 space-y-3">
           {/* Où j'en suis — compte à rebours + progression, une seule carte */}
-          <div className="rounded-2xl border border-gray-100 bg-gradient-to-br from-[#5EA3C0]/10 to-transparent bg-white p-4">
+          <div className="rounded-2xl border border-gray-100 bg-gradient-to-br from-brand/10 to-transparent bg-white p-4">
 
           {departureDate ? (
             <div className="flex items-center gap-4">
@@ -616,7 +620,7 @@ export default function ChecklistPage() {
                   className={`text-3xl font-bold font-outfit leading-none ${
                     daysUntilDeparture !== null && daysUntilDeparture < 30
                       ? 'text-orange-600'
-                      : 'text-[#5EA3C0]'
+                      : 'text-brand-ink'
                   }`}
                 >
                   {daysUntilDeparture === null
@@ -627,7 +631,7 @@ export default function ChecklistPage() {
                         ? 'Jour J'
                         : 'Parti·e'}
                 </div>
-                <div className="text-[10px] text-gray-400 uppercase tracking-wide mt-1">
+                <div className="text-[10px] text-gray-500 uppercase tracking-wide mt-1">
                   avant le départ
                 </div>
               </div>
@@ -702,7 +706,7 @@ export default function ChecklistPage() {
                 </div>
                 <div className="w-full bg-gray-100 rounded-full h-2.5">
                   <div
-                    className="bg-[#5EA3C0] h-2.5 rounded-full transition-all duration-500"
+                    className="bg-brand-ink h-2.5 rounded-full transition-all duration-500"
                     style={{ width: `${pct(arrivalDone, arrivalTotal)}%` }}
                   />
                 </div>
@@ -714,13 +718,13 @@ export default function ChecklistPage() {
           {/* Prochaine action recommandée — le guide « et maintenant, je fais quoi ? »,
               avec le verdict de faisabilité replié dedans (même sujet : la démarche en retard). */}
           {nextAction ? (
-            <div className="rounded-xl border border-[#5EA3C0]/30 bg-[#5EA3C0]/5 px-4 py-3">
+            <div className="rounded-xl border border-brand/30 bg-brand-ink/5 px-4 py-3">
               <div className="flex items-start gap-3">
-                <div className="mt-0.5 flex-shrink-0 w-8 h-8 rounded-full bg-[#5EA3C0]/15 flex items-center justify-center">
-                  <ArrowRight className="w-4 h-4 text-[#5EA3C0]" />
+                <div className="mt-0.5 flex-shrink-0 w-8 h-8 rounded-full bg-brand-ink/15 flex items-center justify-center">
+                  <ArrowRight className="w-4 h-4 text-brand-ink" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-[11px] font-bold uppercase tracking-wider text-[#5EA3C0]">Prochaine action</p>
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-brand-ink">Prochaine action</p>
                   <p className="text-sm font-semibold text-gray-900 mt-0.5">{nextAction.title}</p>
                   <div className="flex items-center gap-2 mt-1 flex-wrap">
                     {nextActionDeadline?.date ? (
@@ -741,7 +745,7 @@ export default function ChecklistPage() {
                 </div>
                 <button
                   onClick={() => toggleItem(nextAction.id)}
-                  className="flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#5EA3C0] hover:bg-[#4891b0] text-white rounded-lg text-xs font-semibold transition-colors"
+                  className="flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand-ink hover:bg-brand-ink-hover text-white rounded-lg text-xs font-semibold transition-colors"
                 >
                   <CheckCircle className="w-3.5 h-3.5" />
                   Fait
@@ -789,7 +793,7 @@ export default function ChecklistPage() {
               concernent vraiment.{' '}
               <Link
                 to={`/onboarding/${projectId}`}
-                className="font-semibold text-[#5EA3C0] hover:text-[#4891b0] underline underline-offset-2"
+                className="font-semibold text-brand-ink hover:text-brand-ink-hover underline underline-offset-2"
               >
                 Compléter mon profil
               </Link>
@@ -868,7 +872,7 @@ export default function ChecklistPage() {
       {/* Liste des étapes */}
       <div className="mt-4">
         {displaySteps.length === 0 ? (
-          <div className="text-center py-16 text-gray-400">
+          <div className="text-center py-16 text-gray-500">
             <p className="text-sm">Aucune étape ne correspond à ce filtre.</p>
           </div>
         ) : (
@@ -878,7 +882,7 @@ export default function ChecklistPage() {
               <div>
                 <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                   <Plane className="w-3.5 h-3.5" /> Avant le départ
-                  <span className="text-gray-400 font-normal normal-case tracking-normal">({beforeSteps.length})</span>
+                  <span className="text-gray-500 font-normal normal-case tracking-normal">({beforeSteps.length})</span>
                 </h2>
                 <div className="space-y-2">
                   {beforeSteps.map((item) => (
@@ -902,7 +906,7 @@ export default function ChecklistPage() {
               <div>
                 <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                   <Home className="w-3.5 h-3.5" /> À l'arrivée
-                  <span className="text-gray-400 font-normal normal-case tracking-normal">({arrivalSteps.length})</span>
+                  <span className="text-gray-500 font-normal normal-case tracking-normal">({arrivalSteps.length})</span>
                 </h2>
                 <div className="space-y-2">
                   {arrivalSteps.map((item) => (
@@ -926,7 +930,7 @@ export default function ChecklistPage() {
         {/* ===== PRICING DÉSACTIVÉ — CTA « Débloquez votre plan complet » =====
         -- Paywall : le reste du plan est verrouillé tant que le projet n'est pas débloqué
         {isLocked && lockedCount > 0 && (
-          <div className="mt-6 rounded-2xl border-2 border-dashed border-[#5EA3C0]/40 bg-[#5EA3C0]/5 p-6 text-center">
+          <div className="mt-6 rounded-2xl border-2 border-dashed border-brand/40 bg-brand-ink/5 p-6 text-center">
             <div className="text-3xl mb-2">🔒</div>
             <p className="font-bold text-gray-900">
               {lockedCount} étape{lockedCount > 1 ? 's' : ''} verrouillée{lockedCount > 1 ? 's' : ''}
@@ -937,7 +941,7 @@ export default function ChecklistPage() {
             </p>
             <button
               onClick={() => setShowPaywall(true)}
-              className="inline-flex items-center gap-2 bg-[#5EA3C0] hover:bg-[#4891b0] text-white px-6 py-3 rounded-full font-semibold text-sm transition-colors"
+              className="inline-flex items-center gap-2 bg-brand-ink hover:bg-brand-ink-hover text-white px-6 py-3 rounded-full font-semibold text-sm transition-colors"
             >
               Débloquer mon projet — 49 €
             </button>
@@ -974,23 +978,23 @@ export default function ChecklistPage() {
                 disabled
                 value="4242 4242 4242 4242"
                 readOnly
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm mb-2 bg-gray-50 text-gray-400"
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm mb-2 bg-gray-50 text-gray-500"
               />
               <div className="flex gap-2">
                 <input
                   disabled
                   value="12/29"
                   readOnly
-                  className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-400"
+                  className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-500"
                 />
                 <input
                   disabled
                   value="123"
                   readOnly
-                  className="w-20 px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-400"
+                  className="w-20 px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-500"
                 />
               </div>
-              <p className="text-[11px] text-gray-400 mt-2">
+              <p className="text-[11px] text-gray-500 mt-2">
                 💳 Démo — aucune vraie carte, aucun débit réel.
               </p>
             </div>
@@ -1007,7 +1011,7 @@ export default function ChecklistPage() {
                   unlockProject.mutate(projectId, { onSuccess: () => setShowPaywall(false) })
                 }
                 disabled={unlockProject.isPending}
-                className="px-5 py-2 text-sm bg-[#5EA3C0] hover:bg-[#4891b0] text-white rounded-lg font-semibold disabled:opacity-50"
+                className="px-5 py-2 text-sm bg-brand-ink hover:bg-brand-ink-hover text-white rounded-lg font-semibold disabled:opacity-50"
               >
                 {unlockProject.isPending ? 'Traitement…' : 'Payer 49 € (démo)'}
               </button>

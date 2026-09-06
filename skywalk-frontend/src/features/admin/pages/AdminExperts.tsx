@@ -161,11 +161,11 @@ export default function AdminExperts() {
         </h2>
 
         {loadingApplications ? (
-          <div className="flex justify-center py-8 text-gray-400">
+          <div className="flex justify-center py-8 text-gray-500">
             <Loader2 className="w-5 h-5 animate-spin" />
           </div>
         ) : applications.length === 0 ? (
-          <p className="text-sm text-gray-400 bg-white border border-gray-100 rounded-2xl p-6 text-center">
+          <p className="text-sm text-gray-500 bg-white border border-gray-100 rounded-2xl p-6 text-center">
             Aucune candidature en attente.
           </p>
         ) : (
@@ -180,7 +180,7 @@ export default function AdminExperts() {
                       {app.user?.email ? ` · ${app.user.email}` : ''}
                       {app.country?.countryName ? ` · ${app.country.countryName}` : ''}
                     </p>
-                    <p className="text-xs text-gray-400 mt-0.5">
+                    <p className="text-xs text-gray-500 mt-0.5">
                       Déposée le {new Date(app.createdAt).toLocaleDateString('fr-FR')}
                     </p>
                   </div>
@@ -188,7 +188,7 @@ export default function AdminExperts() {
                     href={expertApplicationsApi.diplomaUrl(app.idExpertApplication)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-sm font-medium text-[#5EA3C0] hover:text-[#4891b0] border border-[#5EA3C0]/30 rounded-lg px-3 py-1.5"
+                    className="inline-flex items-center gap-1.5 text-sm font-medium text-brand-ink hover:text-brand-ink-hover border border-brand/30 rounded-lg px-3 py-1.5"
                   >
                     <FileText className="w-4 h-4" />
                     Justificatif
@@ -207,7 +207,7 @@ export default function AdminExperts() {
                       setRejectNote((prev) => ({ ...prev, [app.idExpertApplication]: e.target.value }))
                     }
                     placeholder="Motif (transmis au candidat en cas de refus)"
-                    className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:border-[#5EA3C0] outline-none"
+                    className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:border-brand outline-none"
                   />
                   <button
                     onClick={() =>
@@ -246,12 +246,12 @@ export default function AdminExperts() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder={t('experts.admin.search', { defaultValue: 'Rechercher un membre…' })}
-          className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:border-[#5EA3C0] outline-none"
+          className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:border-brand outline-none"
         />
       </div>
 
       {isLoading ? (
-        <div className="flex justify-center py-16 text-gray-400">
+        <div className="flex justify-center py-16 text-gray-500">
           <Loader2 className="w-6 h-6 animate-spin" />
         </div>
       ) : (
@@ -266,7 +266,7 @@ export default function AdminExperts() {
                   <p className="text-sm font-medium text-gray-900 truncate">
                     {u.fullName || `${u.firstName ?? ''} ${u.lastName ?? ''}`.trim() || u.email}
                   </p>
-                  <p className="text-xs text-gray-400 truncate">{u.email}</p>
+                  <p className="text-xs text-gray-500 truncate">{u.email}</p>
                 </div>
                 {isVerified(u) ? (
                   <>
@@ -300,19 +300,19 @@ export default function AdminExperts() {
                     placeholder={t('experts.admin.titlePlaceholder', {
                       defaultValue: 'Titre (ex. Avocat en immigration)',
                     })}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:border-[#5EA3C0] outline-none"
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:border-brand outline-none"
                   />
                   <textarea
                     value={form.expertBio}
                     onChange={(e) => setForm((f) => ({ ...f, expertBio: e.target.value }))}
                     placeholder={t('experts.admin.bioPlaceholder', { defaultValue: 'Bio courte' })}
                     rows={2}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:border-[#5EA3C0] outline-none resize-none"
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:border-brand outline-none resize-none"
                   />
                   <select
                     value={form.expertCountryId}
                     onChange={(e) => setForm((f) => ({ ...f, expertCountryId: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:border-[#5EA3C0] outline-none"
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:border-brand outline-none"
                   >
                     <option value="">
                       {t('experts.admin.countryPlaceholder', { defaultValue: 'Pays d’expertise (optionnel)' })}

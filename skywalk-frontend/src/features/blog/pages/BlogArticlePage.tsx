@@ -66,11 +66,11 @@ export default function BlogArticlePage() {
               <Tag className="w-3 h-3" />
               {categoryLabel}
             </span>
-            <span className="inline-flex items-center gap-1.5 text-xs text-gray-400">
+            <span className="inline-flex items-center gap-1.5 text-xs text-gray-500">
               <Calendar className="w-3 h-3" />
               {formatDate(article.date)}
             </span>
-            <span className="inline-flex items-center gap-1.5 text-xs text-gray-400">
+            <span className="inline-flex items-center gap-1.5 text-xs text-gray-500">
               <Clock className="w-3 h-3" />
               {article.readTime} min {t('blog.article.readTime')}
             </span>
@@ -140,7 +140,7 @@ export default function BlogArticlePage() {
               <Link
                 key={rel.id}
                 to={`/blog/${rel.id}`}
-                className="group block rounded-2xl border border-gray-200 overflow-hidden hover:border-[#5EA3C0] transition-all duration-300"
+                className="group block rounded-2xl border border-gray-200 overflow-hidden hover:border-brand transition-all duration-300"
               >
                 <div className="relative h-40 overflow-hidden">
                   <img
@@ -150,13 +150,13 @@ export default function BlogArticlePage() {
                   />
                 </div>
                 <div className="p-4">
-                  <h3 className="font-bold text-gray-900 mb-1 group-hover:text-[#5EA3C0] transition-colors line-clamp-2">
+                  <h3 className="font-bold text-gray-900 mb-1 group-hover:text-brand-ink transition-colors line-clamp-2">
                     {getArticleTranslation(rel.id, 'title', t)}
                   </h3>
-                  <div className="flex items-center gap-2 text-xs text-gray-400">
+                  <div className="flex items-center gap-2 text-xs text-gray-500">
                     <Clock className="w-3 h-3" />
                     {rel.readTime} min
-                    <ArrowRight className="w-3 h-3 ml-auto text-gray-300 group-hover:text-[#5EA3C0] transition-colors" />
+                    <ArrowRight className="w-3 h-3 ml-auto text-gray-300 group-hover:text-brand-ink transition-colors" />
                   </div>
                 </div>
               </Link>

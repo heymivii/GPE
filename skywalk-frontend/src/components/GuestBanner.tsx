@@ -14,7 +14,7 @@ export default function GuestBanner() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
         <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4 pr-8 sm:pr-0">
           <div className="flex items-start sm:items-center gap-2 sm:gap-3 flex-1 min-w-0">
-            <Sparkles className="w-5 h-5 text-[#5EA3C0] flex-shrink-0 mt-0.5 sm:mt-0" />
+            <Sparkles className="w-5 h-5 text-brand-ink flex-shrink-0 mt-0.5 sm:mt-0" />
             <p className="text-xs sm:text-sm text-gray-700 leading-snug">
               <span className="font-semibold">{t('common.guestBanner.exploreFreely')}</span>{' '}
               <span className="hidden sm:inline">{t('common.guestBanner.signupMessage')}</span>
@@ -24,7 +24,7 @@ export default function GuestBanner() {
           <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0 ml-7 sm:ml-0">
             <Link
               to="/auth/register"
-              className="px-3 sm:px-4 py-1.5 sm:py-2 bg-[#5EA3C0] text-white text-xs sm:text-sm font-medium rounded-full hover:bg-[#4d8a9d] transition-colors whitespace-nowrap"
+              className="px-3 sm:px-4 py-1.5 sm:py-2 bg-brand-ink text-white text-xs sm:text-sm font-medium rounded-full hover:bg-brand-ink-hover transition-colors whitespace-nowrap"
             >
               {t('common.guestBanner.createAccount')}
             </Link>

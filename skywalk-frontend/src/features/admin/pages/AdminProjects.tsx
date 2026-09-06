@@ -41,7 +41,7 @@ export default function AdminProjects() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#5EA3C0]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand"></div>
       </div>
     );
   }
@@ -159,7 +159,7 @@ export default function AdminProjects() {
                         <p className="font-semibold text-gray-950 truncate">
                           {project.user?.firstName ? `${project.user.firstName} ${project.user.lastName || ''}` : 'Utilisateur'}
                         </p>
-                        <p className="text-xs text-gray-400 flex items-center gap-1 mt-0.5">
+                        <p className="text-xs text-gray-500 flex items-center gap-1 mt-0.5">
                           <User className="w-3.5 h-3.5" />
                           {project.user?.email || 'N/A'}
                         </p>
@@ -170,13 +170,13 @@ export default function AdminProjects() {
                   {/* Destination */}
                   <td className="py-4 px-6">
                     <div className="flex items-center gap-2">
-                      <Globe className="w-4 h-4 text-[#5EA3C0] flex-shrink-0" />
+                      <Globe className="w-4 h-4 text-brand-ink flex-shrink-0" />
                       <span className="font-semibold text-gray-800">
                         {project.destinationCountry?.countryName || 'Pays inconnu'}
                       </span>
                     </div>
                     {project.destinationCity?.name && (
-                      <p className="text-xs text-gray-400 ml-6 mt-0.5">
+                      <p className="text-xs text-gray-500 ml-6 mt-0.5">
                         {project.destinationCity.name}
                       </p>
                     )}
@@ -187,7 +187,7 @@ export default function AdminProjects() {
                     <div className="flex items-center gap-1.5 text-xs">
                       <span className="font-semibold text-gray-700">{getObjectiveLabel(project.objective)}</span>
                     </div>
-                    <div className="flex items-center gap-4 text-[11px] text-gray-400">
+                    <div className="flex items-center gap-4 text-[11px] text-gray-500">
                       {project.budget && (
                         <span className="flex items-center gap-0.5">
                           <DollarSign className="w-3 h-3" />
@@ -211,7 +211,7 @@ export default function AdminProjects() {
                         {new Date(project.expectedDepartureDate).toLocaleDateString('fr-FR')}
                       </div>
                     ) : (
-                      <span className="text-xs text-gray-400">Non planifié</span>
+                      <span className="text-xs text-gray-500">Non planifié</span>
                     )}
                   </td>
 
@@ -228,7 +228,7 @@ export default function AdminProjects() {
                       value={project.status}
                       disabled={updateStatusMutation.isPending}
                       onChange={(e) => updateStatusMutation.mutate({ projectId: project.idProject, status: e.target.value })}
-                      className="bg-white border border-gray-200 rounded-lg text-xs font-semibold text-gray-700 px-2 py-1.5 focus:border-[#5EA3C0] focus:ring-1 focus:ring-[#5EA3C0] outline-none"
+                      className="bg-white border border-gray-200 rounded-lg text-xs font-semibold text-gray-700 px-2 py-1.5 focus:border-brand focus:ring-1 focus:ring-brand outline-none"
                     >
                       <option value="planning">Planification</option>
                       <option value="active">Actif</option>
@@ -242,7 +242,7 @@ export default function AdminProjects() {
 
               {filteredProjects.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center text-gray-400">
+                  <td colSpan={6} className="py-12 text-center text-gray-500">
                     Aucun projet ne correspond à votre recherche.
                   </td>
                 </tr>

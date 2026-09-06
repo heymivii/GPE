@@ -54,12 +54,12 @@ export default function Pricing() {
             key={tier.key}
             className={`relative flex flex-col rounded-3xl p-7 transition-all ${
               tier.highlighted
-                ? 'border-2 border-[#5EA3C0] shadow-xl bg-white md:-translate-y-2'
+                ? 'border-2 border-brand shadow-xl bg-white md:-translate-y-2'
                 : 'border border-gray-200 bg-white shadow-sm'
             }`}
           >
             {tier.highlighted && (
-              <span className="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 bg-[#5EA3C0] text-white text-xs font-bold px-3 py-1 rounded-full">
+              <span className="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 bg-brand-ink text-white text-xs font-bold px-3 py-1 rounded-full">
                 <Sparkles className="w-3.5 h-3.5" /> {t('landing.pricing.popular')}
               </span>
             )}
@@ -77,7 +77,7 @@ export default function Pricing() {
             <ul className="space-y-2.5 mb-8 flex-1">
               {Array.from({ length: tier.featureCount }, (_, i) => (
                 <li key={i} className="flex items-start gap-2.5 text-sm text-gray-700">
-                  <Check className="w-4 h-4 text-[#5EA3C0] flex-shrink-0 mt-0.5" />
+                  <Check className="w-4 h-4 text-brand-ink flex-shrink-0 mt-0.5" />
                   {t(`landing.pricing.${tier.key}.f${i + 1}`)}
                 </li>
               ))}
@@ -87,7 +87,7 @@ export default function Pricing() {
               to="/onboarding"
               className={`w-full text-center px-6 py-3 rounded-full font-semibold text-sm transition-colors ${
                 tier.highlighted
-                  ? 'bg-[#5EA3C0] text-white hover:bg-[#4891b0]'
+                  ? 'bg-brand-ink text-white hover:bg-brand-ink-hover'
                   : 'border border-gray-300 text-gray-800 hover:bg-gray-50'
               }`}
             >
@@ -97,7 +97,7 @@ export default function Pricing() {
         ))}
       </div>
 
-      <p className="text-center text-xs text-gray-400 mt-6">{t('landing.pricing.disclaimer')}</p>
+      <p className="text-center text-xs text-gray-500 mt-6">{t('landing.pricing.disclaimer')}</p>
     </section>
   );
 }

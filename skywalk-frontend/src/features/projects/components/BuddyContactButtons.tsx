@@ -90,7 +90,7 @@ export default function BuddyContactButtons({
     return (
       <Link
         to={`/messages?to=${recipientId}&name=${encodeURIComponent(recipientFirstname)}`}
-        className="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1 rounded-md bg-white text-[#5EA3C0] border border-gray-200 hover:border-[#5EA3C0]/50 hover:bg-[#5EA3C0]/5 transition-colors"
+        className="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1 rounded-md bg-white text-brand-ink border border-gray-200 hover:border-brand/50 hover:bg-brand-ink/5 transition-colors"
         onClick={(e) => e.stopPropagation()}
       >
         <MessageCircle className="w-3 h-3" />
@@ -121,7 +121,7 @@ export default function BuddyContactButtons({
             setMenuPos({ top: rect.bottom + 4, right: window.innerWidth - rect.right });
           }
         }}
-        className="p-1 rounded-md text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+        className="p-1 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
       >
         <MoreHorizontal className="w-4 h-4" />
       </button>

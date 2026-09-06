@@ -235,12 +235,12 @@ export default function BudgetTrackerWidget({
               </p>
               <p className="text-sm font-semibold text-gray-800">
                 {liveAvgSalary.toLocaleString()} {destCurrency}
-                <span className="text-xs font-normal text-gray-400 ml-1">/ {t('dashboard.personalized.widgets.jobOpportunities.month')}</span>
+                <span className="text-xs font-normal text-gray-500 ml-1">/ {t('dashboard.personalized.widgets.jobOpportunities.month')}</span>
               </p>
             </div>
           )}
 
-          <p className="text-[10px] text-gray-400 text-right mt-2">
+          <p className="text-[10px] text-gray-500 text-right mt-2">
             {isLiveData
               ? t('dashboard.personalized.widgets.budgetTracker.sourceLive', { city: colCity || '' })
               : t('dashboard.personalized.widgets.budgetTracker.sourceStatic')}
@@ -255,7 +255,7 @@ export default function BudgetTrackerWidget({
 
       {/* Convertisseur rapide */}
       <div className="mt-4 pt-4 border-t border-gray-100">
-        <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400 mb-2 flex items-center gap-1">
+        <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-500 mb-2 flex items-center gap-1">
           <ArrowRightLeft className="w-3 h-3" />
           {t('dashboard.personalized.widgets.budgetTracker.converter.title', { defaultValue: 'Convertisseur rapide' })}
         </p>
@@ -265,13 +265,13 @@ export default function BudgetTrackerWidget({
             inputMode="decimal"
             value={convAmount}
             onChange={(e) => setConvAmount(e.target.value)}
-            className="w-20 px-2 py-1.5 border border-gray-200 rounded-lg text-sm focus:border-[#5EA3C0] outline-none"
+            className="w-20 px-2 py-1.5 border border-gray-200 rounded-lg text-sm focus:border-brand outline-none"
             aria-label={t('dashboard.personalized.widgets.budgetTracker.converter.amount', { defaultValue: 'Montant' })}
           />
           <select
             value={convFrom}
             onChange={(e) => setConvFrom(e.target.value)}
-            className="px-1.5 py-1.5 border border-gray-200 rounded-lg text-sm bg-white focus:border-[#5EA3C0] outline-none"
+            className="px-1.5 py-1.5 border border-gray-200 rounded-lg text-sm bg-white focus:border-brand outline-none"
           >
             {CONVERT_CURRENCIES.map((c) => <option key={c} value={c}>{c}</option>)}
           </select>
@@ -279,7 +279,7 @@ export default function BudgetTrackerWidget({
           <select
             value={convTo}
             onChange={(e) => setConvTo(e.target.value)}
-            className="px-1.5 py-1.5 border border-gray-200 rounded-lg text-sm bg-white focus:border-[#5EA3C0] outline-none"
+            className="px-1.5 py-1.5 border border-gray-200 rounded-lg text-sm bg-white focus:border-brand outline-none"
           >
             {CONVERT_CURRENCIES.map((c) => <option key={c} value={c}>{c}</option>)}
           </select>
@@ -290,7 +290,7 @@ export default function BudgetTrackerWidget({
               {convResult.toLocaleString(undefined, { maximumFractionDigits: 2 })} {convTo}
             </span>
           ) : (
-            <span className="text-gray-400">…</span>
+            <span className="text-gray-500">…</span>
           )}
         </p>
       </div>

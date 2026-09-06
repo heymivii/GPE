@@ -170,12 +170,12 @@ export default function ProfilePage() {
 
   const InfoItem = ({ label, value, icon }: { label: string, value?: string | number | null, icon?: React.ReactNode }) => (
     <div className="group">
-      <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5 flex items-center gap-2 font-outfit">
+      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 flex items-center gap-2 font-outfit">
         {label}
       </p>
       <p className="text-gray-900 font-medium text-base flex items-center gap-2 font-sans">
-        {icon && <span className="text-gray-400">{icon}</span>}
-        {value || <span className="text-gray-400 italic font-normal text-sm">{t('profilePage.notProvided')}</span>}
+        {icon && <span className="text-gray-500">{icon}</span>}
+        {value || <span className="text-gray-500 italic font-normal text-sm">{t('profilePage.notProvided')}</span>}
       </p>
     </div>
   );
@@ -290,7 +290,7 @@ export default function ProfilePage() {
                   />
                   
                   <div>
-                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 font-outfit">{t('profilePage.spokenLanguages')}</p>
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 font-outfit">{t('profilePage.spokenLanguages')}</p>
                     <div className="flex flex-wrap gap-2 font-sans">
                       {profile.spokenLanguages && profile.spokenLanguages.length > 0 ? (
                         profile.spokenLanguages.map((lang, index) => (
@@ -299,7 +299,7 @@ export default function ProfilePage() {
                           </span>
                         ))
                       ) : (
-                        <span className="text-gray-400 italic text-sm">{t('profilePage.noLanguages')}</span>
+                        <span className="text-gray-500 italic text-sm">{t('profilePage.noLanguages')}</span>
                       )}
                     </div>
                   </div>
@@ -447,7 +447,7 @@ export default function ProfilePage() {
                       placeholder={t('profilePage.keepPassword')}
                       minLength={6}
                     />
-                    <p className="text-xs text-gray-400 mt-2 ml-1 font-sans">{t('profilePage.passwordHint')}</p>
+                    <p className="text-xs text-gray-500 mt-2 ml-1 font-sans">{t('profilePage.passwordHint')}</p>
                   </div>
                 </div>
               </div>

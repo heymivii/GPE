@@ -41,7 +41,7 @@ export default function DestinationCard({
         </p>
         
         <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-4 group-hover:translate-y-0">
-          <div className="inline-flex items-center text-sm font-bold uppercase tracking-wider text-[#5EA3C0] bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20 hover:bg-white hover:text-[#5EA3C0] transition-colors">
+          <div className="inline-flex items-center text-sm font-bold uppercase tracking-wider text-white bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20 hover:bg-white hover:text-brand-ink transition-colors">
             <span>Explorer</span>
             <svg className="w-4 h-4 ml-2 transition-transform duration-200 group-hover:translate-x-1" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />

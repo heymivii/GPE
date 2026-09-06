@@ -194,7 +194,7 @@ export default function VisaPage() {
                           <p className="text-sm text-gray-500 mt-0.5">
                             {t(`visa.steps.${step.description}`)}
                           </p>
-                          <span className="inline-block mt-1 text-xs text-gray-400">
+                          <span className="inline-block mt-1 text-xs text-gray-500">
                             ⏱ {t(`visa.timelines.${step.timeline}`)}
                           </span>
                         </div>
@@ -346,7 +346,7 @@ export default function VisaPage() {
                       ) : (
                         <Circle className="w-5 h-5 text-gray-300 flex-shrink-0" />
                       )}
-                      <span className={`text-sm ${checked ? 'text-gray-400 line-through' : 'text-gray-700'}`}>
+                      <span className={`text-sm ${checked ? 'text-gray-500 line-through' : 'text-gray-700'}`}>
                         {t(`visa.checklistItems.${item.label}`)}
                       </span>
                     </button>

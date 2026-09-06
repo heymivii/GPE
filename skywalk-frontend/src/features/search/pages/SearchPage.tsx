@@ -122,12 +122,16 @@ export default function SearchPage() {
               <button
                 onClick={() => setViewMode('grid')}
                 className={`p-2 rounded ${viewMode === 'grid' ? 'bg-white shadow-sm' : ''}`}
+                aria-pressed={viewMode === 'grid'}
+                aria-label={t('searchPage.view.grid', { defaultValue: 'Vue grille' })}
               >
                 <Grid className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setViewMode('list')}
                 className={`p-2 rounded ${viewMode === 'list' ? 'bg-white shadow-sm' : ''}`}
+                aria-pressed={viewMode === 'list'}
+                aria-label={t('searchPage.view.list', { defaultValue: 'Vue liste' })}
               >
                 <List className="w-4 h-4" />
               </button>
@@ -214,7 +218,7 @@ export default function SearchPage() {
                   onClick={() => {
                     handleFilterChange(item.filters);
                   }}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-300 rounded-full text-sm hover:bg-gray-50 hover:border-[#5EA3C0] hover:text-[#5EA3C0] transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-300 rounded-full text-sm hover:bg-gray-50 hover:border-brand hover:text-brand-ink transition-colors"
                 >
                   {item.label}
                 </button>
@@ -242,7 +246,7 @@ export default function SearchPage() {
         {hasMoreResults && (
           <div className="mt-8 bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200 rounded-2xl p-8 text-center">
             <div className="max-w-md mx-auto">
-              <div className="w-16 h-16 bg-[#5EA3C0] rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-brand-ink rounded-full flex items-center justify-center mx-auto mb-4">
                 <Search className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">{t('searchPage.discoverMore', { count: results.length - 10 })}</h3>
@@ -252,13 +256,13 @@ export default function SearchPage() {
               <div className="flex gap-3 justify-center">
                 <Link
                   to="/auth/register"
-                  className="px-6 py-3 bg-[#5EA3C0] text-white font-semibold rounded-full hover:bg-[#4d8a9d] transition-colors"
+                  className="px-6 py-3 bg-brand-ink text-white font-semibold rounded-full hover:bg-brand-ink-hover transition-colors"
                 >
                   {t('searchPage.createFreeAccount')}
                 </Link>
                 <Link
                   to="/auth/login"
-                  className="px-6 py-3 bg-white text-[#5EA3C0] font-semibold rounded-full border-2 border-[#5EA3C0] hover:bg-blue-50 transition-colors"
+                  className="px-6 py-3 bg-white text-brand-ink font-semibold rounded-full border-2 border-brand hover:bg-blue-50 transition-colors"
                 >
                   {t('searchPage.login')}
                 </Link>
@@ -288,7 +292,7 @@ export default function SearchPage() {
                 })
                 search()
               }}
-              className="text-[#5EA3C0] hover:text-[#4A8299] font-medium"
+              className="text-brand-ink hover:text-brand-ink-hover font-medium"
             >
               {t('searchPage.resetFilters')}
             </button>

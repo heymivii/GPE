@@ -106,12 +106,12 @@ export default function DocumentsVault({ projectId, procedureTrackingId, compact
     <div className={compact ? '' : 'bg-white rounded-2xl border border-gray-100 shadow-sm p-6'}>
       {!compact && (
         <div className="flex items-center gap-3 mb-1">
-          <div className="p-2 bg-[#5EA3C0]/10 rounded-xl text-[#5EA3C0]">
+          <div className="p-2 bg-brand-ink/10 rounded-xl text-brand-ink">
             <FolderLock className="w-5 h-5" />
           </div>
           <div>
             <h2 className="text-lg font-semibold text-gray-900">{t('documents.title')}</h2>
-            <p className="text-xs text-gray-400 flex items-center gap-1">
+            <p className="text-xs text-gray-500 flex items-center gap-1">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
               {t('documents.subtitle')}
             </p>
@@ -128,7 +128,7 @@ export default function DocumentsVault({ projectId, procedureTrackingId, compact
           id={`doctype-${projectId}-${procedureTrackingId ?? 'p'}`}
           value={docType}
           onChange={(e) => setDocType(e.target.value)}
-          className="flex-shrink-0 px-2.5 py-1.5 border border-gray-300 rounded-lg text-sm bg-white focus:border-[#5EA3C0] sm:w-44"
+          className="flex-shrink-0 px-2.5 py-1.5 border border-gray-300 rounded-lg text-sm bg-white focus:border-brand sm:w-44"
         >
           {DOC_TYPES.map((k) => (
             <option key={k} value={k}>
@@ -150,11 +150,11 @@ export default function DocumentsVault({ projectId, procedureTrackingId, compact
             handleFiles(e.dataTransfer.files);
           }}
           className={`flex-1 flex items-center justify-center gap-2 rounded-lg border-2 border-dashed cursor-pointer transition-colors py-2.5 px-3 ${
-            dragOver ? 'border-[#5EA3C0] bg-[#5EA3C0]/5' : 'border-gray-200 hover:border-gray-300'
+            dragOver ? 'border-brand bg-brand-ink/5' : 'border-gray-200 hover:border-gray-300'
           }`}
         >
           {uploadMutation.isPending ? (
-            <Loader2 className="w-5 h-5 text-[#5EA3C0] animate-spin" />
+            <Loader2 className="w-5 h-5 text-brand-ink animate-spin" />
           ) : (
             <UploadCloud className="w-5 h-5 text-gray-400" />
           )}
@@ -162,7 +162,7 @@ export default function DocumentsVault({ projectId, procedureTrackingId, compact
             <p className="text-sm text-gray-600">
               {uploadMutation.isPending ? t('documents.uploading') : t('documents.dropzone')}
             </p>
-            <p className="text-[11px] text-gray-400">{t('documents.constraints')}</p>
+            <p className="text-[11px] text-gray-500">{t('documents.constraints')}</p>
           </div>
           <input
             ref={inputRef}
@@ -180,11 +180,11 @@ export default function DocumentsVault({ projectId, procedureTrackingId, compact
       {/* Liste */}
       <div className="mt-4 space-y-2">
         {isLoading ? (
-          <div className="flex justify-center py-4 text-gray-400">
+          <div className="flex justify-center py-4 text-gray-500">
             <Loader2 className="w-5 h-5 animate-spin" />
           </div>
         ) : docs.length === 0 ? (
-          <p className="text-sm text-gray-400 text-center py-4">{t('documents.empty')}</p>
+          <p className="text-sm text-gray-500 text-center py-4">{t('documents.empty')}</p>
         ) : (
           docs.map((doc) => (
             <div
@@ -208,21 +208,21 @@ export default function DocumentsVault({ projectId, procedureTrackingId, compact
                 <p className="text-sm font-semibold text-gray-800 truncate">
                   {typeLabel(doc.docType)}
                 </p>
-                <p className="text-xs text-gray-400 truncate">
+                <p className="text-xs text-gray-500 truncate">
                   {doc.originalName} · {fmtSize(doc.sizeBytes)} ·{' '}
                   {new Date(doc.createdAt).toLocaleDateString()}
                 </p>
               </div>
               <button
                 onClick={() => handleDownload(doc)}
-                className="p-1.5 text-gray-400 hover:text-[#5EA3C0] hover:bg-[#5EA3C0]/10 rounded-lg transition-colors"
+                className="p-1.5 text-gray-500 hover:text-brand-ink hover:bg-brand-ink/10 rounded-lg transition-colors"
                 title={t('documents.download')}
               >
                 <Download className="w-4 h-4" />
               </button>
               <button
                 onClick={() => deleteMutation.mutate(doc.idDocument)}
-                className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                 title={t('documents.delete')}
               >
                 <Trash2 className="w-4 h-4" />

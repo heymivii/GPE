@@ -32,12 +32,12 @@ function StatTile({
   if (value === null || value === undefined) return null;
   return (
     <div className="rounded-xl border border-gray-100 bg-white px-4 py-3">
-      <p className="text-[11px] font-medium uppercase tracking-wide text-gray-400">{label}</p>
+      <p className="text-[11px] font-medium uppercase tracking-wide text-gray-500">{label}</p>
       <p className="mt-1 text-xl font-bold text-gray-900">
         {value.toLocaleString('fr-FR', { maximumFractionDigits: 2 })}
-        {suffix && <span className="ml-1 text-sm font-medium text-gray-400">{suffix}</span>}
+        {suffix && <span className="ml-1 text-sm font-medium text-gray-500">{suffix}</span>}
       </p>
-      {hint && <p className="mt-0.5 text-[11px] text-gray-400">{hint}</p>}
+      {hint && <p className="mt-0.5 text-[11px] text-gray-500">{hint}</p>}
     </div>
   );
 }
@@ -106,7 +106,7 @@ export default function CityDetailPage() {
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#FAFAFA]">
-        <Loader2 className="h-10 w-10 animate-spin text-[#5EA3C0]" />
+        <Loader2 className="h-10 w-10 animate-spin text-brand-ink" />
       </div>
     );
   }
@@ -118,7 +118,7 @@ export default function CityDetailPage() {
         <h1 className="mb-2 text-lg font-bold text-gray-900">{t('cityDetail.notFound')}</h1>
         <Link
           to={countrySlug ? `/destinations/${countrySlug}` : '/destinations'}
-          className="text-sm font-semibold text-[#5EA3C0] hover:underline"
+          className="text-sm font-semibold text-brand-ink hover:underline"
         >
           {t('cityDetail.backToCountry')}
         </Link>
@@ -213,7 +213,7 @@ export default function CityDetailPage() {
                 value={qualityOfLife.propertyPriceToIncome}
               />
             </div>
-            <p className="mt-4 text-[11px] leading-relaxed text-gray-400">
+            <p className="mt-4 text-[11px] leading-relaxed text-gray-500">
               {t('cityDetail.indexScale')}
             </p>
           </Section>
@@ -255,7 +255,7 @@ export default function CityDetailPage() {
         )}
 
         {!qualityOfLife && !propertyInvestment && !isCostOfLivingLoading && (
-          <p className="pt-2 text-center text-sm text-gray-400">{t('cityDetail.partialData')}</p>
+          <p className="pt-2 text-center text-sm text-gray-500">{t('cityDetail.partialData')}</p>
         )}
       </div>
     </div>

@@ -51,7 +51,7 @@ export default function VerifyEmailPage() {
     <div className="text-center">
       {status === 'pending' && (
         <>
-          <Loader2 className="w-10 h-10 text-[#5EA3C0] animate-spin mx-auto mb-4" />
+          <Loader2 className="w-10 h-10 text-brand-ink animate-spin mx-auto mb-4" />
           <p className="text-gray-500">Confirmation de votre adresse en cours…</p>
         </>
       )}
@@ -63,7 +63,7 @@ export default function VerifyEmailPage() {
           <p className="text-sm text-gray-500 mb-6">{message}</p>
           <Link
             to="/dashboard"
-            className="inline-block px-5 py-2.5 bg-[#5EA3C0] hover:bg-[#4891b0] text-white rounded-lg text-sm font-semibold transition-colors"
+            className="inline-block px-5 py-2.5 bg-brand-ink hover:bg-brand-ink-hover text-white rounded-lg text-sm font-semibold transition-colors"
           >
             Aller au tableau de bord
           </Link>

@@ -163,11 +163,11 @@ export default function ResetPasswordForm() {
                 {t("auth.resetPassword.strength")} <span className="font-medium">{getStrengthText()}</span>
               </p>
               <div className="flex gap-1 text-xs">
-                <span className={passwordStrength.checks.length ? "text-green-600" : "text-gray-400"}>8+</span>
-                <span className={passwordStrength.checks.uppercase ? "text-green-600" : "text-gray-400"}>A</span>
-                <span className={passwordStrength.checks.lowercase ? "text-green-600" : "text-gray-400"}>a</span>
-                <span className={passwordStrength.checks.number ? "text-green-600" : "text-gray-400"}>0</span>
-                <span className={passwordStrength.checks.special ? "text-green-600" : "text-gray-400"}>!</span>
+                <span className={passwordStrength.checks.length ? "text-green-600" : "text-gray-500"}>8+</span>
+                <span className={passwordStrength.checks.uppercase ? "text-green-600" : "text-gray-500"}>A</span>
+                <span className={passwordStrength.checks.lowercase ? "text-green-600" : "text-gray-500"}>a</span>
+                <span className={passwordStrength.checks.number ? "text-green-600" : "text-gray-500"}>0</span>
+                <span className={passwordStrength.checks.special ? "text-green-600" : "text-gray-500"}>!</span>
               </div>
             </div>
           </div>
@@ -193,7 +193,7 @@ export default function ResetPasswordForm() {
       </button>
 
       <div className="text-center">
-        <Link to="/auth/login" className="text-sm text-[#5EA3C0] hover:underline">
+        <Link to="/auth/login" className="text-sm text-brand-ink hover:underline">
           {t("auth.resetPassword.backToLogin")}
         </Link>
       </div>

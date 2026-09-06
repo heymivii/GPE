@@ -56,7 +56,7 @@ export default function NotificationBell() {
     new Date(d).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
 
   const typeDot = (n: AppNotification) =>
-    n.notifType === 'alert' ? 'bg-amber-400' : 'bg-[#5EA3C0]';
+    n.notifType === 'alert' ? 'bg-amber-400' : 'bg-brand-ink';
 
   return (
     <div className="relative" ref={panelRef}>
@@ -82,11 +82,11 @@ export default function NotificationBell() {
         >
           <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
             <span className="text-sm font-bold text-gray-800">Notifications</span>
-            <span className="text-xs text-gray-400">{unread.length} non lue(s)</span>
+            <span className="text-xs text-gray-500">{unread.length} non lue(s)</span>
           </div>
           <div className="max-h-96 overflow-y-auto divide-y divide-gray-50">
             {notifications.length === 0 ? (
-              <p className="px-4 py-8 text-center text-sm text-gray-400">Aucune notification.</p>
+              <p className="px-4 py-8 text-center text-sm text-gray-500">Aucune notification.</p>
             ) : (
               notifications.slice(0, 30).map((n) => (
                 <div
@@ -96,13 +96,13 @@ export default function NotificationBell() {
                   <span className={`mt-1.5 w-2 h-2 rounded-full flex-shrink-0 ${typeDot(n)}`} />
                   <div className="flex-1 min-w-0">
                     <p className="text-xs text-gray-800 leading-snug">{n.message}</p>
-                    <p className="text-[10px] text-gray-400 mt-1">{formatDate(n.sentAt)}</p>
+                    <p className="text-[10px] text-gray-500 mt-1">{formatDate(n.sentAt)}</p>
                   </div>
                   {!n.isRead && (
                     <button
                       type="button"
                       onClick={() => markReadMutation.mutate(n.idNotification)}
-                      className="p-1 rounded hover:bg-gray-100 text-gray-400 hover:text-green-600 transition-colors flex-shrink-0"
+                      className="p-1 rounded hover:bg-gray-100 text-gray-500 hover:text-green-600 transition-colors flex-shrink-0"
                       title="Marquer comme lue"
                     >
                       <Check className="w-3.5 h-3.5" />

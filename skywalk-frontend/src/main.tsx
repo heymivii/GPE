@@ -15,8 +15,11 @@ import { CostOfLivingProvider } from './contexts/CostOfLivingContext';
 import { CurrencyProvider } from './contexts/CurrencyContext';
 import { ActiveProjectProvider } from './contexts/ActiveProjectContext';
 import { useSupportedCountries } from './hooks/useSupportedCountries';
+import { retryQuery } from './lib/queryRetry';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: retryQuery } },
+});
 
 /**
  * Invisible component that runs useSupportedCountries() once at app startup.

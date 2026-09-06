@@ -22,7 +22,7 @@ export default function SubstepLinks({ links }: { links: ExtractedLink[] }) {
             ? { target: '_blank', rel: 'noopener noreferrer' }
             : {})}
           onClick={(e) => e.stopPropagation()}
-          className="text-xs text-gray-400 hover:text-gray-600 hover:underline flex items-center gap-1 whitespace-nowrap"
+          className="text-xs text-gray-500 hover:text-gray-600 hover:underline flex items-center gap-1 whitespace-nowrap"
         >
           {link.kind === 'email' && <Mail className="w-3 h-3 flex-shrink-0" />}
           {link.label}

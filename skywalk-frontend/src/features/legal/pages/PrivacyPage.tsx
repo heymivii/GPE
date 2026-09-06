@@ -82,7 +82,7 @@ export default function PrivacyPage() {
           Vous disposez d'un droit d'accès, de rectification, d'effacement, de portabilité et
           d'opposition sur vos données (RGPD, articles 15 à 22). Le profil permet déjà de consulter,
           corriger et supprimer vos informations. Pour toute autre demande, écrivez à{' '}
-          <a href="mailto:contact@skywalk.com" className="font-medium text-[#5EA3C0] hover:underline">
+          <a href="mailto:contact@skywalk.com" className="font-medium text-brand-ink hover:underline">
             contact@skywalk.com
           </a>
           .
@@ -93,7 +93,7 @@ export default function PrivacyPage() {
             href="https://www.cnil.fr"
             target="_blank"
             rel="noopener noreferrer"
-            className="font-medium text-[#5EA3C0] hover:underline"
+            className="font-medium text-brand-ink hover:underline"
           >
             cnil.fr
           </a>

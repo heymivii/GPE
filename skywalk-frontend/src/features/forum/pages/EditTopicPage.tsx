@@ -258,7 +258,7 @@ export default function EditTopicPage() {
                   }`}
                 >
                   <div className="flex items-center gap-2">
-                    <category.icon className="w-5 h-5 text-[#5EA3C0]" />
+                    <category.icon className="w-5 h-5 text-brand-ink" />
                     <span className="font-medium">{category.name}</span>
                   </div>
                 </button>
