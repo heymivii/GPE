@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import type { CityDestination, CostOfLivingData } from '../types';
 import { getLocale } from '../../../data/supportedCountries';
+import { getCityId } from '../cityId';
 
 
 const fmtPrice = (v: number | undefined | null, locale: string, decimals = 0): string =>
@@ -278,7 +279,7 @@ export default function CostOfLivingTab({ cities, countryCurrency, averageHousin
         {citiesWithData.map((city) => {
           const col = city.costOfLiving!;
           const cur = col.currency?.code || countryCurrency || '€';
-          const cityId = city.city_id || city.id || 0;
+          const cityId = getCityId(city);
           const isExpanded = expandedCities[cityId] !== false;
 
           return (

@@ -3703,5 +3703,41 @@
     "report": "Report this member",
     "reported": "Member reported",
     "member": "Member"
+  },
+  "cityDetail": {
+    "notFound": "City not found",
+    "backToCountry": "Back to country",
+    "capital": "Capital",
+    "inhabitants": "inhabitants",
+    "minutes": "min",
+    "costOfLiving": "Cost of living",
+    "costOfLivingDesc": "Average local prices, by category.",
+    "qualityOfLife": "Quality of life",
+    "qualityOfLifeDesc": "Comparative indices published by Numbeo.",
+    "property": "Property",
+    "propertyDesc": "Housing affordability and price-to-income ratio.",
+    "noData": "No cost-of-living data for this city yet.",
+    "partialData": "More indicators will be added for this city as they are published.",
+    "indexScale": "Numbeo indices are relative values across cities — compare them with each other rather than reading them as a score out of 100.",
+    "qol": {
+      "global": "Overall index",
+      "safety": "Safety",
+      "healthCare": "Health care",
+      "purchasingPower": "Purchasing power",
+      "pollution": "Pollution",
+      "climate": "Climate",
+      "traffic": "Commute time",
+      "costIndex": "Cost-of-living index",
+      "priceToIncome": "Property price to income"
+    },
+    "prop": {
+      "priceToIncome": "Price to annual income",
+      "priceToIncomeHint": "Years of income to buy a home",
+      "mortgagePct": "Mortgage to income",
+      "loanAffordability": "Loan affordability",
+      "priceToRentCentre": "Price to rent (centre)",
+      "priceToRentHint": "Years of rent equal to the purchase price",
+      "priceToRentOutside": "Price to rent (outside)"
+    }
   }
 }

@@ -34,6 +34,7 @@ import { useAuth } from '../../../hooks/useAuth';
 import AuthPromptCard from '../../../components/AuthPromptCard';
 import CostOfLivingTab from '../components/CostOfLivingTab';
 import { ISO2_TO_ISO3, getLocale, getCurrentLocale } from '../../../data/supportedCountries';
+import { getCityId } from '../cityId';
 
 export function DestinationDetailPage() {
   const { countrySlug } = useParams<{ countrySlug: string }>();
@@ -202,7 +203,15 @@ export function DestinationDetailPage() {
                     {country.cities.length > 0 ? (
                       <div className="grid gap-6 sm:grid-cols-2">
                         {country.cities.map((city) => (
-                          <div key={city.city_id} className="group border border-gray-100 rounded-xl overflow-hidden hover:shadow-md transition-all">
+                          // Retour de recette : la carte entière est désormais un lien.
+                          // L'ancien <button> « Voir la ville » n'avait aucun onClick,
+                          // et la clé React tombait sur city.city_id (jamais renvoyé par
+                          // l'API, qui expose idCity) — donc undefined pour toutes.
+                          <Link
+                            key={getCityId(city)}
+                            to={`/destinations/${countrySlug}/villes/${getCityId(city)}`}
+                            className="group border border-gray-100 rounded-xl overflow-hidden hover:shadow-md transition-all block"
+                          >
                             <div className="relative h-40">
                               <img
                                 src={city.imageUrl || 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=800&q=80'}
@@ -217,11 +226,11 @@ export function DestinationDetailPage() {
                               <p className="text-gray-600 text-sm line-clamp-2 mb-4">
                                 {city.description || t('services.destinationDetail.discoverCity', { city: city.name })}
                               </p>
-                              <button className="text-[#5EA3C0] font-medium text-sm flex items-center hover:underline">
+                              <span className="text-[#5EA3C0] font-medium text-sm flex items-center group-hover:underline">
                                 {t('services.destinationDetail.viewCity')} <ArrowRight className="w-4 h-4 ml-1" />
-                              </button>
+                              </span>
                             </div>
-                          </div>
+                          </Link>
                         ))}
                       </div>
                     ) : (
