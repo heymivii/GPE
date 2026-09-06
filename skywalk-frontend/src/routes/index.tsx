@@ -21,6 +21,7 @@ import PublicRoute from '../components/PublicRoute';
 import ProfilePage from '../features/profile/pages/ProfilePage';
 import { DestinationsPage } from '../features/destinations/pages/DestinationsPage';
 import { DestinationDetailPage } from '../features/destinations/pages/DestinationDetailPage';
+import CityDetailPage from '../features/destinations/pages/CityDetailPage';
 import ProjectsPage from '../features/projects/pages/ProjectsPage';
 import ProjectDetailPage from '../features/projects/pages/ProjectDetailPage';
 import ChecklistPage from '../features/projects/pages/ChecklistPage';
@@ -87,6 +88,8 @@ export const router = createBrowserRouter([
       { path: 'forum', element: <ForumPage /> },
       { path: 'destinations', element: <DestinationsPage /> },
       { path: 'destinations/:countrySlug', element: <DestinationDetailPage /> },
+      // Fiche ville : coût de la vie, qualité de vie et immobilier détaillés
+      { path: 'destinations/:countrySlug/villes/:cityId', element: <CityDetailPage /> },
       { path: 'comparison', element: <CountryComparison /> },
       { path: 'blog', element: <BlogPage /> },
       { path: 'blog/:id', element: <BlogArticlePage /> },

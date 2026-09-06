@@ -3703,5 +3703,41 @@
     "report": "Signaler ce membre",
     "reported": "Membre signalé",
     "member": "Membre"
+  },
+  "cityDetail": {
+    "notFound": "Ville introuvable",
+    "backToCountry": "Retour au pays",
+    "capital": "Capitale",
+    "inhabitants": "habitants",
+    "minutes": "min",
+    "costOfLiving": "Coût de la vie",
+    "costOfLivingDesc": "Prix moyens relevés sur place, par catégorie.",
+    "qualityOfLife": "Qualité de vie",
+    "qualityOfLifeDesc": "Indices comparatifs publiés par Numbeo.",
+    "property": "Immobilier",
+    "propertyDesc": "Accessibilité du logement et rapport prix / revenus.",
+    "noData": "Aucune donnée de coût de la vie pour cette ville.",
+    "partialData": "D'autres indicateurs seront ajoutés pour cette ville dès qu'ils seront publiés.",
+    "indexScale": "Indices Numbeo : valeurs relatives entre villes, à comparer entre elles plutôt qu'à lire comme une note sur 100.",
+    "qol": {
+      "global": "Indice global",
+      "safety": "Sécurité",
+      "healthCare": "Santé",
+      "purchasingPower": "Pouvoir d'achat",
+      "pollution": "Pollution",
+      "climate": "Climat",
+      "traffic": "Trajet domicile-travail",
+      "costIndex": "Indice du coût de la vie",
+      "priceToIncome": "Prix immobilier / revenu"
+    },
+    "prop": {
+      "priceToIncome": "Prix / revenu annuel",
+      "priceToIncomeHint": "Années de revenu pour acheter un logement",
+      "mortgagePct": "Mensualité / revenu",
+      "loanAffordability": "Accessibilité au crédit",
+      "priceToRentCentre": "Prix / loyer (centre)",
+      "priceToRentHint": "Années de loyer équivalentes au prix d'achat",
+      "priceToRentOutside": "Prix / loyer (périphérie)"
+    }
   }
 }
