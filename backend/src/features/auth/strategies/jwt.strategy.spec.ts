@@ -47,6 +47,26 @@ describe('JwtStrategy', () => {
         role: 'admin',
       });
     });
+
+    // Régression sécurité : les jetons à usage unique sont signés avec le même
+    // secret que les jetons de session. Avant ce contrôle, un lien de
+    // confirmation d'adresse reçu par email ouvrait une session complète
+    // (reproduit sur l'API : GET /auth/profile renvoyait le profil).
+    it.each([
+      ['email-verification', "lien de confirmation d'adresse reçu par email"],
+      ['reset', 'lien de réinitialisation de mot de passe'],
+      ['refresh', 'jeton de rafraîchissement (7 jours)'],
+    ])('refuse un jeton de type « %s » comme jeton de session (%s)', async (type) => {
+      await expect(strategy.validate({ sub: 1, type })).rejects.toThrow(
+        UnauthorizedException,
+      );
+    });
+
+    it('refuse tout jeton typé, même un type inconnu', async () => {
+      await expect(
+        strategy.validate({ sub: 1, type: 'un-futur-usage' }),
+      ).rejects.toThrow(UnauthorizedException);
+    });
   });
 
   describe('jwtFromRequest extractor', () => {
