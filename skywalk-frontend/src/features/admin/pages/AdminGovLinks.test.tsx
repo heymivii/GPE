@@ -4,6 +4,13 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import AdminGovLinks from './AdminGovLinks';
 
+// La génération est désactivée par défaut ; ces tests l'exercent, on l'active ici
+// et on la coupe dans le dernier test.
+const features = { GENERATION_ENABLED: true };
+vi.mock('../../../config/features', () => ({
+  get GENERATION_ENABLED() { return features.GENERATION_ENABLED; },
+}));
+
 vi.mock('react-hot-toast', () => ({
   default: { success: vi.fn(), error: vi.fn() },
 }));
@@ -247,5 +254,17 @@ describe('AdminGovLinks', () => {
     expect(mutationMocks[4]).toHaveBeenCalledWith(
       expect.objectContaining({ id: 1, enabled: true }),
     );
+  });
+
+  it('masque toute génération quand l’interrupteur est coupé, mais explique pourquoi', () => {
+    features.GENERATION_ENABLED = false;
+    try {
+      setup();
+      render(<AdminGovLinks />);
+      expect(screen.queryByText('Générer')).not.toBeInTheDocument(); expect(screen.queryByText('Régénérer')).not.toBeInTheDocument(); expect(screen.queryByText('Relancer')).not.toBeInTheDocument();
+      expect(screen.getByText(/Génération automatique désactivée/)).toBeInTheDocument();
+    } finally {
+      features.GENERATION_ENABLED = true;
+    }
   });
 });

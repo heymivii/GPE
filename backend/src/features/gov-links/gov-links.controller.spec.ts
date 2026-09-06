@@ -1,3 +1,4 @@
+process.env.GENERATION_ENABLED = 'true'; // la génération est verrouillée par défaut
 import {
   BadRequestException,
   ServiceUnavailableException,
@@ -216,5 +217,18 @@ describe('GovLinksController', () => {
       'visa',
     );
     expect(result).toEqual(mockRun(7, 'FR'));
+  });
+});
+
+describe('verrou de génération', () => {
+  it('refuse toute génération quand GENERATION_ENABLED n’est pas « true »', async () => {
+    const { assertGenerationEnabled } = await import('./generation-flag');
+    const avant = process.env.GENERATION_ENABLED;
+    delete process.env.GENERATION_ENABLED;
+    try {
+      expect(() => assertGenerationEnabled()).toThrow(/désactivée/);
+    } finally {
+      process.env.GENERATION_ENABLED = avant;
+    }
   });
 });

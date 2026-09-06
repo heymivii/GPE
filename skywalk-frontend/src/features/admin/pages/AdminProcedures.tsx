@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import type { CountryDestination } from '../../destinations/types';
 import { useSupportedCountries } from '../../../hooks/useSupportedCountries';
 
+import { GENERATION_ENABLED } from '../../../config/features';
 export default function AdminProcedures() {
   const queryClient = useQueryClient();
   const [selectedCountryId, setSelectedCountryId] = useState<number | null>(null);
@@ -258,6 +259,7 @@ export default function AdminProcedures() {
       </div>
 
       {/* Generate from official links */}
+      {GENERATION_ENABLED ? (
       <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-5 space-y-3">
         <div className="flex items-start gap-3">
           <Sparkles className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
@@ -294,6 +296,11 @@ export default function AdminProcedures() {
           </button>
         </div>
       </div>
+      ) : (
+      <div className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-900">
+        <strong>Génération automatique désactivée.</strong> Le contenu des checklists est rédigé et vérifié à la main : validez les liens et modifiez les étapes directement — une régénération écraserait ce travail.
+      </div>
+      )}
 
       {/* Procedures Table */}
       {proceduresLoading ? (

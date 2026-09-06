@@ -4,6 +4,13 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import AdminProcedures from './AdminProcedures';
 
 const mockGetAllDestinations = vi.fn();
+// La génération est désactivée par défaut ; ces tests l'exercent, on l'active ici
+// et on la coupe dans le dernier test.
+const features = { GENERATION_ENABLED: true };
+vi.mock('../../../config/features', () => ({
+  get GENERATION_ENABLED() { return features.GENERATION_ENABLED; },
+}));
+
 vi.mock('../../../api/destinations', () => ({
   destinationsApi: { getAll: (...a: any[]) => mockGetAllDestinations(...a) },
 }));
@@ -257,5 +264,16 @@ describe('AdminProcedures', () => {
     await screen.findByText(/Aucune démarche configurée/);
     fireEvent.click(screen.getByText('Rafraîchir'));
     expect(mockGetAllProcedures).toHaveBeenCalledTimes(2);
+  });
+
+  it('masque toute génération quand l’interrupteur est coupé, mais explique pourquoi', () => {
+    features.GENERATION_ENABLED = false;
+    try {
+      renderPage();
+      expect(screen.queryByText('Générer')).not.toBeInTheDocument();
+      expect(screen.getByText(/Génération automatique désactivée/)).toBeInTheDocument();
+    } finally {
+      features.GENERATION_ENABLED = true;
+    }
   });
 });

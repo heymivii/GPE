@@ -20,6 +20,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { AdminLogService } from '../admin-log/admin-log.service';
 
+import { assertGenerationEnabled } from '../gov-links/generation-flag';
 @ApiTags('Admin Procedure')
 @Controller('admin-procedure')
 export class AdminProcedureController {
@@ -33,6 +34,7 @@ export class AdminProcedureController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   async generateFromGovLinks(@Query('country') country: string, @Request() req) {
+    assertGenerationEnabled();
     const procedures = await this.adminProcedureGeneratorService.generateFromGovLinks(country);
     await this.adminLogService.log(
       req.user.userId,

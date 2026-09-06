@@ -1,3 +1,4 @@
+process.env.GENERATION_ENABLED = 'true'; // la génération est verrouillée par défaut
 import { Test, TestingModule } from '@nestjs/testing';
 import { AdminProcedureController } from './admin-procedure.controller';
 import { AdminProcedureService } from './admin-procedure.service';

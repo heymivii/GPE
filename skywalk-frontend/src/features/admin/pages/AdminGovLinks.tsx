@@ -6,6 +6,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { AlertTriangle, Ban, CheckCircle2, Clock, ExternalLink, Link2, Loader2, RefreshCw, Settings2, XCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 
+import { GENERATION_ENABLED } from '../../../config/features';
 /**
  * Admin panel to configure WHICH countries the engine processes (country.govLinkEnabled)
  * and their official-domain allowlist — the config removed from the country modal lives here.
@@ -377,6 +378,7 @@ export default function AdminGovLinks() {
       {tab === 'links' && (
       <>
       {/* Generation Panel */}
+      {GENERATION_ENABLED ? (
       <div className="bg-white rounded-2xl border border-gray-150 shadow-sm p-6 space-y-4">
         <h2 className="text-base font-bold text-gray-800 flex items-center gap-2">
           <RefreshCw className="w-4 h-4 text-brand-ink" />
@@ -435,6 +437,11 @@ export default function AdminGovLinks() {
           </button>
         </div>
       </div>
+      ) : (
+      <div className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-900">
+        <strong>Génération automatique désactivée.</strong> Le contenu des checklists est rédigé et vérifié à la main : validez les liens et modifiez les étapes directement — une régénération écraserait ce travail.
+      </div>
+      )}
       </>
       )}
 
@@ -467,7 +474,7 @@ export default function AdminGovLinks() {
               ))}
             </select>
           </div>
-          <button
+          {GENERATION_ENABLED && (<button
             type="button"
             onClick={() => generateCountryMutation.mutate(activeRunCountry)}
             disabled={generateCountryMutation.isPending || displayRun?.status === 'running'}
@@ -484,7 +491,7 @@ export default function AdminGovLinks() {
               <RefreshCw className="w-4 h-4" />
             )}
             Générer pour {activeRunCountry}
-          </button>
+          </button>)}
           <span className="text-xs text-gray-500 pb-2.5">
             Le dernier run du pays sélectionné s'affiche automatiquement ci-dessous.
           </span>
@@ -590,7 +597,7 @@ export default function AdminGovLinks() {
                           {r.message ?? '—'}
                         </td>
                         <td className="px-4 py-3">
-                          <button
+                          {GENERATION_ENABLED && (<button
                             type="button"
                             onClick={() =>
                               rerunMutation.mutate({ runId: displayRun.id, category: r.category })
@@ -609,7 +616,7 @@ export default function AdminGovLinks() {
                               <RefreshCw className="w-3.5 h-3.5" />
                             )}
                             Relancer
-                          </button>
+                          </button>)}
                         </td>
                       </tr>
                     );
@@ -734,7 +741,7 @@ export default function AdminGovLinks() {
                             </button>
                           </>
                         )}
-                        <button
+                        {GENERATION_ENABLED && (<button
                           type="button"
                           onClick={() => handleRegenerate(link.countryCode, link.category)}
                           disabled={generateMutation.isPending}
@@ -746,7 +753,7 @@ export default function AdminGovLinks() {
                             <RefreshCw className="w-3.5 h-3.5" />
                           )}
                           Régénérer
-                        </button>
+                        </button>)}
                         </div>
                       </td>
                     </tr>

@@ -18,6 +18,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { CANONICAL_CATEGORIES } from './gov-links.types';
 
+import { assertGenerationEnabled } from './generation-flag';
 @ApiTags('Gov Links')
 @Controller('gov-links')
 export class GovLinksController {
@@ -88,6 +89,7 @@ export class GovLinksController {
     @Query('country') country: string,
     @Query('category') category: string,
   ) {
+    assertGenerationEnabled();
     const cc = (country ?? '').toUpperCase();
     if (!(await this.service.isSupported(cc))) {
       throw new BadRequestException(`Unsupported country: ${country ?? ''}`);
@@ -107,6 +109,7 @@ export class GovLinksController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   async generateCountry(@Query('country') country: string) {
+    assertGenerationEnabled();
     const cc = (country ?? '').toUpperCase();
     if (!(await this.service.isSupported(cc))) {
       throw new BadRequestException(`Unsupported country: ${country ?? ''}`);
@@ -145,6 +148,7 @@ export class GovLinksController {
     @Param('id') id: string,
     @Query('category') category: string,
   ) {
+    assertGenerationEnabled();
     const run = await this.orchestrator.findById(+id);
     if (!run) {
       throw new BadRequestException(`Run not found: ${id}`);
