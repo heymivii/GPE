@@ -15,6 +15,7 @@ import Testimonials from '../components/Testimonials';
 import FAQ from '../components/FAQ';
 import OfficialSources from '../components/OfficialSources';
 import { useAuth } from '../../../hooks/useAuth';
+import ExpertsHighlight from '../components/ExpertsHighlight';
 
 export default function LandingPage() {
   const { t } = useTranslation();
@@ -110,6 +111,9 @@ export default function LandingPage() {
       <HowItWorks />
 
       <OfficialSources />
+
+      {/* Les experts : dire AVANT l'inscription qu'on peut parler à quelqu'un */}
+      <ExpertsHighlight />
 
       <LandingToolsSection />
 

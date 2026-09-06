@@ -3,6 +3,7 @@ import { Users, Briefcase, MessageSquare, BookOpen, MapPin } from 'lucide-react'
 import { useTranslation } from 'react-i18next';
 import type { CountryDestination } from '../types';
 import { getArticlesCountByCountry } from '../../../data/blog-data';
+import { useCountryName, useCountryNameIn } from '../../../hooks/useCountryName';
 
 interface CountryCardProps {
   country: CountryDestination;
@@ -23,7 +24,9 @@ export function CountryCard({ country }: CountryCardProps) {
     return n.toLocaleString(i18n.language === 'fr' ? 'fr-FR' : 'en-US');
   };
 
-  const name = country.countryName || 'Unknown';
+  const countryName = useCountryName();
+  const countryIn = useCountryNameIn();
+  const name = countryName(country.countryName) || 'Unknown';
   const countrySlug = country.isoCode || name.toLowerCase();
   const blogCount = getArticlesCountByCountry(country.isoCode || '');
 
@@ -35,7 +38,7 @@ export function CountryCard({ country }: CountryCardProps) {
       <div className="relative h-48 overflow-hidden">
         <img
           src={country.imageUrl || 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80'}
-          alt={country.countryName}
+          alt={name}
           className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
         />
         <div className="absolute top-4 left-4">
@@ -43,11 +46,11 @@ export function CountryCard({ country }: CountryCardProps) {
             {country.flagUrl && (
               <img
                 src={country.flagUrl}
-                alt={country.countryName}
+                alt={name}
                 className="w-4 h-4 mr-1.5 rounded-full object-cover"
               />
             )}
-            {country.countryName}
+            {name}
           </span>
         </div>
       </div>
@@ -56,7 +59,7 @@ export function CountryCard({ country }: CountryCardProps) {
         <div className="flex items-start justify-between mb-3">
           <div>
             <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
-              {country.countryName}
+              {name}
             </h3>
             <div className="flex items-center mt-1 text-sm text-gray-500">
               <MapPin className="w-3.5 h-3.5 mr-1" />
@@ -66,7 +69,7 @@ export function CountryCard({ country }: CountryCardProps) {
         </div>
 
         <p className="text-sm text-gray-600 mb-6 line-clamp-2 min-h-[40px]">
-          {country.description || t('destinationsPage.card.defaultDescription', { country: country.countryName })}
+          {country.description || t('destinationsPage.card.defaultDescription', { country: countryIn(country.countryName) })}
         </p>
 
         <div className="grid grid-cols-2 gap-3 mt-auto pt-4 border-t border-gray-50">

@@ -7,6 +7,7 @@ import type { Topology, GeometryCollection } from 'topojson-specification';
 import type { Feature, Geometry } from 'geojson';
 import worldTopo from 'world-atlas/countries-110m.json';
 import { SUPPORTED_COUNTRIES, type SupportedCountry } from '../../../data/supportedCountries';
+import { ISO_NUMERIC_TO_ALPHA2 } from '../../../data/isoNumericToAlpha2';
 
 const WIDTH = 960;
 const HEIGHT = 460;
@@ -77,7 +78,29 @@ type CountryFeature = Feature<Geometry, { name: string }> & { id?: string | numb
  */
 export default function WorldMap() {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+
+  // Le fond de carte ne fournit que des noms anglais. Intl.DisplayNames les
+  // traduit dans la langue de l'interface, mais n'accepte que les codes
+  // alpha-2 — d'où la table de conversion depuis le code numérique du fond.
+  const countryName = useMemo(() => {
+    let display: Intl.DisplayNames | null = null;
+    try {
+      display = new Intl.DisplayNames([i18n.language], { type: 'region' });
+    } catch {
+      display = null;
+    }
+    return (numericId: string, fallback: string): string => {
+      const alpha2 = ISO_NUMERIC_TO_ALPHA2[numericId];
+      if (!alpha2 || !display) return fallback;
+      try {
+        return display.of(alpha2) ?? fallback;
+      } catch {
+        // Territoires sans code ISO officiel (Kosovo, Somaliland…)
+        return fallback;
+      }
+    };
+  }, [i18n.language]);
   const [hover, setHover] = useState<HoverState | null>(null);
 
   const { countries, projection, pathFor, markers, graticulePath, spherePath } = useMemo(() => {
@@ -88,10 +111,19 @@ export default function WorldMap() {
       (f) => String(f.id) !== '010',
     );
 
-    const projection = geoNaturalEarth1().fitSize([WIDTH, HEIGHT], {
-      type: 'FeatureCollection',
-      features: countries,
-    } as never);
+    // fitExtent avec une marge NÉGATIVE = zoom : la carte déborde du cadre, ce
+    // qui grossit les pays au lieu de les laisser flotter au milieu.
+    // 6 % est le maximum sans rogner une destination : au-delà, la queue des
+    // Aléoutiennes (États-Unis, à l'extrême ouest) sort du cadre, et un pays
+    // colorié coupé se lit comme un bug d'affichage.
+    const ZOOM = 0.06;
+    const projection = geoNaturalEarth1().fitExtent(
+      [
+        [-WIDTH * ZOOM, -HEIGHT * ZOOM],
+        [WIDTH * (1 + ZOOM), HEIGHT * (1 + ZOOM)],
+      ],
+      { type: 'FeatureCollection', features: countries } as never,
+    );
     const path = geoPath(projection);
 
     const markers = SUPPORTED_COUNTRIES.flatMap((c) => {
@@ -144,7 +176,7 @@ export default function WorldMap() {
     setHover({
       x: e.clientX - rect.left,
       y: e.clientY - rect.top,
-      name: f.properties?.name ?? '',
+      name: countryName(String(f.id).padStart(3, '0'), f.properties?.name ?? ''),
       supported,
       territory,
     });
@@ -262,7 +294,9 @@ export default function WorldMap() {
               paintOrder="stroke"
               strokeLinejoin="round"
             >
-              {country.name}
+              {country.isoNumeric
+                ? countryName(country.isoNumeric, country.name)
+                : country.name}
             </text>
           </g>
         ))}
@@ -277,7 +311,7 @@ export default function WorldMap() {
           {hover.supported ? (
             <>
               <p className="text-sm font-semibold text-gray-900 whitespace-nowrap">
-                {hover.supported.flag} {hover.supported.name}
+                {hover.supported.flag} {hover.name || hover.supported.name}
                 {hover.territory && (
                   <span className="font-normal text-gray-500"> — {hover.territory}</span>
                 )}

@@ -4,7 +4,12 @@ import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import CityDetailPage from './CityDetailPage';
 
 vi.mock('react-i18next', () => ({
-  useTranslation: () => ({ t: (k: string) => k, i18n: { language: 'fr' } }),
+  useTranslation: () => ({
+    // i18next renvoie defaultValue quand la clé manque : le mock doit faire
+    // pareil, sinon les noms de pays traduits ressortent en clés techniques.
+    t: (k: string, o?: { defaultValue?: string }) => o?.defaultValue ?? k,
+    i18n: { language: 'fr' },
+  }),
 }));
 
 // L'onglet coût de la vie a son propre rendu (déjà testé ailleurs).
