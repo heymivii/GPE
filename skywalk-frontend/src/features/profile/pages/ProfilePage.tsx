@@ -1,5 +1,6 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useSearchParams } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { useProfile, useUpdateProfile, useDeleteAccount } from '../../../hooks/useProfile';
@@ -37,6 +38,7 @@ export default function ProfilePage() {
   const updateProfile = useUpdateProfile();
   const deleteAccount = useDeleteAccount();
 
+  const [searchParams] = useSearchParams();
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [formData, setFormData] = useState<UpdateProfileDto>({});
@@ -54,7 +56,7 @@ export default function ProfilePage() {
     }))
   }, [])
 
-  const startEditing = () => {
+  const startEditing = useCallback(() => {
     if (profile) {
       setFormData({
         firstName: profile.firstName,
@@ -68,7 +70,18 @@ export default function ProfilePage() {
       });
       setIsEditing(true);
     }
-  };
+  }, [profile]);
+
+  // Arrivée depuis le dashboard (« Compléter mon profil » → /profile?edit=1) :
+  // on ouvre le formulaire directement, sinon la personne atterrit sur une fiche
+  // en lecture seule et doit encore chercher le bouton « Modifier ».
+  const openedInEditMode = useRef(false);
+  useEffect(() => {
+    if (profile && searchParams.get('edit') === '1' && !openedInEditMode.current) {
+      openedInEditMode.current = true;
+      startEditing();
+    }
+  }, [profile, searchParams, startEditing]);
 
   const cancelEditing = () => {
     setIsEditing(false);

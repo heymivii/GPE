@@ -1,4 +1,5 @@
 import { CheckCircle, Clock, AlertTriangle, ArrowRight, Sparkles } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
 interface WelcomeSectionProps {
@@ -38,6 +39,16 @@ export default function WelcomeSection({
                   <p className="text-sm text-gray-500 mt-1 leading-relaxed">
                     {t('welcome.profileIncompleteDesc')}
                   </p>
+                  {/* Retour de recette : le message constatait le problème sans
+                      donner le moyen de le régler. `?edit=1` ouvre directement
+                      le formulaire, pas la fiche en lecture seule. */}
+                  <Link
+                    to="/profile?edit=1"
+                    className="group inline-flex items-center mt-3 text-sm font-semibold text-gray-900 hover:text-black"
+                  >
+                    {t('welcome.completeProfileCta')}
+                    <ArrowRight className="w-4 h-4 ml-1.5 transition-transform duration-300 group-hover:translate-x-1" />
+                  </Link>
                 </div>
               </div>
             )}

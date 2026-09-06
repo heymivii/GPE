@@ -2173,7 +2173,8 @@
     "personalizedChecklists": "Checklists personnalisées",
     "personalizedChecklistsDesc": "Ne manquez aucune étape administrative importante.",
     "timeSaving": "Gain de temps précieux",
-    "timeSavingDesc": "Accédez directement aux informations qui vous concernent."
+    "timeSavingDesc": "Accédez directement aux informations qui vous concernent.",
+    "completeProfileCta": "Compléter mon profil"
   },
   "authPages": {
     "loginTitle": "Bon retour parmi nous !",
