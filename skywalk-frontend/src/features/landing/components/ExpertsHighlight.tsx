@@ -1,25 +1,63 @@
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { BadgeCheck, ArrowRight, Star } from 'lucide-react';
+import { BadgeCheck, ArrowRight, MessageSquare, ShieldCheck, Globe2 } from 'lucide-react';
 import { useExperts } from '../../../hooks/useExperts';
 import { useCountryName } from '../../../hooks/useCountryName';
 
-const PREVIEW_COUNT = 3;
-
 /**
- * Met en avant les experts vérifiés depuis l'accueil.
+ * Met en avant l'accompagnement par des experts vérifiés, depuis l'accueil.
  * Les testeurs ne savaient pas qu'on pouvait parler à quelqu'un : rien ne le
- * disait avant l'inscription. La section reste muette s'il n'y a aucun expert
- * vérifié — mieux vaut ne rien promettre qu'annoncer un accompagnement vide.
+ * disait avant l'inscription.
+ *
+ * Volontairement GÉNÉRALE : ni nom d'expert, ni nombre. Le vivier change (un
+ * expert est ajouté, un autre révoqué) et mettre trois personnes en vitrine
+ * deviendrait arbitraire dès qu'il y en a davantage. On annonce donc la
+ * promesse — vérification, message privé, pays couverts — pas des individus.
+ * La section disparaît s'il n'y a aucun expert : mieux vaut ne rien promettre.
  */
 export default function ExpertsHighlight() {
   const { t } = useTranslation();
   const countryName = useCountryName();
   const { data: experts = [], isLoading } = useExperts();
 
+  // Pays réellement couverts, dédoublonnés et traduits.
+  const countries = useMemo(() => {
+    const names = new Set<string>();
+    for (const e of experts) {
+      const name = countryName(e.expertCountry?.countryName);
+      if (name) names.add(name);
+    }
+    return [...names].sort((a, b) => a.localeCompare(b));
+  }, [experts, countryName]);
+
   if (isLoading || experts.length === 0) return null;
 
-  const preview = experts.slice(0, PREVIEW_COUNT);
+  const promises = [
+    {
+      icon: ShieldCheck,
+      text: t('landing.experts.promise.verified', {
+        defaultValue: 'Profils vérifiés un par un par notre équipe',
+      }),
+    },
+    {
+      icon: MessageSquare,
+      text: t('landing.experts.promise.private', {
+        defaultValue: 'Échange en message privé, directement depuis leur fiche',
+      }),
+    },
+    {
+      icon: Globe2,
+      text: countries.length
+        ? t('landing.experts.promise.countries', {
+            countries: countries.join(', '),
+            defaultValue: 'Sur place, dans nos destinations : {{countries}}',
+          })
+        : t('landing.experts.promise.topics', {
+            defaultValue: 'Démarches, logement, emploi, scolarité',
+          }),
+    },
+  ];
 
   return (
     <section className="px-4 sm:px-8 w-full max-w-7xl mx-auto py-8">
@@ -51,31 +89,13 @@ export default function ExpertsHighlight() {
           </div>
 
           <div className="w-full flex-shrink-0 space-y-3 lg:w-80">
-            {preview.map((e) => (
+            {promises.map(({ icon: Icon, text }) => (
               <div
-                key={e.idUser}
-                className="flex items-center gap-3 rounded-xl border border-[#5EA3C0]/15 bg-white px-4 py-3 shadow-sm"
+                key={text}
+                className="flex items-start gap-3 rounded-xl border border-[#5EA3C0]/15 bg-white px-4 py-3 shadow-sm"
               >
-                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-[#5EA3C0]/15 text-sm font-bold text-[#4891b0]">
-                  {e.fullName.slice(0, 2).toUpperCase()}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="flex items-center gap-1 truncate text-sm font-semibold text-gray-900">
-                    {e.fullName}
-                    <BadgeCheck className="h-3.5 w-3.5 flex-shrink-0 text-[#5EA3C0]" />
-                  </p>
-                  <p className="truncate text-xs text-gray-500">
-                    {[e.expertTitle, countryName(e.expertCountry?.countryName)]
-                      .filter(Boolean)
-                      .join(' · ')}
-                  </p>
-                </div>
-                {typeof e.averageRating === 'number' && e.ratingCount ? (
-                  <span className="inline-flex flex-shrink-0 items-center gap-1 text-xs font-semibold text-amber-600">
-                    <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                    {e.averageRating.toFixed(1)}
-                  </span>
-                ) : null}
+                <Icon className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#5EA3C0]" />
+                <p className="text-sm leading-relaxed text-gray-700">{text}</p>
               </div>
             ))}
           </div>
