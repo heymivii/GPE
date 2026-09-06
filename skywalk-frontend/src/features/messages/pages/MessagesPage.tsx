@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-hot-toast';
@@ -12,6 +12,42 @@ import {
   pmKeys,
 } from '../../../hooks/usePrivateMessages';
 import { userReportApi } from '../../../api/user-report';
+
+/**
+ * Où engager une conversation. Les points d'entrée existent (fiche expert,
+ * carte buddy d'une étape, auteur d'un sujet du forum) mais rien ne les
+ * indiquait depuis la messagerie : les testeurs arrivaient sur « Aucune
+ * conversation » sans savoir quoi faire.
+ */
+function StartConversationLinks() {
+  const { t } = useTranslation();
+  return (
+    <div className="mt-4 flex flex-col items-center gap-2">
+      <p className="text-xs text-gray-500 max-w-xs leading-relaxed">
+        {t('messages.startHint', {
+          defaultValue:
+            'Écrivez à un expert vérifié depuis sa fiche, ou à un membre depuis le forum.',
+        })}
+      </p>
+      <div className="flex flex-wrap items-center justify-center gap-2">
+        <Link
+          to="/experts"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-[#5EA3C0] px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-[#4891b0]"
+        >
+          <BadgeCheck className="h-3.5 w-3.5" />
+          {t('messages.findExpert', { defaultValue: 'Trouver un expert' })}
+        </Link>
+        <Link
+          to="/forum"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold text-gray-600 transition-colors hover:bg-gray-50"
+        >
+          <Users className="h-3.5 w-3.5" />
+          {t('messages.browseForum', { defaultValue: 'Parcourir le forum' })}
+        </Link>
+      </div>
+    </div>
+  );
+}
 
 export default function MessagesPage() {
   const { t, i18n } = useTranslation();
@@ -146,9 +182,19 @@ export default function MessagesPage() {
                 <Loader2 className="w-5 h-5 animate-spin" />
               </div>
             ) : visibleConversations.length === 0 ? (
-              <p className="px-4 py-8 text-sm text-gray-400 text-center">
-                {t('messages.empty', { defaultValue: 'Aucune conversation.' })}
-              </p>
+              // Retour de recette : les testeurs ne trouvaient pas où engager
+              // une conversation. « Aucune conversation. » était un cul-de-sac :
+              // on indique désormais les deux endroits d'où l'on écrit.
+              <div className="px-4 py-8 text-center">
+                <p className="text-sm text-gray-400">
+                  {filter === 'all'
+                    ? t('messages.empty', { defaultValue: 'Aucune conversation.' })
+                    : t('messages.emptyFiltered', {
+                        defaultValue: 'Aucune conversation dans ce filtre.',
+                      })}
+                </p>
+                {filter === 'all' && <StartConversationLinks />}
+              </div>
             ) : (
               <ul className="divide-y divide-gray-50">
                 {visibleConversations.map((c) => (
@@ -212,10 +258,15 @@ export default function MessagesPage() {
               <div className="flex-1 flex flex-col items-center justify-center text-center text-gray-400 gap-2 p-8">
                 <MessagesSquare className="w-10 h-10 text-gray-300" />
                 <p className="text-sm">
-                  {t('messages.pickConversation', {
-                    defaultValue: 'Sélectionnez une conversation.',
-                  })}
+                  {conversations.length === 0
+                    ? t('messages.noneYet', {
+                        defaultValue: "Vous n'avez pas encore de conversation.",
+                      })
+                    : t('messages.pickConversation', {
+                        defaultValue: 'Sélectionnez une conversation.',
+                      })}
                 </p>
+                {conversations.length === 0 && <StartConversationLinks />}
               </div>
             ) : (
               <>

@@ -87,9 +87,38 @@ describe('MessagesPage', () => {
     expect(screen.getByText('9+')).toBeInTheDocument();
   });
 
-  it('shows the "pick a conversation" placeholder when nothing is selected', () => {
+  it('shows the "pick a conversation" placeholder when conversations exist but none is selected', () => {
+    conversationsState.data = [conv()];
     renderPage();
     expect(screen.getByText('Sélectionnez une conversation.')).toBeInTheDocument();
+  });
+
+  describe('quand la messagerie est vide', () => {
+    // Retour de recette : les testeurs ne trouvaient pas où parler aux experts
+    // ou aux membres. « Aucune conversation. » ne menait nulle part.
+    it('explique où engager une conversation', () => {
+      conversationsState.data = [];
+      renderPage();
+
+      expect(
+        screen.getByText("Vous n'avez pas encore de conversation."),
+      ).toBeInTheDocument();
+      expect(screen.getAllByRole('link', { name: /Trouver un expert/ })[0]).toHaveAttribute(
+        'href',
+        '/experts',
+      );
+      expect(screen.getAllByRole('link', { name: /Parcourir le forum/ })[0]).toHaveAttribute(
+        'href',
+        '/forum',
+      );
+    });
+
+    it('ne propose pas ces raccourcis quand des conversations existent', () => {
+      conversationsState.data = [conv()];
+      renderPage();
+
+      expect(screen.queryByRole('link', { name: /Trouver un expert/ })).not.toBeInTheDocument();
+    });
   });
 
   it('selects a conversation and shows its thread', () => {

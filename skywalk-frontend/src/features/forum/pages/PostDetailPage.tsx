@@ -8,6 +8,7 @@ import {
   AlertCircle,
   Send,
   Edit,
+  Mail,
   Trash2,
   X,
   Check,
@@ -488,6 +489,29 @@ export default function PostDetailPage() {
                   <Flag className="w-4 h-4" />
                 </button>
               )}
+              {/* Retour de recette : on pouvait SIGNALER l'auteur d'un sujet mais
+                  pas lui écrire — les testeurs ne trouvaient pas où contacter un
+                  membre. Le lien mène au fil de discussion privé, déjà ouvert. */}
+              {user && topic.user?.idUser &&
+                user.idUser !== topic.user.idUser &&
+                user.id !== topic.user.idUser && (
+                  <Link
+                    to={`/messages?to=${topic.user.idUser}&name=${encodeURIComponent(
+                      topic.user.fullName || `#${topic.user.idUser}`,
+                    )}`}
+                    className="inline-flex items-center gap-1.5 px-3 py-2 text-sm border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                    title={t('forum.postDetail.messageAuthor', {
+                      defaultValue: "Écrire à l'auteur",
+                    })}
+                  >
+                    <Mail className="w-4 h-4" />
+                    <span className="hidden sm:inline">
+                      {t('forum.postDetail.messageAuthor', {
+                        defaultValue: "Écrire à l'auteur",
+                      })}
+                    </span>
+                  </Link>
+                )}
               {user && topic.user?.idUser &&
                 user.idUser !== topic.user.idUser &&
                 user.id !== topic.user.idUser && (

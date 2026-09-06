@@ -344,4 +344,36 @@ describe('PostDetailPage', () => {
       confirmSpy.mockRestore();
     });
   });
+
+  describe("écrire à l'auteur d'un sujet", () => {
+    // Retour de recette : on pouvait signaler un membre mais pas lui écrire,
+    // et les testeurs ne trouvaient pas où contacter quelqu'un.
+    it('propose un lien vers la conversation privée avec l’auteur', () => {
+      setup({ user: { idUser: 2, id: 2, userRole: 'user' } });
+      renderPage();
+
+      expect(screen.getByRole('link', { name: /forum.postDetail.messageAuthor/ })).toHaveAttribute(
+        'href',
+        '/messages?to=1&name=Alice',
+      );
+    });
+
+    it('ne le propose pas à l’auteur lui-même', () => {
+      setup({ user: { idUser: 1, id: 1, userRole: 'user' } });
+      renderPage();
+
+      expect(
+        screen.queryByRole('link', { name: /forum.postDetail.messageAuthor/ }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('ne le propose pas à un visiteur non connecté', () => {
+      setup({ user: null });
+      renderPage();
+
+      expect(
+        screen.queryByRole('link', { name: /forum.postDetail.messageAuthor/ }),
+      ).not.toBeInTheDocument();
+    });
+  });
 });
