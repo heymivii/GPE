@@ -9,6 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Raw } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { User } from '../user/entities/user.entity';
+import { toPublicUser } from '../user/user.sanitizer';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { MailService } from './mail.service';
@@ -287,7 +288,9 @@ export class AuthService {
   }
 
   private sanitizeUser(user: User) {
-    const { password: _pw, ...sanitized } = user;
+    // toPublicUser retire le mot de passe ET conserve `fullName` (getter du
+    // prototype, perdu par un simple spread).
+    const sanitized = toPublicUser(user);
     // Booléen dérivé : le front n'a pas à connaître la date, seulement l'état.
     // `emailDeliveryEnabled` dit au front si un renvoi de lien a une chance
     // d'aboutir : sans SMTP configuré, proposer le bouton serait mentir.

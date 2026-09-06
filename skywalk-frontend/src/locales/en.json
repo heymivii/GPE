@@ -1170,7 +1170,7 @@
       "userIdError": "User ID error",
       "publishError": "Error while publishing",
       "editError": "Error while editing",
-      "confirmDelete": "Are you sure you want to delete this message?",
+      "confirmDelete": "Permanently delete this topic and all its replies? This cannot be undone.",
       "deleteError": "Error while deleting",
       "deleteSuccess": "Message deleted successfully",
       "replySuccess": "Reply published successfully!",
@@ -1219,7 +1219,8 @@
         "confirmDeleteMessage": "Are you sure you want to delete this message as a moderator?",
         "topicDeleted": "Topic deleted",
         "messageDeleted": "Message deleted by moderator"
-      }
+      },
+      "delete": "Delete"
     },
     "editTopic": {
       "loading": "Loading topic...",

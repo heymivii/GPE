@@ -1170,7 +1170,7 @@
       "userIdError": "Erreur ID utilisateur",
       "publishError": "Erreur lors de la publication",
       "editError": "Erreur lors de la modification",
-      "confirmDelete": "Êtes-vous sûr de vouloir supprimer ce message ?",
+      "confirmDelete": "Supprimer définitivement ce sujet et toutes ses réponses ? Cette action est irréversible.",
       "deleteError": "Erreur lors de la suppression",
       "deleteSuccess": "Message supprimé avec succès",
       "replySuccess": "Réponse publiée avec succès !",
@@ -1219,7 +1219,8 @@
         "confirmDeleteMessage": "Êtes-vous sûr de vouloir supprimer ce message en tant que modérateur ?",
         "topicDeleted": "Topic supprimé",
         "messageDeleted": "Message supprimé par un modérateur"
-      }
+      },
+      "delete": "Supprimer"
     },
     "editTopic": {
       "loading": "Chargement du topic...",

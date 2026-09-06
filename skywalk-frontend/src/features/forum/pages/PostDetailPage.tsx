@@ -34,6 +34,7 @@ import {
   usePinTopic,
   useModeratorDeleteMessage,
   useModeratorDeleteTopic,
+  useDeleteTopic,
   useFollowTopic,
   useUnfollowTopic,
 } from '../../../hooks/useForum';
@@ -118,6 +119,7 @@ export default function PostDetailPage() {
   const pinTopic = usePinTopic();
   const modDeleteMessage = useModeratorDeleteMessage();
   const modDeleteTopic = useModeratorDeleteTopic();
+  const deleteTopic = useDeleteTopic();
 
   const isModOrAdmin = user?.userRole === 'admin' || user?.userRole === 'moderator';
   const isTopicLocked = topic?.is_locked ?? false;
@@ -291,6 +293,18 @@ export default function PostDetailPage() {
       await pinTopic.mutateAsync(topicId);
     } catch (err) {
       console.error('Pin error:', err);
+    }
+  };
+
+  // Retour de recette : un doublon publié par erreur ne pouvait qu'être modifié.
+  // L'API autorisait déjà l'auteur à supprimer, l'écran ne l'exposait pas.
+  const handleDeleteTopic = async () => {
+    if (!window.confirm(t('forum.postDetail.confirmDelete'))) return;
+    try {
+      await deleteTopic.mutateAsync(topicId);
+      navigate('/forum');
+    } catch (err) {
+      console.error('Delete topic error:', err);
     }
   };
 
@@ -491,13 +505,23 @@ export default function PostDetailPage() {
                   </button>
                 )}
               {user && (user.idUser === topic.user?.idUser || user.id === topic.user?.idUser) && (
-                <Link
-                  to={`/forum/post/${id}/edit`}
-                  className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  <Edit className="w-4 h-4" />
-                  {t('forum.postDetail.edit')}
-                </Link>
+                <>
+                  <Link
+                    to={`/forum/post/${id}/edit`}
+                    className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    <Edit className="w-4 h-4" />
+                    {t('forum.postDetail.edit')}
+                  </Link>
+                  <button
+                    onClick={handleDeleteTopic}
+                    disabled={deleteTopic.isPending}
+                    className="flex items-center gap-2 px-4 py-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-50"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    {t('forum.postDetail.delete')}
+                  </button>
+                </>
               )}
             </div>
           </div>
