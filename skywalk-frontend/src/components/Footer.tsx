@@ -71,11 +71,10 @@ export default function Footer() {
                   {t('footer.practicalGuides')}
                 </Link>
               </li>
-              <li>
-                <Link to="/experiences" className="hover:text-[#5EA3C0] transition-colors">
-                  {t('footer.testimonials')}
-                </Link>
-              </li>
+              {/* « Témoignages » renvoyait vers /experiences, une route qui
+                  n'existe pas : l'API des retours d'expérience est en place
+                  côté serveur, mais aucun écran ne les affiche encore. Le lien
+                  est retiré tant que la page n'existe pas. */}
               <li>
                 <Link to="/comparison" className="hover:text-[#5EA3C0] transition-colors">
                   {t('footer.countryComparator')}

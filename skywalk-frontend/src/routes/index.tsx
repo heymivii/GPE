@@ -20,6 +20,10 @@ import ProtectedRoute from '../components/ProtectedRoute';
 import PublicRoute from '../components/PublicRoute';
 import ProfilePage from '../features/profile/pages/ProfilePage';
 import { DestinationsPage } from '../features/destinations/pages/DestinationsPage';
+import AboutPage from '../features/legal/pages/AboutPage';
+import LegalNoticePage from '../features/legal/pages/LegalNoticePage';
+import PrivacyPage from '../features/legal/pages/PrivacyPage';
+import TermsPage from '../features/legal/pages/TermsPage';
 import { DestinationDetailPage } from '../features/destinations/pages/DestinationDetailPage';
 import CityDetailPage from '../features/destinations/pages/CityDetailPage';
 import ProjectsPage from '../features/projects/pages/ProjectsPage';
@@ -87,6 +91,12 @@ export const router = createBrowserRouter([
       { path: 'services/:category', element: <ServicePage /> },
       { path: 'forum', element: <ForumPage /> },
       { path: 'destinations', element: <DestinationsPage /> },
+      // Pages d'information et légales : liées depuis le pied de page et le
+      // formulaire d'inscription, mais aucune route n'existait (404).
+      { path: 'about', element: <AboutPage /> },
+      { path: 'legal', element: <LegalNoticePage /> },
+      { path: 'privacy', element: <PrivacyPage /> },
+      { path: 'terms', element: <TermsPage /> },
       { path: 'destinations/:countrySlug', element: <DestinationDetailPage /> },
       // Fiche ville : coût de la vie, qualité de vie et immobilier détaillés
       { path: 'destinations/:countrySlug/villes/:cityId', element: <CityDetailPage /> },

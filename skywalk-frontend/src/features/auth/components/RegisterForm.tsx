@@ -251,11 +251,11 @@ export default function RegisterForm() {
         />
         <span className="text-sm text-gray-700">
           {t("auth.register.terms")}{" "}
-          <Link to="/legal/terms" className="text-[#5EA3C0] hover:underline" target="_blank">
+          <Link to="/terms" className="text-[#5EA3C0] hover:underline" target="_blank">
             {t("auth.register.termsOfUse")}
           </Link>{" "}
           {t("auth.register.and")}{" "}
-          <Link to="/legal/privacy" className="text-[#5EA3C0] hover:underline" target="_blank">
+          <Link to="/privacy" className="text-[#5EA3C0] hover:underline" target="_blank">
             {t("auth.register.privacyPolicy")}
           </Link>
         </span>
