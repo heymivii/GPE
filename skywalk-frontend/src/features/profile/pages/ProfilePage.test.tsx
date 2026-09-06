@@ -1,9 +1,18 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
 import ProfilePage from './ProfilePage';
 import { useProfile, useUpdateProfile, useDeleteAccount } from '../../../hooks/useProfile';
+
+/** La page lit `?edit=1` : elle a besoin d'un routeur. */
+const renderProfile = (route = '/profile') =>
+  render(
+    <MemoryRouter initialEntries={[route]}>
+      <ProfilePage />
+    </MemoryRouter>,
+  );
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -83,25 +92,25 @@ describe('ProfilePage', () => {
 
   it('shows a loading spinner while the profile is loading', () => {
     setup({ isLoading: true, profile: undefined });
-    const { container } = render(<ProfilePage />);
+    const { container } = renderProfile();
     expect(container.querySelector('.animate-spin')).not.toBeNull();
   });
 
   it('shows an error message when the profile fails to load', () => {
     setup({ error: new Error('boom'), profile: undefined });
-    render(<ProfilePage />);
+    renderProfile();
     expect(screen.getByText('profilePage.loadingError')).toBeInTheDocument();
   });
 
   it('renders nothing when there is no profile and no error', () => {
     setup({ profile: undefined });
-    const { container } = render(<ProfilePage />);
+    const { container } = renderProfile();
     expect(container.firstChild).toBeNull();
   });
 
   it('renders the profile summary in read mode', () => {
     setup();
-    render(<ProfilePage />);
+    renderProfile();
     expect(screen.getByRole('heading', { name: 'Jane Doe' })).toBeInTheDocument();
     expect(screen.getByText('jane@example.com')).toBeInTheDocument();
     expect(screen.getAllByText('France').length).toBeGreaterThan(0);
@@ -110,7 +119,7 @@ describe('ProfilePage', () => {
 
   it('switches to edit mode and pre-fills the form', () => {
     setup();
-    render(<ProfilePage />);
+    renderProfile();
     fireEvent.click(screen.getByText('profilePage.edit'));
     expect(screen.getByLabelText('profilePage.firstName')).toHaveValue('Jane');
     expect(screen.getByLabelText('profilePage.lastName')).toHaveValue('Doe');
@@ -118,7 +127,7 @@ describe('ProfilePage', () => {
 
   it('cancels editing and returns to read mode', () => {
     setup();
-    render(<ProfilePage />);
+    renderProfile();
     fireEvent.click(screen.getByText('profilePage.edit'));
     fireEvent.click(screen.getByText('profilePage.cancel'));
     expect(screen.getByText('profilePage.edit')).toBeInTheDocument();
@@ -127,7 +136,7 @@ describe('ProfilePage', () => {
   it('submits the edited form and shows a success toast', async () => {
     mutateAsync.mockResolvedValue(undefined);
     setup();
-    render(<ProfilePage />);
+    renderProfile();
     fireEvent.click(screen.getByText('profilePage.edit'));
     fireEvent.change(screen.getByLabelText('profilePage.firstName'), { target: { value: 'Janet' } });
     fireEvent.click(screen.getByText('profilePage.save'));
@@ -137,7 +146,7 @@ describe('ProfilePage', () => {
 
   it('shows an error banner when the update mutation failed', () => {
     setup({ updateError: true });
-    render(<ProfilePage />);
+    renderProfile();
     fireEvent.click(screen.getByText('profilePage.edit'));
     expect(screen.getByText('profilePage.updateError')).toBeInTheDocument();
   });
@@ -145,7 +154,7 @@ describe('ProfilePage', () => {
   it('shows the delete confirmation, then confirms and deletes the account', async () => {
     deleteMutateAsync.mockResolvedValue(undefined);
     setup();
-    render(<ProfilePage />);
+    renderProfile();
     fireEvent.click(screen.getByText('profilePage.deleteAccount'));
     expect(screen.getByText('profilePage.deleteConfirm')).toBeInTheDocument();
     fireEvent.click(screen.getByText('profilePage.confirm'));
@@ -154,7 +163,7 @@ describe('ProfilePage', () => {
 
   it('cancels the delete confirmation', () => {
     setup();
-    render(<ProfilePage />);
+    renderProfile();
     fireEvent.click(screen.getByText('profilePage.deleteAccount'));
     fireEvent.click(screen.getByText('profilePage.cancel'));
     expect(screen.queryByText('profilePage.deleteConfirm')).not.toBeInTheDocument();
@@ -162,7 +171,21 @@ describe('ProfilePage', () => {
 
   it('shows a fallback message for languages when none are provided', () => {
     setup({ profile: { ...baseProfile, spokenLanguages: [] } });
-    render(<ProfilePage />);
+    renderProfile();
     expect(screen.getByText('profilePage.noLanguages')).toBeInTheDocument();
+  });
+
+  it('ouvre directement le formulaire quand on arrive avec ?edit=1', () => {
+    // Lien « Compléter mon profil » du dashboard : atterrir sur la fiche en
+    // lecture seule obligerait à chercher encore le bouton « Modifier ».
+    renderProfile('/profile?edit=1');
+
+    expect(screen.getByLabelText('profilePage.firstName')).toBeInTheDocument();
+  });
+
+  it('reste en lecture seule sans le paramètre', () => {
+    renderProfile('/profile');
+
+    expect(screen.queryByLabelText('profilePage.firstName')).not.toBeInTheDocument();
   });
 });

@@ -4,10 +4,15 @@ import PopularDestinations from '../components/PopularDestinations'
 import { useNavigate } from 'react-router-dom'
 import { useProjects } from '../../projects/hooks/useProjectMutations'
 import { useEffect } from 'react'
+import { useAuth } from '../../../hooks/useAuth'
+import { isProfileComplete } from '../../../lib/profileCompletion'
 
 export default function DashboardPage() {
   const navigate = useNavigate()
   const { data: projects, isLoading } = useProjects()
+  // `isProfileComplete` était codé en dur à false : l'alerte s'affichait même
+  // à quelqu'un dont le profil était entièrement rempli.
+  const { user } = useAuth()
 
   const handleStartProject = () => {
     navigate('/onboarding')
@@ -29,8 +34,8 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <WelcomeSection 
-        isProfileComplete={false} 
+      <WelcomeSection
+        isProfileComplete={isProfileComplete(user)}
         onStartProject={handleStartProject}
       />
       
