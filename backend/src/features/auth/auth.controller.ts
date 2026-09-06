@@ -17,6 +17,7 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { VerifyEmailDto } from './dto/verify-email.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @ApiTags('Auth')
@@ -117,5 +118,24 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async resetPassword(@Body() dto: ResetPasswordDto) {
     return this.authService.resetPassword(dto.token, dto.newPassword);
+  }
+
+  // Public : la personne clique le lien reçu par mail, elle n'est pas forcément
+  // connectée dans le navigateur qui ouvre le lien.
+  @Post('verify-email')
+  @Throttle({ default: { ttl: 60_000, limit: 10 } })
+  @HttpCode(HttpStatus.OK)
+  async verifyEmail(@Body() dto: VerifyEmailDto) {
+    return this.authService.verifyEmail(dto.token);
+  }
+
+  // Limité à 3 renvois/5 min : un bouton « renvoyer » ne doit pas servir à
+  // inonder une boîte mail depuis un compte créé pour ça.
+  @Post('resend-verification')
+  @UseGuards(JwtAuthGuard)
+  @Throttle({ default: { ttl: 300_000, limit: 3 } })
+  @HttpCode(HttpStatus.OK)
+  async resendVerification(@Request() req) {
+    return this.authService.resendVerificationEmail(req.user.userId);
   }
 }

@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "../../../hooks/useAuth";
 import { countryApi } from "../../../api/country";
 import PasswordInput from "../../../components/PasswordInput";
+import { isValidPersonName, normalizePersonName } from "../../../lib/personName";
 
 const calculatePasswordStrength = (password: string) => {
   let strength = 0;
@@ -90,12 +91,18 @@ export default function RegisterForm() {
       setError(t("auth.register.nameRequired"));
       return;
     }
-    
+
+    // Même règle que le backend : lettres/accents, espace, apostrophe, tiret.
+    if (!isValidPersonName(firstName) || !isValidPersonName(lastName)) {
+      setError(t("auth.register.nameInvalid"));
+      return;
+    }
+
     registerMutation.mutate({
       email,
       password,
-      firstName: firstName.trim(),
-      lastName: lastName.trim(),
+      firstName: normalizePersonName(firstName),
+      lastName: normalizePersonName(lastName),
       age: age ? parseInt(age) : undefined,
       countryOriginId,
     });
@@ -124,6 +131,7 @@ export default function RegisterForm() {
             value={firstName}
             placeholder={t("auth.register.firstName")}
             onChange={(e) => setFirstName(e.target.value)}
+            maxLength={50}
             required
             disabled={registerMutation.isPending}
           />
@@ -137,6 +145,7 @@ export default function RegisterForm() {
             value={lastName}
             placeholder={t("auth.register.lastName")}
             onChange={(e) => setLastName(e.target.value)}
+            maxLength={50}
             required
             disabled={registerMutation.isPending}
           />

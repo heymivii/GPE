@@ -6,6 +6,7 @@ import LandingPage from '../features/landing/pages/LandingPage';
 import MainLayout from '../layouts/MainLayout';
 import PasswordForgotPage from '../features/auth/pages/PasswordForgotPage';
 import ResetPasswordPage from '../features/auth/pages/ResetPasswordPage';
+import VerifyEmailPage from '../features/auth/pages/VerifyEmailPage';
 import FormPage from '../features/forms/pages/FormPage';
 import DashboardPage from '../features/dashboard/pages/dashboard';
 import PersonalizedDashboard from '../features/dashboard/pages/PersonalizedDashboard';
@@ -69,6 +70,8 @@ export const router = createBrowserRouter([
           { path: 'pwdForgot', element: <PasswordForgotPage /> },
           // Cible du lien envoyé par email (mail.service: /auth/reset-password?token=…)
           { path: 'reset-password', element: <ResetPasswordPage /> },
+          // Cible du lien de confirmation d'inscription (mail.service)
+          { path: 'verify-email', element: <VerifyEmailPage /> },
         ],
       },
     ],

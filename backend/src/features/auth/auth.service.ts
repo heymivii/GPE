@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Raw } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { User } from '../user/entities/user.entity';
 import { LoginDto } from './dto/login.dto';
@@ -22,10 +22,24 @@ export class AuthService {
     private readonly mailService: MailService,
   ) {}
 
-  async register(registerDto: RegisterDto) {
-    const existingUser = await this.userRepository.findOne({
-      where: { email: registerDto.email },
+  /**
+   * Recherche par email insensible à la casse. Les emails saisis sont désormais
+   * normalisés en minuscules à l'inscription, mais des comptes plus anciens ont
+   * pu être créés avec des majuscules : une égalité stricte les empêcherait de
+   * se connecter. On compare donc en minuscules des deux côtés.
+   */
+  private findByEmail(email: string): Promise<User | null> {
+    return this.userRepository.findOne({
+      where: {
+        email: Raw((alias) => `LOWER(${alias}) = LOWER(:email)`, {
+          email: (email ?? '').trim(),
+        }),
+      },
     });
+  }
+
+  async register(registerDto: RegisterDto) {
+    const existingUser = await this.findByEmail(registerDto.email);
 
     if (existingUser) {
       throw new ConflictException('Cet email est déjà utilisé');
@@ -45,11 +59,20 @@ export class AuthService {
 
     await this.userRepository.save(newUser);
 
+    // Envoi de la confirmation d'adresse. `sendEmailVerification` n'échoue jamais
+    // (retourne false) : une panne SMTP ne doit pas annuler une inscription
+    // valide — l'utilisateur pourra toujours redemander l'envoi.
+    await this.mailService.sendEmailVerification(
+      newUser.email,
+      this.generateEmailVerificationToken(newUser),
+    );
+
     const token = this.generateToken(newUser);
     const refreshToken = this.generateRefreshToken(newUser);
 
     return {
-      message: 'Inscription réussie',
+      message:
+        'Inscription réussie — un email de confirmation vient de vous être envoyé',
       user: this.sanitizeUser(newUser),
       access_token: token,
       refresh_token: refreshToken,
@@ -57,9 +80,7 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto) {
-    const user = await this.userRepository.findOne({
-      where: { email: loginDto.email },
-    });
+    const user = await this.findByEmail(loginDto.email);
 
     if (!user) {
       throw new UnauthorizedException('Email ou mot de passe incorrect');
@@ -128,7 +149,7 @@ export class AuthService {
   }
 
   async forgotPassword(email: string) {
-    const user = await this.userRepository.findOne({ where: { email } });
+    const user = await this.findByEmail(email);
 
     if (!user) {
       return {
@@ -176,6 +197,77 @@ export class AuthService {
     }
   }
 
+  /**
+   * Confirme l'adresse email à partir du lien reçu. Idempotent : recliquer sur
+   * un lien déjà utilisé renvoie un succès plutôt qu'une erreur (le lien reste
+   * valide 24 h et les clients mail le préchargent parfois).
+   */
+  async verifyEmail(token: string) {
+    let payload: { sub: number; type?: string };
+    try {
+      payload = this.jwtService.verify(token);
+    } catch {
+      throw new UnauthorizedException(
+        'Lien de confirmation invalide ou expiré — demandez un nouvel envoi',
+      );
+    }
+
+    if (payload.type !== 'email-verification') {
+      throw new UnauthorizedException('Lien de confirmation invalide');
+    }
+
+    const user = await this.userRepository.findOne({
+      where: { idUser: payload.sub },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Utilisateur non trouvé');
+    }
+
+    if (!user.emailVerifiedAt) {
+      user.emailVerifiedAt = new Date();
+      await this.userRepository.save(user);
+    }
+
+    return {
+      message: 'Adresse email confirmée',
+      user: this.sanitizeUser(user),
+    };
+  }
+
+  /** Renvoie le lien de confirmation à l'utilisateur connecté. */
+  async resendVerificationEmail(userId: number) {
+    const user = await this.userRepository.findOne({
+      where: { idUser: userId },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Utilisateur non trouvé');
+    }
+
+    if (user.emailVerifiedAt) {
+      return { message: 'Votre adresse email est déjà confirmée' };
+    }
+
+    const sent = await this.mailService.sendEmailVerification(
+      user.email,
+      this.generateEmailVerificationToken(user),
+    );
+
+    return {
+      message: sent
+        ? 'Email de confirmation envoyé'
+        : "L'envoi a échoué, réessayez dans quelques minutes",
+    };
+  }
+
+  private generateEmailVerificationToken(user: User): string {
+    return this.jwtService.sign(
+      { sub: user.idUser, type: 'email-verification' },
+      { expiresIn: '24h' },
+    );
+  }
+
   private generateToken(user: User): string {
     const payload = {
       sub: user.idUser,
@@ -196,6 +288,7 @@ export class AuthService {
 
   private sanitizeUser(user: User) {
     const { password: _pw, ...sanitized } = user;
-    return sanitized;
+    // Booléen dérivé : le front n'a pas à connaître la date, seulement l'état.
+    return { ...sanitized, emailVerified: !!user.emailVerifiedAt };
   }
 }

@@ -13,6 +13,8 @@ export interface User {
   motherTongue?: string;
   spokenLanguages?: string[];
   countryOriginId?: number;
+  /** Adresse email confirmée via le lien reçu à l'inscription. */
+  emailVerified?: boolean;
   createdAt: string;
   updatedAt: string;
 }

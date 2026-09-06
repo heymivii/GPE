@@ -8,18 +8,26 @@ import {
   Min,
   Max,
   Matches,
+  MaxLength,
 } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsPersonName } from '../../../common/validation/person-name';
 
 export class RegisterDto {
-  @IsString()
-  @MinLength(2, { message: 'Le prénom doit contenir au moins 2 caractères' })
+  @IsPersonName('Le prénom')
   firstName: string;
 
-  @IsString()
-  @MinLength(2, { message: 'Le nom doit contenir au moins 2 caractères' })
+  @IsPersonName('Le nom')
   lastName: string;
 
+  // Normalisé à l'inscription : « Tene@Mail.COM » et « tene@mail.com » ne doivent
+  // pas pouvoir créer deux comptes distincts (la contrainte unique est sensible
+  // à la casse). La connexion compare ensuite en minuscules des deux côtés.
+  @Transform(({ value }) =>
+    typeof value === 'string' ? value.trim().toLowerCase() : value,
+  )
   @IsEmail({}, { message: 'Email invalide' })
+  @MaxLength(255, { message: "L'email ne doit pas dépasser 255 caractères" })
   email: string;
 
   @IsString()
@@ -56,5 +64,4 @@ export class RegisterDto {
   @IsOptional()
   @IsInt()
   countryOriginId?: number;
-
 }

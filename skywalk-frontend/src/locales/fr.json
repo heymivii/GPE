@@ -1742,7 +1742,8 @@
       "submitting": "Inscription...",
       "submit": "Rejoindre l'aventure SkyWalk",
       "hasAccount": "Vous avez déjà un compte ?",
-      "login": "Connectez-vous"
+      "login": "Connectez-vous",
+      "nameInvalid": "Le prénom et le nom ne peuvent contenir que des lettres, espaces, apostrophes et tirets"
     },
     "forgotPassword": {
       "emailSent": "Email envoyé ! Vérifiez votre boîte de réception.",
@@ -2280,7 +2281,8 @@
     "deleteAccount": "Supprimer mon compte",
     "deleteConfirm": "Êtes-vous vraiment sûr de vouloir supprimer votre compte ?",
     "deleting": "Suppression...",
-    "confirm": "Confirmer"
+    "confirm": "Confirmer",
+    "nameInvalid": "Le prénom et le nom ne peuvent contenir que des lettres, espaces, apostrophes et tirets"
   },
   "projectDetail": {
     "projects": "Projets",
