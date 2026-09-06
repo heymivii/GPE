@@ -4,6 +4,12 @@ import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import BuddySidebarCard from './BuddySidebarCard';
 
+// Le pays d'origine passe par la traduction ; on la pilote par test.
+const traduction: Record<string, string> = { Germany: 'Allemagne' };
+vi.mock('../../../hooks/useCountryName', () => ({
+  useCountryName: () => (name: string) => traduction[name] ?? name,
+}));
+
 vi.mock('../../../api/buddies', () => ({ getBuddies: vi.fn() }));
 vi.mock('./BuddyContactButtons', () => ({
   default: ({ recipientId }: { recipientId: number }) => (
@@ -100,5 +106,14 @@ describe('BuddySidebarCard', () => {
     expect(
       await screen.findByText(/Personne n'a encore partagé son expérience/),
     ).toBeInTheDocument();
+  });
+
+  // Retour de recette : « pourquoi il y a Germany ? » — c'est le pays d'ORIGINE du
+  // buddy, affiché tel quel en anglais. Il passe désormais par la traduction.
+  it('traduit le pays d’origine du buddy', async () => {
+    mockedGetBuddies.mockResolvedValue([{ ...buddy(7, 'Tene', '2026-08-01'), originCountry: 'Germany' }]);
+    renderCard();
+    expect(await screen.findByText(/– Allemagne/)).toBeInTheDocument();
+    expect(screen.queryByText(/Germany/)).not.toBeInTheDocument();
   });
 });

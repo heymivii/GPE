@@ -66,7 +66,8 @@ describe('NavBar', () => {
   it('opens the user menu and logs out', async () => {
     setup({ isAuthenticated: true, user: { fullName: 'Alice Martin', email: 'alice@example.com', role: 'user' } });
     renderNav();
-    fireEvent.click(screen.getByText('Alice Martin'));
+    // La pastille n'affiche que les initiales ; le nom est son libellé accessible.
+    fireEvent.click(screen.getByRole('button', { name: 'Alice Martin' }));
     expect(screen.getByText('alice@example.com')).toBeInTheDocument();
     fireEvent.click(screen.getByText('nav.logout'));
     await vi.waitFor(() => expect(logout).toHaveBeenCalled());
@@ -75,14 +76,14 @@ describe('NavBar', () => {
   it('shows the admin link only for an admin user', () => {
     setup({ isAuthenticated: true, user: { fullName: 'Admin', role: 'admin' } });
     renderNav();
-    fireEvent.click(screen.getByText('Admin'));
+    fireEvent.click(screen.getByRole('button', { name: 'Admin' }));
     expect(screen.getByText('Administration')).toBeInTheDocument();
   });
 
   it('hides the admin link for a regular user', () => {
     setup({ isAuthenticated: true, user: { fullName: 'Bob', role: 'user' } });
     renderNav();
-    fireEvent.click(screen.getByText('Bob'));
+    fireEvent.click(screen.getByRole('button', { name: 'Bob' }));
     expect(screen.queryByText('Administration')).not.toBeInTheDocument();
   });
 

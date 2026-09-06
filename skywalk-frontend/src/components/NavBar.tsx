@@ -254,11 +254,14 @@ export default function NavBar() {
                 <button
                   className="flex items-center gap-2 px-3 py-1.5 border border-gray-200 rounded-full bg-white hover:bg-gray-50 transition-colors"
                   onClick={() => setUserMenuOpen((v) => !v)}
+                  // Retour de recette : « laisse que les initiales ». Le nom complet reste
+                  // dans le menu déroulant et dans le libellé accessible du bouton.
+                  aria-label={user.fullName}
+                  title={user.fullName}
                 >
                   <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand to-brand-deep text-white flex items-center justify-center font-semibold text-sm">
                     {getInitials(user.fullName) || <User className="w-4 h-4" />}
                   </div>
-                  <span className="text-sm text-gray-700 font-medium hidden md:inline max-w-[120px] truncate">{user.fullName}</span>
                   <ChevronDown className={`w-3.5 h-3.5 text-gray-400 transition-transform ${userMenuOpen ? 'rotate-180' : ''}`} />
                 </button>
                 

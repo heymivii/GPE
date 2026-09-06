@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useQueries } from '@tanstack/react-query';
 import { Users } from 'lucide-react';
 import { getBuddies, type Buddy } from '../../../api/buddies';
+import { useCountryName } from '../../../hooks/useCountryName';
 import BuddyContactButtons from './BuddyContactButtons';
 
 interface StepRef {
@@ -45,6 +46,7 @@ export default function BuddySidebarCard({
   steps: StepRef[];
   countryId: number;
 }) {
+  const countryName = useCountryName();
   const [expanded, setExpanded] = useState(false);
 
   const results = useQueries({
@@ -114,7 +116,9 @@ export default function BuddySidebarCard({
               <p className="text-xs text-gray-700 font-medium truncate">
                 {row.firstname}
                 {row.originCountry && (
-                  <span className="text-gray-500 font-normal"> – {row.originCountry}</span>
+                  // Pays d'ORIGINE du buddy (pas sa destination), dans la langue de
+                  // l'interface : « Tene – Germany » se lisait comme une destination.
+                  <span className="text-gray-500 font-normal" title="Pays d’origine"> – {countryName(row.originCountry)}</span>
                 )}
               </p>
               <p className="text-[11px] text-gray-500 truncate">
