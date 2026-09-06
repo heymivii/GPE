@@ -8,6 +8,7 @@ import {
   getArticlesByCategory,
 } from '../../../data/blog-data';
 import Breadcrumbs from '../../../components/Breadcrumbs';
+import { renderInlineLinks } from '../renderInlineLinks';
 
 export default function BlogArticlePage() {
   const { id } = useParams<{ id: string }>();
@@ -106,14 +107,14 @@ export default function BlogArticlePage() {
                 return (
                   <ul key={idx} className="list-disc list-inside space-y-2 my-4 text-gray-600">
                     {items.map((item, i) => (
-                      <li key={i}>{item.replace('- ', '')}</li>
+                      <li key={i}>{renderInlineLinks(item.replace('- ', ''))}</li>
                     ))}
                   </ul>
                 );
               }
               return (
                 <p key={idx} className="text-gray-600 leading-relaxed mb-4">
-                  {paragraph}
+                  {renderInlineLinks(paragraph)}
                 </p>
               );
             })}
