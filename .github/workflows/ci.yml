@@ -73,6 +73,55 @@ jobs:
         working-directory: backend
         run: npm run test -- --passWithNoTests --forceExit
 
+  backend-e2e:
+    name: Backend E2E Tests
+    runs-on: ubuntu-latest
+    # Non-bloquant pour le déploiement pour l'instant (voir needs de
+    # deploy-backend/deploy-frontend, inchangés) : le temps de vérifier que
+    # cette suite plus jeune est stable en CI avant de la rendre bloquante.
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: skywalk_db_test
+          POSTGRES_USER: skywalk_user
+          POSTGRES_PASSWORD: skywalk_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U skywalk_user -d skywalk_db_test"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+    env:
+      DB_HOST: localhost
+      DB_PORT: "5432"
+      DB_USER: skywalk_user
+      DB_PASS: skywalk_password
+      DB_NAME: skywalk_db_test
+      JWT_SECRET: ci-test-secret
+      JWT_REFRESH_SECRET: ci-test-refresh-secret
+      NODE_ENV: test
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: backend
+        run: npm ci
+
+      # Migre le schéma puis lance les 27 suites e2e (test/*.e2e-spec.ts) —
+      # global-setup.js s'occupe des migrations, --forceExit ferme les
+      # connexions/cron qui empêcheraient sinon Jest de rendre la main.
+      - name: Run E2E tests
+        working-directory: backend
+        run: npm run test:e2e
+
   frontend-lint:
     name: Frontend Lint
     runs-on: ubuntu-latest
@@ -112,6 +161,70 @@ jobs:
       - name: Run tests
         working-directory: skywalk-frontend
         run: npm run test
+
+  frontend-e2e:
+    name: Frontend E2E Tests
+    runs-on: ubuntu-latest
+    # Playwright démarre lui-même le backend (`npm run start:dev`) ET le
+    # frontend (`npm run dev`) réels — voir skywalk-frontend/playwright.config.ts.
+    # Non-bloquant pour le déploiement pour l'instant, même logique que
+    # backend-e2e ci-dessus.
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: skywalk_db_test
+          POSTGRES_USER: skywalk_user
+          POSTGRES_PASSWORD: skywalk_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U skywalk_user -d skywalk_db_test"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+    env:
+      DB_HOST: localhost
+      DB_PORT: "5432"
+      DB_USER: skywalk_user
+      DB_PASS: skywalk_password
+      DB_NAME: skywalk_db_test
+      JWT_SECRET: ci-test-secret
+      JWT_REFRESH_SECRET: ci-test-refresh-secret
+      NODE_ENV: test
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: |
+            backend/package-lock.json
+            skywalk-frontend/package-lock.json
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm ci
+
+      # `start:dev` (nest start --watch) ne migre rien tout seul, contrairement
+      # au global-setup de la suite jest e2e du backend — sans ça, la base est
+      # vide et le premier test échoue sur des tables inexistantes.
+      - name: Run backend migrations
+        working-directory: backend
+        run: npm run migration:run
+
+      - name: Install frontend dependencies
+        working-directory: skywalk-frontend
+        run: npm ci
+
+      - name: Install Playwright browsers
+        working-directory: skywalk-frontend
+        run: npx playwright install --with-deps chromium
+
+      - name: Run E2E tests
+        working-directory: skywalk-frontend
+        run: npm run test:e2e
 
   backend-build:
     name: Backend Build
